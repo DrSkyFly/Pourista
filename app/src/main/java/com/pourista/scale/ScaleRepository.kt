@@ -2,7 +2,6 @@ package com.pourista.scale
 
 import android.Manifest
 import android.annotation.SuppressLint
-import android.bluetooth.le.ScanFilter
 import android.content.Context
 import android.content.pm.PackageManager
 import android.os.Build
@@ -59,6 +58,12 @@ class ScaleRepository(context: Context) {
     private var peripheral: BluetoothPeripheral? = null
     private var reconnectJob: Job? = null
 
+    /**
+     * Протокол подключённых весов. До первой находки — наш собственный: он
+     * единственный проверен на железе, и с ним же приложение жило раньше.
+     */
+    private var driver: ScaleDriver = FutulaDriver
+
     /** Пользователь отключился сам — не переподключаемся молча. */
     private var userDisconnected = false
 
@@ -73,7 +78,8 @@ class ScaleRepository(context: Context) {
         keepGrams = enabled
         if (!enabled) return
         val current = peripheral ?: return
-        scope.launch { sendCommand(current, WeightUnit.GRAM.commandHex) }
+        val command = driver.unitCommand(WeightUnit.GRAM) ?: return
+        scope.launch { sendCommand(current, command) }
     }
 
     /**
@@ -95,16 +101,22 @@ class ScaleRepository(context: Context) {
         userDisconnected = false
         observeConnectionStateOnce()
         _state.update { it.copy(status = ConnectionStatus.SCANNING) }
-        val filters = ScaleProtocol.DEVICE_NAMES.map {
-            ScanFilter.Builder().setDeviceName(it).build()
-        }
         runCatching {
-            central.scanForPeripheralsUsingFilters(
-                filters,
+            // Имена сверяет сама библиотека, подстрокой: у весов они пишутся
+            // по-разному, и точное совпадение отсекало бы половину моделей.
+            central.scanForPeripheralsWithNames(
+                ScaleDrivers.nameFragments,
                 { found, scanResult ->
-                    Log.d(TAG, "Найдены весы ${found.name}, RSSI ${scanResult.rssi}")
+                    val matched = ScaleDrivers.forName(found.name)
+                    if (matched == null) {
+                        Log.d(TAG, "Устройство ${found.name} не опознано, ищем дальше")
+                        return@scanForPeripheralsWithNames
+                    }
+                    val mark = if (matched.experimental) ", поддержка тестовая" else ""
+                    Log.d(TAG, "Найдены весы ${found.name} (${matched.title}$mark), RSSI ${scanResult.rssi}")
                     central.stopScan()
                     peripheral = found
+                    driver = matched
                     _state.update {
                         it.copy(status = ConnectionStatus.CONNECTING, deviceName = found.name)
                     }
@@ -140,7 +152,8 @@ class ScaleRepository(context: Context) {
 
     fun tare() {
         val current = peripheral ?: return
-        scope.launch { sendCommand(current, ScaleProtocol.COMMAND_TARE) }
+        val command = driver.tareCommand() ?: return
+        scope.launch { sendCommand(current, command) }
     }
 
     private fun connect(target: BluetoothPeripheral) {
@@ -201,37 +214,54 @@ class ScaleRepository(context: Context) {
     }
 
     private fun startObserving(device: BluetoothPeripheral) {
+        val active = driver
         scope.launch {
             try {
-                val weight = device.getCharacteristic(
-                    ScaleProtocol.SERVICE, ScaleProtocol.WEIGHT_CHARACTERISTIC
-                )
-                val battery = device.getCharacteristic(
-                    ScaleProtocol.BATTERY_SERVICE, ScaleProtocol.BATTERY_CHARACTERISTIC
-                )
+                val weight = device.getCharacteristic(active.service, active.weightCharacteristic)
+                val battery = active.batteryService?.let { service ->
+                    active.batteryCharacteristic?.let { device.getCharacteristic(service, it) }
+                }
 
                 if (weight != null) {
                     device.observe(weight) { value ->
-                        val reading = ScaleProtocol.parseWeight(value) ?: run {
+                        val reading = active.parseWeight(value) ?: run {
+                            // Заряд у части весов приходит отдельным кадром
+                            // в ту же характеристику, что и вес.
+                            active.parseBattery(value)?.let { percent ->
+                                _state.update { it.copy(batteryPercent = percent) }
+                            }
                             logPacket(value, null)
                             return@observe
                         }
                         logPacket(value, reading)
-                        if (keepGrams && reading.unitOnScale != WeightUnit.GRAM) {
-                            scope.launch { sendCommand(device, WeightUnit.GRAM.commandHex) }
+                        // Весы могут показывать унции: рецепты и подсказки в граммах,
+                        // поэтому возвращаем их обратно, если модель это умеет.
+                        if (keepGrams && reading.unitOnScale != null &&
+                            reading.unitOnScale != WeightUnit.GRAM
+                        ) {
+                            active.unitCommand(WeightUnit.GRAM)?.let { command ->
+                                scope.launch { sendCommand(device, command) }
+                            }
                         }
-                        _state.update { it.copy(weightGrams = reading.grams) }
+                        _state.update { state ->
+                            state.copy(
+                                weightGrams = reading.grams,
+                                batteryPercent = reading.batteryPercent ?: state.batteryPercent,
+                            )
+                        }
                     }
                 }
 
+                // Отдельная служба заряда есть не у всех: у остальных он приходит
+                // в том же пакете, что и вес.
                 if (battery != null) {
                     device.observe(battery) { value ->
                         _state.update { it.copy(batteryPercent = value.asUInt8()?.toInt()) }
                     }
                 }
 
-                if (keepGrams) sendCommand(device, WeightUnit.GRAM.commandHex)
-                sendCommand(device, ScaleProtocol.timeSyncCommand())
+                if (keepGrams) active.unitCommand(WeightUnit.GRAM)?.let { sendCommand(device, it) }
+                active.onConnectCommands().forEach { sendCommand(device, it) }
             } catch (e: Exception) {
                 Log.d(TAG, "Не удалось подписаться на характеристики: $e")
             }
@@ -242,7 +272,7 @@ class ScaleRepository(context: Context) {
      * Диагностика протокола: раз в секунду печатает сырой пакет и то, как он
      * разобран. Нужна при проверке на живых весах, в релизе не собирается.
      */
-    private fun logPacket(value: ByteArray, reading: ScaleProtocol.WeightReading?) {
+    private fun logPacket(value: ByteArray, reading: WeightReading?) {
         if (!BuildConfig.DEBUG) return
         val now = SystemClock.elapsedRealtime()
         if (now - lastPacketLogAt < PACKET_LOG_INTERVAL_MS) return
@@ -253,14 +283,13 @@ class ScaleRepository(context: Context) {
         Log.d(TAG, "Пакет веса [$hex] → $parsed")
     }
 
-    private suspend fun sendCommand(device: BluetoothPeripheral, hex: String) {
+    private suspend fun sendCommand(device: BluetoothPeripheral, command: ByteArray) {
         try {
-            val characteristic = device.getCharacteristic(
-                ScaleProtocol.SERVICE, ScaleProtocol.COMMAND_CHARACTERISTIC
-            ) ?: return
+            val target = driver.commandCharacteristic ?: return
+            val characteristic = device.getCharacteristic(driver.service, target) ?: return
             device.writeCharacteristic(
                 characteristic,
-                ScaleProtocol.hexToBytes(hex),
+                command,
                 WriteType.WITH_RESPONSE,
             )
         } catch (e: Exception) {

@@ -49,6 +49,13 @@ before a pour, brew history, recipe import and export. Time is the headline
 number on screen; the dose can be typed in and the recipe rescales to it. The
 app does not judge a pace it cannot measure, and does not show empty gauges.
 
+### Supported scales
+
+- **Futula Kitchen Scale 3 / LEFU CK811** — verified on real hardware.
+- **Felicita**, **Bookoo**, **Decent Scale**, **Timemore Black Mirror Dot** —
+  experimental: protocols written from open implementations, never tested on the
+  hardware. Please open an issue to say whether it works.
+
 **With scales** — all of the above plus live weight, grams to go in the current
 step, a pace verdict ("pour faster" / "pour slower"), a cue a few grams before
 the target, pour-end detection by weight, auto-start on the first water,
@@ -110,6 +117,9 @@ release is simply built unsigned and the build does not fail.
 
 Thanks for the idea to [Futula Coffee Scale](https://github.com/wdrs/FutulaCoffeeScale),
 where this all started.
+
+Scale protocols other than Futula were worked out from
+[Beanconqueror](https://github.com/graphefruit/beanconqueror).
 
 ## License
 
