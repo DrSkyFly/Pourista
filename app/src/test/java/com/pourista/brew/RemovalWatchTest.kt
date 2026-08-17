@@ -43,8 +43,10 @@ class RemovalWatchTest {
         // Воронку сняли: вес упал больше чем вдвое.
         val droppedAt = now + 100L
         assertFalse(watch.onSample(60f, droppedAt))
-        assertFalse(watch.onSample(60f, droppedAt + 2_900L))
-        assertTrue(watch.onSample(60f, droppedAt + 3_000L))
+        // Трёх секунд мало: столько длится покачивание воронки на весу.
+        assertFalse(watch.onSample(60f, droppedAt + 3_000L))
+        assertFalse(watch.onSample(60f, droppedAt + 4_900L))
+        assertTrue(watch.onSample(60f, droppedAt + 5_000L))
 
         // Финиш относим к моменту падения, а вес в историю берём последний
         // нормальный: снимали уже готовую чашку.
@@ -60,6 +62,8 @@ class RemovalWatchTest {
 
         now += 500L
         assertFalse(watch.onSample(-420f, now))
+        // Минусу верим быстрее: так бывает только когда сняли всё разом.
+        assertFalse(watch.onSample(-420f, now + 2_900L))
         assertTrue(watch.onSample(-420f, now + 3_000L))
     }
 
@@ -75,8 +79,8 @@ class RemovalWatchTest {
         // Чашку поставили обратно — отсчёт начинается заново.
         assertFalse(watch.onSample(248f, now + 2_000L))
         assertFalse(watch.onSample(10f, now + 2_500L))
-        assertFalse(watch.onSample(10f, now + 4_000L))
-        assertTrue(watch.onSample(10f, now + 5_500L))
+        assertFalse(watch.onSample(10f, now + 6_000L))
+        assertTrue(watch.onSample(10f, now + 7_500L))
     }
 
     @Test

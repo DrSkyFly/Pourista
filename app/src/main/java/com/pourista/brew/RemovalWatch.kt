@@ -14,8 +14,18 @@ package com.pourista.brew
 internal class RemovalWatch(
     /** Ниже какой доли максимума считаем, что с весов сняли. */
     private val dropFactor: Float = DROP_FACTOR,
-    /** Сколько падение должно продержаться, чтобы это была не встряска. */
+    /**
+     * Сколько падение должно продержаться, чтобы это была не встряска.
+     * Пяти секунд хватает, чтобы последнее покачивание воронки не сошло за
+     * конец заваривания: качают две-три секунды и ставят обратно.
+     */
     private val holdMs: Long = HOLD_MS,
+    /**
+     * То же для ушедшего в минус веса. Минус бывает только когда с обнулённых
+     * весов сняли всё разом — тут сомневаться не в чем, и ждать столько же
+     * незачем.
+     */
+    private val negativeHoldMs: Long = NEGATIVE_HOLD_MS,
     /** Совсем лёгкие заваривания не сторожим: там любой шум — падение вдвое. */
     private val minPeakGrams: Float = MIN_PEAK_GRAMS,
 ) {
@@ -62,7 +72,8 @@ internal class RemovalWatch(
             droppedAt = nowMs
             return false
         }
-        return nowMs - droppedAt >= holdMs
+        val hold = if (weightGrams < 0f) negativeHoldMs else holdMs
+        return nowMs - droppedAt >= hold
     }
 
     fun reset() {
@@ -74,7 +85,8 @@ internal class RemovalWatch(
 
     private companion object {
         const val DROP_FACTOR = 0.5f
-        const val HOLD_MS = 3_000L
+        const val HOLD_MS = 5_000L
+        const val NEGATIVE_HOLD_MS = 3_000L
         const val MIN_PEAK_GRAMS = 20f
     }
 }

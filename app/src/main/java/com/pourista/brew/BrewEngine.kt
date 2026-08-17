@@ -216,6 +216,9 @@ class BrewEngine(
     /** Сторож конца заваривания: взводится, когда закончен последний влив. */
     private val removal = RemovalWatch()
 
+    /** Вес для расчётов: без просадок от покачивания воронки. */
+    private val pouredWeight = MonotonicWeight()
+
     fun selectRecipe(recipe: Recipe?) {
         baseRecipe = recipe
         _state.update { current -> current.withRecipeForDose(recipe, current.doseGrams) }
@@ -349,6 +352,7 @@ class BrewEngine(
         pourTrackedStepIndex = -1
         pourStartedAtMs = 0L
         removal.reset()
+        pouredWeight.reset()
         // Возвращаем исходный рецепт: пересчёт был привязан к дозе прошлой чашки.
         _state.value = BrewState(recipe = baseRecipe)
         scale.tare()
@@ -376,9 +380,13 @@ class BrewEngine(
         val current = _state.value
         if (current.phase != BrewPhase.RUNNING) return
 
-        val elapsed = accumulatedMs + (SystemClock.elapsedRealtime() - startedAtElapsedRealtime)
+        val nowMs = SystemClock.elapsedRealtime()
+        val elapsed = accumulatedMs + (nowMs - startedAtElapsedRealtime)
         currentElapsedSec = elapsed / 1000f
-        val weight = current.weightGrams.coerceAtLeast(0f)
+
+        // Для скорости, графиков и конца влива берём неубывающий вес: покачивание
+        // воронки роняет показания, а их возврат выглядел бы бешеным вливом.
+        val weight = pouredWeight.onSample(current.weightGrams.coerceAtLeast(0f), nowMs)
 
         weightSamples.addLast(weight)
         while (weightSamples.size > SAMPLE_WINDOW) weightSamples.removeFirst()
@@ -414,7 +422,6 @@ class BrewEngine(
             }
         }
 
-        val nowMs = SystemClock.elapsedRealtime()
         val firstPass = next.recipe?.let { guidanceFor(it, next) }
         if (firstPass != null) detectPourFinished(firstPass, weight, nowMs)
 

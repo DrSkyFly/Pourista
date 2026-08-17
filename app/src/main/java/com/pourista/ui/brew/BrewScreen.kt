@@ -892,6 +892,7 @@ private fun GuidanceCard(
                         if (started) R.string.guidance_seconds_left else R.string.guidance_seconds_total
                     ),
                     markerFraction = guidance.pourEndFraction.takeIf { it > 0f },
+                    fillFraction = if (started) guidance.pourFill(currentGrams, measuring) else 0f,
                 )
                 Spacer(Modifier.size(16.dp))
                 Column(Modifier.weight(1f)) {
@@ -1030,6 +1031,17 @@ private fun GuidanceCard(
             }
         }
     }
+}
+
+/**
+ * Сколько влива на текущем шаге уже сделано, 0..1 — это и наливается в кольцо.
+ * С весами считаем по факту, без них — по плану: иначе вода стояла бы на дне.
+ */
+private fun Guidance.pourFill(currentGrams: Float, measuring: Boolean): Float {
+    if (stepDeltaGrams <= 0f) return 0f
+    val startedAt = targetEndGrams - stepDeltaGrams
+    val poured = if (measuring) currentGrams - startedAt else targetNowGrams - startedAt
+    return (poured / stepDeltaGrams).coerceIn(0f, 1f)
 }
 
 @Composable

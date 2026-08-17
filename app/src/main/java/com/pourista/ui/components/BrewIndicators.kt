@@ -1,7 +1,12 @@
 package com.pourista.ui.components
 
 import androidx.compose.animation.animateColorAsState
+import androidx.compose.animation.core.LinearEasing
+import androidx.compose.animation.core.animateFloat
 import androidx.compose.animation.core.animateFloatAsState
+import androidx.compose.animation.core.infiniteRepeatable
+import androidx.compose.animation.core.rememberInfiniteTransition
+import androidx.compose.animation.core.tween
 import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -19,13 +24,19 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.geometry.CornerRadius
 import androidx.compose.ui.geometry.Offset
+import androidx.compose.ui.geometry.Rect
 import androidx.compose.ui.geometry.Size
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.Path
 import androidx.compose.ui.graphics.StrokeCap
+import androidx.compose.ui.graphics.drawscope.DrawScope
 import androidx.compose.ui.graphics.drawscope.Stroke
+import androidx.compose.ui.graphics.drawscope.clipPath
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
+import com.pourista.ui.theme.AppTheme
+import kotlin.math.sin
 
 /**
  * Шкала пролива: залитое — фактический вес, риска — где вес должен быть сейчас,
@@ -99,6 +110,9 @@ fun StepRing(
     caption: String? = null,
     /** Отметка, к которой влив должен закончиться, доля от шага 0..1. */
     markerFraction: Float? = null,
+    /** Сколько влива уже сделано, 0..1: наливается водой внутрь кольца. */
+    fillFraction: Float = 0f,
+    waterColor: Color = AppTheme.accents.water,
 ) {
     val track = MaterialTheme.colorScheme.surfaceVariant
     val markerColor = MaterialTheme.colorScheme.onSurface
@@ -106,6 +120,24 @@ fun StepRing(
         targetValue = progress.coerceIn(0f, 1f),
         label = "stepProgress",
     )
+    // Уровень догоняет цель плавно: вес приходит с весов рывками, и без
+    // сглаживания вода дёргалась бы вместе с ним.
+    val level by animateFloatAsState(
+        targetValue = fillFraction.coerceIn(0f, 1f),
+        animationSpec = tween(durationMillis = 400, easing = LinearEasing),
+        label = "waterLevel",
+    )
+    // Волна идёт сама по себе — вода не должна выглядеть застывшей.
+    val waves = rememberInfiniteTransition(label = "water")
+    val phase by waves.animateFloat(
+        initialValue = 0f,
+        targetValue = (2 * Math.PI).toFloat(),
+        animationSpec = infiniteRepeatable(
+            animation = tween(WAVE_PERIOD_MS, easing = LinearEasing),
+        ),
+        label = "waterPhase",
+    )
+
     Box(
         modifier = modifier.size(diameter),
         contentAlignment = Alignment.Center,
@@ -113,6 +145,7 @@ fun StepRing(
         Canvas(modifier = Modifier.size(diameter)) {
             val stroke = 10.dp.toPx()
             val inset = stroke / 2
+            if (level > 0f) drawWater(level, phase, stroke, waterColor)
             drawArc(
                 color = track,
                 startAngle = -90f,
@@ -161,6 +194,40 @@ fun StepRing(
                 )
             }
         }
+    }
+}
+
+/** Период бега волны: заметно, но не мельтешит. */
+private const val WAVE_PERIOD_MS = 2600
+private const val WAVE_AMPLITUDE_DP = 2.5f
+private const val WAVE_COUNT = 2f
+private const val WAVE_STEP_PX = 4f
+
+/**
+ * Вода внутри кольца. Поверхность — синусоида в две волны: ровная линия
+ * читалась бы как заливка индикатора, а не как жидкость.
+ */
+private fun DrawScope.drawWater(level: Float, phase: Float, stroke: Float, color: Color) {
+    val inner = Path().apply {
+        addOval(Rect(stroke, stroke, size.width - stroke, size.height - stroke))
+    }
+    clipPath(inner) {
+        val surface = size.height * (1f - level)
+        // У полного кольца волна ни к чему: воде некуда плескаться.
+        val amplitude = if (level >= 1f) 0f else WAVE_AMPLITUDE_DP.dp.toPx()
+        val water = Path().apply {
+            moveTo(0f, surface)
+            var x = 0f
+            while (x <= size.width) {
+                val angle = x / size.width * 2f * Math.PI.toFloat() * WAVE_COUNT + phase
+                lineTo(x, surface + amplitude * sin(angle))
+                x += WAVE_STEP_PX
+            }
+            lineTo(size.width, size.height)
+            lineTo(0f, size.height)
+            close()
+        }
+        drawPath(water, color.copy(alpha = 0.35f))
     }
 }
 
