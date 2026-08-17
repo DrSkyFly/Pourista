@@ -1,0 +1,21 @@
+# Сборка
+/build
+build/
+.gradle/
+.kotlin/
+/captures
+.externalNativeBuild
+.cxx
+
+# Локальные настройки среды
+local.properties
+*.iml
+/.idea
+
+# Ключ подписи и пароли к нему рядом с проектом не хранятся,
+# но на всякий случай закрываем и здесь.
+*.jks
+*.keystore
+keystore.properties
+
+.DS_Store

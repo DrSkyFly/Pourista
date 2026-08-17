@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+    Воронка V60 с падающей каплей. Рисунок держится внутри безопасной зоны
+    адаптивной иконки с запасом: MIUI и некоторые другие лаунчеры увеличивают
+    адаптивные иконки сильнее стандартного и срезали бы углы конуса.
+-->
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="108dp"
+    android:height="108dp"
+    android:viewportWidth="108"
+    android:viewportHeight="108">
+
+    <!-- Капля -->
+    <path
+        android:fillColor="#FF000000"
+        android:pathData="M54,25 C58.4,32.4 62.4,36.4 62.4,40.8 A8.4,8.4 0 0 1 45.6,40.8 C45.6,36.4 49.6,32.4 54,25 Z" />
+
+    <!-- Конус воронки -->
+    <path
+        android:strokeColor="#FF000000"
+        android:strokeWidth="5.3"
+        android:strokeLineJoin="round"
+        android:strokeLineCap="round"
+        android:pathData="M31.1,53.1 L76.9,53.1 L58.8,78.6 L49.2,78.6 Z" />
+
+    <!-- Рёбра: от кромки к носику, как на настоящей воронке -->
+    <path
+        android:strokeColor="#FF000000"
+        android:strokeAlpha="0.55"
+        android:strokeWidth="2.6"
+        android:strokeLineCap="round"
+        android:pathData="M41.7,58.4 L50.5,74.2" />
+    <path
+        android:strokeColor="#FF000000"
+        android:strokeAlpha="0.55"
+        android:strokeWidth="2.6"
+        android:strokeLineCap="round"
+        android:pathData="M66.3,58.4 L57.5,74.2" />
+</vector>

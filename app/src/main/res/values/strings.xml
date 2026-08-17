@@ -1,0 +1,209 @@
+<resources>
+    <string name="app_name">Pourista</string>
+
+    <string name="tab_brew">Brew</string>
+    <string name="tab_recipes">Recipes</string>
+    <string name="tab_history">History</string>
+    <string name="tab_settings">Settings</string>
+
+    <string name="action_save">Save</string>
+    <string name="action_reset">Reset</string>
+    <string name="action_connect">Connect to scale</string>
+    <string name="action_tare">Tare</string>
+    <string name="action_dose">Dose</string>
+    <string name="action_start">Start</string>
+    <string name="action_auto_start">Auto</string>
+    <string name="action_pause">Pause</string>
+    <string name="action_resume">Resume</string>
+    <string name="action_finish">Finish</string>
+    <string name="action_search">Search</string>
+    <string name="action_edit">Edit</string>
+    <string name="action_delete">Delete</string>
+    <string name="action_duplicate">Duplicate</string>
+    <string name="action_more">More</string>
+    <string name="action_back">Back</string>
+    <string name="action_ok">OK</string>
+    <string name="action_cancel">Cancel</string>
+    <string name="action_choose">Choose</string>
+    <string name="action_favorite">Favourite</string>
+    <string name="action_brew_this">Brew this recipe</string>
+    <string name="action_open_recipe">Open recipe</string>
+    <string name="action_move_up">Move up</string>
+    <string name="action_move_down">Move down</string>
+
+    <string name="readout_weight">Weight</string>
+    <string name="readout_dose">Dose</string>
+    <string name="readout_flow">Flow rate</string>
+    <string name="readout_ratio">Ratio</string>
+    <string name="readout_target">Target</string>
+    <string name="readout_remaining">%1$s g to go</string>
+    <string name="readout_time">Time</string>
+
+    <string name="unit_gram">g</string>
+    <string name="unit_gram_per_second">g/s</string>
+    <string name="value_not_set">not set</string>
+
+    <string name="brew_no_recipe_title">No recipe selected</string>
+    <string name="brew_no_recipe_hint">Pick a recipe and the app will prompt when and how much water to pour.</string>
+    <string name="brew_pick_recipe">Pick a recipe</string>
+    <string name="brew_change_recipe">Change</string>
+    <string name="brew_without_recipe">Brew without recipe</string>
+    <string name="brew_record_recipe">Record</string>
+    <string name="brew_recording_title">Recording a recipe</string>
+    <string name="brew_recording_hint">Brew as usual. The app marks the pours and pauses itself, and Finish opens the ready recipe.</string>
+    <string name="brew_recording_pours">Pours recorded: %1$d</string>
+    <string name="brew_recording_cancel">Cancel recording</string>
+    <string name="recipe_recorded_name">Recording</string>
+    <string name="brew_saved">Brew saved to history</string>
+    <string name="dose_dialog_title">Enter dose</string>
+
+    <string name="guidance_step_position">Step %1$d of %2$d</string>
+    <string name="guidance_seconds_left">sec left</string>
+    <string name="guidance_seconds_total">sec long</string>
+    <string name="guidance_pour_to">Pour up to %1$s g</string>
+    <string name="guidance_remaining_at_rate">%1$s g to go at %2$s g/s</string>
+    <string name="guidance_add_at_rate">Add %1$s g at %2$s g/s</string>
+    <string name="guidance_hold_at">Hold at %1$s g</string>
+    <string name="guidance_next_pour">Next: %1$s +%2$s g up to %3$s g in %4$d s</string>
+    <string name="guidance_next_plain">Next: %1$s in %2$d s</string>
+
+    <string name="hint_next_same">You poured %1$s g/s — same for the next one</string>
+    <string name="hint_next_faster">You poured %1$s g/s — next one faster, %2$s g/s</string>
+    <string name="hint_next_slower">You poured %1$s g/s — next one slower, %2$s g/s</string>
+    <string name="pace_on_track">Flow rate is good</string>
+    <string name="pace_too_fast">Pour slower</string>
+    <string name="pace_too_slow">Pour faster</string>
+    <string name="pace_hold">Hands off the kettle</string>
+
+    <string name="step_pour">Pour</string>
+    <string name="step_wait">Wait</string>
+    <string name="step_swirl">Swirl</string>
+    <string name="step_stir">Stir</string>
+    <string name="step_bloom">Bloom</string>
+    <string name="step_drawdown">Drawdown</string>
+    <string name="step_press">Press</string>
+    <string name="step_duration">Duration, s</string>
+    <string name="step_add_water">Add water, g</string>
+    <string name="step_flow_rate">Flow, g/s</string>
+    <string name="step_pour_seconds">Pour time, s</string>
+    <string name="step_pour_too_long">Pouring takes %1$d s — longer than the %2$d s step</string>
+    <string name="step_cumulative">On the scale by the end of the step: %1$s g</string>
+    <string name="step_title">Step name (optional)</string>
+
+    <string name="chart_weight">Weight</string>
+    <string name="chart_flow">Flow rate</string>
+    <string name="chart_flow_average">Average flow rate: %1$s g/s</string>
+
+    <string name="recipe_new">New recipe</string>
+    <string name="recipe_edit_title">Recipe</string>
+    <string name="recipe_empty">No recipes yet. Create one with the button below.</string>
+    <string name="recipe_copy_suffix">(copy)</string>
+    <string name="recipe_name">Name</string>
+    <string name="recipe_brewer">Brewer</string>
+    <string name="recipe_dose">Dose, g</string>
+    <string name="recipe_water">Water, g</string>
+    <string name="recipe_temp">Temperature, °C</string>
+    <string name="recipe_ratio">Ratio</string>
+    <string name="recipe_ratio_value">Ratio %1$s</string>
+    <string name="recipe_grinder">Grinder</string>
+    <string name="recipe_grind">Grind setting</string>
+    <string name="recipe_grind_hint">For example: 24 clicks, 6.5, medium</string>
+    <string name="recipe_grind_value">Grind: %1$s</string>
+    <string name="recipe_bean">Coffee</string>
+    <string name="recipe_roaster">Roaster</string>
+    <string name="recipe_notes">Notes</string>
+    <string name="recipe_summary">%1$s g / %2$s g · %3$s</string>
+    <string name="recipe_steps_summary">Pours: %1$d · %2$s</string>
+    <string name="recipe_steps_total">Total: %1$s · %2$s g</string>
+    <string name="recipe_water_mismatch">Steps add up to %1$s g</string>
+    <string name="recipe_distribute">Rescale</string>
+    <string name="recipe_preview">Pour schedule</string>
+    <string name="recipe_scaled_note">Rescaled to the actual dose: %1$s g → %2$s g of water</string>
+    <string name="recipe_section_main">Basics</string>
+    <string name="recipe_section_grind">Grind</string>
+    <string name="recipe_section_steps">Steps</string>
+    <string name="recipe_section_extra">Coffee and notes</string>
+
+    <string name="history_empty">History is empty. Brew something — the record appears by itself.</string>
+    <string name="history_untitled">Brew</string>
+    <string name="history_summary">%1$s g → %2$s g · %3$s</string>
+    <string name="history_dose_only">Dose %1$s g</string>
+    <string name="history_detail_title">Brew details</string>
+    <string name="history_notes">Notes</string>
+    <string name="history_extra_note">Comment</string>
+
+    <string name="settings_appearance">Appearance</string>
+    <string name="settings_theme">Theme</string>
+    <string name="theme_system">System</string>
+    <string name="theme_light">Light</string>
+    <string name="theme_dark">Dark</string>
+    <string name="settings_dynamic_color">Dynamic colours</string>
+    <string name="settings_dynamic_color_hint">Take the palette from the wallpaper</string>
+    <string name="settings_brewing">Brewing</string>
+    <string name="settings_keep_screen_on">Keep the screen on while brewing</string>
+    <string name="settings_sound_cues">Sound cues</string>
+    <string name="settings_haptic_cues">Vibration cues</string>
+    <string name="settings_countdown">Countdown before a pour</string>
+    <string name="settings_countdown_hint">Three short cues before the next pour</string>
+    <string name="settings_scale">Scale</string>
+    <string name="settings_pace_tolerance">Flow rate tolerance</string>
+    <string name="settings_pace_tolerance_hint">How far the flow rate may drift from the recipe before the app asks to pour faster or slower</string>
+    <string name="settings_pace_tolerance_value">±%1$d %%</string>
+    <string name="settings_near_target">Cue before the target</string>
+    <string name="settings_near_target_hint">How many grams before the step target to warn</string>
+    <string name="settings_auto_connect">Connect on app start</string>
+    <string name="settings_stop_on_disconnect">Stop the timer when the connection drops</string>
+    <string name="settings_fix_unit">Keep the scale in grams</string>
+    <string name="settings_fix_unit_hint">Recipes and cues are in grams. If the scale switches to ounces, the app switches it back</string>
+    <string name="settings_about">About</string>
+    <string name="settings_version">Version %1$s</string>
+    <string name="settings_about_hint">Recipes, steps and the timer work on their own. A Futula Kitchen Scale 3 (LEFU CK811) adds weight, flow rate and the automatic finish</string>
+
+    <string name="grind_medium">medium</string>
+    <string name="grind_coarse">coarse</string>
+    <string name="grind_fine">fine</string>
+
+    <string name="preset_notes_hoffmann">50 g bloom, two pours, a gentle swirl at the end.</string>
+    <!-- Проценты без удвоения: строку берут getString() без аргументов, и «%%» осталось бы в тексте. -->
+    <string name="preset_notes_kasuya" formatted="false">The first 40% of the water sets sweetness and acidity, the remaining 60% sets strength.</string>
+    <string name="preset_notes_rao">Stir after the bloom, then one continuous pour and a spin at the end.</string>
+    <string name="preset_notes_kalita">Pulse pours every 45 seconds keep the bed flat.</string>
+    <string name="preset_notes_chemex">Thick filter and coarse grind, four pours.</string>
+    <string name="preset_notes_aeropress">Standard method: pour, stir, press.</string>
+    <string name="preset_notes_espresso">Manual start: press Start together with the pump. 36 g in the cup by 0:28.</string>
+    <string name="step_add">Add step</string>
+    <string name="recipe_auto_start">Auto start after dosing</string>
+    <string name="recipe_auto_start_hint">The timer starts by itself once water begins to flow</string>
+    <string name="brew_fixed_water">Water as in the recipe</string>
+    <string name="brew_fixed_water_hint">Do not rescale the volume to the actual dose</string>
+    <string name="action_export">Export</string>
+    <string name="action_copy">Copy</string>
+    <string name="recipes_export_all">Export all to a file</string>
+    <string name="recipes_exported">Recipes exported: %1$d</string>
+    <string name="recipes_imported">Recipes imported: %1$d</string>
+    <string name="recipes_import_failed">Could not read the recipe file</string>
+    <string name="recipes_export_failed">Could not save the file</string>
+    <string name="recipes_format_title">Recipe format</string>
+    <string name="recipes_format_copied">Format description copied</string>
+    <string name="settings_recipes">Recipes</string>
+    <string name="settings_recipe_format">Recipe format reference</string>
+    <string name="settings_recipe_format_hint">Import JSON — hand it to an LLM and let it compose a recipe</string>
+    <string name="recipes_import_menu">Import from a file</string>
+    <string name="action_reorder">Drag to reorder</string>
+    <string name="recipes_import_clipboard">Import from the clipboard</string>
+    <string name="recipes_clipboard_empty">The clipboard is empty</string>
+    <string name="recipe_steps_expand">Show steps</string>
+    <string name="recipe_steps_collapse">Collapse</string>
+    <string name="step_row_water">+%1$s g up to %2$s g</string>
+    <string name="step_row_flow">%1$s g/s</string>
+    <string name="settings_thanks">Thanks for the idea to Futula Coffee Scale, where this all started</string>
+    <string name="settings_thanks_link">github.com/wdrs/FutulaCoffeeScale</string>
+    <string name="settings_contact">Contact the author</string>
+    <string name="settings_sources">Source code</string>
+    <string name="settings_check_updates">Check for updates</string>
+    <string name="settings_updates_url" translatable="false">github.com/DrSkyFly/Pourista/releases/latest</string>
+    <!-- Адреса одни на все локали, поэтому только здесь. -->
+    <string name="settings_contact_telegram" translatable="false">t.me/DrSkyFly</string>
+    <string name="settings_sources_link" translatable="false">github.com/DrSkyFly/Pourista</string>
+    <string name="settings_sound_credits">Cue sounds from freesound.org: Robinhood76 (CC BY-NC 4.0), SpiceProgram (CC BY 3.0), CalebLopez and JohnsonBrandEditing (CC0)</string>
+</resources>

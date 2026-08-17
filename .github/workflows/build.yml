@@ -1,0 +1,60 @@
+name: Сборка
+
+on:
+  push:
+    branches: [main]
+    paths-ignore: ['**.md', 'NOTICE', 'LICENSE']
+  pull_request:
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v5
+
+      - name: JDK 21
+        uses: actions/setup-java@v5
+        with:
+          distribution: temurin
+          java-version: '21'
+
+      - name: Gradle
+        uses: gradle/actions/setup-gradle@v4
+
+      # Образ раннера несёт не все платформы: android-37 и build-tools 36
+      # доставляем сами, иначе сборка полезет их скачивать посреди задачи.
+      # Пакет называется android-37.0: начиная с 36 в имя входит и минорная
+      # версия. Старое имя оставлено запасным, а если не найдётся ни одно —
+      # задача печатает список доступных платформ.
+      - name: Android SDK
+        run: |
+          SDKMANAGER="$ANDROID_HOME/cmdline-tools/latest/bin/sdkmanager"
+          yes | "$SDKMANAGER" --licenses > /dev/null 2>&1 || true
+          "$SDKMANAGER" "platforms;android-37.0" "build-tools;36.0.0" \
+            || "$SDKMANAGER" "platforms;android-37" "build-tools;36.0.0" \
+            || {
+              echo "::error::android-37 недоступен в репозитории SDK"
+              "$SDKMANAGER" --list | grep -E "platforms;android-3[0-9]" || true
+              exit 1
+            }
+
+      - name: Модульные тесты
+        run: ./gradlew testDebugUnitTest
+
+      - name: Отладочная сборка
+        run: ./gradlew assembleDebug
+
+      - name: Отчёты тестов
+        if: failure()
+        uses: actions/upload-artifact@v5
+        with:
+          name: test-results
+          path: app/build/reports/tests/
+
+      - name: APK
+        uses: actions/upload-artifact@v5
+        with:
+          name: pourista-debug-apk
+          path: app/build/outputs/apk/debug/app-debug.apk
+          if-no-files-found: error

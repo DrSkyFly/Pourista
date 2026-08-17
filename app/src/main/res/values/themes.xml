@@ -1,0 +1,10 @@
+<resources>
+    <!--
+        Интерфейс целиком на Compose, поэтому от XML-темы нужен только фон окна
+        на время запуска: он должен совпадать с фоном приложения, иначе при старте
+        мигает белым в тёмной теме.
+    -->
+    <style name="Theme.Pourista" parent="android:Theme.Material.Light.NoActionBar">
+        <item name="android:windowBackground">@color/window_background</item>
+    </style>
+</resources>

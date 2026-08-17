@@ -1,0 +1,54 @@
+name: Ошибка / Bug report
+description: Что-то работает не так — весы, пролив, подсказки, рецепты
+labels: [bug]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Писать можно по-русски или по-английски. / Russian or English is fine.
+
+  - type: textarea
+    id: what-happened
+    attributes:
+      label: Что произошло / What happened
+      description: Что вы делали и что получилось вместо ожидаемого.
+    validations:
+      required: true
+
+  - type: textarea
+    id: expected
+    attributes:
+      label: Чего вы ждали / What you expected
+    validations:
+      required: true
+
+  - type: input
+    id: version
+    attributes:
+      label: Версия приложения / App version
+      description: Настройки → О приложении
+      placeholder: "1.0.0"
+    validations:
+      required: true
+
+  - type: input
+    id: device
+    attributes:
+      label: Телефон и версия Android / Phone and Android version
+      placeholder: "Xiaomi Redmi Note 13, Android 15"
+    validations:
+      required: true
+
+  - type: input
+    id: scale
+    attributes:
+      label: Весы / Scale
+      placeholder: "Futula Kitchen Scale 3"
+
+  - type: textarea
+    id: extra
+    attributes:
+      label: Ещё что-нибудь / Anything else
+      description: |
+        Скриншоты, экспорт рецепта (JSON), лог — всё пригодится.
+        Лог снимается так: `adb logcat -d > pourista.log`.

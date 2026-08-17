@@ -1,0 +1,5 @@
+blank_issues_enabled: true
+contact_links:
+  - name: Формат рецептов / Recipe format
+    url: https://github.com/DrSkyFly/Pourista/blob/main/app/src/main/res/raw/recipe_format.txt
+    about: Описание JSON для импорта рецептов — им же можно поделиться с нейросетью.

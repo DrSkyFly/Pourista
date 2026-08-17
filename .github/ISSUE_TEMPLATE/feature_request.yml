@@ -1,0 +1,29 @@
+name: Предложение / Feature request
+description: Идея или неудобство в интерфейсе
+labels: [enhancement]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Писать можно по-русски или по-английски. / Russian or English is fine.
+
+  - type: textarea
+    id: problem
+    attributes:
+      label: Что неудобно сейчас / What is awkward today
+      description: Опишите ситуацию у весов, а не сразу решение — так понятнее.
+    validations:
+      required: true
+
+  - type: textarea
+    id: idea
+    attributes:
+      label: Как это могло бы работать / How it could work
+    validations:
+      required: false
+
+  - type: input
+    id: brewer
+    attributes:
+      label: Способ заваривания / Brewing method
+      placeholder: "V60, Kalita, аэропресс, эспрессо…"
