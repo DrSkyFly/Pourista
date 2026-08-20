@@ -57,6 +57,30 @@
     <string name="brew_saved">Brew saved to history</string>
     <string name="dose_dialog_title">Enter dose</string>
 
+    <string name="four_six_title">4:6 generator</string>
+    <string name="four_six_button">4:6</string>
+    <string name="four_six_recipe_name">V60 4:6</string>
+    <string name="four_six_dose">Dose</string>
+    <string name="four_six_ratio">Ratio</string>
+    <string name="four_six_ratio_value">1:%1$s</string>
+    <string name="four_six_taste">Taste</string>
+    <string name="four_six_taste_hint" formatted="false">First 40 % of the water: a smaller first pour is sweeter, a larger one brighter.</string>
+    <string name="four_six_taste_sweet">Sweet</string>
+    <string name="four_six_taste_sweet_normal">Sweet / Normal</string>
+    <string name="four_six_taste_normal">Normal</string>
+    <string name="four_six_taste_normal_acid">Normal / Acid</string>
+    <string name="four_six_taste_acid">Acid</string>
+    <string name="four_six_strength">Strength</string>
+    <string name="four_six_strength_hint" formatted="false">Remaining 60 %: the more pours, the denser the cup.</string>
+    <string name="four_six_strength_lower">Light</string>
+    <string name="four_six_strength_low">Light / Normal</string>
+    <string name="four_six_strength_normal">Normal</string>
+    <string name="four_six_strength_high">Normal / Strong</string>
+    <string name="four_six_strength_higher">Strong</string>
+    <string name="four_six_summary">%1$s g of water · %2$d pours · %3$s</string>
+    <string name="four_six_notes">%1$s · %2$s. Pours at 0:00, 0:45 and then evenly until 3:30.</string>
+    <string name="four_six_generate">Done</string>
+
     <string name="guidance_step_position">Step %1$d of %2$d</string>
     <string name="guidance_seconds_left">sec left</string>
     <string name="guidance_seconds_total">sec long</string>
@@ -198,6 +222,7 @@
     <string name="step_row_flow">%1$s g/s</string>
     <string name="settings_thanks">Thanks for the idea to Futula Coffee Scale, where this all started</string>
     <string name="settings_thanks_link">github.com/wdrs/FutulaCoffeeScale</string>
+    <string name="settings_thanks_coffeesaurus">Special thanks to Coffeesaurus</string>
     <string name="settings_contact">Contact the author</string>
     <string name="settings_sources">Source code</string>
     <string name="settings_check_updates">Check for updates</string>
@@ -205,5 +230,6 @@
     <!-- Адреса одни на все локали, поэтому только здесь. -->
     <string name="settings_contact_telegram" translatable="false">t.me/DrSkyFly</string>
     <string name="settings_sources_link" translatable="false">github.com/DrSkyFly/Pourista</string>
+    <string name="settings_thanks_coffeesaurus_link" translatable="false">youtube.com/c/Coffeesaurus</string>
     <string name="settings_sound_credits">Cue sounds from freesound.org: Robinhood76 (CC BY-NC 4.0), SpiceProgram (CC BY 3.0), CalebLopez and JohnsonBrandEditing (CC0)</string>
 </resources>

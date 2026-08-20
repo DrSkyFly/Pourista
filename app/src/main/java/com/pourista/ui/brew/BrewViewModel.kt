@@ -8,6 +8,7 @@ import com.pourista.brew.BrewPhase
 import com.pourista.brew.BrewState
 import com.pourista.data.model.Recipe
 import com.pourista.data.prefs.AppSettings
+import com.pourista.data.presets.FortySixParams
 import com.pourista.scale.ScaleState
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharedFlow
@@ -92,6 +93,17 @@ class BrewViewModel(private val container: AppContainer) : ViewModel() {
         viewModelScope.launch {
             container.settings.setLastRecipeId(recipe?.id)
             recipe?.let { container.recipes.markUsed(it.id) }
+        }
+    }
+
+    /**
+     * Пересобирает рецепт 4:6 по новым настройкам и сразу берёт его в работу:
+     * генератор открывают, когда собираются заваривать, а не про запас.
+     */
+    fun generateFortySix(params: FortySixParams) {
+        viewModelScope.launch {
+            val recipe = container.buildFortySixRecipe(params) ?: return@launch
+            selectRecipe(recipe)
         }
     }
 

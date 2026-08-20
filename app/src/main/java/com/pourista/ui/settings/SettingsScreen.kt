@@ -232,9 +232,21 @@ fun SettingsScreen(
 
                     HorizontalDivider(Modifier.padding(vertical = 12.dp))
                     Text(
+                        text = stringResource(R.string.settings_thanks_coffeesaurus),
+                        style = MaterialTheme.typography.bodySmall,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant,
+                    )
+                    Text(
+                        text = stringResource(R.string.settings_thanks_coffeesaurus_link),
+                        style = MaterialTheme.typography.bodySmall,
+                        color = MaterialTheme.colorScheme.primary,
+                        modifier = Modifier.padding(top = 2.dp),
+                    )
+                    Text(
                         text = stringResource(R.string.settings_thanks),
                         style = MaterialTheme.typography.bodySmall,
                         color = MaterialTheme.colorScheme.onSurfaceVariant,
+                        modifier = Modifier.padding(top = 8.dp),
                     )
                     Text(
                         text = stringResource(R.string.settings_thanks_link),

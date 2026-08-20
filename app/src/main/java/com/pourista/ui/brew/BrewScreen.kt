@@ -121,6 +121,7 @@ fun BrewScreen(
     val snackbarHostState = remember { SnackbarHostState() }
     val cues = rememberBrewCuePlayer()
     var showRecipePicker by remember { mutableStateOf(false) }
+    var showFortySix by remember { mutableStateOf(false) }
     var showDoseDialog by remember { mutableStateOf(false) }
 
     // Развёрнутый рецепт нужен до старта — свериться с планом пролива. Со
@@ -287,6 +288,7 @@ fun BrewScreen(
                                 onToggleExpanded = { recipeExpanded = !recipeExpanded },
                                 onKeepWater = viewModel::toggleKeepRecipeWater,
                                 onPick = { showRecipePicker = true },
+                                onFortySix = { showFortySix = true },
                                 onRecord = viewModel::startRecording,
                                 onClear = { viewModel.selectRecipe(null) },
                                 onEdit = onEditRecipe,
@@ -343,6 +345,22 @@ fun BrewScreen(
                 onSelect = {
                     viewModel.selectRecipe(it)
                     showRecipePicker = false
+                },
+            )
+        }
+    }
+
+    if (showFortySix) {
+        val sheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true)
+        ModalBottomSheet(
+            onDismissRequest = { showFortySix = false },
+            sheetState = sheetState,
+        ) {
+            FortySixSheetContent(
+                initial = settings.fortySix,
+                onGenerate = { params ->
+                    viewModel.generateFortySix(params)
+                    showFortySix = false
                 },
             )
         }
@@ -417,6 +435,9 @@ private fun ConnectionAction(
 /** Полпериода мигания: заметно, но не мельтешит. */
 private const val BLINK_MS = 700
 
+/** Рамка кнопок в плитке рецепта: их там три в ряд, штатная не оставляет места. */
+private val TileButtonPadding = PaddingValues(horizontal = 12.dp, vertical = 8.dp)
+
 @Composable
 private fun RecipeSummaryCard(
     recipe: Recipe?,
@@ -426,6 +447,7 @@ private fun RecipeSummaryCard(
     onToggleExpanded: () -> Unit,
     onKeepWater: () -> Unit,
     onPick: () -> Unit,
+    onFortySix: () -> Unit,
     onRecord: () -> Unit,
     onClear: () -> Unit,
     onEdit: (Long) -> Unit,
@@ -448,15 +470,38 @@ private fun RecipeSummaryCard(
                     color = MaterialTheme.colorScheme.onSurfaceVariant,
                     modifier = Modifier.padding(top = 4.dp),
                 )
+                // Три кнопки в один ряд: тесно, поэтому у них своя, урезанная
+                // внутренняя рамка — иначе «Записать» переносится под остальные.
                 Row(
-                    modifier = Modifier.padding(top = 12.dp),
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(top = 12.dp),
                     horizontalArrangement = Arrangement.spacedBy(8.dp),
                 ) {
-                    Button(onClick = onPick) {
-                        Text(stringResource(R.string.brew_pick_recipe))
+                    Button(
+                        onClick = onPick,
+                        contentPadding = TileButtonPadding,
+                        modifier = Modifier.weight(1f),
+                    ) {
+                        Text(
+                            text = stringResource(R.string.brew_pick_recipe),
+                            maxLines = 1,
+                        )
                     }
-                    OutlinedButton(onClick = onRecord) {
-                        Text(stringResource(R.string.brew_record_recipe))
+                    FilledTonalButton(
+                        onClick = onFortySix,
+                        contentPadding = TileButtonPadding,
+                    ) {
+                        Text(stringResource(R.string.four_six_button))
+                    }
+                    FilledTonalButton(
+                        onClick = onRecord,
+                        contentPadding = TileButtonPadding,
+                    ) {
+                        Text(
+                            text = stringResource(R.string.brew_record_recipe),
+                            maxLines = 1,
+                        )
                     }
                 }
             }
@@ -586,14 +631,30 @@ private fun RecipeSummaryCard(
                 modifier = Modifier.padding(top = 4.dp),
             )
             Row(
-                modifier = Modifier.padding(top = 4.dp),
-                horizontalArrangement = Arrangement.spacedBy(4.dp),
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(top = 8.dp),
+                horizontalArrangement = Arrangement.spacedBy(8.dp),
             ) {
-                TextButton(onClick = { onEdit(recipe.id) }) {
-                    Text(stringResource(R.string.action_open_recipe))
+                FilledTonalButton(
+                    onClick = { onEdit(recipe.id) },
+                    contentPadding = TileButtonPadding,
+                    modifier = Modifier.weight(1f),
+                ) {
+                    Text(text = stringResource(R.string.action_open_recipe), maxLines = 1)
                 }
-                TextButton(onClick = onClear) {
-                    Text(stringResource(R.string.brew_without_recipe))
+                FilledTonalButton(
+                    onClick = onFortySix,
+                    contentPadding = TileButtonPadding,
+                ) {
+                    Text(stringResource(R.string.four_six_button))
+                }
+                FilledTonalButton(
+                    onClick = onClear,
+                    contentPadding = TileButtonPadding,
+                    modifier = Modifier.weight(1f),
+                ) {
+                    Text(text = stringResource(R.string.brew_without_recipe), maxLines = 1)
                 }
             }
         }

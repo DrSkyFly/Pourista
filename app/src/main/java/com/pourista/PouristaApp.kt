@@ -14,9 +14,12 @@ import com.pourista.data.model.Recipe
 import com.pourista.data.prefs.AppSettings
 import com.pourista.data.prefs.SettingsRepository
 import com.pourista.data.presets.BuiltInRecipes
+import com.pourista.data.presets.FortySixGenerator
+import com.pourista.data.presets.FortySixParams
 import com.pourista.data.repo.BrewRepository
 import com.pourista.data.repo.RecipeRepository
 import com.pourista.scale.ScaleRepository
+import com.pourista.ui.labelRes
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -164,6 +167,45 @@ class AppContainer(private val context: Context) {
                 waterTemp = recipe?.waterTempC?.toString(),
             ),
         )
+    }
+
+    /**
+     * Собирает рецепт по методу 4:6 и кладёт его в базу.
+     *
+     * Строка в базе одна и та же: генератор — это верстак, а не фабрика
+     * одноразовых рецептов, засоряющих список. Настройки при этом запоминаются,
+     * чтобы в следующий раз заварить так же.
+     */
+    suspend fun buildFortySixRecipe(params: FortySixParams): Recipe? {
+        val existing = settings.current().fortySixRecipeId?.let { recipes.recipeById(it) }
+        val fresh = FortySixGenerator.recipe(
+            params = params,
+            name = context.getString(R.string.four_six_recipe_name),
+            grindSetting = context.getString(R.string.grind_coarse),
+            notes = context.getString(
+                R.string.four_six_notes,
+                context.getString(params.taste.labelRes()),
+                context.getString(params.strength.labelRes()),
+            ),
+        )
+        // Избранное, место в списке и дату заведения оставляем прежними: с точки
+        // зрения человека рецепт не новый, у него просто поменялись числа.
+        val id = if (existing == null) {
+            recipes.saveNewOnTop(fresh)
+        } else {
+            recipes.save(
+                fresh.copy(
+                    id = existing.id,
+                    isFavorite = existing.isFavorite,
+                    sortOrder = existing.sortOrder,
+                    createdAt = existing.createdAt,
+                    lastUsedAt = existing.lastUsedAt,
+                )
+            )
+        }
+        settings.setFortySix(params)
+        settings.setFortySixRecipeId(id)
+        return recipes.recipeById(id)
     }
 
     /** Записанный пролив превращаем в черновик рецепта — его подхватит редактор. */

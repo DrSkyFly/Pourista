@@ -14,6 +14,8 @@ import com.pourista.R
 import com.pourista.brew.NextPourHint
 import com.pourista.brew.Pace
 import com.pourista.data.model.StepKind
+import com.pourista.data.presets.FortySixStrength
+import com.pourista.data.presets.FortySixTaste
 
 @StringRes
 fun StepKind.labelRes(): Int = when (this) {
@@ -49,4 +51,22 @@ fun NextPourHint.labelRes(): Int = when (this) {
     NextPourHint.SAME -> R.string.hint_next_same
     NextPourHint.FASTER -> R.string.hint_next_faster
     NextPourHint.SLOWER -> R.string.hint_next_slower
+}
+
+@StringRes
+fun FortySixTaste.labelRes(): Int = when (this) {
+    FortySixTaste.SWEET -> R.string.four_six_taste_sweet
+    FortySixTaste.SWEET_NORMAL -> R.string.four_six_taste_sweet_normal
+    FortySixTaste.NORMAL -> R.string.four_six_taste_normal
+    FortySixTaste.NORMAL_ACID -> R.string.four_six_taste_normal_acid
+    FortySixTaste.ACID -> R.string.four_six_taste_acid
+}
+
+@StringRes
+fun FortySixStrength.labelRes(): Int = when (this) {
+    FortySixStrength.LOWER -> R.string.four_six_strength_lower
+    FortySixStrength.LOW -> R.string.four_six_strength_low
+    FortySixStrength.NORMAL -> R.string.four_six_strength_normal
+    FortySixStrength.HIGH -> R.string.four_six_strength_high
+    FortySixStrength.HIGHER -> R.string.four_six_strength_higher
 }

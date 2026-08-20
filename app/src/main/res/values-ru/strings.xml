@@ -57,6 +57,30 @@
     <string name="brew_saved">Заваривание сохранено в историю</string>
     <string name="dose_dialog_title">Ввести дозу</string>
 
+    <string name="four_six_title">Генератор 4:6</string>
+    <string name="four_six_button">4:6</string>
+    <string name="four_six_recipe_name">V60 4:6</string>
+    <string name="four_six_dose">Доза</string>
+    <string name="four_six_ratio">Пропорция</string>
+    <string name="four_six_ratio_value">1:%1$s</string>
+    <string name="four_six_taste">Вкус</string>
+    <string name="four_six_taste_hint" formatted="false">Первые 40 % воды: первый пролив меньше второго — слаще, больше — ярче кислотность.</string>
+    <string name="four_six_taste_sweet">Сладость</string>
+    <string name="four_six_taste_sweet_normal">Сладость / Баланс</string>
+    <string name="four_six_taste_normal">Баланс</string>
+    <string name="four_six_taste_normal_acid">Баланс / Кислотность</string>
+    <string name="four_six_taste_acid">Кислотность</string>
+    <string name="four_six_strength">Крепость</string>
+    <string name="four_six_strength_hint" formatted="false">Оставшиеся 60 %: чем больше проливов, тем плотнее чашка.</string>
+    <string name="four_six_strength_lower">Лёгкая</string>
+    <string name="four_six_strength_low">Лёгкая / Средняя</string>
+    <string name="four_six_strength_normal">Средняя</string>
+    <string name="four_six_strength_high">Средняя / Крепкая</string>
+    <string name="four_six_strength_higher">Крепкая</string>
+    <string name="four_six_summary">%1$s г воды · проливов %2$d · %3$s</string>
+    <string name="four_six_notes">%1$s · %2$s. Проливы в 0:00, 0:45 и дальше поровну до 3:30.</string>
+    <string name="four_six_generate">Готово</string>
+
     <string name="guidance_step_position">Шаг %1$d из %2$d</string>
     <string name="guidance_seconds_left">сек осталось</string>
     <string name="guidance_seconds_total">сек длится</string>
@@ -198,6 +222,7 @@
     <string name="step_row_flow">%1$s г/с</string>
     <string name="settings_thanks">Спасибо за идею — приложению Futula Coffee Scale, с которого всё началось</string>
     <string name="settings_thanks_link">github.com/wdrs/FutulaCoffeeScale</string>
+    <string name="settings_thanks_coffeesaurus">Особая благодарность Кофезавру</string>
     <string name="settings_contact">Написать автору</string>
     <string name="settings_sources">Исходный код</string>
     <string name="settings_check_updates">Проверить обновления</string>

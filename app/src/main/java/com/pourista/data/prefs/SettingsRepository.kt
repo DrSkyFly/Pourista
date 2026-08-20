@@ -14,6 +14,9 @@ import androidx.datastore.preferences.core.stringSetPreferencesKey
 import androidx.datastore.preferences.preferencesDataStore
 import com.pourista.brew.DEFAULT_NEAR_TARGET_GRAMS
 import com.pourista.brew.DEFAULT_PACE_TOLERANCE
+import com.pourista.data.presets.FortySixParams
+import com.pourista.data.presets.FortySixStrength
+import com.pourista.data.presets.FortySixTaste
 import com.pourista.ui.theme.ThemeMode
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.first
@@ -44,6 +47,10 @@ data class AppSettings(
     val keepRecipeWater: Boolean = false,
     /** Встроенные рецепты, которые пользователь удалил: обратно их не сеем. */
     val deletedPresets: Set<String> = emptySet(),
+    /** Последние настройки генератора 4:6 — чтобы заварить так же. */
+    val fortySix: FortySixParams = FortySixParams(),
+    /** Рецепт, в который пишет генератор 4:6: он один и переписывается. */
+    val fortySixRecipeId: Long? = null,
 )
 
 private val Context.dataStore: DataStore<Preferences> by preferencesDataStore(name = "settings")
@@ -67,6 +74,11 @@ class SettingsRepository(private val context: Context) {
         val presetsLocale = stringPreferencesKey("presets_locale")
         val keepRecipeWater = booleanPreferencesKey("keep_recipe_water")
         val deletedPresets = stringSetPreferencesKey("deleted_presets")
+        val fortySixDose = floatPreferencesKey("forty_six_dose")
+        val fortySixRatio = floatPreferencesKey("forty_six_ratio")
+        val fortySixTaste = stringPreferencesKey("forty_six_taste")
+        val fortySixStrength = stringPreferencesKey("forty_six_strength")
+        val fortySixRecipeId = longPreferencesKey("forty_six_recipe_id")
     }
 
     val settings: Flow<AppSettings> = context.dataStore.data.map { prefs ->
@@ -89,6 +101,17 @@ class SettingsRepository(private val context: Context) {
             presetsLocale = prefs[Keys.presetsLocale] ?: "",
             keepRecipeWater = prefs[Keys.keepRecipeWater] ?: false,
             deletedPresets = prefs[Keys.deletedPresets] ?: emptySet(),
+            fortySix = FortySixParams(
+                doseGrams = prefs[Keys.fortySixDose] ?: FortySixParams().doseGrams,
+                ratio = prefs[Keys.fortySixRatio] ?: FortySixParams().ratio,
+                taste = prefs[Keys.fortySixTaste]?.let { value ->
+                    runCatching { FortySixTaste.valueOf(value) }.getOrNull()
+                } ?: FortySixParams().taste,
+                strength = prefs[Keys.fortySixStrength]?.let { value ->
+                    runCatching { FortySixStrength.valueOf(value) }.getOrNull()
+                } ?: FortySixParams().strength,
+            ),
+            fortySixRecipeId = prefs[Keys.fortySixRecipeId]?.takeIf { it > 0 },
         )
     }
 
@@ -130,6 +153,18 @@ class SettingsRepository(private val context: Context) {
     /** Помечает встроенный рецепт удалённым, чтобы он не вернулся при обновлении набора. */
     suspend fun addDeletedPreset(name: String) = edit { prefs ->
         prefs[Keys.deletedPresets] = (prefs[Keys.deletedPresets] ?: emptySet()) + name
+    }
+
+    /** Запоминает ручки генератора 4:6: тайминги в него зашиты и не меняются. */
+    suspend fun setFortySix(params: FortySixParams) = edit { prefs ->
+        prefs[Keys.fortySixDose] = params.doseGrams
+        prefs[Keys.fortySixRatio] = params.ratio
+        prefs[Keys.fortySixTaste] = params.taste.name
+        prefs[Keys.fortySixStrength] = params.strength.name
+    }
+
+    suspend fun setFortySixRecipeId(id: Long?) = edit { prefs ->
+        if (id == null) prefs.remove(Keys.fortySixRecipeId) else prefs[Keys.fortySixRecipeId] = id
     }
 
     private suspend fun edit(block: (MutablePreferences) -> Unit) {

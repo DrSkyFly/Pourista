@@ -83,6 +83,8 @@ automatic finish when the cup is lifted, and weight and flow curves in history.
 - **Rescaling to the actual dose.** Grinding exactly 15.0 g rarely happens, so
   the recipe is scaled by ratio with water rounded to 5 g. Switch it off when
   the extra coffee was deliberate.
+- **4:6 generator.** Tetsu Kasuya's method: dose, water, taste balance and
+  strength in, a ready recipe on the brew tile out.
 - **Recording a recipe from a real brew.** The app splits the brew into steps,
   rounds the grams and seconds and opens the result in the editor.
 - **Sharing recipes.** JSON import and export, as a file or through the
@@ -114,6 +116,8 @@ The release build is signed with a key whose path and passwords live in
 release is simply built unsigned and the build does not fail.
 
 ## Credits
+
+Special thanks to Coffeesaurus — [youtube.com/c/Coffeesaurus](https://www.youtube.com/c/Coffeesaurus).
 
 Thanks for the idea to [Futula Coffee Scale](https://github.com/wdrs/FutulaCoffeeScale),
 where this all started.
