@@ -197,6 +197,8 @@ fun BrewScreen(
         snackbarHost = { SnackbarHost(snackbarHostState) },
         topBar = {
             TopAppBar(
+                colors = AppTheme.topBarColors(),
+                modifier = AppTheme.topBarModifier(),
                 title = { Text(stringResource(R.string.tab_brew)) },
                 actions = {
                     ConnectionAction(
@@ -453,9 +455,7 @@ private fun RecipeSummaryCard(
     onEdit: (Long) -> Unit,
 ) {
     Card(
-        colors = CardDefaults.cardColors(
-            containerColor = MaterialTheme.colorScheme.secondaryContainer,
-        ),
+        colors = CardDefaults.cardColors(containerColor = AppTheme.recipeTile),
         modifier = Modifier.fillMaxWidth(),
     ) {
         if (recipe == null) {

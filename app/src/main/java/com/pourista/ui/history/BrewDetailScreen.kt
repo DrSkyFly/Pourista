@@ -73,6 +73,8 @@ fun BrewDetailScreen(
         modifier = modifier,
         topBar = {
             TopAppBar(
+                colors = AppTheme.topBarColors(),
+                modifier = AppTheme.topBarModifier(),
                 title = { Text(stringResource(R.string.history_detail_title)) },
                 navigationIcon = {
                     IconButton(onClick = onClose) {

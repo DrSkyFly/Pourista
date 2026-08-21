@@ -161,8 +161,13 @@
     <string name="theme_system">System</string>
     <string name="theme_light">Light</string>
     <string name="theme_dark">Dark</string>
-    <string name="settings_dynamic_color">Dynamic colours</string>
-    <string name="settings_dynamic_color_hint">Take the palette from the wallpaper</string>
+    <string name="whats_new_title">What\'s new in %1$s</string>
+    <string name="whats_new_body">• 4:6 generator\n• Palettes: coffee, 4:6 and standard</string>
+
+    <string name="settings_palette">Palette</string>
+    <string name="palette_copper">Coffee</string>
+    <string name="palette_four_six">4:6</string>
+    <string name="palette_dynamic">Standard</string>
     <string name="settings_brewing">Brewing</string>
     <string name="settings_keep_screen_on">Keep the screen on while brewing</string>
     <string name="settings_sound_cues">Sound cues</string>

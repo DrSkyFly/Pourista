@@ -72,6 +72,7 @@ import com.pourista.data.model.Recipe
 import com.pourista.ui.components.RecipeStepsList
 import com.pourista.ui.components.StepsToggle
 import com.pourista.ui.components.dragHandle
+import com.pourista.ui.theme.AppTheme
 import com.pourista.ui.components.rememberReorderState
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -135,6 +136,8 @@ fun RecipeListScreen(
         snackbarHost = { SnackbarHost(snackbarHostState) },
         topBar = {
             TopAppBar(
+                colors = AppTheme.topBarColors(),
+                modifier = AppTheme.topBarModifier(),
                 title = { Text(stringResource(R.string.tab_recipes)) },
                 actions = {
                     // Меню с подписями: одни стрелки читались как перестановка

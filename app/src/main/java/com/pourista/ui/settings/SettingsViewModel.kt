@@ -4,6 +4,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.pourista.AppContainer
 import com.pourista.data.prefs.AppSettings
+import com.pourista.ui.theme.AppPalette
 import com.pourista.ui.theme.ThemeMode
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
@@ -17,7 +18,10 @@ class SettingsViewModel(private val container: AppContainer) : ViewModel() {
     }
 
     fun setThemeMode(mode: ThemeMode) = update { container.settings.setThemeMode(mode) }
-    fun setDynamicColor(value: Boolean) = update { container.settings.setDynamicColor(value) }
+
+    fun setPalette(palette: AppPalette) = update { container.settings.setPalette(palette) }
+
+
     fun setKeepScreenOn(value: Boolean) = update { container.settings.setKeepScreenOn(value) }
     fun setSoundCues(value: Boolean) = update { container.settings.setSoundCues(value) }
     fun setHapticCues(value: Boolean) = update { container.settings.setHapticCues(value) }

@@ -161,8 +161,13 @@
     <string name="theme_system">Система</string>
     <string name="theme_light">Светлая</string>
     <string name="theme_dark">Тёмная</string>
-    <string name="settings_dynamic_color">Динамические цвета</string>
-    <string name="settings_dynamic_color_hint">Брать палитру из обоев системы</string>
+    <string name="whats_new_title">Что нового в %1$s</string>
+    <string name="whats_new_body">• Генератор 4:6\n• Палитры: кофейная, 4:6 и стандартная</string>
+
+    <string name="settings_palette">Палитра</string>
+    <string name="palette_copper">Кофейная</string>
+    <string name="palette_four_six">4:6</string>
+    <string name="palette_dynamic">Стандарт</string>
     <string name="settings_brewing">Заваривание</string>
     <string name="settings_keep_screen_on">Не гасить экран во время пролива</string>
     <string name="settings_sound_cues">Звуковые подсказки</string>

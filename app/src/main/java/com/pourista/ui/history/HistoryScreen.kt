@@ -35,6 +35,7 @@ import com.pourista.core.formatTimerWithTenths
 import com.pourista.data.model.BrewRecord
 import com.pourista.ui.components.SeriesChart
 import java.text.DateFormat
+import com.pourista.ui.theme.AppTheme
 import java.util.Date
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -50,7 +51,13 @@ fun HistoryScreen(
 
     Scaffold(
         modifier = modifier,
-        topBar = { TopAppBar(title = { Text(stringResource(R.string.tab_history)) }) },
+        topBar = {
+            TopAppBar(
+                title = { Text(stringResource(R.string.tab_history)) },
+                colors = AppTheme.topBarColors(),
+                modifier = AppTheme.topBarModifier(),
+            )
+        },
         bottomBar = bottomBar,
     ) { padding ->
         LazyColumn(

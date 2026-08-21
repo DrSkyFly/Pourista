@@ -49,6 +49,8 @@ import com.pourista.BuildConfig
 import com.pourista.R
 import com.pourista.core.formatGrams
 import com.pourista.ui.labelRes
+import com.pourista.ui.theme.AppPalette
+import com.pourista.ui.theme.AppTheme
 import com.pourista.ui.theme.ThemeMode
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -67,7 +69,13 @@ fun SettingsScreen(
 
     Scaffold(
         modifier = modifier,
-        topBar = { TopAppBar(title = { Text(stringResource(R.string.tab_settings)) }) },
+        topBar = {
+            TopAppBar(
+                title = { Text(stringResource(R.string.tab_settings)) },
+                colors = AppTheme.topBarColors(),
+                modifier = AppTheme.topBarModifier(),
+            )
+        },
         bottomBar = bottomBar,
     ) { padding ->
         LazyColumn(
@@ -101,13 +109,29 @@ fun SettingsScreen(
                             }
                         }
                     }
-                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
-                        SwitchRow(
-                            title = stringResource(R.string.settings_dynamic_color),
-                            subtitle = stringResource(R.string.settings_dynamic_color_hint),
-                            checked = settings.dynamicColor,
-                            onCheckedChange = viewModel::setDynamicColor,
-                        )
+                    Text(
+                        text = stringResource(R.string.settings_palette),
+                        style = MaterialTheme.typography.bodyLarge,
+                        modifier = Modifier.padding(top = 16.dp, bottom = 8.dp),
+                    )
+                    // Обои системы умеет только Android 12: на старых
+                    // выбирать не из чего, и пункт просто не показываем.
+                    val palettes = AppPalette.entries.filter {
+                        it != AppPalette.DYNAMIC || Build.VERSION.SDK_INT >= Build.VERSION_CODES.S
+                    }
+                    SingleChoiceSegmentedButtonRow(Modifier.fillMaxWidth()) {
+                        palettes.forEachIndexed { index, palette ->
+                            SegmentedButton(
+                                selected = settings.palette == palette,
+                                onClick = { viewModel.setPalette(palette) },
+                                shape = SegmentedButtonDefaults.itemShape(
+                                    index = index,
+                                    count = palettes.size,
+                                ),
+                            ) {
+                                Text(stringResource(palette.labelRes()))
+                            }
+                        }
                     }
                 }
             }
@@ -430,6 +454,12 @@ private val PACE_TOLERANCE_OPTIONS = listOf(0.05f, 0.1f, 0.15f, 0.2f, 0.3f)
 @Composable
 private fun percentLabel(share: Float): String =
     stringResource(R.string.settings_pace_tolerance_value, kotlin.math.round(share * 100).toInt())
+
+private fun AppPalette.labelRes(): Int = when (this) {
+    AppPalette.COPPER -> R.string.palette_copper
+    AppPalette.FOUR_SIX -> R.string.palette_four_six
+    AppPalette.DYNAMIC -> R.string.palette_dynamic
+}
 
 private fun ThemeMode.labelRes(): Int = when (this) {
     ThemeMode.SYSTEM -> R.string.theme_system

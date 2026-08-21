@@ -17,6 +17,7 @@ import com.pourista.brew.DEFAULT_PACE_TOLERANCE
 import com.pourista.data.presets.FortySixParams
 import com.pourista.data.presets.FortySixStrength
 import com.pourista.data.presets.FortySixTaste
+import com.pourista.ui.theme.AppPalette
 import com.pourista.ui.theme.ThemeMode
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.first
@@ -24,7 +25,7 @@ import kotlinx.coroutines.flow.map
 
 data class AppSettings(
     val themeMode: ThemeMode = ThemeMode.SYSTEM,
-    val dynamicColor: Boolean = true,
+    val palette: AppPalette = AppPalette.DYNAMIC,
     val keepScreenOn: Boolean = true,
     val soundCues: Boolean = true,
     val hapticCues: Boolean = true,
@@ -51,6 +52,8 @@ data class AppSettings(
     val fortySix: FortySixParams = FortySixParams(),
     /** Рецепт, в который пишет генератор 4:6: он один и переписывается. */
     val fortySixRecipeId: Long? = null,
+    /** Версия, для которой уже показали «Что нового». */
+    val whatsNewSeenVersion: Int = 0,
 )
 
 private val Context.dataStore: DataStore<Preferences> by preferencesDataStore(name = "settings")
@@ -59,6 +62,8 @@ class SettingsRepository(private val context: Context) {
 
     private object Keys {
         val themeMode = stringPreferencesKey("theme_mode")
+        val palette = stringPreferencesKey("palette")
+        /** Прежний вид настройки: до появления палитр обои включались флажком. */
         val dynamicColor = booleanPreferencesKey("dynamic_color")
         val keepScreenOn = booleanPreferencesKey("keep_screen_on")
         val soundCues = booleanPreferencesKey("sound_cues")
@@ -79,6 +84,7 @@ class SettingsRepository(private val context: Context) {
         val fortySixTaste = stringPreferencesKey("forty_six_taste")
         val fortySixStrength = stringPreferencesKey("forty_six_strength")
         val fortySixRecipeId = longPreferencesKey("forty_six_recipe_id")
+        val whatsNewSeen = intPreferencesKey("whats_new_seen")
     }
 
     val settings: Flow<AppSettings> = context.dataStore.data.map { prefs ->
@@ -86,7 +92,9 @@ class SettingsRepository(private val context: Context) {
             themeMode = prefs[Keys.themeMode]?.let { value ->
                 runCatching { ThemeMode.valueOf(value) }.getOrNull()
             } ?: ThemeMode.SYSTEM,
-            dynamicColor = prefs[Keys.dynamicColor] ?: true,
+            palette = prefs[Keys.palette]?.let { value ->
+                runCatching { AppPalette.valueOf(value) }.getOrNull()
+            } ?: if (prefs[Keys.dynamicColor] == false) AppPalette.COPPER else AppPalette.DYNAMIC,
             keepScreenOn = prefs[Keys.keepScreenOn] ?: true,
             soundCues = prefs[Keys.soundCues] ?: true,
             hapticCues = prefs[Keys.hapticCues] ?: true,
@@ -112,6 +120,7 @@ class SettingsRepository(private val context: Context) {
                 } ?: FortySixParams().strength,
             ),
             fortySixRecipeId = prefs[Keys.fortySixRecipeId]?.takeIf { it > 0 },
+            whatsNewSeenVersion = prefs[Keys.whatsNewSeen] ?: 0,
         )
     }
 
@@ -119,7 +128,7 @@ class SettingsRepository(private val context: Context) {
 
     suspend fun setThemeMode(mode: ThemeMode) = edit { it[Keys.themeMode] = mode.name }
 
-    suspend fun setDynamicColor(enabled: Boolean) = edit { it[Keys.dynamicColor] = enabled }
+    suspend fun setPalette(palette: AppPalette) = edit { it[Keys.palette] = palette.name }
 
     suspend fun setKeepScreenOn(enabled: Boolean) = edit { it[Keys.keepScreenOn] = enabled }
 
@@ -162,6 +171,9 @@ class SettingsRepository(private val context: Context) {
         prefs[Keys.fortySixTaste] = params.taste.name
         prefs[Keys.fortySixStrength] = params.strength.name
     }
+
+    suspend fun setWhatsNewSeenVersion(versionCode: Int) =
+        edit { it[Keys.whatsNewSeen] = versionCode }
 
     suspend fun setFortySixRecipeId(id: Long?) = edit { prefs ->
         if (id == null) prefs.remove(Keys.fortySixRecipeId) else prefs[Keys.fortySixRecipeId] = id

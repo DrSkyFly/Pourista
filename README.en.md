@@ -97,7 +97,7 @@ automatic finish when the cup is lifted, and weight and flow curves in history.
   they survive a noisy kettle.
 
 The interface is available in English and Russian, with light, dark or system
-theme and Material You dynamic colours.
+theme and a coffee, 4:6 or wallpaper palette.
 
 ## Build
 

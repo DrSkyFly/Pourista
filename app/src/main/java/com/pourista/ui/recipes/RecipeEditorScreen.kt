@@ -54,6 +54,7 @@ import com.pourista.core.formatRatio
 import com.pourista.data.model.StepKind
 import com.pourista.ui.components.SeriesChart
 import com.pourista.ui.icon
+import com.pourista.ui.theme.AppTheme
 import com.pourista.ui.labelRes
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -84,6 +85,8 @@ fun RecipeEditorScreen(
         modifier = modifier,
         topBar = {
             TopAppBar(
+                colors = AppTheme.topBarColors(),
+                modifier = AppTheme.topBarModifier(),
                 title = {
                     Text(
                         if (state.id > 0) {
