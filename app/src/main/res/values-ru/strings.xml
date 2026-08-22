@@ -162,7 +162,7 @@
     <string name="theme_light">Светлая</string>
     <string name="theme_dark">Тёмная</string>
     <string name="whats_new_title">Что нового в %1$s</string>
-    <string name="whats_new_body">• Генератор 4:6\n• Палитры: кофейная, 4:6 и стандартная</string>
+    <string name="whats_new_body">• Альбомный режим и планшеты\n• Списки не растягиваются на широком экране</string>
 
     <string name="settings_palette">Палитра</string>
     <string name="palette_copper">Кофейная</string>

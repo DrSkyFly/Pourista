@@ -18,11 +18,14 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Bluetooth
@@ -90,6 +93,7 @@ import com.pourista.data.model.Recipe
 import com.pourista.scale.ConnectionStatus
 import com.pourista.scale.ScaleRepository
 import com.pourista.ui.icon
+import com.pourista.ui.isWideLayout
 import com.pourista.ui.labelRes
 import com.pourista.ui.components.LabeledChart
 import com.pourista.ui.components.PourGauge
@@ -135,6 +139,7 @@ fun BrewScreen(
     // экран становится про время. Единственная поблажка: посреди пролива режим
     // назад не переключаем, чтобы вёрстка не прыгала от случайного разрыва.
     val brewing = brew.phase == BrewPhase.RUNNING || brew.phase == BrewPhase.PAUSED
+    val wide = isWideLayout()
     var weightMode by remember { mutableStateOf(scale.isConnected) }
     LaunchedEffect(scale.isConnected, brewing) {
         if (scale.isConnected) weightMode = true else if (!brewing) weightMode = false
@@ -252,6 +257,96 @@ fun BrewScreen(
             )
         }
 
+        // Карточки одни и те же, разложены по-разному: в портрете столбиком,
+        // набок — в две колонки, потому что высоты там нет, а ширина лишняя.
+        val recipeTile: @Composable () -> Unit = {
+            if (brew.recording) {
+                RecordingCard(
+                    pours = brew.recordedPours,
+                    onCancel = viewModel::cancelRecording,
+                )
+            } else {
+                RecipeSummaryCard(
+                    recipe = brew.recipe,
+                    scaled = brew.recipeScaled,
+                    keepWater = settings.keepRecipeWater,
+                    expanded = recipeExpanded,
+                    onToggleExpanded = { recipeExpanded = !recipeExpanded },
+                    onKeepWater = viewModel::toggleKeepRecipeWater,
+                    onPick = { showRecipePicker = true },
+                    onFortySix = { showFortySix = true },
+                    onRecord = viewModel::startRecording,
+                    onClear = { viewModel.selectRecipe(null) },
+                    onEdit = onEditRecipe,
+                )
+            }
+        }
+        val guidanceCard: @Composable () -> Unit = {
+            brew.guidance?.let { guidance ->
+                GuidanceCard(
+                    guidance = guidance,
+                    currentGrams = brew.weightGrams,
+                    recipe = brew.recipe,
+                    phase = brew.phase,
+                    measuring = scale.isConnected,
+                )
+            }
+        }
+        val hasCharts = weightMode && brew.weightSeries.size > 1
+        val charts: @Composable () -> Unit = {
+            ChartsCard(
+                weights = brew.weightSeries,
+                flows = brew.flowSeries,
+                guides = brew.recipe?.steps
+                    ?.filter { it.kind.isPour }
+                    ?.map { it.targetWaterGrams }
+                    .orEmpty(),
+                // Ось растягиваем до цели следующего шага, иначе его
+                // линия оказалась бы за верхним краем графика.
+                focusMax = brew.guidance?.let { g ->
+                    g.nextStep?.targetWaterGrams ?: g.targetEndGrams
+                },
+                targetFlowRate = brew.guidance?.targetFlowRate,
+                flowAvg = brew.flowRateAvg,
+            )
+        }
+
+        val edges = PaddingValues(
+            start = 16.dp,
+            end = 16.dp,
+            top = padding.calculateTopPadding() + 8.dp,
+            bottom = padding.calculateBottomPadding() + 24.dp,
+        )
+
+        if (wide) {
+            Row(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .padding(edges),
+                horizontalArrangement = Arrangement.spacedBy(12.dp),
+            ) {
+                Column(
+                    modifier = Modifier
+                        .weight(1f)
+                        .verticalScroll(rememberScrollState()),
+                    verticalArrangement = Arrangement.spacedBy(12.dp),
+                ) {
+                    readout()
+                    if (brew.guidance != null) guidanceCard()
+                }
+                Column(
+                    modifier = Modifier
+                        .weight(1f)
+                        .verticalScroll(rememberScrollState()),
+                    verticalArrangement = Arrangement.spacedBy(12.dp),
+                ) {
+                    if (!brewing) recipeTile()
+                    if (hasCharts) charts()
+                }
+            }
+            return@Scaffold
+        }
+
         Column(Modifier.fillMaxWidth()) {
             if (brewing) {
                 Box(
@@ -275,63 +370,11 @@ fun BrewScreen(
                 verticalArrangement = Arrangement.spacedBy(12.dp),
             ) {
                 if (!brewing) {
-                    item {
-                        if (brew.recording) {
-                            RecordingCard(
-                                pours = brew.recordedPours,
-                                onCancel = viewModel::cancelRecording,
-                            )
-                        } else {
-                            RecipeSummaryCard(
-                                recipe = brew.recipe,
-                                scaled = brew.recipeScaled,
-                                keepWater = settings.keepRecipeWater,
-                                expanded = recipeExpanded,
-                                onToggleExpanded = { recipeExpanded = !recipeExpanded },
-                                onKeepWater = viewModel::toggleKeepRecipeWater,
-                                onPick = { showRecipePicker = true },
-                                onFortySix = { showFortySix = true },
-                                onRecord = viewModel::startRecording,
-                                onClear = { viewModel.selectRecipe(null) },
-                                onEdit = onEditRecipe,
-                            )
-                        }
-                    }
+                    item { recipeTile() }
                     item { readout() }
                 }
-
-                val guidance = brew.guidance
-                if (guidance != null) {
-                    item {
-                        GuidanceCard(
-                            guidance = guidance,
-                            currentGrams = brew.weightGrams,
-                            recipe = brew.recipe,
-                            phase = brew.phase,
-                            measuring = scale.isConnected,
-                        )
-                    }
-                }
-
-                if (weightMode && brew.weightSeries.size > 1) {
-                    item {
-                        ChartsCard(
-                            weights = brew.weightSeries,
-                            flows = brew.flowSeries,
-                            guides = brew.recipe?.steps
-                                ?.filter { it.kind.isPour }
-                                ?.map { it.targetWaterGrams }
-                                .orEmpty(),
-                            // Ось растягиваем до цели следующего шага, иначе его
-                            // линия оказалась бы за верхним краем графика.
-                            focusMax = brew.guidance?.let { g ->
-                                g.nextStep?.targetWaterGrams ?: g.targetEndGrams
-                            },
-                            targetFlowRate = brew.guidance?.targetFlowRate,
-                            flowAvg = brew.flowRateAvg,
-                        )
-                    }
-                }
+                if (brew.guidance != null) item { guidanceCard() }
+                if (hasCharts) item { charts() }
             }
         }
     }

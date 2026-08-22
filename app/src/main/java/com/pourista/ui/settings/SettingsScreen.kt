@@ -47,6 +47,7 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.pourista.BuildConfig
 import com.pourista.R
+import com.pourista.ui.listSidePadding
 import com.pourista.core.formatGrams
 import com.pourista.ui.labelRes
 import com.pourista.ui.theme.AppPalette
@@ -78,11 +79,12 @@ fun SettingsScreen(
         },
         bottomBar = bottomBar,
     ) { padding ->
+        val side = listSidePadding()
         LazyColumn(
             modifier = Modifier.fillMaxSize(),
             contentPadding = PaddingValues(
-                start = 16.dp,
-                end = 16.dp,
+                start = side,
+                end = side,
                 top = padding.calculateTopPadding() + 8.dp,
                 bottom = padding.calculateBottomPadding() + 24.dp,
             ),

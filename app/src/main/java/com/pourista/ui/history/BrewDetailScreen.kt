@@ -33,6 +33,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.pourista.R
+import com.pourista.ui.listSidePadding
 import com.pourista.core.formatGrams
 import com.pourista.core.formatRatio
 import com.pourista.core.formatTimerWithTenths
@@ -110,11 +111,12 @@ fun BrewDetailScreen(
         },
     ) { padding ->
         val current = record
+        val side = listSidePadding()
         LazyColumn(
             modifier = Modifier.fillMaxSize(),
             contentPadding = PaddingValues(
-                start = 16.dp,
-                end = 16.dp,
+                start = side,
+                end = side,
                 top = padding.calculateTopPadding() + 8.dp,
                 bottom = padding.calculateBottomPadding() + 32.dp,
             ),

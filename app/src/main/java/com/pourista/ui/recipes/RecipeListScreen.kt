@@ -65,6 +65,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.pourista.R
+import com.pourista.ui.listSidePadding
 import com.pourista.core.formatClock
 import com.pourista.core.formatGrams
 import com.pourista.core.formatRatio
@@ -189,12 +190,13 @@ fun RecipeListScreen(
             )
         },
     ) { padding ->
+        val side = listSidePadding()
         LazyColumn(
             state = listState,
             modifier = Modifier.fillMaxSize(),
             contentPadding = PaddingValues(
-                start = 16.dp,
-                end = 16.dp,
+                start = side,
+                end = side,
                 top = padding.calculateTopPadding() + 8.dp,
                 bottom = padding.calculateBottomPadding() + 96.dp,
             ),

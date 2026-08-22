@@ -5,12 +5,17 @@ import androidx.compose.material.icons.filled.History
 import androidx.compose.material.icons.filled.LocalCafe
 import androidx.compose.material.icons.automirrored.filled.MenuBook
 import androidx.compose.material.icons.filled.Settings
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material3.Icon
 import androidx.compose.material3.NavigationBar
 import androidx.compose.material3.NavigationBarItem
+import androidx.compose.material3.NavigationRail
+import androidx.compose.material3.NavigationRailItem
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
+import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
@@ -63,8 +68,28 @@ private enum class TopLevel(
 @Composable
 fun AppNavigation() {
     val navController = rememberNavController()
-    val bottomBar: @Composable () -> Unit = { BottomBar(navController) }
+    // Набок разделы уезжают в боковую панель: по высоте в альбомном режиме
+    // дорога каждая строка, а по ширине место есть.
+    val wide = isWideLayout()
+    val bottomBar: @Composable () -> Unit = { if (!wide) BottomBar(navController) }
 
+    val backStackEntry by navController.currentBackStackEntryAsState()
+    val route = backStackEntry?.destination?.route
+    val onTopLevel = TopLevel.entries.any { it.route == route }
+
+    Row(Modifier.fillMaxSize()) {
+        // Редактор и карточка заваривания закрываются кнопкой «назад»,
+        // разделы им не нужны — панель там не показываем.
+        if (wide && onTopLevel) SideRail(navController)
+        AppNavHost(navController, bottomBar)
+    }
+}
+
+@Composable
+private fun AppNavHost(
+    navController: NavHostController,
+    bottomBar: @Composable () -> Unit,
+) {
     NavHost(navController = navController, startDestination = Routes.BREW) {
         composable(Routes.BREW) {
             val context = LocalContext.current
@@ -132,6 +157,24 @@ fun AppNavigation() {
             BrewDetailScreen(
                 viewModel = viewModel,
                 onClose = { navController.popBackStack() },
+            )
+        }
+    }
+}
+
+@Composable
+private fun SideRail(navController: NavHostController) {
+    val backStackEntry by navController.currentBackStackEntryAsState()
+    val currentDestination = backStackEntry?.destination
+
+    NavigationRail {
+        TopLevel.entries.forEach { item ->
+            val selected = currentDestination?.hierarchy?.any { it.route == item.route } == true
+            NavigationRailItem(
+                selected = selected,
+                onClick = { navController.navigateToTab(item.route) },
+                icon = { Icon(item.icon, contentDescription = null) },
+                label = { Text(stringResource(item.labelRes)) },
             )
         }
     }
