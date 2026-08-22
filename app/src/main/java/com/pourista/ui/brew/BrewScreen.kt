@@ -18,8 +18,11 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.IntrinsicSize
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
@@ -94,6 +97,7 @@ import com.pourista.scale.ConnectionStatus
 import com.pourista.scale.ScaleRepository
 import com.pourista.ui.icon
 import com.pourista.ui.isWideLayout
+import com.pourista.ui.listSidePadding
 import com.pourista.ui.labelRes
 import com.pourista.ui.components.LabeledChart
 import com.pourista.ui.components.PourGauge
@@ -241,8 +245,9 @@ fun BrewScreen(
         // Во время пролива плитка рецепта уходит: выбирать рецепт уже поздно, а его
         // цифры дублирует подсказка шага. Показания при этом закрепляются сверху,
         // чтобы вес, цель и таймер были на виду, а шаги и графики листались под ними.
-        val readout: @Composable () -> Unit = {
+        val readout: @Composable (Modifier) -> Unit = { cardModifier ->
             ReadoutCard(
+                modifier = cardModifier,
                 weightGrams = brew.weightGrams,
                 doseGrams = brew.doseGrams,
                 flowRate = brew.flowRate,
@@ -281,9 +286,10 @@ fun BrewScreen(
                 )
             }
         }
-        val guidanceCard: @Composable () -> Unit = {
+        val guidanceCard: @Composable (Modifier) -> Unit = { cardModifier ->
             brew.guidance?.let { guidance ->
                 GuidanceCard(
+                    modifier = cardModifier,
                     guidance = guidance,
                     currentGrams = brew.weightGrams,
                     recipe = brew.recipe,
@@ -293,55 +299,81 @@ fun BrewScreen(
             }
         }
         val hasCharts = weightMode && brew.weightSeries.size > 1
+        val pourGuides = brew.recipe?.steps
+            ?.filter { it.kind.isPour }
+            ?.map { it.targetWaterGrams }
+            .orEmpty()
+        // Ось растягиваем до цели следующего шага, иначе его линия оказалась
+        // бы за верхним краем графика.
+        val chartFocusMax = brew.guidance?.let { g ->
+            g.nextStep?.targetWaterGrams ?: g.targetEndGrams
+        }
         val charts: @Composable () -> Unit = {
             ChartsCard(
                 weights = brew.weightSeries,
                 flows = brew.flowSeries,
-                guides = brew.recipe?.steps
-                    ?.filter { it.kind.isPour }
-                    ?.map { it.targetWaterGrams }
-                    .orEmpty(),
-                // Ось растягиваем до цели следующего шага, иначе его
-                // линия оказалась бы за верхним краем графика.
-                focusMax = brew.guidance?.let { g ->
-                    g.nextStep?.targetWaterGrams ?: g.targetEndGrams
-                },
+                guides = pourGuides,
+                focusMax = chartFocusMax,
                 targetFlowRate = brew.guidance?.targetFlowRate,
                 flowAvg = brew.flowRateAvg,
             )
         }
 
-        val edges = PaddingValues(
-            start = 16.dp,
-            end = 16.dp,
-            top = padding.calculateTopPadding() + 8.dp,
-            bottom = padding.calculateBottomPadding() + 24.dp,
-        )
-
         if (wide) {
-            Row(
+            // Прокрутка общая: колонки едут вместе, иначе строки в них
+            // разъезжаются и сверять их глазами невозможно.
+            val guidance = brew.guidance
+            val split = guidance != null
+            val side = if (split) 16.dp else listSidePadding()
+            Column(
                 modifier = Modifier
                     .fillMaxSize()
-                    .padding(edges),
-                horizontalArrangement = Arrangement.spacedBy(12.dp),
+                    .verticalScroll(rememberScrollState())
+                    .padding(
+                        start = side,
+                        end = side,
+                        top = padding.calculateTopPadding() + 8.dp,
+                        bottom = padding.calculateBottomPadding() + 24.dp,
+                    ),
+                verticalArrangement = Arrangement.spacedBy(12.dp),
             ) {
-                Column(
-                    modifier = Modifier
-                        .weight(1f)
-                        .verticalScroll(rememberScrollState()),
-                    verticalArrangement = Arrangement.spacedBy(12.dp),
-                ) {
-                    readout()
-                    if (brew.guidance != null) guidanceCard()
-                }
-                Column(
-                    modifier = Modifier
-                        .weight(1f)
-                        .verticalScroll(rememberScrollState()),
-                    verticalArrangement = Arrangement.spacedBy(12.dp),
-                ) {
-                    if (!brewing) recipeTile()
+                // Рецепт идёт сверху во всю ширину: он один на оба столбца.
+                if (!brewing) recipeTile()
+
+                if (!split) {
+                    readout(Modifier)
                     if (hasCharts) charts()
+                    return@Column
+                }
+
+                // Высоту паре задаёт та карточка, что выше: вторая тянется
+                // за ней, и ряд получается ровным.
+                Row(
+                    modifier = Modifier.height(IntrinsicSize.Min),
+                    horizontalArrangement = Arrangement.spacedBy(12.dp),
+                ) {
+                    readout(Modifier.weight(1f).fillMaxHeight())
+                    guidanceCard(Modifier.weight(1f).fillMaxHeight())
+                }
+
+                if (hasCharts) {
+                    Row(
+                        modifier = Modifier.height(IntrinsicSize.Min),
+                        horizontalArrangement = Arrangement.spacedBy(12.dp),
+                    ) {
+                        WeightChartCard(
+                            weights = brew.weightSeries,
+                            guides = pourGuides,
+                            focusMax = chartFocusMax,
+                            modifier = Modifier.weight(1f).fillMaxHeight(),
+                        )
+                        FlowChartCard(
+                            flows = brew.flowSeries,
+                            targetFlowRate = brew.guidance?.targetFlowRate,
+                            flowAvg = brew.flowRateAvg,
+                            modifier = Modifier.weight(1f).fillMaxHeight(),
+                        )
+                    }
                 }
             }
             return@Scaffold
@@ -356,7 +388,7 @@ fun BrewScreen(
                         top = padding.calculateTopPadding() + 8.dp,
                         bottom = 12.dp,
                     )
-                ) { readout() }
+                ) { readout(Modifier) }
             }
 
             LazyColumn(
@@ -371,9 +403,9 @@ fun BrewScreen(
             ) {
                 if (!brewing) {
                     item { recipeTile() }
-                    item { readout() }
+                    item { readout(Modifier) }
                 }
-                if (brew.guidance != null) item { guidanceCard() }
+                if (brew.guidance != null) item { guidanceCard(Modifier) }
                 if (hasCharts) item { charts() }
             }
         }
@@ -755,6 +787,7 @@ private fun RecipeFact(label: String, value: String, modifier: Modifier = Modifi
  */
 @Composable
 private fun ReadoutCard(
+    modifier: Modifier = Modifier,
     weightGrams: Float,
     doseGrams: Float,
     flowRate: Float,
@@ -768,6 +801,7 @@ private fun ReadoutCard(
 ) {
     if (!weightMode) {
         TimerReadoutCard(
+            modifier = modifier,
             elapsedMs = elapsedMs,
             doseGrams = doseGrams,
             targetGrams = targetGrams,
@@ -777,7 +811,7 @@ private fun ReadoutCard(
         return
     }
 
-    Card(modifier = Modifier.fillMaxWidth()) {
+    Card(modifier = modifier.fillMaxWidth()) {
         Column(Modifier.padding(16.dp)) {
             Row(verticalAlignment = Alignment.Bottom) {
                 Column(Modifier.weight(1f)) {
@@ -863,13 +897,14 @@ private fun ReadoutCard(
 /** Показания без весов: время крупно, рядом — цель шага, ниже введённая доза. */
 @Composable
 private fun TimerReadoutCard(
+    modifier: Modifier = Modifier,
     elapsedMs: Long,
     doseGrams: Float,
     targetGrams: Float?,
     unitLabel: String,
     onDoseClick: () -> Unit,
 ) {
-    Card(modifier = Modifier.fillMaxWidth()) {
+    Card(modifier = modifier.fillMaxWidth()) {
         Column(Modifier.padding(16.dp)) {
             Row(verticalAlignment = Alignment.Bottom) {
                 Column(Modifier.weight(1f)) {
@@ -912,6 +947,7 @@ private fun TimerReadoutCard(
 
 @Composable
 private fun GuidanceCard(
+    modifier: Modifier = Modifier,
     guidance: Guidance,
     currentGrams: Float,
     recipe: Recipe?,
@@ -944,7 +980,7 @@ private fun GuidanceCard(
     }
 
     Card(
-        modifier = Modifier.fillMaxWidth(),
+        modifier = modifier.fillMaxWidth(),
         colors = CardDefaults.cardColors(
             containerColor = if (running) container else MaterialTheme.colorScheme.surfaceContainer,
         ),
@@ -1159,35 +1195,74 @@ private fun ChartsCard(
 ) {
     Card(modifier = Modifier.fillMaxWidth()) {
         Column(Modifier.padding(16.dp)) {
-            LabeledChart(
-                title = stringResource(R.string.chart_weight),
-                unit = stringResource(R.string.unit_gram),
-                values = weights,
-                guides = guides,
-                guideColor = AppTheme.accents.onTrack,
-                focusMax = focusMax,
-                height = 140.dp,
-            )
+            WeightChart(weights = weights, guides = guides, focusMax = focusMax)
             Spacer(Modifier.height(16.dp))
-            // Скорость — вспомогательная величина, ей хватает половины высоты.
-            LabeledChart(
-                title = stringResource(R.string.chart_flow),
-                unit = stringResource(R.string.unit_gram_per_second),
-                values = flows,
-                lineColor = AppTheme.accents.water,
-                guides = listOfNotNull(targetFlowRate?.takeIf { it > 0f }),
-                guideColor = AppTheme.accents.onTrack,
-                height = 72.dp,
-                ticks = 2,
-            )
-            Text(
-                text = stringResource(R.string.chart_flow_average, formatGrams(flowAvg)),
-                style = MaterialTheme.typography.labelMedium,
-                color = MaterialTheme.colorScheme.onSurfaceVariant,
-                modifier = Modifier.padding(top = 8.dp),
-            )
+            FlowChart(flows = flows, targetFlowRate = targetFlowRate, flowAvg = flowAvg)
         }
     }
+}
+
+/** Тот же график веса, но своей карточкой: набок графики стоят по колонкам. */
+@Composable
+private fun WeightChartCard(
+    weights: List<Float>,
+    guides: List<Float>,
+    focusMax: Float?,
+    modifier: Modifier = Modifier,
+) {
+    Card(modifier = modifier.fillMaxWidth()) {
+        Column(Modifier.padding(16.dp)) {
+            WeightChart(weights = weights, guides = guides, focusMax = focusMax)
+        }
+    }
+}
+
+@Composable
+private fun FlowChartCard(
+    flows: List<Float>,
+    targetFlowRate: Float?,
+    flowAvg: Float,
+    modifier: Modifier = Modifier,
+) {
+    Card(modifier = modifier.fillMaxWidth()) {
+        Column(Modifier.padding(16.dp)) {
+            FlowChart(flows = flows, targetFlowRate = targetFlowRate, flowAvg = flowAvg)
+        }
+    }
+}
+
+@Composable
+private fun WeightChart(weights: List<Float>, guides: List<Float>, focusMax: Float?) {
+    LabeledChart(
+        title = stringResource(R.string.chart_weight),
+        unit = stringResource(R.string.unit_gram),
+        values = weights,
+        guides = guides,
+        guideColor = AppTheme.accents.onTrack,
+        focusMax = focusMax,
+        height = 140.dp,
+    )
+}
+
+@Composable
+private fun FlowChart(flows: List<Float>, targetFlowRate: Float?, flowAvg: Float) {
+    // Скорость — вспомогательная величина, ей хватает половины высоты.
+    LabeledChart(
+        title = stringResource(R.string.chart_flow),
+        unit = stringResource(R.string.unit_gram_per_second),
+        values = flows,
+        lineColor = AppTheme.accents.water,
+        guides = listOfNotNull(targetFlowRate?.takeIf { it > 0f }),
+        guideColor = AppTheme.accents.onTrack,
+        height = 72.dp,
+        ticks = 2,
+    )
+    Text(
+        text = stringResource(R.string.chart_flow_average, formatGrams(flowAvg)),
+        style = MaterialTheme.typography.labelMedium,
+        color = MaterialTheme.colorScheme.onSurfaceVariant,
+        modifier = Modifier.padding(top = 8.dp),
+    )
 }
 
 @Composable

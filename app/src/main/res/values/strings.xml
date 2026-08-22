@@ -161,8 +161,7 @@
     <string name="theme_system">System</string>
     <string name="theme_light">Light</string>
     <string name="theme_dark">Dark</string>
-    <string name="whats_new_title">What\'s new in %1$s</string>
-    <string name="whats_new_body">• Landscape and tablet layout\n• Lists no longer stretch across a wide screen</string>
+    <string name="whats_new_title">What\'s new</string>
 
     <string name="settings_palette">Palette</string>
     <string name="palette_copper">Coffee</string>
@@ -236,5 +235,30 @@
     <string name="settings_contact_telegram" translatable="false">t.me/DrSkyFly</string>
     <string name="settings_sources_link" translatable="false">github.com/DrSkyFly/Pourista</string>
     <string name="settings_thanks_coffeesaurus_link" translatable="false">youtube.com/c/Coffeesaurus</string>
+    <string name="settings_diagnostics">Diagnostics</string>
+    <string name="settings_scale_log">Scale log</string>
+    <string name="settings_scale_log_hint">Record the exchange with the scale to a file and send it to the developer</string>
+    <string name="settings_release_notes">Release notes</string>
+    <string name="notes_1_6_0">• A scale log in settings: records the exchange to a file for protocol debugging\n• The release notes dialog now holds the whole version history\n• The landscape brew layout is fixed</string>
+    <string name="notes_1_5_0">• Landscape and tablet layout: sections move to a side rail, the brew screen splits into two columns\n• Lists no longer stretch across a wide screen</string>
+    <string name="notes_1_4_0">• Palettes: coffee, 4:6 and standard\n• The coffee palette is calmer\n• A "What\'s new" dialog after an update</string>
+    <string name="notes_1_3_0">• Tetsu Kasuya\'s 4:6 generator: dose, water, taste balance and strength in, a ready recipe out\n• Buttons on the recipe tile fit one row</string>
+    <string name="notes_1_2_0">• Water rises inside the step ring\n• Swirling the dripper no longer spikes the flow rate\n• Auto-finish waits five seconds, or three once the weight goes negative</string>
+    <string name="notes_1_1_0">• Experimental support for Felicita, Bookoo, Decent Scale and Timemore Black Mirror Dot\n• The app scans for every known scale at once</string>
+    <string name="notes_1_0_0">First release: step-based recipes, the editor, brewing with and without scales, pace guidance, automatic finish, rescaling to the actual dose, recording a recipe from a brew, JSON import and export, history with charts, sound and vibration.</string>
+
+    <string name="scale_log_title">Scale log</string>
+    <string name="scale_log_intro">Record this when a scale will not connect or reports nonsense. The file holds what the scale sends and how the app read it. No personal data goes in.</string>
+    <string name="scale_log_connected">Scale connected: %1$s</string>
+    <string name="scale_log_disconnected">No scale connected. Without a connection only what the scale advertises gets recorded.</string>
+    <string name="scale_log_steps">1. Switch the scale on and wait for the connection.\n2. Tap "Start recording".\n3. Wait 5 seconds with nothing on the scale.\n4. Tap "Tare" here, then the tare button on the scale itself.\n5. Put a known weight on it and wait 5 seconds.\n6. Add a little more and wait again.\n7. Take everything off.\n8. Tap "Stop".</string>
+    <string name="scale_log_start">Start recording</string>
+    <string name="scale_log_stop">Stop</string>
+    <string name="scale_log_recording">Recording, packets: %1$d</string>
+    <string name="scale_log_ready">Ready: %1$s</string>
+    <string name="scale_log_send_hint">Send the file to t.me/DrSkyFly on Telegram and mention the scale model.</string>
+    <string name="scale_log_share">Send</string>
+    <string name="scale_log_subject">Pourista · scale log</string>
+
     <string name="settings_sound_credits">Cue sounds from freesound.org: Robinhood76 (CC BY-NC 4.0), SpiceProgram (CC BY 3.0), CalebLopez and JohnsonBrandEditing (CC0)</string>
 </resources>

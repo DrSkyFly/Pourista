@@ -1,0 +1,5 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Отдаём наружу только записанные журналы весов: их отправляют в переписке. -->
+<paths>
+    <cache-path name="logs" path="logs/" />
+</paths>

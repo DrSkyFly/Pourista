@@ -47,6 +47,7 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.pourista.BuildConfig
 import com.pourista.R
+import com.pourista.ui.components.ReleaseNotesDialog
 import com.pourista.ui.listSidePadding
 import com.pourista.core.formatGrams
 import com.pourista.ui.labelRes
@@ -58,14 +59,19 @@ import com.pourista.ui.theme.ThemeMode
 @Composable
 fun SettingsScreen(
     viewModel: SettingsViewModel,
+    onOpenScaleLog: () -> Unit = {},
     bottomBar: @Composable () -> Unit = {},
     modifier: Modifier = Modifier,
 ) {
     val settings by viewModel.settings.collectAsStateWithLifecycle()
     var showFormat by remember { mutableStateOf(false) }
+    var showNotes by remember { mutableStateOf(false) }
 
     if (showFormat) {
         RecipeFormatDialog(onDismiss = { showFormat = false })
+    }
+    if (showNotes) {
+        ReleaseNotesDialog(onDismiss = { showNotes = false })
     }
 
     Scaffold(
@@ -221,7 +227,42 @@ fun SettingsScreen(
             }
 
             item {
+                SettingsSection(stringResource(R.string.settings_diagnostics)) {
+                    Column(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .clickable(onClick = onOpenScaleLog)
+                            .padding(vertical = 8.dp),
+                    ) {
+                        Text(
+                            text = stringResource(R.string.settings_scale_log),
+                            style = MaterialTheme.typography.bodyLarge,
+                        )
+                        Text(
+                            text = stringResource(R.string.settings_scale_log_hint),
+                            style = MaterialTheme.typography.bodySmall,
+                            color = MaterialTheme.colorScheme.onSurfaceVariant,
+                        )
+                    }
+                }
+            }
+
+            item {
                 SettingsSection(stringResource(R.string.settings_about)) {
+                    // История изменений стоит перед проверкой обновлений:
+                    // сначала «что нового», потом «где взять».
+                    Column(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .clickable { showNotes = true }
+                            .padding(vertical = 8.dp),
+                    ) {
+                        Text(
+                            text = stringResource(R.string.settings_release_notes),
+                            style = MaterialTheme.typography.bodyLarge,
+                        )
+                    }
+
                     // Проверку обновлений отдаём браузеру: у приложения нет и не
                     // должно быть выхода в сеть. Страница latest на GitHub сама
                     // ведёт на свежий релиз, а версия рядом — с чем сравнивать.

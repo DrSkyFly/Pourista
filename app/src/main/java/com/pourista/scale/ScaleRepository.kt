@@ -2,6 +2,7 @@ package com.pourista.scale
 
 import android.Manifest
 import android.annotation.SuppressLint
+import android.bluetooth.BluetoothGattCharacteristic
 import android.content.Context
 import android.content.pm.PackageManager
 import android.os.Build
@@ -72,7 +73,19 @@ class ScaleRepository(context: Context) {
 
     private var connectionObserverStarted = false
 
+    /** Эфир осматривает сама диагностика — обычный поиск при этом не идёт. */
+    private var diagnosticScan = false
+
     private var lastPacketLogAt = 0L
+
+    /** Идёт запись протокола: журнал ведём, пока он здесь. */
+    @Volatile
+    private var diagnostics: ScaleDiagnostics? = null
+
+    private val _diagnosticsPackets = MutableStateFlow(0)
+
+    /** Сколько пакетов уже записано: экран диагностики показывает счётчик. */
+    val diagnosticsPackets: StateFlow<Int> = _diagnosticsPackets.asStateFlow()
 
     fun keepGrams(enabled: Boolean) {
         keepGrams = enabled
@@ -154,6 +167,112 @@ class ScaleRepository(context: Context) {
         val current = peripheral ?: return
         val command = driver.tareCommand() ?: return
         scope.launch { sendCommand(current, command) }
+    }
+
+    /**
+     * Начинает запись протокола весов.
+     *
+     * Если весы на связи — выкладывает их службы и подписывается на всё, что
+     * умеет уведомлять: неработающая модель чаще всего шлёт данные не туда, где
+     * их ждёт драйвер. Если связи нет — осматривает эфир: по имени в объявлении
+     * видно, узнаёт ли приложение эти весы вообще.
+     */
+    @SuppressLint("MissingPermission")
+    fun startDiagnostics(header: List<String>) {
+        val log = ScaleDiagnostics(header)
+        diagnostics = log
+        _diagnosticsPackets.value = 0
+
+        val device = peripheral
+        if (_state.value.isConnected && device != null) {
+            log.note("Драйвер: ${driver.title}")
+            dumpServices(device, log)
+            observeEverything(device, log)
+        } else {
+            log.note("Весы не подключены — смотрим, что в эфире")
+            log.note("")
+            scanForDiagnostics(log)
+        }
+    }
+
+    /** Останавливает запись и отдаёт журнал. */
+    @SuppressLint("MissingPermission")
+    fun stopDiagnostics(): String? {
+        val log = diagnostics ?: return null
+        diagnostics = null
+        if (diagnosticScan) {
+            diagnosticScan = false
+            central.stopScan()
+            if (_state.value.status == ConnectionStatus.SCANNING) {
+                _state.update { it.copy(status = ConnectionStatus.IDLE) }
+            }
+        }
+        return log.text()
+    }
+
+    private fun dumpServices(device: BluetoothPeripheral, log: ScaleDiagnostics) {
+        log.note("")
+        log.note("Службы устройства:")
+        device.services.forEach { service ->
+            log.note("  ${service.uuid}")
+            service.characteristics.forEach { characteristic ->
+                log.note("    ${characteristic.uuid}  ${characteristic.propertyNames()}")
+            }
+        }
+        log.note("")
+        log.note("Драйвер ждёт вес в ${driver.weightCharacteristic}")
+        log.note("")
+        log.note("время   характеристика  байты → разбор")
+    }
+
+    /**
+     * Подписка на все уведомляющие характеристики. Отписаться blessed не даёт,
+     * поэтому лишние подписки живут до разрыва связи — записывать они перестают
+     * вместе с концом журнала.
+     */
+    private fun observeEverything(device: BluetoothPeripheral, log: ScaleDiagnostics) {
+        scope.launch {
+            device.services.forEach { service ->
+                service.characteristics.forEach { characteristic ->
+                    if (!characteristic.notifies()) return@forEach
+                    if (characteristic.uuid == driver.weightCharacteristic) return@forEach
+                    runCatching {
+                        device.observe(characteristic) { value ->
+                            val current = diagnostics ?: return@observe
+                            current.packet(characteristic.uuid.toString(), value, "не вес")
+                            _diagnosticsPackets.value = current.packetCount
+                        }
+                    }.onFailure {
+                        log.event("не удалось подписаться на ${characteristic.uuid}: $it")
+                    }
+                }
+            }
+        }
+    }
+
+    @SuppressLint("MissingPermission")
+    private fun scanForDiagnostics(log: ScaleDiagnostics) {
+        if (!hasPermissions()) {
+            log.note("Нет разрешения на Bluetooth — эфир посмотреть не получилось")
+            return
+        }
+        diagnosticScan = true
+        val seen = mutableSetOf<String>()
+        runCatching {
+            central.scanForPeripherals(
+                { found, result ->
+                    // Адрес нужен только чтобы не повторять устройство в журнале.
+                    if (!seen.add(found.address)) return@scanForPeripherals
+                    val name = found.name.ifBlank { "(без имени)" }
+                    val services = result.scanRecord?.serviceUuids
+                        ?.joinToString(", ") { it.uuid.toString() }
+                        ?: "не объявлены"
+                    val known = ScaleDrivers.forName(found.name)?.title ?: "приложению не знакомы"
+                    log.event("в эфире: \"$name\", RSSI ${result.rssi}, службы: $services → $known")
+                },
+                { failure -> log.event("поиск не удался: $failure") },
+            )
+        }.onFailure { log.event("поиск не запустился: $it") }
     }
 
     private fun connect(target: BluetoothPeripheral) {
@@ -260,6 +379,14 @@ class ScaleRepository(context: Context) {
                     }
                 }
 
+                // Связь могли поднять уже после начала записи: тогда службы
+                // и остальные подписки достаются журналу здесь.
+                diagnostics?.let { log ->
+                    log.event("подключились: ${device.name}, драйвер ${active.title}")
+                    dumpServices(device, log)
+                    observeEverything(device, log)
+                }
+
                 if (keepGrams) active.unitCommand(WeightUnit.GRAM)?.let { sendCommand(device, it) }
                 active.onConnectCommands().forEach { sendCommand(device, it) }
             } catch (e: Exception) {
@@ -273,6 +400,12 @@ class ScaleRepository(context: Context) {
      * разобран. Нужна при проверке на живых весах, в релизе не собирается.
      */
     private fun logPacket(value: ByteArray, reading: WeightReading?) {
+        diagnostics?.let { log ->
+            val parsed = reading?.let { "%.1f г, единица %s".format(it.grams, it.unitOnScale) }
+                ?: "разобрать не удалось"
+            log.packet(driver.weightCharacteristic.toString(), value, parsed)
+            _diagnosticsPackets.value = log.packetCount
+        }
         if (!BuildConfig.DEBUG) return
         val now = SystemClock.elapsedRealtime()
         if (now - lastPacketLogAt < PACKET_LOG_INTERVAL_MS) return
@@ -285,22 +418,47 @@ class ScaleRepository(context: Context) {
 
     private suspend fun sendCommand(device: BluetoothPeripheral, command: ByteArray) {
         try {
-            val target = driver.commandCharacteristic ?: return
-            val characteristic = device.getCharacteristic(driver.service, target) ?: return
+            val target = driver.commandCharacteristic ?: run {
+                diagnostics?.event("команда не отправлена: у драйвера нет характеристики команд")
+                return
+            }
+            val characteristic = device.getCharacteristic(driver.service, target) ?: run {
+                diagnostics?.event("команда не отправлена: характеристики $target нет у устройства")
+                return
+            }
             device.writeCharacteristic(
                 characteristic,
                 command,
                 WriteType.WITH_RESPONSE,
             )
+            diagnostics?.command(target.toString(), command, "отправлено")
         } catch (e: Exception) {
             Log.d(TAG, "Команда не доставлена: $e")
+            diagnostics?.event("команда не ушла: $e")
         }
     }
+
+    private fun BluetoothGattCharacteristic.notifies(): Boolean =
+        properties and NOTIFYING_PROPERTIES != 0
+
+    private fun BluetoothGattCharacteristic.propertyNames(): String = buildList {
+        if (properties and BluetoothGattCharacteristic.PROPERTY_READ != 0) add("read")
+        if (properties and BluetoothGattCharacteristic.PROPERTY_WRITE != 0) add("write")
+        if (properties and BluetoothGattCharacteristic.PROPERTY_WRITE_NO_RESPONSE != 0) {
+            add("write-nr")
+        }
+        if (properties and BluetoothGattCharacteristic.PROPERTY_NOTIFY != 0) add("notify")
+        if (properties and BluetoothGattCharacteristic.PROPERTY_INDICATE != 0) add("indicate")
+    }.joinToString(", ").ifEmpty { "—" }
 
     companion object {
         private const val TAG = "ScaleRepository"
         private const val RECONNECT_DELAY_MS = 10_000L
         private const val PACKET_LOG_INTERVAL_MS = 1_000L
+
+        private const val NOTIFYING_PROPERTIES =
+            BluetoothGattCharacteristic.PROPERTY_NOTIFY or
+                BluetoothGattCharacteristic.PROPERTY_INDICATE
 
         /** Разрешения, без которых BLE-поиск невозможен. */
         fun requiredPermissions(): Array<String> =

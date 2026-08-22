@@ -33,6 +33,8 @@ import com.pourista.R
 import com.pourista.appContainer
 import com.pourista.ui.brew.BrewScreen
 import com.pourista.ui.brew.BrewViewModel
+import com.pourista.ui.diagnostics.ScaleLogScreen
+import com.pourista.ui.diagnostics.ScaleLogViewModel
 import com.pourista.ui.history.BrewDetailScreen
 import com.pourista.ui.history.BrewDetailViewModel
 import com.pourista.ui.history.HistoryScreen
@@ -51,6 +53,7 @@ private object Routes {
     const val SETTINGS = "settings"
     const val RECIPE_EDITOR = "recipe_editor"
     const val BREW_DETAIL = "brew_detail"
+    const val SCALE_LOG = "scale_log"
     const val ARG_ID = "id"
 }
 
@@ -127,7 +130,20 @@ private fun AppNavHost(
         composable(Routes.SETTINGS) {
             val context = LocalContext.current
             val viewModel: SettingsViewModel = viewModel { SettingsViewModel(context.appContainer) }
-            SettingsScreen(viewModel = viewModel, bottomBar = bottomBar)
+            SettingsScreen(
+                viewModel = viewModel,
+                onOpenScaleLog = { navController.navigate(Routes.SCALE_LOG) },
+                bottomBar = bottomBar,
+            )
+        }
+
+        composable(Routes.SCALE_LOG) {
+            val context = LocalContext.current
+            val viewModel: ScaleLogViewModel = viewModel { ScaleLogViewModel(context.appContainer) }
+            ScaleLogScreen(
+                viewModel = viewModel,
+                onClose = { navController.popBackStack() },
+            )
         }
 
         composable(

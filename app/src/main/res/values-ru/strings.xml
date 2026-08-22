@@ -161,8 +161,7 @@
     <string name="theme_system">Система</string>
     <string name="theme_light">Светлая</string>
     <string name="theme_dark">Тёмная</string>
-    <string name="whats_new_title">Что нового в %1$s</string>
-    <string name="whats_new_body">• Альбомный режим и планшеты\n• Списки не растягиваются на широком экране</string>
+    <string name="whats_new_title">Что нового</string>
 
     <string name="settings_palette">Палитра</string>
     <string name="palette_copper">Кофейная</string>
@@ -231,5 +230,30 @@
     <string name="settings_contact">Написать автору</string>
     <string name="settings_sources">Исходный код</string>
     <string name="settings_check_updates">Проверить обновления</string>
+    <string name="settings_diagnostics">Диагностика</string>
+    <string name="settings_scale_log">Журнал весов</string>
+    <string name="settings_scale_log_hint">Записать обмен с весами в файл и отправить разработчику</string>
+    <string name="settings_release_notes">История изменений</string>
+    <string name="notes_1_6_0">• Журнал весов в настройках: запись обмена в файл для разбора протокола\n• Окно «Что нового» со всей историей версий\n• Починена альбомная раскладка экрана заваривания</string>
+    <string name="notes_1_5_0">• Альбомный режим и планшеты: разделы уходят в боковую панель, экран заваривания раскладывается в две колонки\n• Списки не растягиваются на широком экране</string>
+    <string name="notes_1_4_0">• Палитры оформления: кофейная, «4:6» и стандартная\n• Кофейная палитра приглушена\n• Окно «Что нового» после обновления</string>
+    <string name="notes_1_3_0">• Генератор 4:6 Тэцу Кацуи: доза, вода, баланс вкуса и крепость — на выходе готовый рецепт\n• Кнопки в плитке рецепта одним рядом</string>
+    <string name="notes_1_2_0">• В кольце шага поднимается вода\n• Покачивание воронки больше не даёт выброс скорости\n• Автофиниш ждёт пять секунд, а при уходе веса в минус — три</string>
+    <string name="notes_1_1_0">• Тестовая поддержка Felicita, Bookoo, Decent Scale и Timemore Black Mirror Dot\n• Приложение ищет все известные модели весов сразу</string>
+    <string name="notes_1_0_0">Первый выпуск: рецепты по шагам, редактор, заваривание с весами и без, подсказки по темпу пролива, автофиниш, пересчёт под дозу, запись рецепта с пролива, импорт и экспорт JSON, история с графиками, звук и вибрация.</string>
+
+    <string name="scale_log_title">Журнал весов</string>
+    <string name="scale_log_intro">Запись нужна, когда весы не заводятся или показывают ерунду. В файл попадают ответы весов и то, как приложение их поняло. Личных данных там нет.</string>
+    <string name="scale_log_connected">Весы на связи: %1$s</string>
+    <string name="scale_log_disconnected">Весы не подключены. Без связи запишется только то, что весы объявляют в эфире.</string>
+    <string name="scale_log_steps">1. Включите весы и дождитесь связи.\n2. Нажмите «Начать запись».\n3. Подождите 5 секунд, ничего не ставя на весы.\n4. Нажмите «Тара» здесь, потом кнопку тары на самих весах.\n5. Поставьте предмет известного веса и держите 5 секунд.\n6. Добавьте ещё немного и снова подождите.\n7. Снимите всё с весов.\n8. Нажмите «Остановить».</string>
+    <string name="scale_log_start">Начать запись</string>
+    <string name="scale_log_stop">Остановить</string>
+    <string name="scale_log_recording">Идёт запись, пакетов: %1$d</string>
+    <string name="scale_log_ready">Готово: %1$s</string>
+    <string name="scale_log_send_hint">Отправьте файл в Telegram на t.me/DrSkyFly и напишите модель весов.</string>
+    <string name="scale_log_share">Отправить</string>
+    <string name="scale_log_subject">Pourista · журнал весов</string>
+
     <string name="settings_sound_credits">Звуки сигналов — с freesound.org: Robinhood76 (CC BY-NC 4.0), SpiceProgram (CC BY 3.0), CalebLopez и JohnsonBrandEditing (CC0)</string>
 </resources>
