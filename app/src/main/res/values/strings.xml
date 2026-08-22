@@ -239,6 +239,7 @@
     <string name="settings_scale_log">Scale log</string>
     <string name="settings_scale_log_hint">Record the exchange with the scale to a file and send it to the developer</string>
     <string name="settings_release_notes">Release notes</string>
+    <string name="notes_1_6_1">• A bell once the last step of the recipe is over\n• Auto-finish now spots a lifted dripper on large brews too\n• A tablet in portrait no longer gets the landscape layout</string>
     <string name="notes_1_6_0">• A scale log in settings: records the exchange to a file for protocol debugging\n• The release notes dialog now holds the whole version history\n• The landscape brew layout is fixed</string>
     <string name="notes_1_5_0">• Landscape and tablet layout: sections move to a side rail, the brew screen splits into two columns\n• Lists no longer stretch across a wide screen</string>
     <string name="notes_1_4_0">• Palettes: coffee, 4:6 and standard\n• The coffee palette is calmer\n• A "What\'s new" dialog after an update</string>

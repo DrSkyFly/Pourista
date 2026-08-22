@@ -81,6 +81,12 @@ class BrewCuePlayer(context: Context) {
         if (sound) play(stopSound)
     }
 
+    /** План отыгран, вода уходит: тот же звоночек, но своя вибрация. */
+    fun planFinished(sound: Boolean, haptic: Boolean) {
+        if (haptic) vibrate(longArrayOf(0, 150, 100, 150))
+        if (sound) play(stepSound)
+    }
+
     fun finished(sound: Boolean, haptic: Boolean) {
         if (haptic) vibrate(longArrayOf(0, 200, 120, 200, 120, 320))
         if (sound) play(finishSound)

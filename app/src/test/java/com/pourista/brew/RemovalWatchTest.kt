@@ -84,6 +84,34 @@ class RemovalWatchTest {
     }
 
     @Test
+    fun `на большом объёме снятая воронка весит меньше половины`() {
+        val watch = RemovalWatch()
+        var now = watch.pourUpTo(600f)
+        watch.arm(600f)
+
+        // Воронка с намокшим кофе — около сотни граммов из шестисот: вдвое
+        // вес тут не упадёт никогда, а заваривание всё равно закончено.
+        now += 1_000L
+        val droppedAt = now
+        assertFalse(watch.onSample(490f, droppedAt))
+        assertTrue(watch.onSample(490f, droppedAt + 5_000L))
+        assertEquals(600f, watch.weightBeforeDrop, 0.01f)
+    }
+
+    @Test
+    fun `покачивание воронки на весах за снятие не считаем`() {
+        val watch = RemovalWatch()
+        var now = watch.pourUpTo(250f)
+        watch.arm(250f)
+
+        // Двадцать граммов туда-сюда — обычный шум при свирле.
+        repeat(10) {
+            now += 1_000L
+            assertFalse(watch.onSample(if (it % 2 == 0) 232f else 250f, now))
+        }
+    }
+
+    @Test
     fun `на совсем лёгком весе сторож молчит`() {
         val watch = RemovalWatch()
         // Пятнадцать граммов — это ещё доза, а не заваривание: шум весов в

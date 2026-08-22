@@ -100,6 +100,12 @@ sealed interface BrewEvent {
 
     /** До цели шага осталось совсем немного — пора готовиться закрывать чайник. */
     data class NearTarget(val remainingGrams: Float) : BrewEvent
+
+    /**
+     * План рецепта отыгран: время последнего шага, обычно слива, вышло.
+     * Заваривание при этом ещё идёт — воронку снимают руками.
+     */
+    data object PlanFinished : BrewEvent
     data object Finished : BrewEvent
 }
 
@@ -168,6 +174,9 @@ class BrewEngine(
     /** Шаг, влив которого уже завершён — по достижении цели или по остановке веса. */
     private var pourDoneStepIndex = -1
     private var nearTargetStepIndex = -1
+
+    /** Сигнал о конце плана даём один раз за заваривание. */
+    private var planFinishedEmitted = false
     private var steadyWeight = 0f
     private var steadySinceMs = 0L
 
@@ -346,6 +355,7 @@ class BrewEngine(
         lastCountdownSecond = -1
         pourDoneStepIndex = -1
         nearTargetStepIndex = -1
+        planFinishedEmitted = false
         steadySinceMs = 0L
         timelineShiftSec = 0f
         lastPourFlowRate = 0f
@@ -471,6 +481,16 @@ class BrewEngine(
             nearTargetStepIndex = guidance.stepIndex
             _events.tryEmit(BrewEvent.NearTarget(guidance.remainingGrams))
         }
+        // Последний шаг отыгран: рецепт кончился, пора снимать воронку.
+        // Финиш при этом не наступает — его даёт снятая чашка или кнопка.
+        if (!planFinishedEmitted &&
+            guidance.stepIndex == guidance.stepCount - 1 &&
+            guidance.secondsLeftInStep <= 0
+        ) {
+            planFinishedEmitted = true
+            _events.tryEmit(BrewEvent.PlanFinished)
+        }
+
         val toNextPour = guidance.secondsToNextPour
         if (toNextPour != null && toNextPour in 1..COUNTDOWN_FROM &&
             toNextPour != lastCountdownSecond

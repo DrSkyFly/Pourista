@@ -175,6 +175,9 @@ fun BrewScreen(
 
                 is BrewEvent.NearTarget -> cues.nearTarget(settings.soundCues, settings.hapticCues)
 
+                BrewEvent.PlanFinished ->
+                    cues.planFinished(settings.soundCues, settings.hapticCues)
+
                 BrewEvent.Finished -> cues.finished(settings.soundCues, settings.hapticCues)
             }
         }
