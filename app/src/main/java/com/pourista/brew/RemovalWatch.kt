@@ -54,6 +54,13 @@ internal class RemovalWatch(
     /** Момент падения — настоящий конец заваривания, а не тремя секундами позже. */
     val droppedAtMs: Long get() = droppedAt
 
+    /**
+     * Вес уже просел, но выдержка ещё не вышла. Кнопку «Финиш» в этот момент
+     * жмут те, кто снял воронку и не стал ждать: заваривание надо закрывать
+     * так же, как по автофинишу, — временем падения и весом до него.
+     */
+    val dropPending: Boolean get() = armed && droppedAt != 0L
+
     /** Вес, ниже которого считаем, что чашку сняли. */
     val cutoffGrams: Float get() = peakGrams - maxOf(minDropGrams, peakGrams * dropShare)
 

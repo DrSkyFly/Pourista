@@ -5,6 +5,7 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.imePadding
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
@@ -113,7 +114,11 @@ fun BrewDetailScreen(
         val current = record
         val side = listSidePadding()
         LazyColumn(
-            modifier = Modifier.fillMaxSize(),
+            // Клавиатура перекрывала нижние поля: список ужимается на её
+            // высоту, и поле, в которое пишут, само выезжает на видное место.
+            modifier = Modifier
+                .fillMaxSize()
+                .imePadding(),
             contentPadding = PaddingValues(
                 start = side,
                 end = side,

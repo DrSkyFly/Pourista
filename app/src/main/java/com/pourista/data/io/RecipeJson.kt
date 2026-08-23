@@ -42,6 +42,7 @@ object RecipeJson {
         json.putOpt("roaster", recipe.roaster)
         json.putOpt("notes", recipe.notes)
         json.put("autoStart", recipe.autoStart)
+        if (recipe.aeropressMode) json.put("aeropressMode", true)
 
         val steps = JSONArray()
         var previousTarget = 0f
@@ -113,6 +114,7 @@ object RecipeJson {
             roaster = json.optStringOrNull("roaster"),
             notes = json.optStringOrNull("notes"),
             autoStart = json.optBoolean("autoStart", true),
+            aeropressMode = json.optBoolean("aeropressMode", false),
             steps = steps,
         )
     }

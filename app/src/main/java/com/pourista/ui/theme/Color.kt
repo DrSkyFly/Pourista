@@ -219,3 +219,102 @@ val FourSixLightAccents = BrewAccents(
     water = Color(0xFF1264A3),
     alarm = Color(0xFFD32020),
 )
+
+// Палитра «спокойная»: бледный оливковый фон, шалфейные карточки и травяной
+// акцент. Цвета сняты со светлой темы Material You на зелёных обоях — она
+// вышла тише всего, что рисуют динамические цвета.
+
+private val Herb = Color(0xFF47662E)
+private val Sage = Color(0xFFE0E4D6)
+
+val CalmLightColors = lightColorScheme(
+    primary = Herb,
+    onPrimary = Color(0xFFFFFFFF),
+    primaryContainer = Color(0xFFC4EFA0),
+    onPrimaryContainer = Color(0xFF142B06),
+    secondary = Color(0xFF58624A),
+    onSecondary = Color(0xFFFFFFFF),
+    secondaryContainer = Color(0xFFDCE7CE),
+    onSecondaryContainer = Color(0xFF161E0F),
+    tertiary = Color(0xFF386669),
+    onTertiary = Color(0xFFFFFFFF),
+    tertiaryContainer = Color(0xFFBCEBEE),
+    onTertiaryContainer = Color(0xFF002022),
+    error = Color(0xFFA8443C),
+    onError = Color(0xFFFFFFFF),
+    errorContainer = Color(0xFFF2DCD8),
+    onErrorContainer = Color(0xFF3A0F0C),
+    background = Color(0xFFF8FAEC),
+    onBackground = Color(0xFF25291B),
+    surface = Color(0xFFF8FAEC),
+    onSurface = Color(0xFF25291B),
+    surfaceVariant = Sage,
+    onSurfaceVariant = Color(0xFF454A3B),
+    surfaceContainerLowest = Color(0xFFFFFFFF),
+    surfaceContainerLow = Color(0xFFF2F5E6),
+    surfaceContainer = Color(0xFFECF0E0),
+    surfaceContainerHigh = Color(0xFFE6EADB),
+    surfaceContainerHighest = Sage,
+    outline = Color(0xFF757B69),
+    outlineVariant = Color(0xFFC5CBB6),
+    inverseSurface = Color(0xFF2A2E22),
+    inverseOnSurface = Color(0xFFF1F5E4),
+    inversePrimary = Color(0xFFA9D286),
+)
+
+val CalmDarkColors = darkColorScheme(
+    primary = Color(0xFFA9D286),
+    onPrimary = Color(0xFF1B3700),
+    primaryContainer = Color(0xFF304F19),
+    onPrimaryContainer = Color(0xFFC4EFA0),
+    secondary = Color(0xFFC0CBB0),
+    onSecondary = Color(0xFF2B3421),
+    secondaryContainer = Color(0xFF414A37),
+    onSecondaryContainer = Color(0xFFDCE7CE),
+    tertiary = Color(0xFFA0CFD2),
+    onTertiary = Color(0xFF003739),
+    tertiaryContainer = Color(0xFF1E4E51),
+    onTertiaryContainer = Color(0xFFBCEBEE),
+    error = Color(0xFFE8A29B),
+    onError = Color(0xFF5A1712),
+    errorContainer = Color(0xFF7A2A24),
+    onErrorContainer = Color(0xFFF7DAD6),
+    background = Color(0xFF12140E),
+    onBackground = Color(0xFFE3E7D6),
+    surface = Color(0xFF12140E),
+    onSurface = Color(0xFFE3E7D6),
+    surfaceVariant = Color(0xFF444A3A),
+    onSurfaceVariant = Color(0xFFC5CBB6),
+    surfaceContainerLowest = Color(0xFF0D0F09),
+    surfaceContainerLow = Color(0xFF1A1D15),
+    surfaceContainer = Color(0xFF1E2119),
+    surfaceContainerHigh = Color(0xFF292C23),
+    surfaceContainerHighest = Color(0xFF34372D),
+    outline = Color(0xFF8F9581),
+    outlineVariant = Color(0xFF444A3A),
+    inverseSurface = Color(0xFFE3E7D6),
+    inverseOnSurface = Color(0xFF2A2E22),
+    inversePrimary = Herb,
+)
+
+val CalmLightAccents = BrewAccents(
+    onTrack = Herb,
+    onTrackContainer = Color(0xFFDCE7CE),
+    tooFast = Color(0xFF96543E),
+    tooFastContainer = Color(0xFFF0DFD6),
+    tooSlow = Color(0xFF3F6480),
+    tooSlowContainer = Color(0xFFD9E4EC),
+    water = Color(0xFF3F6480),
+    alarm = Color(0xFFC0453B),
+)
+
+val CalmDarkAccents = BrewAccents(
+    onTrack = Color(0xFFA9D286),
+    onTrackContainer = Color(0xFF2C3F22),
+    tooFast = Color(0xFFDFAE96),
+    tooFastContainer = Color(0xFF4B382D),
+    tooSlow = Color(0xFFA5BFD0),
+    tooSlowContainer = Color(0xFF2E4150),
+    water = Color(0xFFA5BFD0),
+    alarm = Color(0xFFE0776C),
+)

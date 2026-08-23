@@ -10,7 +10,7 @@ import androidx.sqlite.db.SupportSQLiteDatabase
 import java.io.File
 
 @Database(
-    version = 8,
+    version = 9,
     entities = [
         BrewEntity::class,
         BrewNotesEntity::class,
@@ -34,7 +34,7 @@ abstract class AppDatabase : RoomDatabase() {
             renamePreviousFile(context)
             return Room
                 .databaseBuilder(context, AppDatabase::class.java, NAME)
-                .addMigrations(MIGRATION_7_8)
+                .addMigrations(MIGRATION_7_8, MIGRATION_8_9)
                 .build()
         }
 
@@ -55,6 +55,16 @@ abstract class AppDatabase : RoomDatabase() {
                 if (!from.exists()) true else from.renameTo(File(target.path + suffix))
             }
             Log.i(TAG, if (moved) "База переименована в $NAME" else "Не удалось переименовать базу")
+        }
+
+        /** Версия 9: у рецепта появился режим аэропресса. */
+        internal val MIGRATION_8_9 = object : Migration(8, 9) {
+            override fun migrate(db: SupportSQLiteDatabase) {
+                db.execSQL(
+                    "ALTER TABLE `recipes` ADD COLUMN `aeropress_mode` " +
+                        "INTEGER NOT NULL DEFAULT 0"
+                )
+            }
         }
 
         /**

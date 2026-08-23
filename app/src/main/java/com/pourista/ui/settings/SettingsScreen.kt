@@ -8,20 +8,26 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.ArrowDropDown
 import androidx.compose.material3.AlertDialog
+import androidx.compose.material3.Icon
 import androidx.compose.material3.Card
 import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.SegmentedButton
 import androidx.compose.material3.SegmentedButtonDefaults
@@ -117,30 +123,20 @@ fun SettingsScreen(
                             }
                         }
                     }
-                    Text(
-                        text = stringResource(R.string.settings_palette),
-                        style = MaterialTheme.typography.bodyLarge,
-                        modifier = Modifier.padding(top = 16.dp, bottom = 8.dp),
-                    )
                     // Обои системы умеет только Android 12: на старых
                     // выбирать не из чего, и пункт просто не показываем.
                     val palettes = AppPalette.entries.filter {
                         it != AppPalette.DYNAMIC || Build.VERSION.SDK_INT >= Build.VERSION_CODES.S
                     }
-                    SingleChoiceSegmentedButtonRow(Modifier.fillMaxWidth()) {
-                        palettes.forEachIndexed { index, palette ->
-                            SegmentedButton(
-                                selected = settings.palette == palette,
-                                onClick = { viewModel.setPalette(palette) },
-                                shape = SegmentedButtonDefaults.itemShape(
-                                    index = index,
-                                    count = palettes.size,
-                                ),
-                            ) {
-                                Text(stringResource(palette.labelRes()))
-                            }
-                        }
-                    }
+                    // Список, а не полоса кнопок: палитр уже четыре, и в
+                    // строку их названия не помещаются.
+                    ChoiceRow(
+                        title = stringResource(R.string.settings_palette),
+                        subtitle = null,
+                        current = stringResource(settings.palette.labelRes()),
+                        options = palettes.map { stringResource(it.labelRes()) to it },
+                        onSelect = viewModel::setPalette,
+                    )
                 }
             }
 
@@ -251,18 +247,6 @@ fun SettingsScreen(
                 SettingsSection(stringResource(R.string.settings_about)) {
                     // История изменений стоит перед проверкой обновлений:
                     // сначала «что нового», потом «где взять».
-                    Column(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .clickable { showNotes = true }
-                            .padding(vertical = 8.dp),
-                    ) {
-                        Text(
-                            text = stringResource(R.string.settings_release_notes),
-                            style = MaterialTheme.typography.bodyLarge,
-                        )
-                    }
-
                     // Проверку обновлений отдаём браузеру: у приложения нет и не
                     // должно быть выхода в сеть. Страница latest на GitHub сама
                     // ведёт на свежий релиз, а версия рядом — с чем сравнивать.
@@ -280,6 +264,16 @@ fun SettingsScreen(
                         TextButton(
                             onClick = { runCatching { uriHandler.openUri("https://$releases") } },
                         ) { Text(stringResource(R.string.settings_check_updates)) }
+                    }
+                    // История изменений под версией и той же кнопкой, что и
+                    // проверка обновлений: обе про то, что нового в приложении.
+                    // Без боковой рамки кнопки: строка должна начинаться там
+                    // же, где версия над ней, а не с отступом.
+                    TextButton(
+                        onClick = { showNotes = true },
+                        contentPadding = PaddingValues(vertical = 8.dp),
+                    ) {
+                        Text(stringResource(R.string.settings_release_notes))
                     }
                     Text(
                         text = stringResource(R.string.settings_about_hint),
@@ -473,7 +467,19 @@ private fun <T> ChoiceRow(
             }
         }
         Box {
-            TextButton(onClick = { expanded = true }) { Text(current) }
+            // Значение в рамке и со стрелкой: без них строка читается как
+            // подпись, и что по ней можно нажать, никто не догадывается.
+            OutlinedButton(
+                onClick = { expanded = true },
+                contentPadding = PaddingValues(start = 16.dp, end = 8.dp),
+            ) {
+                Text(current)
+                Spacer(Modifier.size(4.dp))
+                Icon(
+                    imageVector = Icons.Default.ArrowDropDown,
+                    contentDescription = null,
+                )
+            }
             DropdownMenu(expanded = expanded, onDismissRequest = { expanded = false }) {
                 options.forEach { (label, value) ->
                     DropdownMenuItem(
@@ -500,6 +506,7 @@ private fun percentLabel(share: Float): String =
 
 private fun AppPalette.labelRes(): Int = when (this) {
     AppPalette.COPPER -> R.string.palette_copper
+    AppPalette.CALM -> R.string.palette_calm
     AppPalette.FOUR_SIX -> R.string.palette_four_six
     AppPalette.DYNAMIC -> R.string.palette_dynamic
 }

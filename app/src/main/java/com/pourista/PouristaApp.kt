@@ -255,9 +255,13 @@ class AppContainer(private val context: Context) {
 
             if (current.presetsVersion < BuiltInRecipes.VERSION) {
                 val removed = recipes.deleteUntouchedBuiltIns()
+                // Первый запуск — только актуальный набор. Дальше пересев
+                // возвращает и рецепты, которые новичкам уже не предлагаем:
+                // у кого они стояли, у того и останутся.
+                val firstRun = current.presetsVersion == 0
                 // Удалённые пользователем встроенные рецепты обратно не возвращаем:
                 // если аэропресса в доме нет, он не должен воскресать с обновлением.
-                BuiltInRecipes.all(context)
+                BuiltInRecipes.all(context, includeRetired = !firstRun)
                     .filterNot { it.name in current.deletedPresets }
                     .forEach { recipes.save(it) }
                 settings.setPresetsVersion(BuiltInRecipes.VERSION)

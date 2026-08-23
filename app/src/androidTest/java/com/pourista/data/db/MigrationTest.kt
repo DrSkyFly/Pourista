@@ -97,6 +97,36 @@ class MigrationTest {
         }
     }
 
+    /** Режим аэропресса добавляется колонкой: старые рецепты получают ноль. */
+    @Test
+    fun migrate8To9_addsAeropressMode() {
+        helper.createDatabase(TEST_DB_AEROPRESS, 8).use { db ->
+            db.execSQL(
+                """
+                INSERT INTO recipes
+                (name, brewer, dose_grams, water_grams, water_temp_c, grinder_name,
+                 grind_setting, bean_name, roaster, notes, is_built_in, is_favorite,
+                 auto_start, sort_order, created_at, updated_at, last_used_at)
+                VALUES ('AeroPress', 'AeroPress', 15.0, 220.0, 85, NULL,
+                        NULL, NULL, NULL, NULL, 1, 0, 1, 50, 1700000000000, 1700000000000, NULL)
+                """.trimIndent()
+            )
+        }
+
+        val db = helper.runMigrationsAndValidate(
+            TEST_DB_AEROPRESS,
+            9,
+            true,
+            AppDatabase.MIGRATION_8_9,
+        )
+
+        db.query("SELECT name, aeropress_mode FROM recipes").use { cursor ->
+            assertTrue("Рецепт должен пережить миграцию", cursor.moveToFirst())
+            assertEquals("AeroPress", cursor.getString(0))
+            assertEquals("Старым рецептам режим не включаем", 0, cursor.getInt(1))
+        }
+    }
+
     /** Заметка без заваривания не должна ломать внешний ключ новой таблицы. */
     @Test
     fun migrate7To8_dropsOrphanNotes() {
@@ -122,5 +152,6 @@ class MigrationTest {
     private companion object {
         const val TEST_DB = "migration-test.db"
         const val TEST_DB_ORPHAN = "migration-test-orphan.db"
+        const val TEST_DB_AEROPRESS = "migration-test-aeropress.db"
     }
 }

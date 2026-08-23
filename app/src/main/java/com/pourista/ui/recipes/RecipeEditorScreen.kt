@@ -8,6 +8,7 @@ import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.imePadding
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
@@ -21,7 +22,6 @@ import androidx.compose.material.icons.filled.ArrowDownward
 import androidx.compose.material.icons.filled.ArrowUpward
 import androidx.compose.material.icons.filled.Check
 import androidx.compose.material.icons.filled.Delete
-import androidx.compose.material3.AssistChip
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.DropdownMenu
@@ -125,7 +125,11 @@ fun RecipeEditorScreen(
     ) { padding ->
         val side = listSidePadding()
         LazyColumn(
-            modifier = Modifier.fillMaxSize(),
+            // Клавиатура перекрывала нижние поля: список ужимается на её
+            // высоту, и поле, в которое пишут, само выезжает на видное место.
+            modifier = Modifier
+                .fillMaxSize()
+                .imePadding(),
             contentPadding = PaddingValues(
                 start = side,
                 end = side,
@@ -177,26 +181,17 @@ fun RecipeEditorScreen(
                             modifier = Modifier.weight(1f),
                         )
                     }
-                    Row(
+                    // Пропорция не задаётся, а считается: воду и дозу вводят
+                    // руками, и подгонять одно под другое кнопками незачем.
+                    Text(
+                        text = stringResource(
+                            R.string.recipe_ratio_value,
+                            formatRatio(state.doseValue, state.waterValue),
+                        ),
+                        style = MaterialTheme.typography.bodyMedium,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant,
                         modifier = Modifier.padding(top = 8.dp),
-                        horizontalArrangement = Arrangement.spacedBy(8.dp),
-                        verticalAlignment = Alignment.CenterVertically,
-                    ) {
-                        Text(
-                            text = stringResource(
-                                R.string.recipe_ratio_value,
-                                formatRatio(state.doseValue, state.waterValue),
-                            ),
-                            style = MaterialTheme.typography.bodyMedium,
-                        )
-                        Spacer(Modifier.weight(1f))
-                        listOf(15f, 16f, 16.7f).forEach { ratio ->
-                            AssistChip(
-                                onClick = { viewModel.applyRatio(ratio) },
-                                label = { Text("1:${formatGrams(ratio)}") },
-                            )
-                        }
-                    }
+                    )
                     Row(
                         modifier = Modifier
                             .fillMaxWidth()
@@ -217,6 +212,28 @@ fun RecipeEditorScreen(
                         Switch(
                             checked = state.autoStart,
                             onCheckedChange = viewModel::setAutoStart,
+                        )
+                    }
+                    Row(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(top = 12.dp),
+                        verticalAlignment = Alignment.CenterVertically,
+                    ) {
+                        Column(Modifier.weight(1f)) {
+                            Text(
+                                text = stringResource(R.string.recipe_aeropress_mode),
+                                style = MaterialTheme.typography.bodyLarge,
+                            )
+                            Text(
+                                text = stringResource(R.string.recipe_aeropress_mode_hint),
+                                style = MaterialTheme.typography.bodySmall,
+                                color = MaterialTheme.colorScheme.onSurfaceVariant,
+                            )
+                        }
+                        Switch(
+                            checked = state.aeropressMode,
+                            onCheckedChange = viewModel::setAeropressMode,
                         )
                     }
                 }

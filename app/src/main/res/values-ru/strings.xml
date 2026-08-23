@@ -165,6 +165,7 @@
 
     <string name="settings_palette">Палитра</string>
     <string name="palette_copper">Кофейная</string>
+    <string name="palette_calm">Оливковая</string>
     <string name="palette_four_six">4:6</string>
     <string name="palette_dynamic">Стандарт</string>
     <string name="settings_brewing">Заваривание</string>
@@ -192,9 +193,8 @@
     <string name="grind_fine">мелкий</string>
 
     <string name="preset_notes_hoffmann">Блум 50 г, два пролива, лёгкое покачивание в конце.</string>
-    <!-- Проценты без удвоения: строку берут getString() без аргументов, и «%%» осталось бы в тексте. -->
-    <string name="preset_notes_kasuya" formatted="false">Первые 40% воды задают кислотность и сладость, оставшиеся 60% — крепость.</string>
     <string name="preset_notes_rao">Размешать после блума, дальше один непрерывный пролив и спин в конце.</string>
+    <string name="preset_notes_kasuya" formatted="false">Первые 40% воды задают кислотность и сладость, оставшиеся 60% — крепость.</string>
     <string name="preset_notes_kalita">Импульсные проливы каждые 45 секунд держат слой ровным.</string>
     <string name="preset_notes_chemex">Толстый фильтр и крупный помол, четыре пролива.</string>
     <string name="preset_notes_aeropress">Стандартный метод: залить, размешать, отжать.</string>
@@ -202,6 +202,8 @@
     <string name="step_add">Добавить шаг</string>
     <string name="recipe_auto_start">Автостарт после дозы</string>
     <string name="recipe_auto_start_hint">Таймер сам стартует, как только польётся вода</string>
+    <string name="recipe_aeropress_mode">Режим аэропресса</string>
+    <string name="recipe_aeropress_mode_hint">Вес пишется как есть, автофиниш выключен: на графике виден момент отжима</string>
     <string name="brew_fixed_water">Вода как в рецепте</string>
     <string name="brew_fixed_water_hint">Не пересчитывать объём под фактическую дозу</string>
     <string name="action_export">Экспорт</string>
@@ -234,6 +236,7 @@
     <string name="settings_scale_log">Журнал весов</string>
     <string name="settings_scale_log_hint">Записать обмен с весами в файл и отправить разработчику</string>
     <string name="settings_release_notes">История изменений</string>
+    <string name="notes_1_7_0">• Режим аэропресса: виден момент отжима\n• Палитра «Оливковая»\n• Клавиатура больше не закрывает поля ввода\n• Свирл не портит график и скорость\n• Правильный вес при финише после снятой воронки</string>
     <string name="notes_1_6_1">• Звоночек, когда отыгран последний шаг рецепта\n• Автофиниш замечает снятую воронку и на больших объёмах\n• Планшет в портрете больше не показывает альбомную раскладку</string>
     <string name="notes_1_6_0">• Журнал весов в настройках: запись обмена в файл для разбора протокола\n• Окно «Что нового» со всей историей версий\n• Починена альбомная раскладка экрана заваривания</string>
     <string name="notes_1_5_0">• Альбомный режим и планшеты: разделы уходят в боковую панель, экран заваривания раскладывается в две колонки\n• Списки не растягиваются на широком экране</string>

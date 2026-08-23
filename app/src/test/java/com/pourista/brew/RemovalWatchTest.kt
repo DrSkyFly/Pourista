@@ -123,6 +123,20 @@ class RemovalWatchTest {
     }
 
     @Test
+    fun `просевший вес виден до истечения выдержки`() {
+        val watch = RemovalWatch()
+        val now = watch.pourUpTo(600f)
+        watch.arm(600f)
+        assertFalse(watch.dropPending)
+
+        // Воронку сняли секунду назад: выдержка ещё идёт, но факт падения
+        // уже известен — «Финиш» по кнопке должен считать так же.
+        assertFalse(watch.onSample(400f, now + 1_000L))
+        assertTrue(watch.dropPending)
+        assertEquals(600f, watch.weightBeforeDrop, 0.01f)
+    }
+
+    @Test
     fun `сброс снимает сторож`() {
         val watch = RemovalWatch()
         val now = watch.pourUpTo(250f)

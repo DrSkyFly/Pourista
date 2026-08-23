@@ -28,6 +28,7 @@ data class EditorState(
     val roaster: String = "",
     val notes: String = "",
     val autoStart: Boolean = true,
+    val aeropressMode: Boolean = false,
     val isBuiltIn: Boolean = false,
     val isFavorite: Boolean = false,
     val sortOrder: Int = USER_RECIPE_SORT_ORDER,
@@ -137,6 +138,7 @@ class RecipeEditorViewModel(
             roaster = roaster.orEmpty(),
             notes = notes.orEmpty(),
             autoStart = autoStart,
+            aeropressMode = aeropressMode,
             isBuiltIn = isBuiltIn,
             isFavorite = isFavorite,
             sortOrder = sortOrder,
@@ -158,10 +160,7 @@ class RecipeEditorViewModel(
     fun setNotes(value: String) = _state.update { it.copy(notes = value) }
     fun setAutoStart(value: Boolean) = _state.update { it.copy(autoStart = value) }
 
-    /** Пропорция задаёт объём воды: доза × коэффициент. */
-    fun applyRatio(ratio: Float) = _state.update { state ->
-        state.copy(water = trimNumber(state.doseValue * ratio))
-    }
+    fun setAeropressMode(value: Boolean) = _state.update { it.copy(aeropressMode = value) }
 
     /** Обычный шаг всегда появляется перед сливом. */
     fun addStep() = _state.update { state ->
@@ -263,6 +262,7 @@ class RecipeEditorViewModel(
             roaster = roaster.trim().takeIf { it.isNotBlank() },
             notes = notes.trim().takeIf { it.isNotBlank() },
             autoStart = autoStart,
+            aeropressMode = aeropressMode,
             isBuiltIn = isBuiltIn,
             isFavorite = isFavorite,
             sortOrder = sortOrder,

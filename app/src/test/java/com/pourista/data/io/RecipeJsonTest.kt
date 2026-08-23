@@ -4,7 +4,9 @@ import com.pourista.data.model.Recipe
 import com.pourista.data.model.RecipeStep
 import com.pourista.data.model.StepKind
 import org.junit.Assert.assertEquals
+import org.junit.Assert.assertFalse
 import org.junit.Assert.assertThrows
+import org.junit.Assert.assertTrue
 import org.junit.Test
 
 class RecipeJsonTest {
@@ -121,5 +123,36 @@ class RecipeJsonTest {
     fun `мусор вместо рецептов не проходит молча`() {
         assertThrows(IllegalArgumentException::class.java) { RecipeJson.decode("не json") }
         assertThrows(IllegalArgumentException::class.java) { RecipeJson.decode("""{"recipes":[]}""") }
+    }
+
+    @Test
+    fun `режим аэропресса переживает выгрузку и загрузку`() {
+        val recipe = Recipe(
+            name = "AeroPress",
+            brewer = "AeroPress",
+            doseGrams = 15f,
+            waterGrams = 220f,
+            waterTempC = 85,
+            aeropressMode = true,
+            steps = listOf(
+                RecipeStep(kind = StepKind.POUR, startSec = 0, durationSec = 20, targetWaterGrams = 220f),
+            ),
+        )
+
+        val restored = RecipeJson.decode(RecipeJson.encode(listOf(recipe)))
+
+        assertEquals(1, restored.size)
+        assertTrue("Режим должен сохраниться", restored.first().aeropressMode)
+    }
+
+    @Test
+    fun `рецепт без режима аэропресса читается как обычный`() {
+        val json = """
+            {"recipes":[{"name":"V60","brewer":"Hario","doseGrams":15,"waterGrams":250,
+             "waterTempC":95,"steps":[{"kind":"POUR","startSec":0,"durationSec":30,
+             "targetWaterGrams":250}]}]}
+        """.trimIndent()
+
+        assertFalse(RecipeJson.decode(json).first().aeropressMode)
     }
 }

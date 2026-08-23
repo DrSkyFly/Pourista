@@ -165,6 +165,7 @@
 
     <string name="settings_palette">Palette</string>
     <string name="palette_copper">Coffee</string>
+    <string name="palette_calm">Olive</string>
     <string name="palette_four_six">4:6</string>
     <string name="palette_dynamic">Standard</string>
     <string name="settings_brewing">Brewing</string>
@@ -192,9 +193,8 @@
     <string name="grind_fine">fine</string>
 
     <string name="preset_notes_hoffmann">50 g bloom, two pours, a gentle swirl at the end.</string>
-    <!-- Проценты без удвоения: строку берут getString() без аргументов, и «%%» осталось бы в тексте. -->
-    <string name="preset_notes_kasuya" formatted="false">The first 40% of the water sets sweetness and acidity, the remaining 60% sets strength.</string>
     <string name="preset_notes_rao">Stir after the bloom, then one continuous pour and a spin at the end.</string>
+    <string name="preset_notes_kasuya" formatted="false">The first 40% of the water sets sweetness and acidity, the remaining 60% sets strength.</string>
     <string name="preset_notes_kalita">Pulse pours every 45 seconds keep the bed flat.</string>
     <string name="preset_notes_chemex">Thick filter and coarse grind, four pours.</string>
     <string name="preset_notes_aeropress">Standard method: pour, stir, press.</string>
@@ -202,6 +202,8 @@
     <string name="step_add">Add step</string>
     <string name="recipe_auto_start">Auto start after dosing</string>
     <string name="recipe_auto_start_hint">The timer starts by itself once water begins to flow</string>
+    <string name="recipe_aeropress_mode">AeroPress mode</string>
+    <string name="recipe_aeropress_mode_hint">Weight is recorded as it comes and auto-finish is off, so the press shows up on the chart</string>
     <string name="brew_fixed_water">Water as in the recipe</string>
     <string name="brew_fixed_water_hint">Do not rescale the volume to the actual dose</string>
     <string name="action_export">Export</string>
@@ -239,6 +241,7 @@
     <string name="settings_scale_log">Scale log</string>
     <string name="settings_scale_log_hint">Record the exchange with the scale to a file and send it to the developer</string>
     <string name="settings_release_notes">Release notes</string>
+    <string name="notes_1_7_0">• AeroPress mode: the press shows up on the chart\n• Olive palette\n• The keyboard no longer covers input fields\n• Swirling no longer spoils the chart and the flow rate\n• Correct weight when finishing after the dripper is lifted</string>
     <string name="notes_1_6_1">• A bell once the last step of the recipe is over\n• Auto-finish now spots a lifted dripper on large brews too\n• A tablet in portrait no longer gets the landscape layout</string>
     <string name="notes_1_6_0">• A scale log in settings: records the exchange to a file for protocol debugging\n• The release notes dialog now holds the whole version history\n• The landscape brew layout is fixed</string>
     <string name="notes_1_5_0">• Landscape and tablet layout: sections move to a side rail, the brew screen splits into two columns\n• Lists no longer stretch across a wide screen</string>

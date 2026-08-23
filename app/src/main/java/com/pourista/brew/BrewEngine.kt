@@ -321,7 +321,14 @@ class BrewEngine(
         }
     }
 
-    fun finish() = finishAt(SystemClock.elapsedRealtime())
+    /**
+     * Финиш по кнопке. Если вес к этому моменту уже просел, закрываем
+     * заваривание так же, как автофиниш: воронку сняли раньше, чем нажали,
+     * и в историю должен попасть вес до падения.
+     */
+    fun finish() {
+        if (removal.dropPending) finishAfterRemoval() else finishAt(SystemClock.elapsedRealtime())
+    }
 
     /**
      * Заканчивает заваривание временем [atMs] по монотонным часам. Отдельный
@@ -396,7 +403,11 @@ class BrewEngine(
 
         // Для скорости, графиков и конца влива берём неубывающий вес: покачивание
         // воронки роняет показания, а их возврат выглядел бы бешеным вливом.
-        val weight = pouredWeight.onSample(current.weightGrams.coerceAtLeast(0f), nowMs)
+        // В режиме аэропресса — наоборот: отжим роняет вес по делу, и сглаживать
+        // его нельзя, иначе на графике не видно, когда начали давить.
+        val raw = current.weightGrams.coerceAtLeast(0f)
+        val aeropress = current.recipe?.aeropressMode == true
+        val weight = if (aeropress) raw else pouredWeight.onSample(raw, nowMs)
 
         weightSamples.addLast(weight)
         while (weightSamples.size > SAMPLE_WINDOW) weightSamples.removeFirst()
@@ -407,7 +418,11 @@ class BrewEngine(
         } else {
             weightSamples.first()
         }
-        val instantFlow = (weight - secondAgo).coerceAtLeast(0f)
+        // Скачок веса на десятки граммов за секунду из чайника не наливают:
+        // так выглядит только возврат показаний после долгой просадки. В
+        // скорость и в график такое попадать не должно.
+        val jump = (weight - secondAgo).coerceAtLeast(0f)
+        val instantFlow = if (jump > MAX_PLAUSIBLE_FLOW) 0f else jump
         flowSamples.addLast(instantFlow)
         while (flowSamples.size > TICKS_PER_SECOND) flowSamples.removeFirst()
         val flowRate = flowSamples.average().toFloat()
@@ -662,7 +677,11 @@ class BrewEngine(
         pourDoneStepIndex = guidance.stepIndex
         // Дальше рецепт воды не требует: с этого момента любое падение веса —
         // это снятая с весов чашка, а не пролив.
-        if (isLastPour(guidance)) removal.arm(_state.value.weightGrams)
+        // В режиме аэропресса сторож не взводим: там вес падает от отжима, а не
+        // от снятой чашки, и заваривание заканчивают руками.
+        if (isLastPour(guidance) && baseRecipe?.aeropressMode != true) {
+            removal.arm(_state.value.weightGrams)
+        }
         if (guidance.nextStep?.kind != StepKind.DRAWDOWN) return
         val left = guidance.step.endSec - (currentElapsedSec + timelineShiftSec)
         if (left > 0f) timelineShiftSec += left
@@ -689,6 +708,9 @@ class BrewEngine(
         const val TICKS_PER_SECOND = 10
         const val SAMPLE_WINDOW = 60
         const val MIN_FLOW_FOR_AVERAGE = 0.1f
+
+        /** Быстрее этого не льют: 25 г/с — это полтора литра в минуту. */
+        const val MAX_PLAUSIBLE_FLOW = 25f
         const val COUNTDOWN_FROM = 3
 
         /** Насколько близко к цели считается «долил» при остановившемся весе. */

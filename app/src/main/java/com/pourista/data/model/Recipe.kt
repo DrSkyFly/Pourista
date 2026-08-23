@@ -90,6 +90,13 @@ data class Recipe(
     val isFavorite: Boolean = false,
     /** Взводить автостарт сразу после записи дозы. */
     val autoStart: Boolean = true,
+    /**
+     * Режим аэропресса. Отжим роняет вес: воду продавливают в чашку, а поршень
+     * давит на весы неравномерно. Обычно такое сглаживают и считают концом
+     * заваривания, здесь — наоборот: вес пишется как есть, автофиниш молчит,
+     * и на графике видно, когда начался отжим.
+     */
+    val aeropressMode: Boolean = false,
     /** Порядок в списке рецептов. */
     val sortOrder: Int = USER_RECIPE_SORT_ORDER,
     val createdAt: Long = 0,
@@ -164,6 +171,7 @@ fun RecipeWithSteps.toDomain(): Recipe = Recipe(
     isBuiltIn = recipe.isBuiltIn,
     isFavorite = recipe.isFavorite,
     autoStart = recipe.autoStart,
+    aeropressMode = recipe.aeropressMode,
     sortOrder = recipe.sortOrder,
     createdAt = recipe.createdAt,
     updatedAt = recipe.updatedAt,
@@ -197,6 +205,7 @@ fun Recipe.toEntity(now: Long): RecipeEntity = RecipeEntity(
     isBuiltIn = isBuiltIn,
     isFavorite = isFavorite,
     autoStart = autoStart,
+    aeropressMode = aeropressMode,
     sortOrder = sortOrder,
     createdAt = if (createdAt == 0L) now else createdAt,
     updatedAt = now,

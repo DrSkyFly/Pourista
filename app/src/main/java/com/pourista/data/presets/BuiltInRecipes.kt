@@ -16,9 +16,14 @@ object BuiltInRecipes {
      * Версия набора. При росте встроенные рецепты пересеиваются, а изменённые
      * пользователем и добавленные в избранное остаются нетронутыми.
      */
-    const val VERSION = 8
+    const val VERSION = 10
 
-    fun all(context: Context): List<Recipe> {
+    /**
+     * Набор для посева. [includeRetired] — рецепты, которые новичкам больше не
+     * предлагаем, но у кого они уже стоят, тем оставляем: человек мог к ним
+     * привыкнуть, а обновление не повод менять его полку.
+     */
+    fun all(context: Context, includeRetired: Boolean = true): List<Recipe> {
         val medium = context.getString(R.string.grind_medium)
         val coarse = context.getString(R.string.grind_coarse)
         val fine = context.getString(R.string.grind_fine)
@@ -26,13 +31,14 @@ object BuiltInRecipes {
         // способы. Каждому рецепту достаётся своё место в сортировке.
         return listOf(
             hoffmann(context, medium),
-            kasuya(context, coarse),
+            // 4:6 ушёл из набора: тот же метод считает генератор, и точнее.
+            kasuya(context, coarse).takeIf { includeRetired },
             rao(context, medium),
             espresso(context, fine),
             aeropress(context, fine),
             kalita(context, medium),
             chemex(context, coarse),
-        ).mapIndexed { index, recipe -> recipe.copy(sortOrder = (index + 1) * 10) }
+        ).filterNotNull().mapIndexed { index, recipe -> recipe.copy(sortOrder = (index + 1) * 10) }
     }
 
     private fun recipe(
@@ -45,6 +51,7 @@ object BuiltInRecipes {
         notes: String,
         steps: List<RecipeStep>,
         autoStart: Boolean = true,
+        aeropressMode: Boolean = false,
     ) = Recipe(
         name = name,
         brewer = brewer,
@@ -55,6 +62,7 @@ object BuiltInRecipes {
         notes = notes,
         isBuiltIn = true,
         autoStart = autoStart,
+        aeropressMode = aeropressMode,
         steps = steps,
     )
 
@@ -200,6 +208,8 @@ object BuiltInRecipes {
         temp = 85,
         grind = grind,
         notes = context.getString(R.string.preset_notes_aeropress),
+        // Отжим роняет вес: сглаживать его и ловить по нему конец нельзя.
+        aeropressMode = true,
         steps = listOf(
             step(StepKind.POUR, 0, 20, 220f, flow = 11f),
             step(StepKind.STIR, 20, 70, 220f),

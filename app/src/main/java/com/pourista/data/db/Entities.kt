@@ -81,6 +81,12 @@ data class RecipeEntity(
      * у эспрессо — нет: там таймер пускают вместе с помпой.
      */
     @ColumnInfo(name = "auto_start", defaultValue = "1") val autoStart: Boolean = true,
+    /**
+     * Режим аэропресса: без автофиниша и без сглаживания веса. Отжим роняет
+     * показания, и это единственный способ увидеть на графике, когда он начался.
+     */
+    @ColumnInfo(name = "aeropress_mode", defaultValue = "0")
+    val aeropressMode: Boolean = false,
     /** Порядок в списке: его задаёт человек, перетаскивая карточки. */
     @ColumnInfo(name = "sort_order", defaultValue = "1000") val sortOrder: Int = 1000,
     @ColumnInfo(name = "created_at") val createdAt: Long,

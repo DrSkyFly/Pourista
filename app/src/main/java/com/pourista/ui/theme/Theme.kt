@@ -22,10 +22,11 @@ import androidx.compose.ui.unit.dp
 enum class ThemeMode { SYSTEM, LIGHT, DARK }
 
 /**
- * Набор цветов. [DYNAMIC] берёт их из обоев системы и есть только с Android 12;
- * на более старых он равносилен [COPPER].
+ * Набор цветов. Порядок — как в списке настроек, [DYNAMIC] по умолчанию: он
+ * берёт цвета из обоев системы и есть только с Android 12, на более старых
+ * равносилен [COPPER].
  */
-enum class AppPalette { COPPER, FOUR_SIX, DYNAMIC }
+enum class AppPalette { DYNAMIC, CALM, COPPER, FOUR_SIX }
 
 private val LocalBrewAccents = staticCompositionLocalOf { LightAccents }
 private val LocalPalette = staticCompositionLocalOf { AppPalette.COPPER }
@@ -95,6 +96,7 @@ fun PouristaTheme(
     val colorScheme = when {
         dynamic -> if (dark) dynamicDarkColorScheme(context) else dynamicLightColorScheme(context)
         palette == AppPalette.FOUR_SIX -> if (dark) FourSixDarkColors else FourSixLightColors
+        palette == AppPalette.CALM -> if (dark) CalmDarkColors else CalmLightColors
         dark -> DarkColors
         else -> LightColors
     }
@@ -102,6 +104,7 @@ fun PouristaTheme(
     // сохранять смысл, поэтому у обоев системы они остаются кофейными.
     val accents = when {
         palette == AppPalette.FOUR_SIX -> if (dark) FourSixDarkAccents else FourSixLightAccents
+        palette == AppPalette.CALM -> if (dark) CalmDarkAccents else CalmLightAccents
         dark -> DarkAccents
         else -> LightAccents
     }

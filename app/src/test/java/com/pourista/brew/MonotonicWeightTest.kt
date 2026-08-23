@@ -35,9 +35,23 @@ class MonotonicWeightTest {
 
         // Нажали тару: вес упал и не возвращается.
         assertEquals(200f, weight.onSample(0f, 1_000), 0.001f)
-        assertEquals(200f, weight.onSample(0f, 2_500), 0.001f)
-        assertEquals(0f, weight.onSample(0f, 3_100), 0.001f)
-        assertEquals(30f, weight.onSample(30f, 3_200), 0.001f)
+        assertEquals(200f, weight.onSample(0f, 4_500), 0.001f)
+        assertEquals(0f, weight.onSample(0f, 6_100), 0.001f)
+        assertEquals(30f, weight.onSample(30f, 6_200), 0.001f)
+    }
+
+    @Test
+    fun `свирл на четыре секунды просадкой не считается`() {
+        val weight = MonotonicWeight()
+        weight.onSample(600f, 0)
+
+        // Воронку качают несколько секунд: показания гуляют, но возвращаются.
+        assertEquals(600f, weight.onSample(380f, 500), 0.001f)
+        assertEquals(600f, weight.onSample(420f, 2_000), 0.001f)
+        assertEquals(600f, weight.onSample(390f, 3_500), 0.001f)
+        assertEquals(600f, weight.onSample(600f, 4_200), 0.001f)
+        // И следующий влив считается от прежнего максимума, а не от провала.
+        assertEquals(610f, weight.onSample(610f, 4_500), 0.001f)
     }
 
     @Test
