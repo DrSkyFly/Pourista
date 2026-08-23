@@ -14,6 +14,7 @@ import androidx.compose.animation.core.rememberInfiniteTransition
 import androidx.compose.animation.core.tween
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
@@ -79,6 +80,7 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalView
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.KeyboardType
+import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.core.content.ContextCompat
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
@@ -826,7 +828,7 @@ private fun ReadoutCard(
                     Row(verticalAlignment = Alignment.Bottom) {
                         Text(text = formatGrams(weightGrams), style = WeightReadoutStyle)
                         Text(
-                            text = " $unitLabel",
+                            text = unitLabel,
                             style = MaterialTheme.typography.titleMedium,
                             color = MaterialTheme.colorScheme.onSurfaceVariant,
                             modifier = Modifier.padding(bottom = 12.dp),
@@ -843,7 +845,7 @@ private fun ReadoutCard(
                             color = MaterialTheme.colorScheme.onSurfaceVariant,
                         )
                         Text(
-                            text = "${formatGrams(targetGrams, 0)} $unitLabel",
+                            text = "${formatGrams(targetGrams, 0)}$unitLabel",
                             style = MetricValueStyle,
                             color = MaterialTheme.colorScheme.primary,
                         )
@@ -926,7 +928,7 @@ private fun TimerReadoutCard(
                             color = MaterialTheme.colorScheme.onSurfaceVariant,
                         )
                         Text(
-                            text = "${formatGrams(targetGrams, 0)} $unitLabel",
+                            text = "${formatGrams(targetGrams, 0)}$unitLabel",
                             style = MetricValueStyle,
                             color = MaterialTheme.colorScheme.primary,
                             modifier = Modifier.padding(bottom = 8.dp),
@@ -1196,14 +1198,62 @@ private fun ChartsCard(
     targetFlowRate: Float?,
     flowAvg: Float,
 ) {
-    Card(modifier = Modifier.fillMaxWidth()) {
-        Column(Modifier.padding(16.dp)) {
-            WeightChart(weights = weights, guides = guides, focusMax = focusMax)
-            Spacer(Modifier.height(16.dp))
-            FlowChart(flows = flows, targetFlowRate = targetFlowRate, flowAvg = flowAvg)
+    // На коротком экране оба графика в рост не помещаются, и скорость уезжает
+    // за нижний край. Меряем, сколько высоты вообще есть, и ужимаемся по ней.
+    BoxWithConstraints {
+        val (weightHeight, flowHeight) = chartHeights(maxHeight)
+        Card(modifier = Modifier.fillMaxWidth()) {
+            Column(Modifier.padding(16.dp)) {
+                WeightChart(
+                    weights = weights,
+                    guides = guides,
+                    focusMax = focusMax,
+                    height = weightHeight,
+                )
+                Spacer(Modifier.height(16.dp))
+                FlowChart(
+                    flows = flows,
+                    targetFlowRate = targetFlowRate,
+                    flowAvg = flowAvg,
+                    height = flowHeight,
+                )
+            }
         }
     }
 }
+
+/**
+ * Высоты графиков веса и скорости под доступную высоту экрана.
+ *
+ * Сначала ужимается вес — он крупнее и терпит. Ниже равенства не опускаемся:
+ * скорость вспомогательная, и делать её выше веса незачем. Когда и поровну не
+ * влезает, уменьшаются оба, но не мельче [MIN_CHART_HEIGHT] — дальше это уже
+ * не график, а полоска.
+ */
+internal fun chartHeights(available: Dp): Pair<Dp, Dp> {
+    val budget = available * CHART_SHARE - CHART_CHROME
+    return when {
+        budget >= WEIGHT_CHART_HEIGHT + FLOW_CHART_HEIGHT ->
+            WEIGHT_CHART_HEIGHT to FLOW_CHART_HEIGHT
+
+        budget >= FLOW_CHART_HEIGHT * 2 -> (budget - FLOW_CHART_HEIGHT) to FLOW_CHART_HEIGHT
+
+        else -> {
+            val half = (budget / 2).coerceAtLeast(MIN_CHART_HEIGHT)
+            half to half
+        }
+    }
+}
+
+private val WEIGHT_CHART_HEIGHT = 140.dp
+private val FLOW_CHART_HEIGHT = 72.dp
+private val MIN_CHART_HEIGHT = 48.dp
+
+/** Больше половины экрана графики не занимают: сверху вес и подсказка шага. */
+private const val CHART_SHARE = 0.5f
+
+/** Подписи, средняя скорость и поля карточки — место помимо самих графиков. */
+private val CHART_CHROME = 100.dp
 
 /** Тот же график веса, но своей карточкой: набок графики стоят по колонкам. */
 @Composable
@@ -1235,7 +1285,12 @@ private fun FlowChartCard(
 }
 
 @Composable
-private fun WeightChart(weights: List<Float>, guides: List<Float>, focusMax: Float?) {
+private fun WeightChart(
+    weights: List<Float>,
+    guides: List<Float>,
+    focusMax: Float?,
+    height: Dp = WEIGHT_CHART_HEIGHT,
+) {
     LabeledChart(
         title = stringResource(R.string.chart_weight),
         unit = stringResource(R.string.unit_gram),
@@ -1243,12 +1298,17 @@ private fun WeightChart(weights: List<Float>, guides: List<Float>, focusMax: Flo
         guides = guides,
         guideColor = AppTheme.accents.onTrack,
         focusMax = focusMax,
-        height = 140.dp,
+        height = height,
     )
 }
 
 @Composable
-private fun FlowChart(flows: List<Float>, targetFlowRate: Float?, flowAvg: Float) {
+private fun FlowChart(
+    flows: List<Float>,
+    targetFlowRate: Float?,
+    flowAvg: Float,
+    height: Dp = FLOW_CHART_HEIGHT,
+) {
     // Скорость — вспомогательная величина, ей хватает половины высоты.
     LabeledChart(
         title = stringResource(R.string.chart_flow),
@@ -1257,7 +1317,7 @@ private fun FlowChart(flows: List<Float>, targetFlowRate: Float?, flowAvg: Float
         lineColor = AppTheme.accents.water,
         guides = listOfNotNull(targetFlowRate?.takeIf { it > 0f }),
         guideColor = AppTheme.accents.onTrack,
-        height = 72.dp,
+        height = height,
         ticks = 2,
     )
     Text(
@@ -1287,9 +1347,11 @@ private fun BrewControls(
             .padding(horizontal = 16.dp, vertical = 12.dp),
         verticalArrangement = Arrangement.spacedBy(8.dp),
     ) {
-        // Тара и дозирование обращаются к весам. Без весов это не «пока
-        // недоступно», а просто не про этого человека — ряд не показываем.
-        if (weightMode) {
+        // Тара и дозирование нужны до старта: взвесить кофе и обнулить весы.
+        // Дальше они только занимают место — с началом пролива ряд уходит.
+        // Без весов его нет вовсе: это не «пока недоступно», а не про этого
+        // человека.
+        if (weightMode && phase == BrewPhase.IDLE) {
             Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
                 OutlinedButton(
                     onClick = onTare,

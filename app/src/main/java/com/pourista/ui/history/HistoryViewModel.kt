@@ -3,6 +3,7 @@ package com.pourista.ui.history
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.pourista.AppContainer
+import com.pourista.brew.RecipeFromHistory
 import com.pourista.data.model.BrewNotes
 import com.pourista.data.model.BrewRecord
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -16,6 +17,9 @@ import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalCoroutinesApi::class)
+/** Температуры в записи может не быть — берём типовую для пуровера. */
+private const val DEFAULT_WATER_TEMP_C = 94
+
 class HistoryViewModel(private val container: AppContainer) : ViewModel() {
 
     private val _query = MutableStateFlow("")
@@ -46,6 +50,23 @@ class HistoryViewModel(private val container: AppContainer) : ViewModel() {
         _query.value = value
     }
 
+    /**
+     * Рецепт по записанному проливу — тот же разбор, что и в карточке
+     * заваривания. Готовый черновик подхватывает редактор.
+     */
+    fun buildRecipe(record: BrewRecord, name: String): Boolean {
+        val recipe = RecipeFromHistory.build(
+            weightSeries = record.weightSeries,
+            name = name,
+            brewer = record.notes.brewer.orEmpty(),
+            doseGrams = record.doseGrams,
+            waterTempC = record.notes.waterTemp?.toIntOrNull() ?: DEFAULT_WATER_TEMP_C,
+            elapsedMs = record.elapsedMs,
+        ) ?: return false
+        container.recipeDraft = recipe
+        return true
+    }
+
     fun delete(record: BrewRecord) {
         viewModelScope.launch { container.brews.deleteBrew(record.id) }
     }
@@ -65,6 +86,25 @@ class BrewDetailViewModel(
             ?.takeIf { it.isNotBlank() }
         if (record == null || current == null) record else record.copy(recipeName = current)
     }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(5_000), null)
+
+    /**
+     * Собирает рецепт по записанному проливу и оставляет его черновиком:
+     * дальше его открывает редактор. Возвращает false, когда проливов в записи
+     * не видно — заваривали без весов, разбирать нечего.
+     */
+    fun buildRecipe(name: String): Boolean {
+        val record = brew.value ?: return false
+        val recipe = RecipeFromHistory.build(
+            weightSeries = record.weightSeries,
+            name = name,
+            brewer = record.notes.brewer.orEmpty(),
+            doseGrams = record.doseGrams,
+            waterTempC = record.notes.waterTemp?.toIntOrNull() ?: DEFAULT_WATER_TEMP_C,
+            elapsedMs = record.elapsedMs,
+        ) ?: return false
+        container.recipeDraft = recipe
+        return true
+    }
 
     fun saveNotes(notes: BrewNotes) {
         viewModelScope.launch { container.brews.updateNotes(brewId, notes) }

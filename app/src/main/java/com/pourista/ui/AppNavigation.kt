@@ -123,6 +123,7 @@ private fun AppNavHost(
             HistoryScreen(
                 viewModel = viewModel,
                 onOpen = { id -> navController.navigate("${Routes.BREW_DETAIL}/$id") },
+                onOpenDraft = { navController.navigate("${Routes.RECIPE_EDITOR}/0") },
                 bottomBar = bottomBar,
             )
         }
@@ -173,6 +174,7 @@ private fun AppNavHost(
             BrewDetailScreen(
                 viewModel = viewModel,
                 onClose = { navController.popBackStack() },
+                onOpenDraft = { navController.navigate("${Routes.RECIPE_EDITOR}/0") },
             )
         }
     }

@@ -253,7 +253,7 @@ fun StatTile(
             )
             if (unit != null) {
                 Text(
-                    text = " $unit",
+                    text = unit,
                     style = MaterialTheme.typography.labelMedium,
                     color = MaterialTheme.colorScheme.onSurfaceVariant,
                     modifier = Modifier.padding(bottom = 3.dp),

@@ -1,6 +1,7 @@
 package com.pourista.ui.components
 
 import androidx.compose.foundation.Canvas
+import androidx.compose.foundation.gestures.detectDragGesturesAfterLongPress
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -11,6 +12,10 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.geometry.Offset
@@ -19,6 +24,8 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.Path
 import androidx.compose.ui.graphics.PathEffect
 import androidx.compose.ui.graphics.drawscope.Stroke
+import androidx.compose.ui.input.pointer.PointerInputScope
+import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.text.AnnotatedString
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.drawText
@@ -28,6 +35,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.pourista.core.formatClock
 import java.util.Locale
+import kotlin.math.roundToInt
 
 /**
  * Лёгкий линейный график на Canvas. Раньше здесь был AAChart внутри WebView —
@@ -51,6 +59,8 @@ fun SeriesChart(
     showAxis: Boolean = true,
     /** Число делений сетки: у низких графиков подписи иначе сливаются. */
     ticks: Int = 4,
+    /** Точка, которую держат пальцем: её отмечаем вертикалью и кружком. */
+    scrubIndex: Int? = null,
 ) {
     val gridColor = MaterialTheme.colorScheme.outlineVariant
     val labelColor = MaterialTheme.colorScheme.onSurfaceVariant
@@ -131,6 +141,21 @@ fun SeriesChart(
 
         drawPath(path = area, brush = Brush.verticalGradient(listOf(fillColor, Color.Transparent)))
         drawPath(path = line, color = lineColor, style = Stroke(width = 2.5.dp.toPx()))
+
+        val marked = scrubIndex?.coerceIn(0, values.lastIndex)
+        if (marked != null) {
+            val x = plotLeft + marked * stepX
+            val y = yOf(values[marked].coerceAtLeast(0f))
+            drawLine(
+                color = labelColor,
+                start = Offset(x, 0f),
+                end = Offset(x, size.height),
+                strokeWidth = 1.dp.toPx(),
+            )
+            // Кружок с подложкой: на самой кривой одноцветная точка теряется.
+            drawCircle(color = gridColor, radius = 6.dp.toPx(), center = Offset(x, y))
+            drawCircle(color = lineColor, radius = 4.dp.toPx(), center = Offset(x, y))
+        }
     }
 }
 
@@ -172,6 +197,14 @@ fun LabeledChart(
     ticks: Int = 4,
     durationSec: Int = values.size,
 ) {
+    // Точка под пальцем: держат — показываем, сколько тут было и когда.
+    var scrub by remember(values.size) { mutableStateOf<Int?>(null) }
+    val marked = scrub?.coerceIn(0, values.lastIndex.coerceAtLeast(0))
+    val readout = marked?.takeIf { values.size > 1 }?.let { index ->
+        val second = index * durationSec / (values.size - 1)
+        "${formatClock(second)} · ${formatTick(values[index])} $unit"
+    }
+
     Column(modifier = modifier) {
         Row(
             modifier = Modifier.fillMaxWidth(),
@@ -180,13 +213,30 @@ fun LabeledChart(
         ) {
             Text(text = title, style = MaterialTheme.typography.labelLarge)
             Text(
-                text = unit,
+                text = readout ?: unit,
                 style = MaterialTheme.typography.labelMedium,
-                color = MaterialTheme.colorScheme.onSurfaceVariant,
+                color = if (readout != null) {
+                    MaterialTheme.colorScheme.primary
+                } else {
+                    MaterialTheme.colorScheme.onSurfaceVariant
+                },
             )
         }
         Box(modifier = Modifier.padding(top = 8.dp)) {
             SeriesChart(
+                modifier = Modifier.pointerInput(values.size) {
+                    // Долгое нажатие, а не обычное: иначе жест отбирал бы
+                    // прокрутку у списка, в котором график живёт.
+                    val lastIndex = values.lastIndex
+                    detectDragGesturesAfterLongPress(
+                        onDragStart = { scrub = indexAt(it.x, size.width, lastIndex) },
+                        onDrag = { change, _ ->
+                            scrub = indexAt(change.position.x, size.width, lastIndex)
+                        },
+                        onDragEnd = { scrub = null },
+                        onDragCancel = { scrub = null },
+                    )
+                },
                 values = values,
                 height = height,
                 lineColor = lineColor,
@@ -194,6 +244,7 @@ fun LabeledChart(
                 guideColor = guideColor,
                 focusMax = focusMax,
                 ticks = ticks,
+                scrubIndex = marked,
             )
         }
         Row(
@@ -214,4 +265,12 @@ fun LabeledChart(
             )
         }
     }
+}
+
+/** Какая точка ряда под пальцем: отсчёт от левого края поля, без оси. */
+private fun PointerInputScope.indexAt(x: Float, width: Int, lastIndex: Int): Int {
+    if (lastIndex <= 0) return 0
+    val gutter = AXIS_GUTTER_DP.dp.toPx()
+    val plotWidth = (width - gutter).coerceAtLeast(1f)
+    return ((x - gutter) / plotWidth * lastIndex).roundToInt().coerceIn(0, lastIndex)
 }

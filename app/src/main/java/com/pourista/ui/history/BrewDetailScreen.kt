@@ -13,6 +13,7 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.Check
 import androidx.compose.material.icons.filled.Delete
+import androidx.compose.material.icons.filled.PlaylistAdd
 import androidx.compose.material3.Card
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.HorizontalDivider
@@ -48,9 +49,15 @@ import com.pourista.ui.theme.AppTheme
 fun BrewDetailScreen(
     viewModel: BrewDetailViewModel,
     onClose: () -> Unit,
+    onOpenDraft: () -> Unit = {},
     modifier: Modifier = Modifier,
 ) {
     val record by viewModel.brew.collectAsStateWithLifecycle()
+
+    // Имя нового рецепта: как называлось заваривание, иначе «Запись» с датой.
+    val recordedName = stringResource(R.string.recipe_recorded_name)
+    val recipeName = record?.recipeName?.takeIf { it.isNotBlank() }
+        ?: "$recordedName ${formatDateTime(record?.brewedAt ?: 0L)}"
 
     var bean by remember { mutableStateOf("") }
     var roaster by remember { mutableStateOf("") }
@@ -103,6 +110,14 @@ fun BrewDetailScreen(
                         }
                     ) {
                         Icon(Icons.Default.Check, stringResource(R.string.action_save))
+                    }
+                    // Рецепт из записи: пролив уже случился, повторить его
+                    // проще по готовым шагам, чем восстанавливать по графику.
+                    IconButton(onClick = { if (viewModel.buildRecipe(recipeName)) onOpenDraft() }) {
+                        Icon(
+                            Icons.Default.PlaylistAdd,
+                            stringResource(R.string.history_make_recipe),
+                        )
                     }
                     IconButton(onClick = { viewModel.delete(onClose) }) {
                         Icon(Icons.Default.Delete, stringResource(R.string.action_delete))

@@ -8,13 +8,17 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Delete
+import androidx.compose.material.icons.filled.PlaylistAdd
 import androidx.compose.material.icons.filled.Search
 import androidx.compose.material3.Card
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Scaffold
@@ -44,6 +48,7 @@ import java.util.Date
 fun HistoryScreen(
     viewModel: HistoryViewModel,
     onOpen: (Long) -> Unit,
+    onOpenDraft: () -> Unit = {},
     bottomBar: @Composable () -> Unit = {},
     modifier: Modifier = Modifier,
 ) {
@@ -98,14 +103,29 @@ fun HistoryScreen(
             }
 
             items(brews, key = { it.id }) { record ->
-                BrewHistoryCard(record = record, onClick = { onOpen(record.id) })
+                val recordedName = stringResource(R.string.recipe_recorded_name)
+                BrewHistoryCard(
+                    record = record,
+                    onClick = { onOpen(record.id) },
+                    onMakeRecipe = {
+                        val name = record.recipeName?.takeIf { it.isNotBlank() }
+                            ?: "$recordedName ${formatDateTime(record.brewedAt)}"
+                        if (viewModel.buildRecipe(record, name)) onOpenDraft()
+                    },
+                    onDelete = { viewModel.delete(record) },
+                )
             }
         }
     }
 }
 
 @Composable
-private fun BrewHistoryCard(record: BrewRecord, onClick: () -> Unit) {
+private fun BrewHistoryCard(
+    record: BrewRecord,
+    onClick: () -> Unit,
+    onMakeRecipe: () -> Unit,
+    onDelete: () -> Unit,
+) {
     Card(
         modifier = Modifier
             .fillMaxWidth()
@@ -126,9 +146,27 @@ private fun BrewHistoryCard(record: BrewRecord, onClick: () -> Unit) {
                         color = MaterialTheme.colorScheme.onSurfaceVariant,
                     )
                 }
+                // Рецепт по проливу — только когда есть что разбирать:
+                // без весов график пустой, и собирать шаги не из чего.
+                if (record.weightSeries.size > 1) {
+                    IconButton(onClick = onMakeRecipe, modifier = Modifier.size(ICON_BUTTON, ICON_TOUCH)) {
+                        Icon(
+                            imageVector = Icons.Default.PlaylistAdd,
+                            contentDescription = stringResource(R.string.history_make_recipe),
+                        )
+                    }
+                }
+                IconButton(onClick = onDelete, modifier = Modifier.size(ICON_BUTTON, ICON_TOUCH)) {
+                    Icon(
+                        imageVector = Icons.Default.Delete,
+                        contentDescription = stringResource(R.string.action_delete),
+                        tint = MaterialTheme.colorScheme.onSurfaceVariant,
+                    )
+                }
                 Text(
                     text = formatTimerWithTenths(record.elapsedMs),
                     style = MaterialTheme.typography.titleMedium,
+                    modifier = Modifier.padding(start = 2.dp),
                 )
             }
 
@@ -179,3 +217,11 @@ private fun BrewHistoryCard(record: BrewRecord, onClick: () -> Unit) {
 
 internal fun formatDateTime(millis: Long): String =
     DateFormat.getDateTimeInstance(DateFormat.MEDIUM, DateFormat.SHORT).format(Date(millis))
+
+/**
+ * Кнопки в строке заголовка. Зазор между значками — это рамка кнопки, а не
+ * сами значки: сужаем её до ширины значка с небольшим запасом, высоту под
+ * палец оставляем прежней.
+ */
+private val ICON_BUTTON = 30.dp
+private val ICON_TOUCH = 40.dp

@@ -159,7 +159,7 @@ private fun StepRow(step: RecipeStep, deltaGrams: Float, current: Boolean) {
     }
 }
 
-/** «+50 г до 50 г · 5,0 г/с» — шаги без долива обходятся без второй строки. */
+/** «+50г до 50г · 45с · 5,0г/с» — шаги без долива обходятся без второй строки. */
 @Composable
 private fun stepDetails(step: RecipeStep, deltaGrams: Float): String? {
     if (deltaGrams <= 0f) return null
@@ -168,8 +168,10 @@ private fun stepDetails(step: RecipeStep, deltaGrams: Float): String? {
         formatGrams(deltaGrams, 0),
         formatGrams(step.targetWaterGrams, 0),
     )
+    // Длительность шага: по диапазону справа её приходится вычитать в уме.
+    val duration = stringResource(R.string.step_row_duration, step.durationSec)
     val seconds = step.pourSeconds(deltaGrams)
-    if (seconds <= 0f) return water
+    if (seconds <= 0f) return "$water · $duration"
     val flow = stringResource(R.string.step_row_flow, formatGrams(deltaGrams / seconds))
-    return "$water · $flow"
+    return "$water · $duration · $flow"
 }

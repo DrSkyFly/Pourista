@@ -36,7 +36,7 @@
     <string name="readout_flow">Скорость</string>
     <string name="readout_ratio">Пропорция</string>
     <string name="readout_target">Цель</string>
-    <string name="readout_remaining">осталось %1$s г</string>
+    <string name="readout_remaining">осталось %1$sг</string>
     <string name="readout_time">Время</string>
 
     <string name="unit_gram">г</string>
@@ -77,23 +77,23 @@
     <string name="four_six_strength_normal">Средняя</string>
     <string name="four_six_strength_high">Средняя / Крепкая</string>
     <string name="four_six_strength_higher">Крепкая</string>
-    <string name="four_six_summary">%1$s г воды · проливов %2$d · %3$s</string>
+    <string name="four_six_summary">%1$sг воды · проливов %2$d · %3$s</string>
     <string name="four_six_notes">%1$s · %2$s. Проливы в 0:00, 0:45 и дальше поровну до 3:30.</string>
     <string name="four_six_generate">Готово</string>
 
     <string name="guidance_step_position">Шаг %1$d из %2$d</string>
     <string name="guidance_seconds_left">сек осталось</string>
     <string name="guidance_seconds_total">сек длится</string>
-    <string name="guidance_pour_to">Лейте до %1$s г</string>
-    <string name="guidance_remaining_at_rate">Осталось %1$s г, скорость %2$s г/с</string>
-    <string name="guidance_add_at_rate">Долить %1$s г, скорость %2$s г/с</string>
-    <string name="guidance_hold_at">Держим %1$s г</string>
-    <string name="guidance_next_pour">Далее: %1$s +%2$s г до %3$s г через %4$d с</string>
-    <string name="guidance_next_plain">Далее: %1$s через %2$d с</string>
+    <string name="guidance_pour_to">Лейте до %1$sг</string>
+    <string name="guidance_remaining_at_rate">Осталось %1$sг, скорость %2$sг/с</string>
+    <string name="guidance_add_at_rate">Долить %1$sг, скорость %2$sг/с</string>
+    <string name="guidance_hold_at">Держим %1$sг</string>
+    <string name="guidance_next_pour">Далее: %1$s +%2$sг до %3$sг через %4$dс</string>
+    <string name="guidance_next_plain">Далее: %1$s через %2$dс</string>
 
-    <string name="hint_next_same">Лили %1$s г/с — следующий так же</string>
-    <string name="hint_next_faster">Лили %1$s г/с — следующий быстрее, %2$s г/с</string>
-    <string name="hint_next_slower">Лили %1$s г/с — следующий медленнее, %2$s г/с</string>
+    <string name="hint_next_same">Лили %1$sг/с — следующий так же</string>
+    <string name="hint_next_faster">Лили %1$sг/с — следующий быстрее, %2$sг/с</string>
+    <string name="hint_next_slower">Лили %1$sг/с — следующий медленнее, %2$sг/с</string>
     <string name="pace_on_track">Скорость в норме</string>
     <string name="pace_too_fast">Лейте медленнее</string>
     <string name="pace_too_slow">Лейте быстрее</string>
@@ -110,13 +110,13 @@
     <string name="step_add_water">Долить, г</string>
     <string name="step_flow_rate">Скорость, г/с</string>
     <string name="step_pour_seconds">Время влива, с</string>
-    <string name="step_pour_too_long">Влив занимает %1$d с — это дольше шага в %2$d с</string>
-    <string name="step_cumulative">На весах к концу шага: %1$s г</string>
+    <string name="step_pour_too_long">Влив занимает %1$dс — это дольше шага в %2$dс</string>
+    <string name="step_cumulative">На весах к концу шага: %1$sг</string>
     <string name="step_title">Название шага (необязательно)</string>
 
     <string name="chart_weight">Вес</string>
     <string name="chart_flow">Скорость пролива</string>
-    <string name="chart_flow_average">Средняя скорость: %1$s г/с</string>
+    <string name="chart_flow_average">Средняя скорость: %1$sг/с</string>
 
     <string name="recipe_new">Новый рецепт</string>
     <string name="recipe_edit_title">Рецепт</string>
@@ -136,13 +136,13 @@
     <string name="recipe_bean">Кофе</string>
     <string name="recipe_roaster">Обжарщик</string>
     <string name="recipe_notes">Заметки</string>
-    <string name="recipe_summary">%1$s г / %2$s г · %3$s</string>
+    <string name="recipe_summary">%1$sг / %2$sг · %3$s</string>
     <string name="recipe_steps_summary">Проливов: %1$d · %2$s</string>
-    <string name="recipe_steps_total">Всего: %1$s · %2$s г</string>
-    <string name="recipe_water_mismatch">Шаги дают %1$s г</string>
+    <string name="recipe_steps_total">Всего: %1$s · %2$sг</string>
+    <string name="recipe_water_mismatch">Шаги дают %1$sг</string>
     <string name="recipe_distribute">Подогнать</string>
     <string name="recipe_preview">График пролива</string>
-    <string name="recipe_scaled_note">Пересчитано под дозу: %1$s г → %2$s г воды</string>
+    <string name="recipe_scaled_note">Пересчитано под дозу: %1$sг → %2$sг воды</string>
     <string name="recipe_section_main">Основное</string>
     <string name="recipe_section_grind">Помол</string>
     <string name="recipe_section_steps">Шаги</string>
@@ -150,8 +150,9 @@
 
     <string name="history_empty">История пуста. Заварите кофе — запись появится сама.</string>
     <string name="history_untitled">Заваривание</string>
-    <string name="history_summary">%1$s г → %2$s г · %3$s</string>
-    <string name="history_dose_only">Доза %1$s г</string>
+    <string name="history_summary">%1$sг → %2$sг · %3$s</string>
+    <string name="history_dose_only">Доза %1$sг</string>
+    <string name="history_make_recipe">Сделать рецепт</string>
     <string name="history_detail_title">Заваривание</string>
     <string name="history_notes">Заметки</string>
     <string name="history_extra_note">Комментарий</string>
@@ -224,8 +225,9 @@
     <string name="recipes_clipboard_empty">В буфере обмена нет текста</string>
     <string name="recipe_steps_expand">Показать этапы</string>
     <string name="recipe_steps_collapse">Свернуть</string>
-    <string name="step_row_water">+%1$s г до %2$s г</string>
-    <string name="step_row_flow">%1$s г/с</string>
+    <string name="step_row_water">+%1$sг до %2$sг</string>
+    <string name="step_row_duration">%1$dс</string>
+    <string name="step_row_flow">%1$sг/с</string>
     <string name="settings_thanks">Спасибо за идею — приложению Futula Coffee Scale, с которого всё началось</string>
     <string name="settings_thanks_link">github.com/wdrs/FutulaCoffeeScale</string>
     <string name="settings_thanks_coffeesaurus">Особая благодарность Кофезавру</string>
@@ -236,6 +238,7 @@
     <string name="settings_scale_log">Журнал весов</string>
     <string name="settings_scale_log_hint">Записать обмен с весами в файл и отправить разработчику</string>
     <string name="settings_release_notes">История изменений</string>
+    <string name="notes_1_7_1">• Рецепт по записанному проливу — из истории\n• Зажми график: покажет вес и время в точке\n• Удаление заваривания прямо из списка\n• Длительность этапа в списке шагов</string>
     <string name="notes_1_7_0">• Режим аэропресса: виден момент отжима\n• Палитра «Оливковая»\n• Клавиатура больше не закрывает поля ввода\n• Свирл не портит график и скорость\n• Правильный вес при финише после снятой воронки</string>
     <string name="notes_1_6_1">• Звоночек, когда отыгран последний шаг рецепта\n• Автофиниш замечает снятую воронку и на больших объёмах\n• Планшет в портрете больше не показывает альбомную раскладку</string>
     <string name="notes_1_6_0">• Журнал весов в настройках: запись обмена в файл для разбора протокола\n• Окно «Что нового» со всей историей версий\n• Починена альбомная раскладка экрана заваривания</string>

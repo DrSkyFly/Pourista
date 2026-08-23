@@ -36,7 +36,7 @@
     <string name="readout_flow">Flow rate</string>
     <string name="readout_ratio">Ratio</string>
     <string name="readout_target">Target</string>
-    <string name="readout_remaining">%1$s g to go</string>
+    <string name="readout_remaining">%1$sg to go</string>
     <string name="readout_time">Time</string>
 
     <string name="unit_gram">g</string>
@@ -77,23 +77,23 @@
     <string name="four_six_strength_normal">Normal</string>
     <string name="four_six_strength_high">Normal / Strong</string>
     <string name="four_six_strength_higher">Strong</string>
-    <string name="four_six_summary">%1$s g of water · %2$d pours · %3$s</string>
+    <string name="four_six_summary">%1$sg of water · %2$d pours · %3$s</string>
     <string name="four_six_notes">%1$s · %2$s. Pours at 0:00, 0:45 and then evenly until 3:30.</string>
     <string name="four_six_generate">Done</string>
 
     <string name="guidance_step_position">Step %1$d of %2$d</string>
     <string name="guidance_seconds_left">sec left</string>
     <string name="guidance_seconds_total">sec long</string>
-    <string name="guidance_pour_to">Pour up to %1$s g</string>
-    <string name="guidance_remaining_at_rate">%1$s g to go at %2$s g/s</string>
-    <string name="guidance_add_at_rate">Add %1$s g at %2$s g/s</string>
-    <string name="guidance_hold_at">Hold at %1$s g</string>
-    <string name="guidance_next_pour">Next: %1$s +%2$s g up to %3$s g in %4$d s</string>
-    <string name="guidance_next_plain">Next: %1$s in %2$d s</string>
+    <string name="guidance_pour_to">Pour up to %1$sg</string>
+    <string name="guidance_remaining_at_rate">%1$sg to go at %2$sg/s</string>
+    <string name="guidance_add_at_rate">Add %1$sg at %2$sg/s</string>
+    <string name="guidance_hold_at">Hold at %1$sg</string>
+    <string name="guidance_next_pour">Next: %1$s +%2$sg up to %3$sg in %4$ds</string>
+    <string name="guidance_next_plain">Next: %1$s in %2$ds</string>
 
-    <string name="hint_next_same">You poured %1$s g/s — same for the next one</string>
-    <string name="hint_next_faster">You poured %1$s g/s — next one faster, %2$s g/s</string>
-    <string name="hint_next_slower">You poured %1$s g/s — next one slower, %2$s g/s</string>
+    <string name="hint_next_same">You poured %1$sg/s — same for the next one</string>
+    <string name="hint_next_faster">You poured %1$sg/s — next one faster, %2$sg/s</string>
+    <string name="hint_next_slower">You poured %1$sg/s — next one slower, %2$sg/s</string>
     <string name="pace_on_track">Flow rate is good</string>
     <string name="pace_too_fast">Pour slower</string>
     <string name="pace_too_slow">Pour faster</string>
@@ -110,13 +110,13 @@
     <string name="step_add_water">Add water, g</string>
     <string name="step_flow_rate">Flow, g/s</string>
     <string name="step_pour_seconds">Pour time, s</string>
-    <string name="step_pour_too_long">Pouring takes %1$d s — longer than the %2$d s step</string>
-    <string name="step_cumulative">On the scale by the end of the step: %1$s g</string>
+    <string name="step_pour_too_long">Pouring takes %1$ds — longer than the %2$ds step</string>
+    <string name="step_cumulative">On the scale by the end of the step: %1$sg</string>
     <string name="step_title">Step name (optional)</string>
 
     <string name="chart_weight">Weight</string>
     <string name="chart_flow">Flow rate</string>
-    <string name="chart_flow_average">Average flow rate: %1$s g/s</string>
+    <string name="chart_flow_average">Average flow rate: %1$sg/s</string>
 
     <string name="recipe_new">New recipe</string>
     <string name="recipe_edit_title">Recipe</string>
@@ -136,13 +136,13 @@
     <string name="recipe_bean">Coffee</string>
     <string name="recipe_roaster">Roaster</string>
     <string name="recipe_notes">Notes</string>
-    <string name="recipe_summary">%1$s g / %2$s g · %3$s</string>
+    <string name="recipe_summary">%1$sg / %2$sg · %3$s</string>
     <string name="recipe_steps_summary">Pours: %1$d · %2$s</string>
-    <string name="recipe_steps_total">Total: %1$s · %2$s g</string>
-    <string name="recipe_water_mismatch">Steps add up to %1$s g</string>
+    <string name="recipe_steps_total">Total: %1$s · %2$sg</string>
+    <string name="recipe_water_mismatch">Steps add up to %1$sg</string>
     <string name="recipe_distribute">Rescale</string>
     <string name="recipe_preview">Pour schedule</string>
-    <string name="recipe_scaled_note">Rescaled to the actual dose: %1$s g → %2$s g of water</string>
+    <string name="recipe_scaled_note">Rescaled to the actual dose: %1$sg → %2$sg of water</string>
     <string name="recipe_section_main">Basics</string>
     <string name="recipe_section_grind">Grind</string>
     <string name="recipe_section_steps">Steps</string>
@@ -150,8 +150,9 @@
 
     <string name="history_empty">History is empty. Brew something — the record appears by itself.</string>
     <string name="history_untitled">Brew</string>
-    <string name="history_summary">%1$s g → %2$s g · %3$s</string>
-    <string name="history_dose_only">Dose %1$s g</string>
+    <string name="history_summary">%1$sg → %2$sg · %3$s</string>
+    <string name="history_dose_only">Dose %1$sg</string>
+    <string name="history_make_recipe">Make a recipe</string>
     <string name="history_detail_title">Brew details</string>
     <string name="history_notes">Notes</string>
     <string name="history_extra_note">Comment</string>
@@ -224,8 +225,9 @@
     <string name="recipes_clipboard_empty">The clipboard is empty</string>
     <string name="recipe_steps_expand">Show steps</string>
     <string name="recipe_steps_collapse">Collapse</string>
-    <string name="step_row_water">+%1$s g up to %2$s g</string>
-    <string name="step_row_flow">%1$s g/s</string>
+    <string name="step_row_water">+%1$sg up to %2$sg</string>
+    <string name="step_row_duration">%1$ds</string>
+    <string name="step_row_flow">%1$sg/s</string>
     <string name="settings_thanks">Thanks for the idea to Futula Coffee Scale, where this all started</string>
     <string name="settings_thanks_link">github.com/wdrs/FutulaCoffeeScale</string>
     <string name="settings_thanks_coffeesaurus">Special thanks to Coffeesaurus</string>
@@ -241,6 +243,7 @@
     <string name="settings_scale_log">Scale log</string>
     <string name="settings_scale_log_hint">Record the exchange with the scale to a file and send it to the developer</string>
     <string name="settings_release_notes">Release notes</string>
+    <string name="notes_1_7_1">• A recipe from a recorded brew — straight from history\n• Hold the chart: it shows weight and time at that point\n• Delete a brew straight from the list\n• Step duration in the step list</string>
     <string name="notes_1_7_0">• AeroPress mode: the press shows up on the chart\n• Olive palette\n• The keyboard no longer covers input fields\n• Swirling no longer spoils the chart and the flow rate\n• Correct weight when finishing after the dripper is lifted</string>
     <string name="notes_1_6_1">• A bell once the last step of the recipe is over\n• Auto-finish now spots a lifted dripper on large brews too\n• A tablet in portrait no longer gets the landscape layout</string>
     <string name="notes_1_6_0">• A scale log in settings: records the exchange to a file for protocol debugging\n• The release notes dialog now holds the whole version history\n• The landscape brew layout is fixed</string>
