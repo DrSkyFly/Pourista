@@ -40,12 +40,14 @@ class RecipeFromHistoryTest {
             elapsedMs = weights.size * 1_000L,
         )!!
 
-        assertEquals(2, recipe.steps.size)
+        // Два пролива и слив.
+        assertEquals(3, recipe.steps.size)
         assertEquals("первый влив — блуминг", StepKind.BLOOM, recipe.steps.first().kind)
+        assertEquals("последний шаг — слив", StepKind.DRAWDOWN, recipe.steps.last().kind)
         // Шаг длится от своего пролива до начала следующего, а не до конца влива.
-        assertEquals(listOf(0, 45), recipe.steps.map { it.startSec })
+        assertEquals(listOf(0, 45), recipe.steps.take(2).map { it.startSec })
         assertEquals(45, recipe.steps.first().durationSec)
-        assertEquals(listOf(50f, 150f), recipe.steps.map { it.targetWaterGrams })
+        assertEquals(listOf(50f, 150f, 150f), recipe.steps.map { it.targetWaterGrams })
         assertEquals(150f, recipe.waterGrams, 0.01f)
         assertEquals(15f, recipe.doseGrams, 0.01f)
         assertEquals("Hario V60-02", recipe.brewer)

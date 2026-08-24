@@ -163,6 +163,12 @@ fun SettingsScreen(
                         checked = settings.countdownCue,
                         onCheckedChange = viewModel::setCountdownCue,
                     )
+                    SwitchRow(
+                        title = stringResource(R.string.settings_auto_finish),
+                        subtitle = stringResource(R.string.settings_auto_finish_hint),
+                        checked = settings.autoFinish,
+                        onCheckedChange = viewModel::setAutoFinish,
+                    )
                     ChoiceRow(
                         title = stringResource(R.string.settings_pace_tolerance),
                         subtitle = stringResource(R.string.settings_pace_tolerance_hint),
@@ -240,6 +246,14 @@ fun SettingsScreen(
                             color = MaterialTheme.colorScheme.onSurfaceVariant,
                         )
                     }
+                    // Журнал нужен не только когда весы сломались, но и когда
+                    // их вообще нет в списке: по нему разбирают протокол.
+                    Text(
+                        text = stringResource(R.string.settings_scale_log_unsupported),
+                        style = MaterialTheme.typography.bodySmall,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant,
+                        modifier = Modifier.padding(top = 8.dp),
+                    )
                 }
             }
 

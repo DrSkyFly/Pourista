@@ -39,7 +39,7 @@ class ChartHeightsTest {
     fun `меньше нижнего предела графики не становятся`() {
         val (weight, flow) = chartHeights(available = 200.dp)
 
-        assertEquals(48.dp, weight)
-        assertEquals(48.dp, flow)
+        assertEquals(64.dp, weight)
+        assertEquals(64.dp, flow)
     }
 }

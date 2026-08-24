@@ -34,6 +34,11 @@ data class AppSettings(
     val nearTargetGrams: Float = DEFAULT_NEAR_TARGET_GRAMS,
     /** Допустимое расхождение скорости пролива с рецептом, доля от целевой. */
     val paceTolerance: Float = DEFAULT_PACE_TOLERANCE,
+    /**
+     * Заканчивать заваривание самому, когда с весов сняли воронку или чашку.
+     * Кому мешает — выключает и жмёт «Финиш» руками.
+     */
+    val autoFinish: Boolean = true,
     val autoConnectOnLaunch: Boolean = true,
     val stopTimerOnDisconnect: Boolean = true,
     val keepScaleInGrams: Boolean = true,
@@ -71,6 +76,7 @@ class SettingsRepository(private val context: Context) {
         val countdownCue = booleanPreferencesKey("countdown_cue")
         val nearTargetGrams = floatPreferencesKey("near_target_grams")
         val paceTolerance = floatPreferencesKey("pace_tolerance")
+        val autoFinish = booleanPreferencesKey("auto_finish")
         val autoConnect = booleanPreferencesKey("auto_connect")
         val stopTimerOnDisconnect = booleanPreferencesKey("stop_timer_on_disconnect")
         val keepScaleInGrams = booleanPreferencesKey("keep_scale_in_grams")
@@ -101,6 +107,7 @@ class SettingsRepository(private val context: Context) {
             countdownCue = prefs[Keys.countdownCue] ?: true,
             nearTargetGrams = prefs[Keys.nearTargetGrams] ?: DEFAULT_NEAR_TARGET_GRAMS,
             paceTolerance = prefs[Keys.paceTolerance] ?: DEFAULT_PACE_TOLERANCE,
+            autoFinish = prefs[Keys.autoFinish] ?: true,
             autoConnectOnLaunch = prefs[Keys.autoConnect] ?: true,
             stopTimerOnDisconnect = prefs[Keys.stopTimerOnDisconnect] ?: true,
             keepScaleInGrams = prefs[Keys.keepScaleInGrams] ?: true,
@@ -141,6 +148,8 @@ class SettingsRepository(private val context: Context) {
     suspend fun setNearTargetGrams(grams: Float) = edit { it[Keys.nearTargetGrams] = grams }
 
     suspend fun setPaceTolerance(share: Float) = edit { it[Keys.paceTolerance] = share }
+
+    suspend fun setAutoFinish(enabled: Boolean) = edit { it[Keys.autoFinish] = enabled }
 
     suspend fun setAutoConnect(enabled: Boolean) = edit { it[Keys.autoConnect] = enabled }
 

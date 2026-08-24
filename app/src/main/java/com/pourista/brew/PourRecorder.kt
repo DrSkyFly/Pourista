@@ -98,9 +98,20 @@ internal class PourRecorder {
             if (index == 0) 0 else roundSeconds(segment.startMs / 1000f)
         }
 
+        // Последний влив кончается там, где перестал расти вес, а остаток
+        // времени — это слив: вода уходит, лить больше нечего.
+        val lastStart = starts.last()
+        val lastPour = pours.last()
+        val lastPourEnd = maxOf(
+            roundSeconds(lastPour.endMs / 1000f),
+            lastStart + TIME_STEP_SEC,
+        )
+        val drawdownSec = totalSec - lastPourEnd
+
         val steps = pours.mapIndexed { index, segment ->
             val start = starts[index]
-            val end = starts.getOrNull(index + 1) ?: maxOf(totalSec, start + TIME_STEP_SEC)
+            val end = starts.getOrNull(index + 1)
+                ?: if (drawdownSec >= TIME_STEP_SEC) lastPourEnd else maxOf(totalSec, start + TIME_STEP_SEC)
             val poured = (segment.endWeight - segment.startWeight).coerceAtLeast(0f)
             val seconds = ((segment.endMs - segment.startMs) / 1000f).coerceAtLeast(1f)
             RecipeStep(
@@ -114,13 +125,24 @@ internal class PourRecorder {
             )
         }
 
+        val withDrawdown = if (drawdownSec >= TIME_STEP_SEC) {
+            steps + RecipeStep(
+                kind = StepKind.DRAWDOWN,
+                startSec = lastPourEnd,
+                durationSec = drawdownSec,
+                targetWaterGrams = steps.last().targetWaterGrams,
+            )
+        } else {
+            steps
+        }
+
         return Recipe(
             name = name,
             brewer = brewer,
             doseGrams = doseGrams,
             waterGrams = steps.last().targetWaterGrams,
             waterTempC = waterTempC,
-            steps = steps,
+            steps = withDrawdown,
         )
     }
 

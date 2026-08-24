@@ -45,7 +45,13 @@ data class EditorState(
         get() = steps.any { it.kind.isPour } && kotlin.math.abs(stepsWater - waterValue) > 1f
     val canSave: Boolean get() = name.isNotBlank() && doseValue > 0f
 
-    /** Расписание рецепта посекундно — для предпросмотра кривой пролива. */
+    /**
+     * Расписание рецепта посекундно — для предпросмотра кривой пролива.
+     *
+     * Внутри шага вода прибывает только пока льют: воду наливают за «время
+     * влива», остальное шаг стоит. Растягивать подъём на весь шаг нельзя —
+     * получается ровная горка, не похожая ни на один настоящий пролив.
+     */
     fun previewSeries(): List<Float> {
         if (steps.isEmpty()) return emptyList()
         val result = mutableListOf<Float>()
@@ -53,10 +59,11 @@ data class EditorState(
         steps.forEach { step ->
             val target = cumulative + step.deltaGrams
             val duration = step.durationSec.coerceAtLeast(1)
+            val pouring = step.pourSeconds.coerceIn(1, duration)
             for (second in 1..duration) {
-                val fraction = second.toFloat() / duration
                 result += if (step.kind.isPour) {
-                    cumulative + (target - cumulative) * fraction
+                    val poured = (second.toFloat() / pouring).coerceIn(0f, 1f)
+                    cumulative + (target - cumulative) * poured
                 } else {
                     target
                 }

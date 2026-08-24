@@ -29,6 +29,8 @@ class SettingsViewModel(private val container: AppContainer) : ViewModel() {
     fun setNearTargetGrams(value: Float) = update { container.settings.setNearTargetGrams(value) }
 
     fun setPaceTolerance(value: Float) = update { container.settings.setPaceTolerance(value) }
+    fun setAutoFinish(value: Boolean) = update { container.settings.setAutoFinish(value) }
+
     fun setAutoConnect(value: Boolean) = update { container.settings.setAutoConnect(value) }
     fun setStopTimerOnDisconnect(value: Boolean) =
         update { container.settings.setStopTimerOnDisconnect(value) }

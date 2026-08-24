@@ -152,7 +152,8 @@
     <string name="history_untitled">Заваривание</string>
     <string name="history_summary">%1$sг → %2$sг · %3$s</string>
     <string name="history_dose_only">Доза %1$sг</string>
-    <string name="history_make_recipe">Сделать рецепт</string>
+    <string name="history_share">Поделиться</string>
+    <string name="history_make_recipe">Создать рецепт</string>
     <string name="history_detail_title">Заваривание</string>
     <string name="history_notes">Заметки</string>
     <string name="history_extra_note">Комментарий</string>
@@ -176,6 +177,8 @@
     <string name="settings_countdown">Отсчёт перед проливом</string>
     <string name="settings_countdown_hint">Три коротких сигнала до следующего пролива</string>
     <string name="settings_scale">Весы</string>
+    <string name="settings_auto_finish">Автофиниш</string>
+    <string name="settings_auto_finish_hint">Заканчивать заваривание, когда с весов сняли воронку или чашку</string>
     <string name="settings_pace_tolerance">Допуск по скорости</string>
     <string name="settings_pace_tolerance_hint">Насколько скорость может разойтись с рецептом, прежде чем приложение попросит лить быстрее или медленнее</string>
     <string name="settings_pace_tolerance_value">±%1$d %%</string>
@@ -238,6 +241,7 @@
     <string name="settings_scale_log">Журнал весов</string>
     <string name="settings_scale_log_hint">Записать обмен с весами в файл и отправить разработчику</string>
     <string name="settings_release_notes">История изменений</string>
+    <string name="notes_1_7_2">• Картинка заваривания для «поделиться»\n• Автофиниш можно выключить\n• Графики: сетка по 50 г, шкала времени, больше высота\n• Слив отдельным шагом в рецепте из записи\n• Починен автофиниш при доливе после смены шага</string>
     <string name="notes_1_7_1">• Рецепт по записанному проливу — из истории\n• Зажми график: покажет вес и время в точке\n• Удаление заваривания прямо из списка\n• Длительность этапа в списке шагов</string>
     <string name="notes_1_7_0">• Режим аэропресса: виден момент отжима\n• Палитра «Оливковая»\n• Клавиатура больше не закрывает поля ввода\n• Свирл не портит график и скорость\n• Правильный вес при финише после снятой воронки</string>
     <string name="notes_1_6_1">• Звоночек, когда отыгран последний шаг рецепта\n• Автофиниш замечает снятую воронку и на больших объёмах\n• Планшет в портрете больше не показывает альбомную раскладку</string>
@@ -249,6 +253,7 @@
     <string name="notes_1_1_0">• Тестовая поддержка Felicita, Bookoo, Decent Scale и Timemore Black Mirror Dot\n• Приложение ищет все известные модели весов сразу</string>
     <string name="notes_1_0_0">Первый выпуск: рецепты по шагам, редактор, заваривание с весами и без, подсказки по темпу пролива, автофиниш, пересчёт под дозу, запись рецепта с пролива, импорт и экспорт JSON, история с графиками, звук и вибрация.</string>
 
+    <string name="settings_scale_log_unsupported">Ваших весов нет среди поддерживаемых? Запишите журнал и пришлите — по нему добавляется поддержка новой модели.</string>
     <string name="scale_log_title">Журнал весов</string>
     <string name="scale_log_intro">Запись нужна, когда весы не заводятся или показывают ерунду. В файл попадают ответы весов и то, как приложение их поняло. Личных данных там нет.</string>
     <string name="scale_log_connected">Весы на связи: %1$s</string>

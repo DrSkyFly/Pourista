@@ -68,20 +68,23 @@ class PourRecorderTest {
             waterTempC = 94,
         )!!
 
-        assertEquals(3, recipe.steps.size)
-        assertTrue("все шаги льют воду", recipe.steps.all { it.kind.isPour })
+        // Три пролива плюс слив: после последнего влива вода ещё уходит.
+        assertEquals(4, recipe.steps.size)
         assertEquals("первый влив — блуминг", StepKind.BLOOM, recipe.steps.first().kind)
-        assertTrue("дальше обычные проливы", recipe.steps.drop(1).all { it.kind == StepKind.POUR })
+        assertEquals("последний шаг — слив", StepKind.DRAWDOWN, recipe.steps.last().kind)
+        val poured = recipe.steps.filter { it.kind.isPour }
+        assertEquals(3, poured.size)
+        assertTrue("между блумингом и сливом обычные проливы", poured.drop(1).all { it.kind == StepKind.POUR })
 
-        // Цели округлены до пяти граммов и накопительны.
-        assertEquals(listOf(50f, 150f, 250f), recipe.steps.map { it.targetWaterGrams })
+        // Цели округлены до пяти граммов и накопительны, слив держит последнюю.
+        assertEquals(listOf(50f, 150f, 250f, 250f), recipe.steps.map { it.targetWaterGrams })
         assertEquals(250f, recipe.waterGrams, 0.01f)
 
         // Время начала шагов округлено до пяти секунд, первый всегда с нуля.
-        assertEquals(listOf(0, 45, 75), recipe.steps.map { it.startSec })
+        assertEquals(listOf(0, 45, 75, 95), recipe.steps.map { it.startSec })
 
         // Скорость округлена до 1 г/с: 50 г за 10 с и 100 г за 20 с — это 5 г/с.
-        assertEquals(listOf(5f, 5f, 5f), recipe.steps.map { it.pourFlowRate })
+        assertEquals(listOf(5f, 5f, 5f), poured.map { it.pourFlowRate })
     }
 
     @Test
@@ -117,6 +120,22 @@ class PourRecorderTest {
         assertNull(
             trace.recorder.buildRecipe("Запись", "", 15f, trace.totalMs, 94),
         )
+    }
+
+    @Test
+    fun `последний влив кончается там, где перестал расти вес`() {
+        val trace = Trace()
+        trace.pour(grams = 100f, seconds = 20)
+        trace.wait(seconds = 100)
+
+        val recipe = trace.recorder.buildRecipe("Запись", "", 15f, trace.totalMs, 94)!!
+
+        assertEquals(2, recipe.steps.size)
+        val pour = recipe.steps.first()
+        val drawdown = recipe.steps.last()
+        assertEquals(StepKind.DRAWDOWN, drawdown.kind)
+        assertEquals("слив начинается сразу после влива", pour.endSec, drawdown.startSec)
+        assertTrue("слив занимает всё оставшееся время", drawdown.durationSec >= 90)
     }
 
     @Test

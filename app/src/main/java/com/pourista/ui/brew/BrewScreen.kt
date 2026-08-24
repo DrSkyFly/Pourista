@@ -101,6 +101,7 @@ import com.pourista.ui.icon
 import com.pourista.ui.isWideLayout
 import com.pourista.ui.listSidePadding
 import com.pourista.ui.labelRes
+import com.pourista.ui.components.FLOW_AXIS_STEPS
 import com.pourista.ui.components.LabeledChart
 import com.pourista.ui.components.PourGauge
 import com.pourista.ui.components.RecipeStepsList
@@ -1247,7 +1248,7 @@ internal fun chartHeights(available: Dp): Pair<Dp, Dp> {
 
 private val WEIGHT_CHART_HEIGHT = 140.dp
 private val FLOW_CHART_HEIGHT = 72.dp
-private val MIN_CHART_HEIGHT = 48.dp
+private val MIN_CHART_HEIGHT = 64.dp
 
 /** Больше половины экрана графики не занимают: сверху вес и подсказка шага. */
 private const val CHART_SHARE = 0.5f
@@ -1318,7 +1319,7 @@ private fun FlowChart(
         guides = listOfNotNull(targetFlowRate?.takeIf { it > 0f }),
         guideColor = AppTheme.accents.onTrack,
         height = height,
-        ticks = 2,
+        axisSteps = FLOW_AXIS_STEPS,
     )
     Text(
         text = stringResource(R.string.chart_flow_average, formatGrams(flowAvg)),

@@ -1,20 +1,26 @@
 package com.pourista.ui.history
 
 import androidx.compose.foundation.layout.Arrangement
+import android.content.Context
+import android.content.Intent
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.imePadding
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.Check
 import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material.icons.filled.PlaylistAdd
+import androidx.compose.material.icons.filled.Share
 import androidx.compose.material3.Card
+import androidx.compose.material3.Button
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
@@ -32,14 +38,21 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
+import androidx.core.content.FileProvider
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.pourista.R
 import com.pourista.ui.listSidePadding
+import com.pourista.ui.share.BrewImage
+import com.pourista.ui.share.BrewImageColors
+import com.pourista.ui.share.BrewImageContent
 import com.pourista.core.formatGrams
 import com.pourista.core.formatRatio
 import com.pourista.core.formatTimerWithTenths
 import com.pourista.data.model.BrewNotes
+import com.pourista.data.model.BrewRecord
+import com.pourista.ui.components.FLOW_AXIS_STEPS
 import com.pourista.ui.components.LabeledChart
 import com.pourista.ui.components.StatTile
 import com.pourista.ui.theme.AppTheme
@@ -58,6 +71,39 @@ fun BrewDetailScreen(
     val recordedName = stringResource(R.string.recipe_recorded_name)
     val recipeName = record?.recipeName?.takeIf { it.isNotBlank() }
         ?: "$recordedName ${formatDateTime(record?.brewedAt ?: 0L)}"
+
+    // Всё для картинки собираем здесь: в отрисовке нет ни ресурсов, ни темы.
+    val context = LocalContext.current
+    val current = record
+    val imageColors = BrewImageColors(
+        background = MaterialTheme.colorScheme.surface,
+        onBackground = MaterialTheme.colorScheme.onSurface,
+        muted = MaterialTheme.colorScheme.onSurfaceVariant,
+        weightLine = MaterialTheme.colorScheme.primary,
+        flowLine = AppTheme.accents.water,
+        grid = MaterialTheme.colorScheme.outlineVariant,
+    )
+    val texts = BrewShareTexts(
+        title = recipeName,
+        subtitle = formatDateTime(current?.brewedAt ?: 0L),
+        facts = stringResource(
+            R.string.history_summary,
+            formatGrams(current?.doseGrams ?: 0f),
+            formatGrams(current?.weightGrams ?: 0f, 0),
+            formatRatio(current?.doseGrams ?: 0f, current?.weightGrams ?: 0f),
+        ) + " · " + formatTimerWithTenths(current?.elapsedMs ?: 0L),
+        details = listOfNotNull(
+            current?.notes?.bean?.takeIf { it.isNotBlank() },
+            current?.notes?.roaster?.takeIf { it.isNotBlank() },
+            current?.notes?.grinder?.takeIf { it.isNotBlank() },
+            current?.notes?.grindSetting?.takeIf { it.isNotBlank() }
+                ?.let { stringResource(R.string.recipe_grind_value, it) },
+        ).joinToString(" · ").takeIf { it.isNotBlank() },
+        weightTitle = stringResource(R.string.chart_weight),
+        flowTitle = stringResource(R.string.chart_flow),
+        footer = stringResource(R.string.history_share_footer),
+        chooser = stringResource(R.string.history_share),
+    )
 
     var bean by remember { mutableStateOf("") }
     var roaster by remember { mutableStateOf("") }
@@ -94,7 +140,19 @@ fun BrewDetailScreen(
                     }
                 },
                 actions = {
+                    // Кнопка гаснет, когда менять нечего: так видно, что
+                    // сохранять нечего, а не что она сломана.
+                    val edited = current?.notes?.let { saved ->
+                        bean != saved.bean.orEmpty() ||
+                            roaster != saved.roaster.orEmpty() ||
+                            grinder != saved.grinder.orEmpty() ||
+                            grind != saved.grindSetting.orEmpty() ||
+                            brewer != saved.brewer.orEmpty() ||
+                            temp != saved.waterTemp.orEmpty() ||
+                            extra != saved.extra.orEmpty()
+                    } ?: false
                     IconButton(
+                        enabled = edited,
                         onClick = {
                             viewModel.saveNotes(
                                 BrewNotes(
@@ -107,17 +165,20 @@ fun BrewDetailScreen(
                                     extra = extra.takeIf { it.isNotBlank() },
                                 )
                             )
+                            // Сохранили — и сразу назад к списку: держать
+                            // человека в карточке после этого незачем.
+                            onClose()
                         }
                     ) {
                         Icon(Icons.Default.Check, stringResource(R.string.action_save))
                     }
-                    // Рецепт из записи: пролив уже случился, повторить его
-                    // проще по готовым шагам, чем восстанавливать по графику.
-                    IconButton(onClick = { if (viewModel.buildRecipe(recipeName)) onOpenDraft() }) {
-                        Icon(
-                            Icons.Default.PlaylistAdd,
-                            stringResource(R.string.history_make_recipe),
-                        )
+                    // Картинку собираем заново, а не снимаем экран: снимок
+                    // обрезан по высоте телефона и тащит поля с кнопками.
+                    IconButton(
+                        onClick = { current?.let { shareBrew(context, it, imageColors, texts) } },
+                        enabled = current?.weightSeries.orEmpty().size > 1,
+                    ) {
+                        Icon(Icons.Default.Share, stringResource(R.string.history_share))
                     }
                     IconButton(onClick = { viewModel.delete(onClose) }) {
                         Icon(Icons.Default.Delete, stringResource(R.string.action_delete))
@@ -197,6 +258,9 @@ fun BrewDetailScreen(
                                 title = stringResource(R.string.chart_weight),
                                 unit = stringResource(R.string.unit_gram),
                                 values = current.weightSeries,
+                                // В истории экран листается: графику можно
+                                // отдать высоту, на которой цифры не жмутся.
+                                height = 200.dp,
                             )
                         }
                     }
@@ -212,8 +276,8 @@ fun BrewDetailScreen(
                                 unit = stringResource(R.string.unit_gram_per_second),
                                 values = current.flowSeries,
                                 lineColor = AppTheme.accents.water,
-                                height = 72.dp,
-                                ticks = 2,
+                                height = 130.dp,
+                                axisSteps = FLOW_AXIS_STEPS,
                             )
                             Text(
                                 text = stringResource(
@@ -225,6 +289,21 @@ fun BrewDetailScreen(
                                 modifier = Modifier.padding(top = 8.dp),
                             )
                         }
+                    }
+                }
+            }
+
+            // Рецепт из записи: пролив уже случился, повторить его проще по
+            // готовым шагам. Значка в шапке для этого мало — нужна подпись.
+            if (current.weightSeries.size > 1) {
+                item {
+                    Button(
+                        onClick = { if (viewModel.buildRecipe(recipeName)) onOpenDraft() },
+                        modifier = Modifier.fillMaxWidth(),
+                    ) {
+                        Icon(Icons.Default.PlaylistAdd, contentDescription = null)
+                        Spacer(Modifier.size(8.dp))
+                        Text(stringResource(R.string.history_make_recipe))
                     }
                 }
             }
@@ -263,4 +342,48 @@ private fun NotesField(value: String, onValueChange: (String) -> Unit, labelRes:
             .fillMaxWidth()
             .padding(bottom = 8.dp),
     )
+}
+
+/** Тексты картинки: собираются из ресурсов на экране, отрисовке они приходят готовыми. */
+private data class BrewShareTexts(
+    val title: String,
+    val subtitle: String,
+    val facts: String,
+    val details: String?,
+    val weightTitle: String,
+    val flowTitle: String,
+    val footer: String,
+    val chooser: String,
+)
+
+/** Рисует картинку заваривания, кладёт в кэш и отдаёт системе «поделиться». */
+private fun shareBrew(
+    context: Context,
+    record: BrewRecord,
+    colors: BrewImageColors,
+    texts: BrewShareTexts,
+) {
+    val bitmap = BrewImage.render(
+        context = context,
+        content = BrewImageContent(
+            title = texts.title,
+            subtitle = texts.subtitle,
+            facts = texts.facts,
+            details = texts.details,
+            weightSeries = record.weightSeries,
+            flowSeries = record.flowSeries,
+            weightTitle = texts.weightTitle,
+            flowTitle = texts.flowTitle,
+            footer = texts.footer,
+        ),
+        colors = colors,
+    )
+    val file = BrewImage.save(context, bitmap, "pourista-${record.id}.png") ?: return
+    val uri = FileProvider.getUriForFile(context, "${context.packageName}.files", file)
+    val send = Intent(Intent.ACTION_SEND).apply {
+        type = "image/png"
+        putExtra(Intent.EXTRA_STREAM, uri)
+        addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
+    }
+    runCatching { context.startActivity(Intent.createChooser(send, texts.chooser)) }
 }

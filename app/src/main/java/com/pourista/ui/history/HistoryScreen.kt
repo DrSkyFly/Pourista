@@ -208,7 +208,9 @@ private fun BrewHistoryCard(
                 SeriesChart(
                     values = record.weightSeries,
                     modifier = Modifier.padding(top = 12.dp),
-                    height = 64.dp,
+                    // Плитка листается вместе со списком, и графику нужна
+                    // высота: на низком цифры оси жмутся друг к другу.
+                    height = 150.dp,
                 )
             }
         }

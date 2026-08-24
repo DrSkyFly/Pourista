@@ -137,6 +137,22 @@ class RemovalWatchTest {
     }
 
     @Test
+    fun `падение до взведения запоминается и досчитывается после`() {
+        val watch = RemovalWatch()
+        val now = watch.pourUpTo(600f)
+
+        // Воронку сняли раньше, чем рецепт признал влив законченным.
+        assertFalse(watch.onSample(400f, now + 1_000L))
+        assertTrue("падение видно и без взведения", watch.dropPending)
+        assertEquals("вес до падения запомнен", 600f, watch.weightBeforeDrop, 0.01f)
+
+        // Взвели позже — отсчёт идёт с самого падения, а не с этого момента.
+        watch.arm(400f)
+        assertEquals(600f, watch.weightBeforeDrop, 0.01f)
+        assertTrue(watch.onSample(400f, now + 6_000L))
+    }
+
+    @Test
     fun `сброс снимает сторож`() {
         val watch = RemovalWatch()
         val now = watch.pourUpTo(250f)

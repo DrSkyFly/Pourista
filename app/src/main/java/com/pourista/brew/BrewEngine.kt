@@ -225,6 +225,14 @@ class BrewEngine(
     /** Сторож конца заваривания: взводится, когда закончен последний влив. */
     private val removal = RemovalWatch()
 
+    /**
+     * Заканчивать ли заваривание самому по снятой воронке. Выключенный
+     * автофиниш падения всё равно считает: по ним «Финиш» руками пишет в
+     * историю вес до того, как чашку сняли.
+     */
+    @Volatile
+    var autoFinish: Boolean = true
+
     /** Вес для расчётов: без просадок от покачивания воронки. */
     private val pouredWeight = MonotonicWeight()
 
@@ -455,11 +463,32 @@ class BrewEngine(
         val guidance = next.recipe?.let { guidanceFor(it, next) }
         _state.value = next.copy(guidance = guidance)
 
-        if (guidance != null) emitCues(guidance)
+        if (guidance != null) {
+            emitCues(guidance)
+            armRemovalWhenWaterDone(guidance, weight)
+        }
 
         // Вес берём как есть, без обрезки по нулю: снятая целиком чашка уводит
         // весы в минус, и это самый явный признак, что заваривание закончено.
-        if (removal.onSample(current.weightGrams, nowMs)) finishAfterRemoval()
+        if (removal.onSample(current.weightGrams, nowMs) && autoFinish) finishAfterRemoval()
+    }
+
+    /**
+     * Взводит сторож конца, как только рецепт больше не требует воды.
+     *
+     * Обычно это делает детектор конца влива, но он привязан к шагу: если
+     * человек долил уже после того, как шаг сменился, влив «не закончился», и
+     * снятую воронку никто не ждал. Поэтому сторож взводится ещё и по факту —
+     * когда налито столько, сколько просит рецепт, или когда план отыгран.
+     */
+    private fun armRemovalWhenWaterDone(guidance: Guidance, weight: Float) {
+        if (removal.armed || baseRecipe?.aeropressMode == true) return
+        val recipe = _state.value.recipe ?: return
+
+        val poured = weight >= recipe.finalTargetGrams - NEAR_STOP_GRAMS
+        val planOver = guidance.stepIndex == guidance.stepCount - 1 &&
+            guidance.secondsLeftInStep <= 0
+        if (poured || planOver) removal.arm(weight)
     }
 
     /**

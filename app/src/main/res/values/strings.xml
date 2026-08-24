@@ -152,7 +152,8 @@
     <string name="history_untitled">Brew</string>
     <string name="history_summary">%1$sg → %2$sg · %3$s</string>
     <string name="history_dose_only">Dose %1$sg</string>
-    <string name="history_make_recipe">Make a recipe</string>
+    <string name="history_share">Share</string>
+    <string name="history_make_recipe">Create a recipe</string>
     <string name="history_detail_title">Brew details</string>
     <string name="history_notes">Notes</string>
     <string name="history_extra_note">Comment</string>
@@ -176,6 +177,8 @@
     <string name="settings_countdown">Countdown before a pour</string>
     <string name="settings_countdown_hint">Three short cues before the next pour</string>
     <string name="settings_scale">Scale</string>
+    <string name="settings_auto_finish">Automatic finish</string>
+    <string name="settings_auto_finish_hint">End the brew once the dripper or the cup is lifted off the scale</string>
     <string name="settings_pace_tolerance">Flow rate tolerance</string>
     <string name="settings_pace_tolerance_hint">How far the flow rate may drift from the recipe before the app asks to pour faster or slower</string>
     <string name="settings_pace_tolerance_value">±%1$d %%</string>
@@ -234,6 +237,7 @@
     <string name="settings_contact">Contact the author</string>
     <string name="settings_sources">Source code</string>
     <string name="settings_check_updates">Check for updates</string>
+    <string name="history_share_footer" translatable="false">Brewed with Pourista</string>
     <string name="settings_updates_url" translatable="false">github.com/DrSkyFly/Pourista/releases/latest</string>
     <!-- Адреса одни на все локали, поэтому только здесь. -->
     <string name="settings_contact_telegram" translatable="false">t.me/DrSkyFly</string>
@@ -243,6 +247,7 @@
     <string name="settings_scale_log">Scale log</string>
     <string name="settings_scale_log_hint">Record the exchange with the scale to a file and send it to the developer</string>
     <string name="settings_release_notes">Release notes</string>
+    <string name="notes_1_7_2">• A brew image to share\n• Automatic finish can be switched off\n• Charts: a 50 g grid, a time axis, more height\n• Drawdown as its own step in a recipe from history\n• Fixed automatic finish when water is added after the step changes</string>
     <string name="notes_1_7_1">• A recipe from a recorded brew — straight from history\n• Hold the chart: it shows weight and time at that point\n• Delete a brew straight from the list\n• Step duration in the step list</string>
     <string name="notes_1_7_0">• AeroPress mode: the press shows up on the chart\n• Olive palette\n• The keyboard no longer covers input fields\n• Swirling no longer spoils the chart and the flow rate\n• Correct weight when finishing after the dripper is lifted</string>
     <string name="notes_1_6_1">• A bell once the last step of the recipe is over\n• Auto-finish now spots a lifted dripper on large brews too\n• A tablet in portrait no longer gets the landscape layout</string>
@@ -254,6 +259,7 @@
     <string name="notes_1_1_0">• Experimental support for Felicita, Bookoo, Decent Scale and Timemore Black Mirror Dot\n• The app scans for every known scale at once</string>
     <string name="notes_1_0_0">First release: step-based recipes, the editor, brewing with and without scales, pace guidance, automatic finish, rescaling to the actual dose, recording a recipe from a brew, JSON import and export, history with charts, sound and vibration.</string>
 
+    <string name="settings_scale_log_unsupported">Scale not on the supported list? Record a log and send it — that is what support for a new model is written from.</string>
     <string name="scale_log_title">Scale log</string>
     <string name="scale_log_intro">Record this when a scale will not connect or reports nonsense. The file holds what the scale sends and how the app read it. No personal data goes in.</string>
     <string name="scale_log_connected">Scale connected: %1$s</string>

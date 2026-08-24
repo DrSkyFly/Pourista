@@ -299,6 +299,12 @@ class AppContainer(private val context: Context) {
         }
         scope.launch {
             settings.settings
+                .map { it.autoFinish }
+                .distinctUntilChanged()
+                .collect { brewEngine.autoFinish = it }
+        }
+        scope.launch {
+            settings.settings
                 .map { it.keepRecipeWater }
                 .distinctUntilChanged()
                 .collect { brewEngine.setKeepRecipeWater(it) }
