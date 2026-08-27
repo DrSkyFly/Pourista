@@ -1,11 +1,12 @@
 package com.pourista.ui.components
 
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.material.icons.Icons
@@ -19,13 +20,16 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.draw.drawBehind
+import androidx.compose.ui.geometry.Offset
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.drawscope.DrawScope
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import com.pourista.R
 import com.pourista.core.formatClock
 import com.pourista.core.formatGrams
 import com.pourista.data.model.RecipeStep
-import com.pourista.ui.icon
 import com.pourista.ui.labelRes
 
 /**
@@ -91,6 +95,10 @@ fun StepsToggleInline(
 /**
  * Все этапы рецепта подряд: что делать, когда и сколько долить.
  *
+ * Этапы идут лентой — кружок со значком, от кружка к кружку линия. Пролив
+ * последователен, и порядок должен читаться раньше текста; заодно видно, что
+ * список кончился, а не оборвался.
+ *
  * Вода в шаге хранится накопительной целью, а человеку нужен долив — разницу
  * считаем здесь, по тому же правилу, что и подсказки во время пролива.
  */
@@ -101,63 +109,136 @@ fun RecipeStepsList(
     /** Шаг, который идёт прямо сейчас, — его подсвечиваем. */
     currentIndex: Int? = null,
 ) {
-    Column(
-        modifier = modifier.fillMaxWidth(),
-        verticalArrangement = Arrangement.spacedBy(10.dp),
-    ) {
+    // Промежутки между строками отданы самим строкам: линия должна тянуться и
+    // через них, иначе лента распадётся на отдельные кружки.
+    Column(modifier = modifier.fillMaxWidth()) {
         var previousTarget = 0f
         steps.forEachIndexed { index, step ->
             val delta = (step.targetWaterGrams - previousTarget).coerceAtLeast(0f)
             previousTarget = maxOf(previousTarget, step.targetWaterGrams)
-            StepRow(step = step, deltaGrams = delta, current = index == currentIndex)
+            StepRow(
+                step = step,
+                deltaGrams = delta,
+                current = index == currentIndex,
+                first = index == 0,
+                last = index == steps.lastIndex,
+            )
         }
     }
 }
 
 @Composable
-private fun StepRow(step: RecipeStep, deltaGrams: Float, current: Boolean) {
+private fun StepRow(
+    step: RecipeStep,
+    deltaGrams: Float,
+    current: Boolean,
+    first: Boolean,
+    last: Boolean,
+) {
     val muted = MaterialTheme.colorScheme.onSurfaceVariant
-    val accent = if (current) MaterialTheme.colorScheme.primary else muted
+    val accent = MaterialTheme.colorScheme.primary
+    val line = MaterialTheme.colorScheme.outlineVariant
 
-    Row(modifier = Modifier.fillMaxWidth()) {
-        Icon(
-            imageVector = step.kind.icon(),
-            contentDescription = null,
-            tint = accent,
-            modifier = Modifier
-                .padding(top = 2.dp)
-                .size(18.dp),
-        )
-        Spacer(Modifier.size(12.dp))
-        Column(Modifier.weight(1f)) {
-            Text(
-                text = step.title?.takeIf { it.isNotBlank() }
-                    ?: stringResource(step.kind.labelRes()),
-                style = MaterialTheme.typography.bodyMedium,
-                color = if (current) {
-                    MaterialTheme.colorScheme.primary
+    val details = stepDetails(step, deltaGrams)
+    val note = step.note?.takeIf { it.isNotBlank() }
+    // У слива и ожидания нет ни долива, ни заметки — строка всего одна, и вся
+    // она встаёт по середине кружка. Где строк больше, по середине стоит
+    // кружок, а название с временем остаются наверху.
+    val single = details == null && note == null
+    val rowAlign = if (single) Alignment.CenterVertically else Alignment.Top
+
+    Column(
+        modifier = Modifier
+            .fillMaxWidth()
+            .then(
+                if (first && last) {
+                    Modifier
                 } else {
-                    MaterialTheme.colorScheme.onSurface
-                },
+                    Modifier.drawBehind { drawStepLine(line, first, last) }
+                }
+            ),
+    ) {
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                // Этап без подписей ниже кружка — линии тогда не от чего вести.
+                .heightIn(min = StepBadgeSize),
+        ) {
+            StepBadge(
+                kind = step.kind,
+                tint = if (current) MaterialTheme.colorScheme.onPrimary else muted,
+                ring = if (current) accent else line,
+                fill = if (current) accent else null,
+                // Кружок по середине всего этапа, а не по строке с названием:
+                // описание — часть того же этапа, и значок относится к нему же.
+                modifier = Modifier.align(Alignment.CenterVertically),
             )
-            val details = stepDetails(step, deltaGrams)
-            if (details != null) {
-                Text(text = details, style = MaterialTheme.typography.labelMedium, color = muted)
+            Spacer(Modifier.size(12.dp))
+            Column(
+                modifier = Modifier
+                    .weight(1f)
+                    .align(rowAlign),
+            ) {
+                Text(
+                    text = step.title?.takeIf { it.isNotBlank() }
+                        ?: stringResource(step.kind.labelRes()),
+                    style = MaterialTheme.typography.bodyMedium,
+                    color = if (current) {
+                        MaterialTheme.colorScheme.primary
+                    } else {
+                        MaterialTheme.colorScheme.onSurface
+                    },
+                )
+                if (details != null) {
+                    Text(text = details, style = MaterialTheme.typography.labelMedium, color = muted)
+                }
+                if (note != null) {
+                    Text(text = note, style = MaterialTheme.typography.labelSmall, color = muted)
+                }
             }
-            val note = step.note?.takeIf { it.isNotBlank() }
-            if (note != null) {
-                Text(text = note, style = MaterialTheme.typography.labelSmall, color = muted)
-            }
+            Spacer(Modifier.size(8.dp))
+            Text(
+                text = "${formatClock(step.startSec)}–${formatClock(step.endSec)}",
+                style = MaterialTheme.typography.labelMedium,
+                color = muted,
+                // Время стоит вровень с названием: строчка у него мелче, и
+                // без поправки она уезжает вверх.
+                modifier = Modifier
+                    .align(rowAlign)
+                    .padding(top = if (single) 0.dp else TIME_TOP),
+            )
         }
-        Spacer(Modifier.size(8.dp))
-        Text(
-            text = "${formatClock(step.startSec)}–${formatClock(step.endSec)}",
-            style = MaterialTheme.typography.labelMedium,
-            color = muted,
-            modifier = Modifier.align(Alignment.Top),
-        )
+        // Просвет между этапами — часть строки: линия идёт и по нему.
+        if (!last) Spacer(Modifier.height(STEP_GAP))
     }
 }
+
+/**
+ * Линия между кружками: рисуем по фону этапа, за текстом.
+ *
+ * Двумя кусками — от верха строки к своему кружку и от него вниз. Кружок стоит
+ * посередине строки, и над ним у высокого этапа остаётся пустое место: рисуй
+ * только вниз — и до следующего кружка линия не достанет.
+ */
+private fun DrawScope.drawStepLine(color: Color, first: Boolean, last: Boolean) {
+    val badge = StepBadgeSize.toPx()
+    // Просвет до следующего этапа лежит под строкой; у последнего его нет.
+    val rowHeight = size.height - if (last) 0f else STEP_GAP.toPx()
+    val x = badge / 2f
+    val width = StepLineWidth.toPx()
+    if (!first) {
+        drawLine(color, Offset(x, 0f), Offset(x, (rowHeight - badge) / 2f), width)
+    }
+    if (!last) {
+        drawLine(color, Offset(x, (rowHeight + badge) / 2f), Offset(x, size.height), width)
+    }
+}
+
+/** Просвет между этапами: столько линии видно между кружками. */
+private val STEP_GAP = 18.dp
+
+/** Поправка для времени справа: у него строка мелче, чем у названия. */
+private val TIME_TOP = 2.dp
 
 /** «+50г до 50г · 45с · 5,0г/с» — шаги без долива обходятся без второй строки. */
 @Composable

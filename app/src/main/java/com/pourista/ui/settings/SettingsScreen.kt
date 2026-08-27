@@ -1,7 +1,12 @@
 package com.pourista.ui.settings
 
+import android.app.Activity
+import android.content.Context
+import android.content.ContextWrapper
 import android.os.Build
 import android.widget.Toast
+import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -37,6 +42,7 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -53,6 +59,8 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.pourista.BuildConfig
 import com.pourista.R
+import com.pourista.appContainer
+import com.pourista.core.AppLocale
 import com.pourista.ui.components.ReleaseNotesDialog
 import com.pourista.ui.listSidePadding
 import com.pourista.core.formatGrams
@@ -72,6 +80,23 @@ fun SettingsScreen(
     val settings by viewModel.settings.collectAsStateWithLifecycle()
     var showFormat by remember { mutableStateOf(false) }
     var showNotes by remember { mutableStateOf(false) }
+
+    // Файл выбирает система: доступ ко всему хранилищу приложению не нужен.
+    val saveBackup = rememberLauncherForActivityResult(
+        ActivityResultContracts.CreateDocument(BACKUP_MIME)
+    ) { uri -> uri?.let(viewModel::exportBackup) }
+    val openBackup = rememberLauncherForActivityResult(
+        ActivityResultContracts.OpenDocument()
+    ) { uri -> uri?.let(viewModel::importBackup) }
+
+    val backupContext = LocalContext.current
+    val backupMessage by viewModel.backupMessage.collectAsStateWithLifecycle()
+    LaunchedEffect(backupMessage) {
+        val current = backupMessage ?: return@LaunchedEffect
+        val text = backupContext.getString(current.textRes, current.recipes, current.brews)
+        Toast.makeText(backupContext, text, Toast.LENGTH_LONG).show()
+        viewModel.clearBackupMessage()
+    }
 
     if (showFormat) {
         RecipeFormatDialog(onDismiss = { showFormat = false })
@@ -104,6 +129,9 @@ fun SettingsScreen(
         ) {
             item {
                 SettingsSection(stringResource(R.string.settings_appearance)) {
+                    // Язык первым: кто открыл приложение на чужом языке, ищет
+                    // именно эту строку, и искать её должно быть недолго.
+                    LanguageRow()
                     Text(
                         text = stringResource(R.string.settings_theme),
                         style = MaterialTheme.typography.bodyLarge,
@@ -208,6 +236,29 @@ fun SettingsScreen(
             }
 
             item {
+                SettingsSection(stringResource(R.string.settings_backup)) {
+                    Text(
+                        text = stringResource(R.string.settings_backup_hint),
+                        style = MaterialTheme.typography.bodySmall,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant,
+                        modifier = Modifier.padding(bottom = 8.dp),
+                    )
+                    // Кнопки одна под другой: в длинных языках две в строку
+                    // не помещаются, а перенос в кнопке читается плохо.
+                    OutlinedButton(
+                        onClick = { saveBackup.launch(BACKUP_FILE) },
+                        modifier = Modifier.fillMaxWidth(),
+                    ) { Text(stringResource(R.string.settings_backup_export)) }
+                    OutlinedButton(
+                        onClick = { openBackup.launch(BACKUP_OPEN_MIME) },
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(top = 8.dp),
+                    ) { Text(stringResource(R.string.settings_backup_import)) }
+                }
+            }
+
+            item {
                 SettingsSection(stringResource(R.string.settings_scale)) {
                     SwitchRow(
                         title = stringResource(R.string.settings_auto_connect),
@@ -264,6 +315,7 @@ fun SettingsScreen(
                     // Проверку обновлений отдаём браузеру: у приложения нет и не
                     // должно быть выхода в сеть. Страница latest на GitHub сама
                     // ведёт на свежий релиз, а версия рядом — с чем сравнивать.
+                    // В сборке для магазина кнопки нет: обновляет магазин.
                     val uriHandler = LocalUriHandler.current
                     val releases = stringResource(R.string.settings_updates_url)
                     Row(verticalAlignment = Alignment.CenterVertically) {
@@ -275,9 +327,13 @@ fun SettingsScreen(
                             style = MaterialTheme.typography.bodyMedium,
                             modifier = Modifier.weight(1f),
                         )
-                        TextButton(
-                            onClick = { runCatching { uriHandler.openUri("https://$releases") } },
-                        ) { Text(stringResource(R.string.settings_check_updates)) }
+                        if (BuildConfig.UPDATE_LINK) {
+                            TextButton(
+                                onClick = {
+                                    runCatching { uriHandler.openUri("https://$releases") }
+                                },
+                            ) { Text(stringResource(R.string.settings_check_updates)) }
+                        }
                     }
                     // История изменений под версией и той же кнопкой, что и
                     // проверка обновлений: обе про то, что нового в приложении.
@@ -317,18 +373,6 @@ fun SettingsScreen(
                         color = MaterialTheme.colorScheme.primary,
                         modifier = Modifier.padding(top = 2.dp),
                     )
-                    Text(
-                        text = stringResource(R.string.settings_thanks),
-                        style = MaterialTheme.typography.bodySmall,
-                        color = MaterialTheme.colorScheme.onSurfaceVariant,
-                        modifier = Modifier.padding(top = 8.dp),
-                    )
-                    Text(
-                        text = stringResource(R.string.settings_thanks_link),
-                        style = MaterialTheme.typography.bodySmall,
-                        color = MaterialTheme.colorScheme.primary,
-                        modifier = Modifier.padding(top = 2.dp),
-                    )
                     // Двух авторов указать обязаны: их звуки под лицензиями
                     // с атрибуцией. Остальные два — CC0, но раз уж список
                     // есть, пусть будет полным.
@@ -342,6 +386,47 @@ fun SettingsScreen(
             }
         }
     }
+}
+
+/**
+ * Выбор языка интерфейса.
+ *
+ * Значение читается из системы (или из своего хранилища на старых Android),
+ * а не из общих настроек: с Android 13 язык принадлежит системе, и её выбор
+ * должен быть виден здесь, даже если его сменили в настройках телефона.
+ */
+@Composable
+private fun LanguageRow() {
+    val context = LocalContext.current
+    val system = stringResource(R.string.language_system)
+    val options = remember(system) {
+        buildList<Pair<String, String?>> {
+            add(system to null)
+            AppLocale.languages.forEach { add(it.label to it.tag) }
+        }
+    }
+    ChoiceRow(
+        title = stringResource(R.string.settings_language),
+        subtitle = null,
+        current = AppLocale.selected(context)?.label ?: system,
+        options = options,
+        onSelect = { tag ->
+            AppLocale.apply(context, tag)
+            // Тексты встроенных рецептов лежат в базе и сами не переведутся.
+            context.appContainer.syncPresets()
+            // С Android 13 экран пересоздаёт система, раньше — некому.
+            if (Build.VERSION.SDK_INT < Build.VERSION_CODES.TIRAMISU) {
+                context.activity()?.recreate()
+            }
+        },
+    )
+}
+
+/** Экран, на котором мы находимся: до него из контекста Compose один шаг. */
+private tailrec fun Context.activity(): Activity? = when (this) {
+    is Activity -> this
+    is ContextWrapper -> baseContext.activity()
+    else -> null
 }
 
 /**
@@ -530,3 +615,10 @@ private fun ThemeMode.labelRes(): Int = when (this) {
     ThemeMode.LIGHT -> R.string.theme_light
     ThemeMode.DARK -> R.string.theme_dark
 }
+
+/** Копия — обычный JSON, и открывать её должно предложенным именем файла. */
+private const val BACKUP_MIME = "application/json"
+private const val BACKUP_FILE = "pourista-backup.json"
+
+/** Некоторые файловые менеджеры отдают копию как text/plain, а то и никак. */
+private val BACKUP_OPEN_MIME = arrayOf("application/json", "text/plain", "*/*")

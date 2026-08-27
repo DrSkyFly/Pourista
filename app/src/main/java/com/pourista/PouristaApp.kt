@@ -17,6 +17,7 @@ import com.pourista.data.presets.BuiltInRecipes
 import com.pourista.data.presets.FortySixGenerator
 import com.pourista.data.presets.FortySixParams
 import com.pourista.data.repo.BrewRepository
+import com.pourista.core.AppLocale
 import com.pourista.data.repo.RecipeRepository
 import com.pourista.scale.ScaleRepository
 import com.pourista.ui.labelRes
@@ -47,6 +48,11 @@ class PouristaApp : Application() {
     lateinit var container: AppContainer
         private set
 
+    /** Язык приложения нужен уже здесь: из контекста приложения читаются пресеты. */
+    override fun attachBaseContext(base: Context) {
+        super.attachBaseContext(AppLocale.wrap(base))
+    }
+
     override fun onCreate() {
         super.onCreate()
         container = AppContainer(this)
@@ -76,6 +82,13 @@ class AppContainer(private val context: Context) {
 
     /** Нужен экранам для доступа к файлам: импорт и экспорт рецептов. */
     val appContext: Context get() = context
+
+    /**
+     * Контекст для чтения строк. Язык могли сменить уже после запуска, а
+     * контекст приложения на старых Android остаётся с прежней локалью —
+     * поэтому берём его заново на каждое обращение, а не один раз.
+     */
+    private val localized: Context get() = AppLocale.wrap(context)
 
     private val database = AppDatabase.build(context)
 
@@ -180,12 +193,12 @@ class AppContainer(private val context: Context) {
         val existing = settings.current().fortySixRecipeId?.let { recipes.recipeById(it) }
         val fresh = FortySixGenerator.recipe(
             params = params,
-            name = context.getString(R.string.four_six_recipe_name),
-            grindSetting = context.getString(R.string.grind_coarse),
-            notes = context.getString(
+            name = localized.getString(R.string.four_six_recipe_name),
+            grindSetting = localized.getString(R.string.grind_coarse),
+            notes = localized.getString(
                 R.string.four_six_notes,
-                context.getString(params.taste.labelRes()),
-                context.getString(params.strength.labelRes()),
+                localized.getString(params.taste.labelRes()),
+                localized.getString(params.strength.labelRes()),
             ),
         )
         // Избранное, место в списке и дату заведения оставляем прежними: с точки
@@ -212,7 +225,7 @@ class AppContainer(private val context: Context) {
     private fun prepareRecordedDraft() {
         val stamp = SimpleDateFormat("d MMMM, HH:mm", Locale.getDefault()).format(Date())
         val draft = brewEngine.buildRecordedRecipe(
-            name = "${context.getString(R.string.recipe_recorded_name)} $stamp",
+            name = "${localized.getString(R.string.recipe_recorded_name)} $stamp",
             brewer = "",
         )
         brewEngine.cancelRecording()
@@ -261,7 +274,7 @@ class AppContainer(private val context: Context) {
                 val firstRun = current.presetsVersion == 0
                 // Удалённые пользователем встроенные рецепты обратно не возвращаем:
                 // если аэропресса в доме нет, он не должен воскресать с обновлением.
-                BuiltInRecipes.all(context, includeRetired = !firstRun)
+                BuiltInRecipes.all(localized, includeRetired = !firstRun)
                     .filterNot { it.name in current.deletedPresets }
                     .forEach { recipes.save(it) }
                 settings.setPresetsVersion(BuiltInRecipes.VERSION)
@@ -273,7 +286,7 @@ class AppContainer(private val context: Context) {
             if (current.presetsLocale == locale) return@launch
             // Пересевом язык не поправить: он снёс бы порядок и избранное. Меняем
             // только тексты и только у рецептов, которых не касались руками.
-            BuiltInRecipes.all(context).forEach { recipes.relocalizeBuiltIn(it) }
+            BuiltInRecipes.all(localized).forEach { recipes.relocalizeBuiltIn(it) }
             settings.setPresetsLocale(locale)
             Log.d(TAG, "Тексты встроенных рецептов переведены на $locale")
         }
@@ -281,7 +294,7 @@ class AppContainer(private val context: Context) {
 
     /** Язык, на котором приложение сейчас отдаёт строки из ресурсов. */
     private fun currentLocaleTag(): String =
-        context.resources.configuration.locales[0].toLanguageTag()
+        localized.resources.configuration.locales[0].toLanguageTag()
 
     /** Пороги и режимы подсказок живут в настройках, движок получает их отсюда. */
     private fun applyCueSettings() {

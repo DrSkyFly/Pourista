@@ -1,5 +1,6 @@
 package com.pourista
 
+import android.content.Context
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
@@ -15,6 +16,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import com.pourista.core.AppLocale
 import com.pourista.scale.ScaleRepository
 import com.pourista.ui.AppNavigation
 import com.pourista.ui.components.ReleaseNotesDialog
@@ -31,6 +33,14 @@ class MainActivity : ComponentActivity() {
         }
 
     private val container: AppContainer get() = appContainer
+
+    /**
+     * До Android 13 система про выбранный в приложении язык не знает,
+     * поэтому локаль подменяем сами — раньше, чем экран возьмётся за ресурсы.
+     */
+    override fun attachBaseContext(newBase: Context) {
+        super.attachBaseContext(AppLocale.wrap(newBase))
+    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         enableEdgeToEdge()

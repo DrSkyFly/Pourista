@@ -1,5 +1,6 @@
 package com.pourista.ui.theme
 
+import android.app.Activity
 import android.os.Build
 import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -12,12 +13,15 @@ import androidx.compose.material3.dynamicLightColorScheme
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.ReadOnlyComposable
+import androidx.compose.runtime.SideEffect
 import androidx.compose.runtime.staticCompositionLocalOf
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.LocalView
 import androidx.compose.ui.unit.dp
+import androidx.core.view.WindowCompat
 
 enum class ThemeMode { SYSTEM, LIGHT, DARK }
 
@@ -107,6 +111,20 @@ fun PouristaTheme(
         palette == AppPalette.CALM -> if (dark) CalmDarkAccents else CalmLightAccents
         dark -> DarkAccents
         else -> LightAccents
+    }
+
+    // Значки системной строки: под шапкой 4:6 всегда бирюза, поэтому там они
+    // светлые независимо от темы, а внизу цвет берётся от фона приложения.
+    val view = LocalView.current
+    if (!view.isInEditMode) {
+        val barDark = dark || palette == AppPalette.FOUR_SIX
+        SideEffect {
+            val window = (view.context as? Activity)?.window ?: return@SideEffect
+            WindowCompat.getInsetsController(window, view).apply {
+                isAppearanceLightStatusBars = !barDark
+                isAppearanceLightNavigationBars = !dark
+            }
+        }
     }
 
     CompositionLocalProvider(

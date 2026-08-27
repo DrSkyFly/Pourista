@@ -470,6 +470,10 @@ class BrewEngine(
 
         // Вес берём как есть, без обрезки по нулю: снятая целиком чашка уводит
         // весы в минус, и это самый явный признак, что заваривание закончено.
+        // В режиме аэропресса сторожу делать нечего: там вес падает от отжима,
+        // а не от снятой чашки, и принимать отжим за конец нельзя — ни здесь,
+        // ни в «Финише» по кнопке, который смотрит на тот же сторож.
+        if (aeropress) return
         if (removal.onSample(current.weightGrams, nowMs) && autoFinish) finishAfterRemoval()
     }
 
@@ -493,14 +497,18 @@ class BrewEngine(
 
     /**
      * Автофиниш: с весов сняли воронку или чашку. Заваривание закрываем тем
-     * временем, когда вес упал, а вес возвращаем последний нормальный — вместе
+     * временем, когда вес упал, а вес возвращаем последний устоявшийся — вместе
      * с графиками, куда уже успели попасть секунды падения.
      */
     private fun finishAfterRemoval() {
         val restored = removal.weightBeforeDrop
-        val cutoff = removal.cutoffGrams
         finishAt(removal.droppedAtMs) { state ->
-            val weights = state.weightSeries.dropLastWhile { it <= cutoff }
+            // Хвост графика обрезаем по восстановленному весу, а не по порогу
+            // сторожа: между полной воронкой и падением ниже порога на график
+            // ложится просадка, и график расходился бы с итогом в карточке.
+            val weights = state.weightSeries
+                .dropLastWhile { it < restored - CHART_TAIL_GRAMS }
+                .ifEmpty { state.weightSeries }
             state.copy(
                 weightGrams = restored,
                 weightSeries = weights,
@@ -744,6 +752,9 @@ class BrewEngine(
 
         /** Насколько близко к цели считается «долил» при остановившемся весе. */
         const val NEAR_STOP_GRAMS = 5f
+
+        /** Допуск, с которым хвост графика подрезается под итоговый вес. */
+        const val CHART_TAIL_GRAMS = 1f
         const val STEADY_TOLERANCE_GRAMS = 0.4f
         const val STEADY_HOLD_MS = 3_000L
 

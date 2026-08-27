@@ -40,10 +40,10 @@ jobs:
             }
 
       - name: Модульные тесты
-        run: ./gradlew testDebugUnitTest
+        run: ./gradlew testGithubDebugUnitTest
 
       - name: Отладочная сборка
-        run: ./gradlew assembleDebug
+        run: ./gradlew assembleGithubDebug
 
       - name: Отчёты тестов
         if: failure()
@@ -56,5 +56,5 @@ jobs:
         uses: actions/upload-artifact@v5
         with:
           name: pourista-debug-apk
-          path: app/build/outputs/apk/debug/app-debug.apk
+          path: app/build/outputs/apk/github/debug/app-github-debug.apk
           if-no-files-found: error

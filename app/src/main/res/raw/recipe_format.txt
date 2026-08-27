@@ -1,7 +1,7 @@
-ФОРМАТ РЕЦЕПТОВ POURISTA
+POURISTA RECIPE FORMAT
 
-Файл — обычный JSON в кодировке UTF-8. В нём один объект с полями format,
-version и списком recipes. Такой же файл создаёт экспорт из приложения.
+The file is plain JSON in UTF-8. It holds one object with the fields format,
+version and a list of recipes. Export from the app produces the same file.
 
 {
   "format": "pourista.recipes",
@@ -9,55 +9,56 @@ version и списком recipes. Такой же файл создаёт эк�
   "recipes": [ ... ]
 }
 
-РЕЦЕПТ
+RECIPE
 
-  name       строка, обязательно. Название.
-  brewer     строка. Воронка или прибор: «Hario V60-02», «AeroPress».
-  dose       число. Доза кофе, граммы.
-  water      число. Общий объём воды, граммы. Если не указать — возьмётся
-             сумма проливов из шагов.
-  temp       целое. Температура воды, °C. По умолчанию 94.
-  grinder    строка. Кофемолка.
-  grind      строка. Помол: «24 клика», «6.5», «средний».
-  bean       строка. Кофе.
-  roaster    строка. Обжарщик.
-  notes      строка. Заметки, можно многострочные.
-  autoStart  true/false. Пускать ли таймер автоматически, как только на весах
-             появится вода. Для пуровера true, для эспрессо false.
-  steps      список шагов, обязательно.
+  name       string, required. The name.
+  brewer     string. Dripper or device: "Hario V60-02", "AeroPress".
+  dose       number. Coffee dose, grams.
+  water      number. Total water, grams. Left out — the sum of the pours
+             from the steps is used.
+  temp       integer. Water temperature, °C. Defaults to 94.
+  grinder    string. Grinder.
+  grind      string. Grind setting: "24 clicks", "6.5", "medium".
+  bean       string. Coffee.
+  roaster    string. Roaster.
+  notes      string. Notes, several lines allowed.
+  autoStart  true/false. Whether to start the timer by itself as soon as water
+             shows up on the scale. True for pour-over, false for espresso.
+  steps      list of steps, required.
 
-ШАГ
+STEP
 
-  kind       вид шага, одно из:
-               BLOOM     блуминг, всегда первый шаг рецепта;
-               POUR      обычный пролив;
-               WAIT      пауза без долива;
-               SWIRL     покачать воронку;
-               STIR      размешать;
-               DRAWDOWN  слив, всегда последний шаг рецепта;
-               PRESS     отжим поршня (аэропресс).
-             Если поле не указано, шаг с водой считается POUR, без воды — WAIT.
-  duration   целое, секунды. Длительность всего шага: влив плюс пауза после
-             него. Именно так рецепты и пишут: «50 г, 45 секунд».
-  water      число, граммы. Сколько долить НА ЭТОМ шаге (не суммарно!).
-             Приложение само посчитает, сколько должно быть на весах.
-  flow       число, г/с. Скорость влива. Из неё считается время влива:
-             50 г при 5 г/с — это 10 секунд влива и 35 секунд паузы внутри
-             сорокапятисекундного шага. Хранится именно скорость: при смене
-             дозы объём воды пересчитывается, а комфортная скорость остаётся.
-  title      строка. Своё название шага, если нужно.
-  note       строка. Подсказка к шагу.
+  kind       kind of step, one of:
+               BLOOM     bloom, always the first step of a recipe;
+               POUR      an ordinary pour;
+               WAIT      a pause with no water added;
+               SWIRL     swirl the dripper;
+               STIR      stir;
+               DRAWDOWN  drawdown, always the last step of a recipe;
+               PRESS     press the plunger (AeroPress).
+             With the field left out, a step with water counts as POUR,
+             a step without water as WAIT.
+  duration   integer, seconds. Length of the whole step: the pour plus the
+             pause after it. That is how recipes are written: "50 g, 45 seconds".
+  water      number, grams. How much to add ON THIS step (not the running
+             total). The app works out what the scale should read.
+  flow       number, g/s. Pouring speed. The pour time comes from it: 50 g at
+             5 g/s means 10 seconds of pouring and 35 seconds of pause inside
+             a forty-five-second step. The speed is what gets stored: change
+             the dose and the volume is recalculated, the comfortable speed stays.
+  title      string. Your own name for the step, if you need one.
+  note       string. A hint for the step.
 
-ПРАВИЛА
+RULES
 
-  • Блуминг может быть только один и только первым шагом.
-  • Слив может быть только один и только последним шагом.
-  • Шаги идут подряд, без пропусков времени: время начала каждого шага —
-    это сумма длительностей предыдущих.
-  • Влив не должен быть длиннее шага: water / flow ≤ duration.
-  • Сумма water по всем шагам должна совпадать с полем water рецепта.
+  • There can be only one bloom, and only as the first step.
+  • There can be only one drawdown, and only as the last step.
+  • Steps run back to back, with no gaps in time: a step starts at the sum of
+    the durations before it.
+  • A pour must not outlast its step: water / flow ≤ duration.
+  • The sum of water over all steps must match the recipe's water field.
 
-ПРИМЕР
+EXAMPLE
 
 {
   "format": "pourista.recipes",
@@ -69,8 +70,8 @@ version и списком recipes. Такой же файл создаёт эк�
       "dose": 15,
       "water": 250,
       "temp": 95,
-      "grind": "средний",
-      "notes": "Блум 50 г, два пролива, лёгкое покачивание в конце.",
+      "grind": "medium",
+      "notes": "50 g bloom, two pours, a gentle swirl at the end.",
       "autoStart": true,
       "steps": [
         { "kind": "BLOOM",    "duration": 45, "water": 50,  "flow": 5 },
@@ -83,11 +84,11 @@ version и списком recipes. Такой же файл создаёт эк�
   ]
 }
 
-ЧТО СКАЗАТЬ НЕЙРОСЕТИ
+WHAT TO ASK AN LLM
 
-  «Составь рецепт для V60 на 18 г кофе и пропорцию 1:16 в этом формате.
-  Верни только JSON.» — и приложить текст выше.
+  "Write a V60 recipe for 18 g of coffee at a 1:16 ratio in this format.
+  Return JSON only." — and paste the text above.
 
-  Готовый ответ можно просто скопировать и выбрать в списке рецептов
-  «Импортировать из буфера обмена». Обрамление ```json и пояснения вокруг
-  JSON приложение отбросит само.
+  The answer can be copied as is: in the recipe list pick "Import from the
+  clipboard". The app strips ```json fences and any prose around the JSON
+  by itself.

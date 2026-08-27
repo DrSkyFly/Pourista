@@ -10,7 +10,8 @@ Scales are optional. Without them it is a recipe book with a step-by-step timer
 that knows when to pour, when to wait and how much to add. With a
 **Futula Kitchen Scale 3** bluetooth scale (also sold as LEFU CK811) you also
 get live weight, a verdict on your flow rate, the automatic finish and a record
-of the cup you just brewed.
+of the cup you just brewed. In beta — Acaia, Bookoo, Decent Scale, DiFluid,
+Eureka Precisa, Felicita, Timemore and Varia AKU.
 
 *[По-русски](README.md)*
 
@@ -52,9 +53,14 @@ app does not judge a pace it cannot measure, and does not show empty gauges.
 ### Supported scales
 
 - **Futula Kitchen Scale 3 / LEFU CK811** — verified on real hardware.
-- **Felicita**, **Bookoo**, **Decent Scale**, **Timemore Black Mirror Dot** —
-  experimental: protocols written from open implementations, never tested on the
-  hardware. Please open an issue to say whether it works.
+- **Timemore Black Mirror Dot / Basic 3** — beta: the parsing is checked
+  against a protocol capture from a real scale, the connection itself is not
+  confirmed by its owner yet.
+- **Acaia** Pearl / Lunar / Pyxis / Cinco, **Bookoo**, **Decent Scale**,
+  **DiFluid Microbalance**, **Eureka Precisa** (CFS-9002, LSJ-001),
+  **Felicita**, **Varia AKU** — beta: protocols written from open
+  implementations, never tested on the hardware. Please open an issue to say
+  whether it works.
 
 **With scales** — all of the above plus live weight, grams to go in the current
 step, a pace verdict ("pour faster" / "pour slower"), a cue a few grams before
@@ -101,11 +107,15 @@ theme and a coffee, 4:6 or wallpaper palette.
 
 ## Build
 
+The app is built in two flavors: `github` for the APK on the releases page and
+`play` for the Google Play bundle, which has no update check button.
+
 ```bash
-./gradlew assembleDebug          # debug build
-./gradlew assembleRelease        # release, signed with the key from ../keystore
-./gradlew testDebugUnitTest      # unit tests
-./gradlew connectedAndroidTest   # database migration tests, needs a device
+./gradlew assembleGithubDebug     # debug build
+./gradlew assembleGithubRelease   # release, signed with the key from ../keystore
+./gradlew bundlePlayRelease       # Google Play bundle
+./gradlew testGithubDebugUnitTest # unit tests
+./gradlew connectedGithubDebugAndroidTest   # database migration tests, needs a device
 ```
 
 JDK 21 and an Android SDK with platform android-37 and build-tools 36 are
@@ -119,11 +129,11 @@ release is simply built unsigned and the build does not fail.
 
 Special thanks to Coffeesaurus — [youtube.com/c/Coffeesaurus](https://www.youtube.com/c/Coffeesaurus).
 
-Thanks for the idea to [Futula Coffee Scale](https://github.com/wdrs/FutulaCoffeeScale),
-where this all started.
-
-Scale protocols other than Futula were worked out from
-[Beanconqueror](https://github.com/graphefruit/beanconqueror).
+Scale protocols other than Futula were worked out from open implementations:
+[Beanconqueror](https://github.com/graphefruit/beanconqueror),
+[pyacaia](https://github.com/lucapinello/pyacaia),
+[aioacaia](https://github.com/zweckj/aioacaia) and the published
+[BooKoo](https://github.com/BooKooCode/OpenSource) protocol.
 
 ## License
 

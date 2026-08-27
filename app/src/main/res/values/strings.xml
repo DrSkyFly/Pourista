@@ -63,6 +63,8 @@
     <string name="four_six_dose">Dose</string>
     <string name="four_six_ratio">Ratio</string>
     <string name="four_six_ratio_value">1:%1$s</string>
+    <string name="four_six_lock_ratio">Lock ratio</string>
+    <string name="four_six_locked_hint">Ratio is locked: water sets how much coffee to grind.</string>
     <string name="four_six_taste">Taste</string>
     <string name="four_six_taste_hint" formatted="false">First 40 % of the water: a smaller first pour is sweeter, a larger one brighter.</string>
     <string name="four_six_taste_sweet">Sweet</string>
@@ -159,6 +161,8 @@
     <string name="history_extra_note">Comment</string>
 
     <string name="settings_appearance">Appearance</string>
+    <string name="settings_language">Language</string>
+    <string name="language_system">System</string>
     <string name="settings_theme">Theme</string>
     <string name="theme_system">System</string>
     <string name="theme_light">Light</string>
@@ -190,7 +194,7 @@
     <string name="settings_fix_unit_hint">Recipes and cues are in grams. If the scale switches to ounces, the app switches it back</string>
     <string name="settings_about">About</string>
     <string name="settings_version">Version %1$s</string>
-    <string name="settings_about_hint">Recipes, steps and the timer work on their own. A Futula Kitchen Scale 3 (LEFU CK811) adds weight, flow rate and the automatic finish</string>
+    <string name="settings_about_hint">Recipes, steps and the timer work on their own. A Futula Kitchen Scale 3 (LEFU CK811) adds weight, flow rate and the automatic finish. In beta — Acaia, Bookoo, Decent Scale, DiFluid, Eureka Precisa, Felicita, Timemore, Varia AKU</string>
 
     <string name="grind_medium">medium</string>
     <string name="grind_coarse">coarse</string>
@@ -222,17 +226,25 @@
     <string name="settings_recipes">Recipes</string>
     <string name="settings_recipe_format">Recipe format reference</string>
     <string name="settings_recipe_format_hint">Import JSON — hand it to an LLM and let it compose a recipe</string>
+    <string name="settings_backup">Backup</string>
+    <string name="settings_backup_hint">Recipes and brew history in one file. App settings stay on the phone.</string>
+    <string name="settings_backup_export">Save to a file</string>
+    <string name="settings_backup_import">Restore from a file</string>
+    <string name="backup_saved">Saved: %1$d recipes, %2$d brews</string>
+    <string name="backup_save_failed">Could not save the file</string>
+    <string name="backup_restored">Restored: %1$d recipes, %2$d brews</string>
+    <string name="backup_restore_failed">This file is not a Pourista backup</string>
     <string name="recipes_import_menu">Import from a file</string>
     <string name="action_reorder">Drag to reorder</string>
     <string name="recipes_import_clipboard">Import from the clipboard</string>
     <string name="recipes_clipboard_empty">The clipboard is empty</string>
     <string name="recipe_steps_expand">Show steps</string>
     <string name="recipe_steps_collapse">Collapse</string>
+    <string name="recipe_notes_expand">More</string>
+    <string name="recipe_notes_collapse">Collapse</string>
     <string name="step_row_water">+%1$sg up to %2$sg</string>
     <string name="step_row_duration">%1$ds</string>
     <string name="step_row_flow">%1$sg/s</string>
-    <string name="settings_thanks">Thanks for the idea to Futula Coffee Scale, where this all started</string>
-    <string name="settings_thanks_link">github.com/wdrs/FutulaCoffeeScale</string>
     <string name="settings_thanks_coffeesaurus">Special thanks to Coffeesaurus</string>
     <string name="settings_contact">Contact the author</string>
     <string name="settings_sources">Source code</string>

@@ -29,7 +29,8 @@ object RecipeJson {
         return root.toString(2)
     }
 
-    private fun encodeRecipe(recipe: Recipe): JSONObject {
+    /** Открыт резервной копии: там тот же рецепт плюс служебные поля. */
+    internal fun encodeRecipe(recipe: Recipe): JSONObject {
         val json = JSONObject()
         json.put("name", recipe.name)
         json.putOpt("brewer", recipe.brewer.takeIf { it.isNotBlank() })
@@ -94,7 +95,7 @@ object RecipeJson {
         return text.substring(start, end + 1)
     }
 
-    private fun decodeRecipe(json: JSONObject): Recipe {
+    internal fun decodeRecipe(json: JSONObject): Recipe {
         val name = json.optString("name").takeIf { it.isNotBlank() }
             ?: throw IllegalArgumentException("У рецепта нет названия")
         val steps = decodeSteps(json.optJSONArray("steps"))

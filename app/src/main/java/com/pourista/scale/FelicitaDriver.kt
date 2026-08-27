@@ -33,14 +33,24 @@ object FelicitaDriver : ScaleDriver {
         val sign = if (value[2].toInt() == ASCII_MINUS) -1f else 1f
 
         val unit = String(value, 9, 2, Charsets.US_ASCII).trim().lowercase()
+        val ounces = unit == "oz"
+        // На весах может стоять унция; приложение считает в граммах, поэтому
+        // переводим сразу, не дожидаясь, пока единицу переключат обратно.
+        val displayed = sign * hundredths / 100f
         return WeightReading(
-            grams = sign * hundredths / 100f,
-            unitOnScale = if (unit == "oz") WeightUnit.OUNCE else WeightUnit.GRAM,
+            grams = if (ounces) displayed * GRAMS_PER_OUNCE else displayed,
+            unitOnScale = if (ounces) WeightUnit.OUNCE else WeightUnit.GRAM,
             batteryPercent = batteryPercent(value[15].toInt() and 0xff),
         )
     }
 
     override fun tareCommand(): ByteArray = byteArrayOf(CMD_TARE)
+
+    /** Единицу весы только перебирают по кругу: граммы, унции и обратно. */
+    override fun unitCommand(unit: WeightUnit): ByteArray? =
+        if (unit == WeightUnit.GRAM) byteArrayOf(CMD_TOGGLE_UNIT) else null
+
+    override val unitCommandIsToggle = true
 
     /** Заряд приходит сырым уровнем, границы у модели фиксированные. */
     private fun batteryPercent(raw: Int): Int? {
@@ -55,4 +65,6 @@ object FelicitaDriver : ScaleDriver {
     private const val BATTERY_MIN = 129
     private const val BATTERY_MAX = 158
     private const val CMD_TARE: Byte = 0x54
+    private const val CMD_TOGGLE_UNIT: Byte = 0x55
+    private const val GRAMS_PER_OUNCE = 28.349523f
 }

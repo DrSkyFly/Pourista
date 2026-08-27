@@ -22,6 +22,8 @@ object BookooDriver : ScaleDriver {
 
     override fun parseWeight(value: ByteArray): WeightReading? {
         if (value.size < PACKET_SIZE) return null
+        // В ту же характеристику приходят и другие пакеты: у веса свой номер.
+        if (value[0] != PRODUCT || value[1] != TYPE_WEIGHT) return null
 
         val hundredths = (value[7].toInt() and 0xff shl 16) or
             (value[8].toInt() and 0xff shl 8) or
@@ -36,5 +38,7 @@ object BookooDriver : ScaleDriver {
         byteArrayOf(0x03, 0x0a, 0x01, 0x00, 0x00, 0x08)
 
     private const val PACKET_SIZE = 20
+    private const val PRODUCT: Byte = 0x03
+    private const val TYPE_WEIGHT: Byte = 0x0B
     private const val ASCII_MINUS = '-'.code
 }

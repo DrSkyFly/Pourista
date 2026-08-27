@@ -44,6 +44,15 @@ object DecentScaleDriver : ScaleDriver {
     override fun onConnectCommands(): List<ByteArray> =
         listOf(command(byteArrayOf(HEADER, 0x0a, 0x01, 0x01, 0x00, 0x00)))
 
+    /** Без напоминаний весы засыпают посреди пролива. */
+    override fun heartbeatCommands(): List<ByteArray> =
+        listOf(command(byteArrayOf(HEADER, 0x0a, 0x03, 0xff.toByte(), 0xff.toByte(), 0x00)))
+
+    override val heartbeatIntervalMs = 2_000L
+
+    /** Первую команду весы часто теряют, поэтому каждую шлём дважды. */
+    override val commandRepeats = 2
+
     /** Дописывает к шести байтам контрольную сумму. */
     private fun command(body: ByteArray): ByteArray {
         var checksum = 0

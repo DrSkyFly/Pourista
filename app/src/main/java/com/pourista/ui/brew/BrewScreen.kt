@@ -12,6 +12,7 @@ import androidx.compose.animation.core.animateFloat
 import androidx.compose.animation.core.infiniteRepeatable
 import androidx.compose.animation.core.rememberInfiniteTransition
 import androidx.compose.animation.core.tween
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.BoxWithConstraints
@@ -80,6 +81,7 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalView
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.KeyboardType
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.core.content.ContextCompat
@@ -97,7 +99,6 @@ import com.pourista.core.formatTimerWithTenths
 import com.pourista.data.model.Recipe
 import com.pourista.scale.ConnectionStatus
 import com.pourista.scale.ScaleRepository
-import com.pourista.ui.icon
 import com.pourista.ui.isWideLayout
 import com.pourista.ui.listSidePadding
 import com.pourista.ui.labelRes
@@ -107,6 +108,7 @@ import com.pourista.ui.components.PourGauge
 import com.pourista.ui.components.RecipeStepsList
 import com.pourista.ui.components.StatTile
 import com.pourista.ui.components.StepsToggleInline
+import com.pourista.ui.components.StepBadge
 import com.pourista.ui.components.StepRing
 import com.pourista.ui.components.StepTimeline
 import com.pourista.ui.theme.AppTheme
@@ -441,8 +443,9 @@ fun BrewScreen(
         ) {
             FortySixSheetContent(
                 initial = settings.fortySix,
-                onGenerate = { params ->
-                    viewModel.generateFortySix(params)
+                initialLockRatio = settings.fortySixLockRatio,
+                onGenerate = { params, lockRatio ->
+                    viewModel.generateFortySix(params, lockRatio)
                     showFortySix = false
                 },
             )
@@ -643,10 +646,13 @@ private fun RecipeSummaryCard(
             }
 
             // Заметки к рецепту — это то, что нужно знать до начала: сколько
-            // раз качнуть воронку, чем этот способ отличается. Показываем
-            // целиком, обрезать такое нельзя.
+            // раз качнуть воронку, чем этот способ отличается. Короткие видно
+            // целиком, длинные сворачиваются: описание на полэкрана оттесняет
+            // всё остальное вниз.
             val notes = recipe.notes?.takeIf { it.isNotBlank() }
             if (notes != null) {
+                var notesExpanded by remember(notes) { mutableStateOf(false) }
+                var notesClipped by remember(notes) { mutableStateOf(false) }
                 Row(
                     modifier = Modifier
                         .fillMaxWidth()
@@ -661,11 +667,37 @@ private fun RecipeSummaryCard(
                             .size(18.dp),
                     )
                     Spacer(Modifier.size(8.dp))
-                    Text(
-                        text = notes,
-                        style = MaterialTheme.typography.bodyMedium,
-                        color = MaterialTheme.colorScheme.onSurfaceVariant,
-                    )
+                    Column(Modifier.weight(1f)) {
+                        Text(
+                            text = notes,
+                            style = MaterialTheme.typography.bodyMedium,
+                            color = MaterialTheme.colorScheme.onSurfaceVariant,
+                            maxLines = if (notesExpanded) Int.MAX_VALUE else NOTES_LINES,
+                            overflow = TextOverflow.Ellipsis,
+                            // В развёрнутом виде обрезки нет, и признак сбросился
+                            // бы вместе с кнопкой «Свернуть».
+                            onTextLayout = { layout ->
+                                if (!notesExpanded) notesClipped = layout.hasVisualOverflow
+                            },
+                        )
+                        if (notesClipped) {
+                            Text(
+                                text = stringResource(
+                                    if (notesExpanded) {
+                                        R.string.recipe_notes_collapse
+                                    } else {
+                                        R.string.recipe_notes_expand
+                                    }
+                                ),
+                                style = MaterialTheme.typography.labelLarge,
+                                color = MaterialTheme.colorScheme.primary,
+                                modifier = Modifier
+                                    .align(Alignment.End)
+                                    .padding(top = 2.dp, end = 8.dp)
+                                    .clickable { notesExpanded = !notesExpanded },
+                            )
+                        }
+                    }
                 }
             }
 
@@ -993,12 +1025,15 @@ private fun GuidanceCard(
     ) {
         Column(Modifier.padding(16.dp)) {
             Row(verticalAlignment = Alignment.CenterVertically) {
-                Icon(
-                    imageVector = guidance.step.kind.icon(),
-                    contentDescription = null,
+                // Кружок тот же, что в списке этапов: это один и тот же этап,
+                // только крупнее — и узнаваться он должен без чтения.
+                StepBadge(
+                    kind = guidance.step.kind,
+                    size = 36.dp,
                     tint = paceColor,
+                    ring = paceColor,
                 )
-                Spacer(Modifier.size(8.dp))
+                Spacer(Modifier.size(12.dp))
                 Column(Modifier.weight(1f)) {
                     Text(
                         text = guidance.step.title?.takeIf { it.isNotBlank() } ?: stepName,
@@ -1496,3 +1531,6 @@ private fun DoseDialog(
         },
     )
 }
+
+/** Сколько строк описания видно в свёрнутом виде. */
+private const val NOTES_LINES = 4

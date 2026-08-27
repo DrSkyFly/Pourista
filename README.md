@@ -10,6 +10,8 @@ Android-приложение для заваривания кофе по рец�
 знает, когда лить, когда ждать и сколько доливать. С bluetooth-весами
 **Futula Kitchen Scale 3** (они же LEFU CK811) добавляются вес в реальном
 времени, оценка скорости пролива, автофиниш и разбор получившейся чашки.
+В бете — Acaia, Bookoo, Decent Scale, DiFluid, Eureka Precisa, Felicita,
+Timemore и Varia AKU.
 
 *[In English](README.en.md)*
 
@@ -51,9 +53,13 @@ GitHub и предлагает поставить новую версию, ка�
 ### Какие весы
 
 - **Futula Kitchen Scale 3 / LEFU CK811** — проверено на железе.
-- **Felicita**, **Bookoo**, **Decent Scale**, **Timemore Black Mirror Dot** —
-  тестовая поддержка: протоколы написаны по открытым реализациям, на железе не
-  проверялись. Напишите в issues, если заработало или нет.
+- **Timemore Black Mirror Dot / Basic 3** — бета: разбор сверен с записью
+  протокола с живых весов, подключение владельцем ещё не подтверждено.
+- **Acaia** Pearl / Lunar / Pyxis / Cinco, **Bookoo**, **Decent Scale**,
+  **DiFluid Microbalance**, **Eureka Precisa** (CFS-9002, LSJ-001),
+  **Felicita**, **Varia AKU** — бета: протоколы написаны по открытым
+  реализациям, на железе не проверялись. Напишите в issues, если заработало
+  или нет.
 
 **С весами** — то же самое плюс вес в реальном времени, остаток до цели шага,
 оценка темпа («лейте быстрее» / «медленнее»), сигнал за несколько граммов до
@@ -99,11 +105,15 @@ GitHub и предлагает поставить новую версию, ка�
 
 ## Сборка
 
+Приложение собирается в двух вариантах: `github` — APK со страницы релизов,
+`play` — бандл для Google Play без кнопки проверки обновлений.
+
 ```bash
-./gradlew assembleDebug      # отладочная сборка
-./gradlew assembleRelease    # релизная, подписывается ключом из ../keystore
-./gradlew testDebugUnitTest  # модульные тесты
-./gradlew connectedAndroidTest   # тесты миграций базы, нужен эмулятор или телефон
+./gradlew assembleGithubDebug     # отладочная сборка
+./gradlew assembleGithubRelease   # релизная, подписывается ключом из ../keystore
+./gradlew bundlePlayRelease       # бандл для Google Play
+./gradlew testGithubDebugUnitTest # модульные тесты
+./gradlew connectedGithubDebugAndroidTest   # тесты миграций базы, нужен эмулятор или телефон
 ```
 
 Требуется JDK 21 и Android SDK с платформой android-37 и build-tools 36.
@@ -120,11 +130,11 @@ GitHub и предлагает поставить новую версию, ка�
 
 Особая благодарность Кофезавру — [youtube.com/c/Coffeesaurus](https://www.youtube.com/c/Coffeesaurus).
 
-Спасибо за идею приложению [Futula Coffee Scale](https://github.com/wdrs/FutulaCoffeeScale),
-с которого всё началось.
-
-Протоколы весов, кроме Futula, разобраны по
-[Beanconqueror](https://github.com/graphefruit/beanconqueror).
+Протоколы весов, кроме Futula, разобраны по открытым реализациям:
+[Beanconqueror](https://github.com/graphefruit/beanconqueror),
+[pyacaia](https://github.com/lucapinello/pyacaia),
+[aioacaia](https://github.com/zweckj/aioacaia) и описанию протокола
+[BooKoo](https://github.com/BooKooCode/OpenSource).
 
 ## Лицензия
 

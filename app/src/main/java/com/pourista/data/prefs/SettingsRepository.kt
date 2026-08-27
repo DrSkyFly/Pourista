@@ -55,6 +55,8 @@ data class AppSettings(
     val deletedPresets: Set<String> = emptySet(),
     /** Последние настройки генератора 4:6 — чтобы заварить так же. */
     val fortySix: FortySixParams = FortySixParams(),
+    /** Пропорция в генераторе 4:6 закреплена: воду крутят, доза считается. */
+    val fortySixLockRatio: Boolean = false,
     /** Рецепт, в который пишет генератор 4:6: он один и переписывается. */
     val fortySixRecipeId: Long? = null,
     /** Версия, для которой уже показали «Что нового». */
@@ -89,6 +91,7 @@ class SettingsRepository(private val context: Context) {
         val fortySixRatio = floatPreferencesKey("forty_six_ratio")
         val fortySixTaste = stringPreferencesKey("forty_six_taste")
         val fortySixStrength = stringPreferencesKey("forty_six_strength")
+        val fortySixLockRatio = booleanPreferencesKey("forty_six_lock_ratio")
         val fortySixRecipeId = longPreferencesKey("forty_six_recipe_id")
         val whatsNewSeen = intPreferencesKey("whats_new_seen")
     }
@@ -126,6 +129,7 @@ class SettingsRepository(private val context: Context) {
                     runCatching { FortySixStrength.valueOf(value) }.getOrNull()
                 } ?: FortySixParams().strength,
             ),
+            fortySixLockRatio = prefs[Keys.fortySixLockRatio] ?: false,
             fortySixRecipeId = prefs[Keys.fortySixRecipeId]?.takeIf { it > 0 },
             whatsNewSeenVersion = prefs[Keys.whatsNewSeen] ?: 0,
         )
@@ -180,6 +184,9 @@ class SettingsRepository(private val context: Context) {
         prefs[Keys.fortySixTaste] = params.taste.name
         prefs[Keys.fortySixStrength] = params.strength.name
     }
+
+    suspend fun setFortySixLockRatio(locked: Boolean) =
+        edit { it[Keys.fortySixLockRatio] = locked }
 
     suspend fun setWhatsNewSeenVersion(versionCode: Int) =
         edit { it[Keys.whatsNewSeen] = versionCode }

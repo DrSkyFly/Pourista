@@ -29,6 +29,23 @@ android {
         versionName = "1.7.2"
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
     }
+
+    // Приложение одно, но раздаётся из двух мест, и правила у них разные.
+    // Код общий: различия сводятся к константам BuildConfig.
+    flavorDimensions += "store"
+    productFlavors {
+        create("github") {
+            dimension = "store"
+            // Ссылка на страницу релизов: обновление оттуда ставят руками.
+            buildConfigField("boolean", "UPDATE_LINK", "true")
+        }
+        create("play") {
+            dimension = "store"
+            // В магазине обновлениями занимается сам магазин, а звать людей за
+            // APK мимо него правилами Play и не разрешено.
+            buildConfigField("boolean", "UPDATE_LINK", "false")
+        }
+    }
     signingConfigs {
         if (keystoreProps.getProperty("storeFile") != null) {
             create("release") {
@@ -68,6 +85,15 @@ android {
 
     androidResources {
         generateLocaleConfig = true
+    }
+
+    bundle {
+        // Play раздаёт из бандла только языки телефона, а язык у нас выбирают
+        // в настройках — и до Android 13 подменой локали, которой нужны сами
+        // ресурсы. Значит все переводы едут в каждой установке.
+        language {
+            enableSplit = false
+        }
     }
 }
 

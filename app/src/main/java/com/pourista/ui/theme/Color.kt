@@ -126,6 +126,12 @@ private val Teal = Color(0xFF1C677E)
 val FourSixBar = Teal
 val FourSixOnBar = Color(0xFFEBF6FA)
 private val SkyBlue = Color(0xFF1D89E4)
+
+/** Тёплый песочный фон светлой темы 4:6 — карточки на нём остаются белыми. */
+private val Sand = Color(0xFFECE7E3)
+
+/** Оранжевый кнопок и этапов светлой темы 4:6 — снят с кнопки оригинала. */
+private val Orange = Color(0xFFFFA62B)
 private val Ember = Color(0xFFF34433)
 
 val FourSixDarkColors = darkColorScheme(
@@ -164,10 +170,10 @@ val FourSixDarkColors = darkColorScheme(
 )
 
 val FourSixLightColors = lightColorScheme(
-    primary = Color(0xFF7D5A00),
-    onPrimary = Color(0xFFFFFFFF),
-    primaryContainer = Color(0xFFFFE3B4),
-    onPrimaryContainer = Color(0xFF271A00),
+    primary = Orange,
+    onPrimary = Color(0xFF2A1500),
+    primaryContainer = Color(0xFFFFDFAE),
+    onPrimaryContainer = Color(0xFF2A1B00),
     secondary = Teal,
     onSecondary = Color(0xFFFFFFFF),
     secondaryContainer = Color(0xFFCDEEF9),
@@ -180,21 +186,21 @@ val FourSixLightColors = lightColorScheme(
     onError = Color(0xFFFFFFFF),
     errorContainer = Color(0xFFFFDAD6),
     onErrorContainer = Color(0xFF410002),
-    background = Color(0xFFFAFAFA),
-    onBackground = Color(0xFF1B1B1B),
-    surface = Color(0xFFFAFAFA),
-    onSurface = Color(0xFF1B1B1B),
-    surfaceVariant = Color(0xFFE3E3E3),
-    onSurfaceVariant = Color(0xFF474747),
+    background = Sand,
+    onBackground = Color(0xFF1F1C1A),
+    surface = Sand,
+    onSurface = Color(0xFF1F1C1A),
+    surfaceVariant = Color(0xFFE2DDD8),
+    onSurfaceVariant = Color(0xFF4E4944),
     surfaceContainerLowest = Color(0xFFFFFFFF),
-    surfaceContainerLow = Color(0xFFF5F5F5),
-    surfaceContainer = Color(0xFFEFEFEF),
-    surfaceContainerHigh = Color(0xFFE9E9E9),
-    surfaceContainerHighest = Color(0xFFE3E3E3),
-    outline = Color(0xFF787878),
-    outlineVariant = Color(0xFFC9C9C9),
-    inverseSurface = Color(0xFF2F2F2F),
-    inverseOnSurface = Color(0xFFF2F2F2),
+    surfaceContainerLow = Color(0xFFFFFFFF),
+    surfaceContainer = Color(0xFFFAF6F3),
+    surfaceContainerHigh = Color(0xFFF4F0EC),
+    surfaceContainerHighest = Color(0xFFEDE8E3),
+    outline = Color(0xFF857E78),
+    outlineVariant = Color(0xFFD5CEC8),
+    inverseSurface = Color(0xFF34302C),
+    inverseOnSurface = Color(0xFFF5F0EC),
     inversePrimary = Amber,
 )
 

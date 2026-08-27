@@ -63,6 +63,8 @@
     <string name="four_six_dose">Доза</string>
     <string name="four_six_ratio">Пропорция</string>
     <string name="four_six_ratio_value">1:%1$s</string>
+    <string name="four_six_lock_ratio">Зафиксировать пропорцию</string>
+    <string name="four_six_locked_hint">Пропорция зафиксирована: вода задаёт, сколько кофе смолоть.</string>
     <string name="four_six_taste">Вкус</string>
     <string name="four_six_taste_hint" formatted="false">Первые 40 % воды: первый пролив меньше второго — слаще, больше — ярче кислотность.</string>
     <string name="four_six_taste_sweet">Сладость</string>
@@ -159,6 +161,8 @@
     <string name="history_extra_note">Комментарий</string>
 
     <string name="settings_appearance">Внешний вид</string>
+    <string name="settings_language">Язык</string>
+    <string name="language_system">Системный</string>
     <string name="settings_theme">Тема</string>
     <string name="theme_system">Система</string>
     <string name="theme_light">Светлая</string>
@@ -190,7 +194,7 @@
     <string name="settings_fix_unit_hint">Рецепты и подсказки — в граммах. Если весы переключатся на унции, приложение вернёт граммы</string>
     <string name="settings_about">О приложении</string>
     <string name="settings_version">Версия %1$s</string>
-    <string name="settings_about_hint">Рецепты, шаги и таймер работают сами по себе. С весами Futula Kitchen Scale 3 (LEFU CK811) добавляются вес, скорость пролива и автофиниш</string>
+    <string name="settings_about_hint">Рецепты, шаги и таймер работают сами по себе. С весами Futula Kitchen Scale 3 (LEFU CK811) добавляются вес, скорость пролива и автофиниш. В бете — Acaia, Bookoo, Decent Scale, DiFluid, Eureka Precisa, Felicita, Timemore, Varia AKU</string>
 
     <string name="grind_medium">средний</string>
     <string name="grind_coarse">крупный</string>
@@ -222,17 +226,25 @@
     <string name="settings_recipes">Рецепты</string>
     <string name="settings_recipe_format">Описание формата рецептов</string>
     <string name="settings_recipe_format_hint">JSON для импорта — можно отдать нейросети, чтобы она составила рецепт</string>
+    <string name="settings_backup">Резервная копия</string>
+    <string name="settings_backup_hint">Рецепты и история завариваний одним файлом. Настройки приложения остаются на телефоне.</string>
+    <string name="settings_backup_export">Сохранить в файл</string>
+    <string name="settings_backup_import">Восстановить из файла</string>
+    <string name="backup_saved">Сохранено: рецептов — %1$d, завариваний — %2$d</string>
+    <string name="backup_save_failed">Не удалось сохранить файл</string>
+    <string name="backup_restored">Восстановлено: рецептов — %1$d, завариваний — %2$d</string>
+    <string name="backup_restore_failed">Это не резервная копия Pourista</string>
     <string name="recipes_import_menu">Импортировать из файла</string>
     <string name="action_reorder">Перетащить, чтобы поменять порядок</string>
     <string name="recipes_import_clipboard">Импортировать из буфера обмена</string>
     <string name="recipes_clipboard_empty">В буфере обмена нет текста</string>
     <string name="recipe_steps_expand">Показать этапы</string>
     <string name="recipe_steps_collapse">Свернуть</string>
+    <string name="recipe_notes_expand">Ещё</string>
+    <string name="recipe_notes_collapse">Свернуть</string>
     <string name="step_row_water">+%1$sг до %2$sг</string>
     <string name="step_row_duration">%1$dс</string>
     <string name="step_row_flow">%1$sг/с</string>
-    <string name="settings_thanks">Спасибо за идею — приложению Futula Coffee Scale, с которого всё началось</string>
-    <string name="settings_thanks_link">github.com/wdrs/FutulaCoffeeScale</string>
     <string name="settings_thanks_coffeesaurus">Особая благодарность Кофезавру</string>
     <string name="settings_contact">Написать автору</string>
     <string name="settings_sources">Исходный код</string>

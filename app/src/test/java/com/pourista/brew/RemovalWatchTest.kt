@@ -153,6 +153,40 @@ class RemovalWatchTest {
     }
 
     @Test
+    fun `промежуточные показания снятия не занижают вес в истории`() {
+        val watch = RemovalWatch()
+        var now = watch.pourUpTo(430f)
+        watch.arm(430f)
+
+        now += 1_000L
+        assertFalse(watch.onSample(430f, now))
+
+        // Весы отдают снятие не одним скачком: пока воронку поднимают, приходит
+        // два-три промежуточных показания. Первое из них ещё выше порога, и
+        // раньше именно оно уезжало в историю вместо налитого.
+        assertFalse(watch.onSample(403f, now + 100L))
+        assertFalse(watch.onSample(180f, now + 200L))
+        assertTrue(watch.onSample(150f, now + 5_200L))
+
+        assertEquals(430f, watch.weightBeforeDrop, 0.01f)
+    }
+
+    @Test
+    fun `просадка, которая держится, всё-таки становится весом до падения`() {
+        val watch = RemovalWatch()
+        var now = watch.pourUpTo(430f)
+        watch.arm(430f)
+
+        // Не всякое падение внутри порога — снятие: чашку могли подвинуть, и
+        // новый вес держится. Пятнадцать секунд — это уже не рябь.
+        repeat(15) {
+            now += 1_000L
+            assertFalse(watch.onSample(403f, now))
+        }
+        assertEquals(403f, watch.weightBeforeDrop, 0.01f)
+    }
+
+    @Test
     fun `сброс снимает сторож`() {
         val watch = RemovalWatch()
         val now = watch.pourUpTo(250f)

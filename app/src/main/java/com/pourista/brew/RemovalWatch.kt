@@ -41,6 +41,12 @@ internal class RemovalWatch(
     private val negativeHoldMs: Long = NEGATIVE_HOLD_MS,
     /** Совсем лёгкие заваривания не сторожим: там любой шум — падение вдвое. */
     private val minPeakGrams: Float = MIN_PEAK_GRAMS,
+    /**
+     * Сколько просевший вес должен продержаться, чтобы стать весом до падения.
+     * Дольше выдержки самого сторожа: пока он решает, сняли чашку или нет,
+     * показание на пути вниз объявлять правдой нельзя.
+     */
+    private val settleMs: Long = SETTLE_MS,
 ) {
 
     var armed: Boolean = false
@@ -49,9 +55,20 @@ internal class RemovalWatch(
     private var peakGrams = 0f
     private var droppedAt = 0L
 
-    /** Вес до падения: именно он налит в чашку и должен попасть в историю. */
+    /**
+     * Вес до падения: именно он налит в чашку и должен попасть в историю.
+     *
+     * Считается по устоявшимся показаниям, а не по последнему нормальному.
+     * Порог падения отстоит от максимума на десятки граммов, а весы отдают
+     * снятие не одним скачком — пока воронку поднимают, приходит два-три
+     * промежуточных значения, и первые из них ещё выше порога. Брать последнее
+     * из них значит записать в историю вес на пути вниз.
+     */
     var weightBeforeDrop: Float = 0f
         private set
+
+    /** Тот же приём, что и для графика: короткая просадка правдой не считается. */
+    private val settled = MonotonicWeight(rebaseAfterMs = settleMs)
 
     /** Момент падения — настоящий конец заваривания, а не тремя секундами позже. */
     val droppedAtMs: Long get() = droppedAt
@@ -73,7 +90,7 @@ internal class RemovalWatch(
         armed = true
         // Если вес просел ещё до взведения — воронку уже сняли, и отсчёт идёт
         // с того момента, а не с этого. Вес до падения тоже уже запомнен.
-        if (droppedAt == 0L) weightBeforeDrop = currentWeightGrams
+        if (droppedAt == 0L) weightBeforeDrop = maxOf(weightBeforeDrop, currentWeightGrams)
     }
 
     /**
@@ -86,7 +103,7 @@ internal class RemovalWatch(
         if (peakGrams < minPeakGrams) return false
 
         if (weightGrams > cutoffGrams) {
-            weightBeforeDrop = weightGrams
+            weightBeforeDrop = settled.onSample(weightGrams, nowMs)
             droppedAt = 0L
             return false
         }
@@ -104,6 +121,7 @@ internal class RemovalWatch(
         peakGrams = 0f
         droppedAt = 0L
         weightBeforeDrop = 0f
+        settled.reset()
     }
 
     private companion object {
@@ -112,5 +130,6 @@ internal class RemovalWatch(
         const val HOLD_MS = 5_000L
         const val NEGATIVE_HOLD_MS = 3_000L
         const val MIN_PEAK_GRAMS = 20f
+        const val SETTLE_MS = 10_000L
     }
 }

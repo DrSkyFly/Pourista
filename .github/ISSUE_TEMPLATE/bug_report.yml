@@ -43,6 +43,9 @@ body:
     id: scale
     attributes:
       label: Весы / Scale
+      description: |
+        Futula Kitchen Scale 3 (LEFU CK811) — проверены на железе.
+        В бете: Acaia, Bookoo, Decent Scale, DiFluid, Eureka Precisa, Felicita, Timemore, Varia AKU.
       placeholder: "Futula Kitchen Scale 3"
 
   - type: textarea

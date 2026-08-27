@@ -12,10 +12,14 @@
 - Android SDK: платформа `android-37`, build-tools `36.0.0`;
 - Gradle идёт в комплекте (wrapper), отдельно ставить не нужно.
 
+Сборка идёт в двух вариантах: `github` — APK для страницы релизов, `play` —
+бандл для Google Play.
+
 ```bash
-./gradlew testDebugUnitTest      # модульные тесты
-./gradlew assembleDebug          # отладочная сборка
-./gradlew connectedAndroidTest   # тесты миграций базы, нужен телефон или эмулятор
+./gradlew testGithubDebugUnitTest # модульные тесты
+./gradlew assembleGithubDebug     # отладочная сборка
+./gradlew bundlePlayRelease       # бандл для Google Play
+./gradlew connectedGithubDebugAndroidTest   # тесты миграций базы, нужен телефон или эмулятор
 ```
 
 ## Код
@@ -43,7 +47,7 @@ keyAlias=pourista
 keyPassword=…
 ```
 
-Если файла нет, `assembleRelease` соберёт неподписанный APK и не упадёт. Ключ
+Если файла нет, `assembleGithubRelease` соберёт неподписанный APK и не упадёт. Ключ
 терять нельзя: подписанное другим ключом обновление не встанет поверх
 установленного приложения.
 
@@ -56,15 +60,16 @@ keyPassword=…
 3. Прогнать тесты и собрать релиз:
 
    ```bash
-   ./gradlew testDebugUnitTest assembleRelease
+   ./gradlew testGithubDebugUnitTest assembleGithubRelease
    ```
 
 4. Проверить, что собралось именно то:
 
    ```bash
    $ANDROID_HOME/build-tools/36.0.0/aapt2 dump badging \
-       app/build/outputs/apk/release/app-release.apk | head -3
-   apksigner verify --print-certs app/build/outputs/apk/release/app-release.apk
+       app/build/outputs/apk/github/release/app-github-release.apk | head -3
+   apksigner verify --print-certs \
+       app/build/outputs/apk/github/release/app-github-release.apk
    ```
 
 5. Поставить APK на телефон и проверить руками главное: подключение к весам,

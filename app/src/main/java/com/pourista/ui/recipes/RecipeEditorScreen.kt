@@ -19,6 +19,7 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.ArrowDownward
+import androidx.compose.material.icons.filled.ArrowDropDown
 import androidx.compose.material.icons.filled.ArrowUpward
 import androidx.compose.material.icons.filled.Check
 import androidx.compose.material.icons.filled.Delete
@@ -54,6 +55,7 @@ import com.pourista.core.formatGrams
 import com.pourista.core.formatRatio
 import com.pourista.data.model.StepKind
 import com.pourista.ui.components.SeriesChart
+import com.pourista.ui.components.StepBadge
 import com.pourista.ui.icon
 import com.pourista.ui.theme.AppTheme
 import com.pourista.ui.labelRes
@@ -444,7 +446,7 @@ private fun StepEditorCard(
     ) {
         Column(Modifier.padding(12.dp)) {
             Row(verticalAlignment = Alignment.CenterVertically) {
-                Icon(step.kind.icon(), null, tint = MaterialTheme.colorScheme.primary)
+                StepBadge(kind = step.kind, tint = MaterialTheme.colorScheme.primary)
                 Spacer(Modifier.size(8.dp))
                 // У блуминга и слива вид менять нечем: место у них закреплено,
                 // и превратить их в обычный шаг значит просто удалить.
@@ -456,7 +458,14 @@ private fun StepEditorCard(
                     )
                 } else {
                     Box {
-                        TextButton(onClick = { kindMenu = true }) {
+                        // Стрелка слева от названия: без неё строка выглядит
+                        // как подпись, и что вид шага можно сменить, не видно.
+                        TextButton(
+                            onClick = { kindMenu = true },
+                            contentPadding = PaddingValues(start = 4.dp, end = 12.dp),
+                        ) {
+                            Icon(Icons.Default.ArrowDropDown, null)
+                            Spacer(Modifier.size(4.dp))
                             Text(stringResource(step.kind.labelRes()))
                         }
                         DropdownMenu(expanded = kindMenu, onDismissRequest = { kindMenu = false }) {

@@ -21,6 +21,12 @@ class ScaleDriversTest {
         assertSame(DecentScaleDriver, ScaleDrivers.forName("Decent Scale"))
         assertSame(TimemoreDotDriver, ScaleDrivers.forName("DOT-1234"))
         assertSame(TimemoreDotDriver, ScaleDrivers.forName("TES017"))
+        // Имя из эфира у весов владельца — с заглавными буквами.
+        assertSame(TimemoreDotDriver, ScaleDrivers.forName("TIMEMORE_Dot"))
+        assertSame(TimemoreDotDriver, ScaleDrivers.forName("TIMEMORE Basic3"))
+        assertSame(BookooDriver, ScaleDrivers.forName("BOOKOO_SC"))
+        // Black Mirror второго поколения говорит другим протоколом.
+        assertNull(ScaleDrivers.forName("TIMEMORE Scale"))
         // «dot» посреди чужого имени за весы не считаем.
         assertNull(ScaleDrivers.forName("Bluetooth dot speaker"))
         assertNull(ScaleDrivers.forName("Мои наушники"))
@@ -74,6 +80,8 @@ class ScaleDriversTest {
     @Test
     fun `Bookoo читает три байта старшим вперёд`() {
         val packet = ByteArray(20)
+        packet[0] = 0x03            // номер изделия и тип пакета
+        packet[1] = 0x0B
         packet[6] = '+'.code.toByte()
         packet[8] = 0x04
         packet[9] = 0xD2.toByte()   // 1234 — это 12,34 г
@@ -134,6 +142,45 @@ class ScaleDriversTest {
     }
 
     @Test
+    fun `Timemore Dot разбирает кадры с живых весов`() {
+        // Записи владельца весов из issue #2: пустые весы, монета 5 г,
+        // отрицательный вес после снятия груза. CRC весы шлют нулями.
+        assertEquals(0f, dotWeight("A55A010100090000000000000000000000"), 0.01f)
+        assertEquals(5f, dotWeight("A55A010100090000003200000000000000"), 0.01f)
+        assertEquals(-4.3f, dotWeight("A55A01010009FFFFFFD500000000000000"), 0.01f)
+        assertEquals(110.7f, dotWeight("A55A010100090000045303E70000000000"), 0.01f)
+    }
+
+    @Test
+    fun `Timemore Dot берёт заряд из хвоста пакета с весом`() {
+        // Заряд весы дописывают вторым кадром к первому, отдельным не шлют.
+        val packet = ScaleDrivers.hexToBytes(
+            "A55A010100090000003200000000000000" + "A55A0105000203550000"
+        )
+        val reading = TimemoreDotDriver.parseWeight(packet)
+        assertNotNull(reading)
+        assertEquals(5f, reading!!.grams, 0.01f)
+        assertEquals(85, reading.batteryPercent)
+        assertEquals(85, TimemoreDotDriver.parseBattery(packet))
+    }
+
+    @Test
+    fun `Timemore Dot шлёт команды в отдельную характеристику`() {
+        // fff1 только уведомляет: команды туда не уходят.
+        assertEquals(bluetoothUuid("fff2"), TimemoreDotDriver.commandCharacteristic)
+        assertEquals(bluetoothUuid("fff1"), TimemoreDotDriver.weightCharacteristic)
+    }
+
+    @Test
+    fun `Timemore Dot просит граммы и обычный режим`() {
+        assertEquals("a55a0306000100e8a7", TimemoreDotDriver.unitCommand(WeightUnit.GRAM)!!.toHex())
+        assertEquals(
+            "a55a030800020100eb31",
+            TimemoreDotDriver.onConnectCommands().single().toHex(),
+        )
+    }
+
+    @Test
     fun `Timemore Dot не верит чужому заголовку`() {
         val alien = byteArrayOf(0x01, 0x02, 0x01, 0x01, 0x00, 0x08, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0)
         assertNull(TimemoreDotDriver.parseWeight(alien))
@@ -147,6 +194,11 @@ class ScaleDriversTest {
         assertEquals((crc shr 8 and 0xff).toByte(), command[6])
         assertEquals((crc and 0xff).toByte(), command[7])
     }
+
+    private fun dotWeight(hex: String): Float =
+        TimemoreDotDriver.parseWeight(ScaleDrivers.hexToBytes(hex))!!.grams
+
+    private fun ByteArray.toHex(): String = joinToString("") { "%02x".format(it) }
 
     /** Кадр Timemore: заголовок, код, номер команды, длина, данные и CRC. */
     private fun timemoreFrame(command: Int, data: ByteArray): ByteArray {

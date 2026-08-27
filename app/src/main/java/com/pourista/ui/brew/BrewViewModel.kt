@@ -100,8 +100,9 @@ class BrewViewModel(private val container: AppContainer) : ViewModel() {
      * Пересобирает рецепт 4:6 по новым настройкам и сразу берёт его в работу:
      * генератор открывают, когда собираются заваривать, а не про запас.
      */
-    fun generateFortySix(params: FortySixParams) {
+    fun generateFortySix(params: FortySixParams, lockRatio: Boolean) {
         viewModelScope.launch {
+            container.settings.setFortySixLockRatio(lockRatio)
             val recipe = container.buildFortySixRecipe(params) ?: return@launch
             selectRecipe(recipe)
         }

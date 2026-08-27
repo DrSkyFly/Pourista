@@ -84,6 +84,30 @@ class RecipeRepository(private val dao: RecipeDao) {
         return recipes.size
     }
 
+    /** Всё, что есть в базе, — для резервной копии. */
+    suspend fun exportAll(): List<Recipe> = dao.allRecipes().map { it.toDomain() }
+
+    /**
+     * Восстановление из копии. Рецепт с таким же названием пропускаем: на
+     * свежей установке уже посеян встроенный набор, да и повторное
+     * восстановление не должно плодить двойники. Всё остальное переносим как
+     * есть — избранное, порядок, времена.
+     */
+    suspend fun restoreAll(recipes: List<Recipe>): Int {
+        val known = dao.recipeNames().map { it.lowercase() }.toMutableSet()
+        var restored = 0
+        recipes.forEach { recipe ->
+            if (!known.add(recipe.name.lowercase())) return@forEach
+            dao.upsertRecipeWithSteps(
+                recipe = recipe.copy(id = 0).toEntity(recipe.updatedAt.takeIf { it > 0 }
+                    ?: System.currentTimeMillis()),
+                steps = recipe.steps.map { it.copy(id = 0) }.toEntities(0),
+            )
+            restored++
+        }
+        return restored
+    }
+
     private companion object {
         const val TOP_SORT_ORDER = 10
         const val SORT_ORDER_GAP = 10

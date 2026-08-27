@@ -3,6 +3,7 @@ package com.pourista.scale
 import android.Manifest
 import android.annotation.SuppressLint
 import android.bluetooth.BluetoothGattCharacteristic
+import android.bluetooth.le.ScanResult
 import android.content.Context
 import android.content.pm.PackageManager
 import android.os.Build
@@ -58,6 +59,7 @@ class ScaleRepository(context: Context) {
 
     private var peripheral: BluetoothPeripheral? = null
     private var reconnectJob: Job? = null
+    private var heartbeatJob: Job? = null
 
     /**
      * Протокол подключённых весов. До первой находки — наш собственный: он
@@ -77,6 +79,13 @@ class ScaleRepository(context: Context) {
     private var diagnosticScan = false
 
     private var lastPacketLogAt = 0L
+
+    /** Когда последний раз просили весы вернуться в граммы. */
+    private var lastUnitCommandAt = 0L
+
+    /** Пришёл ли хоть один разобранный вес после подключения. */
+    @Volatile
+    private var readingSeen = false
 
     /** Идёт запись протокола: журнал ведём, пока он здесь. */
     @Volatile
@@ -115,23 +124,20 @@ class ScaleRepository(context: Context) {
         observeConnectionStateOnce()
         _state.update { it.copy(status = ConnectionStatus.SCANNING) }
         runCatching {
-            // Имена сверяет сама библиотека, подстрокой: у весов они пишутся
-            // по-разному, и точное совпадение отсекало бы половину моделей.
-            central.scanForPeripheralsWithNames(
-                ScaleDrivers.nameFragments,
+            // Смотрим весь эфир и сверяем имена сами: у библиотеки сравнение
+            // с учётом регистра, и весы, объявленные как «TIMEMORE_Dot», под
+            // строчный «timemore» не попадали.
+            central.scanForPeripherals(
                 { found, scanResult ->
-                    val matched = ScaleDrivers.forName(found.name)
-                    if (matched == null) {
-                        Log.d(TAG, "Устройство ${found.name} не опознано, ищем дальше")
-                        return@scanForPeripheralsWithNames
-                    }
+                    val name = found.advertisedName(scanResult)
+                    val matched = ScaleDrivers.forName(name) ?: return@scanForPeripherals
                     val mark = if (matched.experimental) ", поддержка тестовая" else ""
-                    Log.d(TAG, "Найдены весы ${found.name} (${matched.title}$mark), RSSI ${scanResult.rssi}")
+                    Log.d(TAG, "Найдены весы $name (${matched.title}$mark), RSSI ${scanResult.rssi}")
                     central.stopScan()
                     peripheral = found
                     driver = matched
                     _state.update {
-                        it.copy(status = ConnectionStatus.CONNECTING, deviceName = found.name)
+                        it.copy(status = ConnectionStatus.CONNECTING, deviceName = name)
                     }
                     connect(found)
                 },
@@ -158,6 +164,7 @@ class ScaleRepository(context: Context) {
     fun disconnect() {
         userDisconnected = true
         reconnectJob?.cancel()
+        heartbeatJob?.cancel()
         central.stopScan()
         peripheral?.let { device -> scope.launch { central.cancelConnection(device) } }
         _state.update { ScaleState() }
@@ -263,11 +270,12 @@ class ScaleRepository(context: Context) {
                 { found, result ->
                     // Адрес нужен только чтобы не повторять устройство в журнале.
                     if (!seen.add(found.address)) return@scanForPeripherals
-                    val name = found.name.ifBlank { "(без имени)" }
+                    val advertised = found.advertisedName(result)
+                    val name = advertised.ifBlank { "(без имени)" }
                     val services = result.scanRecord?.serviceUuids
                         ?.joinToString(", ") { it.uuid.toString() }
                         ?: "не объявлены"
-                    val known = ScaleDrivers.forName(found.name)?.title ?: "приложению не знакомы"
+                    val known = ScaleDrivers.forName(advertised)?.title ?: "приложению не знакомы"
                     log.event("в эфире: \"$name\", RSSI ${result.rssi}, службы: $services → $known")
                 },
                 { failure -> log.event("поиск не удался: $failure") },
@@ -305,6 +313,7 @@ class ScaleRepository(context: Context) {
                 ConnectionState.DISCONNECTING -> Unit
 
                 ConnectionState.DISCONNECTED -> {
+                    heartbeatJob?.cancel()
                     _state.update {
                         it.copy(
                             status = if (userDisconnected) {
@@ -333,7 +342,9 @@ class ScaleRepository(context: Context) {
     }
 
     private fun startObserving(device: BluetoothPeripheral) {
-        val active = driver
+        val active = refineDriver(device)
+        active.reset()
+        readingSeen = false
         scope.launch {
             try {
                 val weight = device.getCharacteristic(active.service, active.weightCharacteristic)
@@ -353,11 +364,17 @@ class ScaleRepository(context: Context) {
                             return@observe
                         }
                         logPacket(value, reading)
+                        readingSeen = true
                         // Весы могут показывать унции: рецепты и подсказки в граммах,
                         // поэтому возвращаем их обратно, если модель это умеет.
+                        // Пакеты идут по десять в секунду, а переключается
+                        // единица не мгновенно — иначе весы успели бы сделать
+                        // круг «граммы → унции → граммы».
                         if (keepGrams && reading.unitOnScale != null &&
-                            reading.unitOnScale != WeightUnit.GRAM
+                            reading.unitOnScale != WeightUnit.GRAM &&
+                            SystemClock.elapsedRealtime() - lastUnitCommandAt > UNIT_COMMAND_PAUSE_MS
                         ) {
+                            lastUnitCommandAt = SystemClock.elapsedRealtime()
                             active.unitCommand(WeightUnit.GRAM)?.let { command ->
                                 scope.launch { sendCommand(device, command) }
                             }
@@ -387,10 +404,68 @@ class ScaleRepository(context: Context) {
                     observeEverything(device, log)
                 }
 
-                if (keepGrams) active.unitCommand(WeightUnit.GRAM)?.let { sendCommand(device, it) }
-                active.onConnectCommands().forEach { sendCommand(device, it) }
+                // Весы, у которых единица только переключается по кругу,
+                // вслепую трогать нельзя: граммы превратились бы в унции.
+                if (keepGrams && !active.unitCommandIsToggle) {
+                    active.unitCommand(WeightUnit.GRAM)?.let { sendCommand(device, it) }
+                }
+                // Знакомство у части весов идёт по шагам, и торопить его нельзя:
+                // подряд отправленные команды они пропускают.
+                active.onConnectCommands().forEach {
+                    sendCommand(device, it)
+                    delay(COMMAND_GAP_MS)
+                }
+                startHeartbeat(device, active)
             } catch (e: Exception) {
                 Log.d(TAG, "Не удалось подписаться на характеристики: $e")
+            }
+        }
+    }
+
+    /**
+     * Уточняет драйвер по службам устройства. По имени видно модель, но не
+     * поколение: у Acaia имя одно, а служб две, и различить их можно только
+     * после подключения.
+     */
+    @SuppressLint("MissingPermission")
+    private fun refineDriver(device: BluetoothPeripheral): ScaleDriver {
+        val current = driver
+        if (device.getCharacteristic(current.service, current.weightCharacteristic) != null) {
+            return current
+        }
+        val better = ScaleDrivers.all.firstOrNull { candidate ->
+            candidate !== current &&
+                candidate.matches(device.name) &&
+                device.getCharacteristic(candidate.service, candidate.weightCharacteristic) != null
+        } ?: return current
+
+        Log.d(TAG, "Драйвер уточнён по службам: ${current.title} → ${better.title}")
+        diagnostics?.event("драйвер уточнён по службам: ${better.title}")
+        driver = better
+        return better
+    }
+
+    /**
+     * Напоминания весам, что мы на связи. Acaia без них перестаёт слать вес
+     * через несколько секунд, Decent — засыпает.
+     */
+    private fun startHeartbeat(device: BluetoothPeripheral, active: ScaleDriver) {
+        heartbeatJob?.cancel()
+        val interval = active.heartbeatIntervalMs
+        if (interval <= 0L || active.heartbeatCommands().isEmpty()) return
+        heartbeatJob = scope.launch {
+            while (_state.value.isConnected) {
+                delay(interval)
+                if (!_state.value.isConnected) break
+                // Знакомство весы могли пропустить — тогда веса нет вовсе.
+                // Повторяем его, пока не увидим первый пакет.
+                if (!readingSeen) {
+                    active.onConnectCommands().forEach {
+                        sendCommand(device, it, silent = true)
+                        delay(COMMAND_GAP_MS)
+                    }
+                }
+                active.heartbeatCommands().forEach { sendCommand(device, it, silent = true) }
             }
         }
     }
@@ -416,7 +491,11 @@ class ScaleRepository(context: Context) {
         Log.d(TAG, "Пакет веса [$hex] → $parsed")
     }
 
-    private suspend fun sendCommand(device: BluetoothPeripheral, command: ByteArray) {
+    private suspend fun sendCommand(
+        device: BluetoothPeripheral,
+        command: ByteArray,
+        silent: Boolean = false,
+    ) {
         try {
             val target = driver.commandCharacteristic ?: run {
                 diagnostics?.event("команда не отправлена: у драйвера нет характеристики команд")
@@ -426,12 +505,22 @@ class ScaleRepository(context: Context) {
                 diagnostics?.event("команда не отправлена: характеристики $target нет у устройства")
                 return
             }
-            device.writeCharacteristic(
-                characteristic,
-                command,
-                WriteType.WITH_RESPONSE,
-            )
-            diagnostics?.command(target.toString(), command, "отправлено")
+            // Часть весов принимает команды только без подтверждения — у
+            // Timemore характеристика команд иначе и не умеет.
+            val write = when {
+                driver.writeWithoutResponse &&
+                    characteristic.supports(PROPERTY_WRITE_NO_RESPONSE) -> WriteType.WITHOUT_RESPONSE
+
+                characteristic.supports(BluetoothGattCharacteristic.PROPERTY_WRITE) ->
+                    WriteType.WITH_RESPONSE
+
+                else -> WriteType.WITHOUT_RESPONSE
+            }
+            repeat(driver.commandRepeats.coerceAtLeast(1)) { attempt ->
+                if (attempt > 0) delay(COMMAND_GAP_MS)
+                device.writeCharacteristic(characteristic, command, write)
+            }
+            if (!silent) diagnostics?.command(target.toString(), command, "отправлено, $write")
         } catch (e: Exception) {
             Log.d(TAG, "Команда не доставлена: $e")
             diagnostics?.event("команда не ушла: $e")
@@ -440,6 +529,17 @@ class ScaleRepository(context: Context) {
 
     private fun BluetoothGattCharacteristic.notifies(): Boolean =
         properties and NOTIFYING_PROPERTIES != 0
+
+    private fun BluetoothGattCharacteristic.supports(property: Int): Boolean =
+        properties and property != 0
+
+    /**
+     * Имя из объявления. У устройства оно бывает пустым, пока с ним не
+     * связывались, а в самом объявлении при этом есть.
+     */
+    @SuppressLint("MissingPermission")
+    private fun BluetoothPeripheral.advertisedName(result: ScanResult): String =
+        name.ifBlank { result.scanRecord?.deviceName.orEmpty() }
 
     private fun BluetoothGattCharacteristic.propertyNames(): String = buildList {
         if (properties and BluetoothGattCharacteristic.PROPERTY_READ != 0) add("read")
@@ -455,6 +555,15 @@ class ScaleRepository(context: Context) {
         private const val TAG = "ScaleRepository"
         private const val RECONNECT_DELAY_MS = 10_000L
         private const val PACKET_LOG_INTERVAL_MS = 1_000L
+
+        /** Пауза между командами: подряд весы их теряют. */
+        private const val COMMAND_GAP_MS = 200L
+
+        /** Как часто можно просить весы вернуться в граммы. */
+        private const val UNIT_COMMAND_PAUSE_MS = 3_000L
+
+        private const val PROPERTY_WRITE_NO_RESPONSE =
+            BluetoothGattCharacteristic.PROPERTY_WRITE_NO_RESPONSE
 
         private const val NOTIFYING_PROPERTIES =
             BluetoothGattCharacteristic.PROPERTY_NOTIFY or

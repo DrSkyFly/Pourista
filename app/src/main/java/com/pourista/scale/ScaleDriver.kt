@@ -34,8 +34,8 @@ interface ScaleDriver {
     val experimental: Boolean get() = true
 
     /**
-     * Куски имени устройства в эфире. По ним идёт поиск (подстрокой) и по ним
-     * же выбирается драйвер, когда весы нашлись.
+     * Куски имени устройства в эфире: по ним драйвер узнаёт свои весы. Регистр
+     * не важен — имена весы пишут кто как.
      */
     val nameFragments: List<String>
 
@@ -46,6 +46,23 @@ interface ScaleDriver {
 
     /** Куда писать команды. Null — весы команд не принимают. */
     val commandCharacteristic: UUID?
+
+    /**
+     * Писать команды без подтверждения. Часть весов иначе их не принимает, а
+     * если характеристика умеет только один способ, выбор всё равно за ней.
+     */
+    val writeWithoutResponse: Boolean get() = false
+
+    /** Сколько раз слать каждую команду: Decent теряет первую. */
+    val commandRepeats: Int get() = 1
+
+    /**
+     * Что слать раз в [heartbeatIntervalMs], пока весы на связи. Acaia без
+     * этого замолкает через несколько секунд, Decent — засыпает.
+     */
+    fun heartbeatCommands(): List<ByteArray> = emptyList()
+
+    val heartbeatIntervalMs: Long get() = 0L
 
     /** Отдельная служба заряда, если он не приходит вместе с весом. */
     val batteryService: UUID? get() = null
@@ -68,14 +85,24 @@ interface ScaleDriver {
 
     /** Перевести весы в нужную единицу. Null — единица не переключается. */
     fun unitCommand(unit: WeightUnit): ByteArray? = null
+
+    /**
+     * Команда единицы не задаёт её, а переключает по кругу. Такую нельзя слать
+     * вслепую при подключении — только когда в пакете видно, что на весах не
+     * граммы.
+     */
+    val unitCommandIsToggle: Boolean get() = false
+
+    /** Забыть состояние разбора: вызывается перед каждым подключением. */
+    fun reset() {}
 }
 
 /**
  * Известные приложению весы.
  *
  * Протоколы разобраны по открытым реализациям и написаны заново; на живом
- * железе проверен только Futula. Остальные ждут подтверждения от владельцев —
- * см. README.
+ * железе проверен только Futula, у Timemore сверен разбор с записью протокола
+ * от владельца. Остальные — бета и ждут подтверждения, см. README.
  */
 object ScaleDrivers {
 
@@ -85,11 +112,12 @@ object ScaleDrivers {
         BookooDriver,
         DecentScaleDriver,
         TimemoreDotDriver,
+        EurekaPrecisaDriver,
+        VariaAkuDriver,
+        DifluidMicrobalanceDriver,
+        AcaiaClassicDriver,
+        AcaiaPyxisDriver,
     )
-
-    /** Всё, чем весы могут представиться: с этим списком идём сканировать. */
-    val nameFragments: Array<String> =
-        all.flatMap { it.nameFragments }.distinct().toTypedArray()
 
     fun forName(deviceName: String?): ScaleDriver? {
         val name = deviceName?.takeIf { it.isNotBlank() } ?: return null

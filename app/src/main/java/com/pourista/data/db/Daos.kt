@@ -44,6 +44,19 @@ interface BrewDao {
     @Query("SELECT * FROM brews WHERE id = :id")
     fun observeBrew(id: Long): Flow<BrewWithNotes?>
 
+    /** Вся история разом — для резервной копии. */
+    @Transaction
+    @Query("SELECT * FROM brews ORDER BY brewed_at ASC")
+    suspend fun allBrews(): List<BrewWithNotes>
+
+    /**
+     * Времена уже записанных завариваний. По ним отсеиваются повторы при
+     * восстановлении: миллисекунда старта — ключ не хуже любого другого, а
+     * своего у записи нет.
+     */
+    @Query("SELECT brewed_at FROM brews")
+    suspend fun brewTimestamps(): List<Long>
+
     /** Заметки уходят сами: у них внешний ключ с каскадным удалением. */
     @Query("DELETE FROM brews WHERE id = :id")
     suspend fun deleteBrew(id: Long)
@@ -79,6 +92,14 @@ interface RecipeDao {
     @Transaction
     @Query("SELECT * FROM recipes WHERE id = :id")
     suspend fun recipeById(id: Long): RecipeWithSteps?
+
+    /** Все рецепты разом — для резервной копии. */
+    @Transaction
+    @Query("SELECT * FROM recipes ORDER BY sort_order ASC, name COLLATE NOCASE ASC")
+    suspend fun allRecipes(): List<RecipeWithSteps>
+
+    @Query("SELECT name FROM recipes")
+    suspend fun recipeNames(): List<String>
 
     @Query("SELECT MIN(sort_order) FROM recipes")
     suspend fun minSortOrder(): Int?
