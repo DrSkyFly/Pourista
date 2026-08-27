@@ -63,6 +63,10 @@
     <string name="dose_dialog_title">输入粉量</string>
 
     <string name="four_six_title">4:6 生成器</string>
+    <string name="four_six_presets">预设</string>
+    <string name="four_six_preset_off">不用预设</string>
+    <string name="four_six_preset_save">另存为…</string>
+    <string name="four_six_preset_name">预设名称</string>
     <string name="four_six_button">4:6</string>
     <string name="four_six_recipe_name">V60 4:6</string>
     <string name="four_six_dose">粉量</string>
@@ -228,6 +232,7 @@
     <string name="recipes_exported">已导出配方：%1$d</string>
     <string name="recipes_imported">已导入配方：%1$d</string>
     <string name="recipes_import_failed">读不出这个配方文件</string>
+    <string name="recipe_file_label">Pourista 配方</string>
     <string name="recipes_export_failed">文件没能保存</string>
     <string name="recipes_format_title">配方格式</string>
     <string name="recipes_format_copied">格式说明已复制</string>
@@ -260,6 +265,7 @@
     <string name="settings_scale_log">咖啡秤日志</string>
     <string name="settings_scale_log_hint">把与秤之间的通信记进文件，发给开发者</string>
     <string name="settings_release_notes">更新历史</string>
+    <string name="notes_1_8_1">• 配方文件（.pour）直接在应用里打开，并跳到冲煮页\n• 4:6 生成器的预设：保存、选择和删除\n• 4:6 面板里「完成」始终可见，步骤列表不再跳动</string>
     <string name="notes_1_8_0">• 界面支持 14 种语言，可在设置里切换\n• 备份：配方和全部记录存成一个文件\n• 配方步骤以圆形图标串联显示\n• 外观焕新：圆润图标、更大的数字、新的搜索框\n• 长按卡片调整配方顺序\n• 记录可滑动删除，并可撤销\n• 支持 Acaia、Difluid Microbalance、Eureka Precisa、Varia AKU\n• 修正了自动结束时记录的重量</string>
     <string name="notes_1_7_2">• 可以把这次冲煮做成图片分享\n• 自动结束可以关掉\n• 曲线图：50g 一格、时间轴、更高\n• 从记录生成的配方里，滴滤单独成一步\n• 修好了换步之后补水时的自动结束</string>
     <string name="notes_1_7_1">• 用记录下来的冲煮直接生成配方 — 就在记录里\n• 按住曲线：显示那一点的重量和时间\n• 在列表里直接删掉一次冲煮\n• 步骤列表里显示每步时长</string>

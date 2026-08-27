@@ -8,6 +8,7 @@ import com.pourista.brew.BrewPhase
 import com.pourista.brew.BrewState
 import com.pourista.data.model.Recipe
 import com.pourista.data.prefs.AppSettings
+import com.pourista.data.prefs.FortySixPreset
 import com.pourista.data.presets.FortySixParams
 import com.pourista.scale.ScaleState
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -94,6 +95,17 @@ class BrewViewModel(private val container: AppContainer) : ViewModel() {
             container.settings.setLastRecipeId(recipe?.id)
             recipe?.let { container.recipes.markUsed(it.id) }
         }
+    }
+
+    /** Сохранить ручки генератора под именем. Имя занято — пресет заменяется. */
+    fun saveFortySixPreset(name: String, params: FortySixParams, lockRatio: Boolean) {
+        viewModelScope.launch {
+            container.settings.saveFortySixPreset(FortySixPreset(name, params, lockRatio))
+        }
+    }
+
+    fun deleteFortySixPreset(name: String) {
+        viewModelScope.launch { container.settings.deleteFortySixPreset(name) }
     }
 
     /**

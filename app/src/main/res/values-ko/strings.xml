@@ -63,6 +63,10 @@
     <string name="dose_dialog_title">원두량 입력</string>
 
     <string name="four_six_title">4:6 생성기</string>
+    <string name="four_six_presets">프리셋</string>
+    <string name="four_six_preset_off">프리셋 없음</string>
+    <string name="four_six_preset_save">다른 이름으로 저장…</string>
+    <string name="four_six_preset_name">프리셋 이름</string>
     <string name="four_six_button">4:6</string>
     <string name="four_six_recipe_name">V60 4:6</string>
     <string name="four_six_dose">원두량</string>
@@ -228,6 +232,7 @@
     <string name="recipes_exported">내보낸 레시피: %1$d</string>
     <string name="recipes_imported">가져온 레시피: %1$d</string>
     <string name="recipes_import_failed">레시피 파일을 읽지 못했습니다</string>
+    <string name="recipe_file_label">Pourista 레시피</string>
     <string name="recipes_export_failed">파일을 저장하지 못했습니다</string>
     <string name="recipes_format_title">레시피 형식</string>
     <string name="recipes_format_copied">형식 설명을 복사했습니다</string>
@@ -260,6 +265,7 @@
     <string name="settings_scale_log">저울 로그</string>
     <string name="settings_scale_log_hint">저울과 주고받은 내용을 파일로 기록해 개발자에게 보내기</string>
     <string name="settings_release_notes">업데이트 기록</string>
+    <string name="notes_1_8_1">• 레시피 파일(.pour)이 앱에서 바로 열리고 추출 화면으로 이어집니다\n• 4:6 제너레이터 프리셋: 저장, 선택, 삭제\n• 4:6 시트에서 «완료»가 항상 보이고 단계 목록이 튀지 않습니다</string>
     <string name="notes_1_8_0">• 14개 언어 지원, 설정에서 언어 선택\n• 백업: 레시피와 기록 전체를 파일 하나로\n• 레시피 단계를 원형 아이콘의 흐름으로 표시\n• 새로워진 모습: 둥근 아이콘, 큰 숫자, 새 검색창\n• 레시피 순서는 카드를 길게 눌러 변경\n• 기록은 밀어서 삭제, 실행 취소 가능\n• Acaia, Difluid Microbalance, Eureka Precisa, Varia AKU 지원\n• 자동 종료로 기록되던 무게를 수정</string>
     <string name="notes_1_7_2">• 추출을 이미지로 만들어 공유\n• 자동 종료를 끌 수 있습니다\n• 그래프: 50g 눈금, 시간 축, 높이 확대\n• 기록에서 만든 레시피에 드로우다운이 별도 단계로\n• 단계가 바뀐 뒤 물을 더 부을 때 자동 종료 오류 수정</string>
     <string name="notes_1_7_1">• 기록한 추출로 레시피 만들기 — 기록에서 바로\n• 그래프를 길게 누르면 그 지점의 무게와 시간 표시\n• 목록에서 바로 추출 삭제\n• 단계 목록에 걸린 시간 표시</string>

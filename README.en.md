@@ -93,7 +93,9 @@ automatic finish when the cup is lifted, and weight and flow curves in history.
   strength in, a ready recipe on the brew tile out.
 - **Recording a recipe from a real brew.** The app splits the brew into steps,
   rounds the grams and seconds and opens the result in the editor.
-- **Sharing recipes.** JSON import and export, as a file or through the
+- **Sharing recipes.** A `.pour` file opens straight in the app: the recipe is
+  added and becomes current on the brewing screen. Import and export also work
+  by hand, as a file or through the
   clipboard. The format is documented inside the app (Settings → Recipe format
   reference) and can be handed to an LLM to compose a recipe.
 - **History.** Weight and flow-rate curves for every cup, notes on the beans,

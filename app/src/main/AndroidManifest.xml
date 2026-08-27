@@ -53,6 +53,46 @@
 
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
+
+            <!--
+              Файл рецепта, открытый снаружи: из мессенджера, почты, файлового
+              менеджера. Своего типа система не знает, поэтому ловим двумя
+              путями: по типу, если отправитель его проставил, и по имени файла.
+            -->
+            <intent-filter android:label="@string/recipe_file_label">
+                <action android:name="android.intent.action.VIEW" />
+                <category android:name="android.intent.category.DEFAULT" />
+                <category android:name="android.intent.category.BROWSABLE" />
+                <data android:scheme="content" />
+                <data android:scheme="file" />
+                <data android:mimeType="application/vnd.pourista.recipe" />
+            </intent-filter>
+            <intent-filter android:label="@string/recipe_file_label">
+                <action android:name="android.intent.action.VIEW" />
+                <category android:name="android.intent.category.DEFAULT" />
+                <category android:name="android.intent.category.BROWSABLE" />
+                <data android:scheme="content" />
+                <data android:scheme="file" />
+                <data android:host="*" />
+                <data android:mimeType="*/*" />
+                <!--
+                  Шаблон пути дословный: точек в имени может быть сколько
+                  угодно, и каждый случай приходится описывать отдельно.
+                -->
+                <data android:pathPattern=".*\\.pour" />
+                <data android:pathPattern=".*\\..*\\.pour" />
+                <data android:pathPattern=".*\\..*\\..*\\.pour" />
+                <data android:pathPattern=".*\\..*\\..*\\..*\\.pour" />
+                <data android:pathSuffix=".pour" tools:targetApi="31" />
+            </intent-filter>
+
+            <!-- «Поделиться → Pourista» из мессенджера. -->
+            <intent-filter android:label="@string/recipe_file_label">
+                <action android:name="android.intent.action.SEND" />
+                <category android:name="android.intent.category.DEFAULT" />
+                <data android:mimeType="application/vnd.pourista.recipe" />
+                <data android:mimeType="application/json" />
+            </intent-filter>
         </activity>
 
         <!--

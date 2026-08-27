@@ -22,6 +22,18 @@ import com.pourista.ui.theme.ThemeMode
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.map
+import org.json.JSONArray
+import org.json.JSONObject
+
+/**
+ * Сохранённые настройки генератора 4:6: доза, пропорция и обе ручки под своим
+ * именем. Таймингов в пресете нет — они у метода 4:6 неизменные.
+ */
+data class FortySixPreset(
+    val name: String,
+    val params: FortySixParams,
+    val lockRatio: Boolean,
+)
 
 data class AppSettings(
     val themeMode: ThemeMode = ThemeMode.SYSTEM,
@@ -57,6 +69,8 @@ data class AppSettings(
     val fortySix: FortySixParams = FortySixParams(),
     /** Пропорция в генераторе 4:6 закреплена: воду крутят, доза считается. */
     val fortySixLockRatio: Boolean = false,
+    /** Сохранённые настройки генератора, по имени. */
+    val fortySixPresets: List<FortySixPreset> = emptyList(),
     /** Рецепт, в который пишет генератор 4:6: он один и переписывается. */
     val fortySixRecipeId: Long? = null,
     /** Версия, для которой уже показали «Что нового». */
@@ -93,6 +107,7 @@ class SettingsRepository(private val context: Context) {
         val fortySixStrength = stringPreferencesKey("forty_six_strength")
         val fortySixLockRatio = booleanPreferencesKey("forty_six_lock_ratio")
         val fortySixRecipeId = longPreferencesKey("forty_six_recipe_id")
+        val fortySixPresets = stringPreferencesKey("forty_six_presets")
         val whatsNewSeen = intPreferencesKey("whats_new_seen")
     }
 
@@ -130,6 +145,7 @@ class SettingsRepository(private val context: Context) {
                 } ?: FortySixParams().strength,
             ),
             fortySixLockRatio = prefs[Keys.fortySixLockRatio] ?: false,
+            fortySixPresets = decodePresets(prefs[Keys.fortySixPresets]),
             fortySixRecipeId = prefs[Keys.fortySixRecipeId]?.takeIf { it > 0 },
             whatsNewSeenVersion = prefs[Keys.whatsNewSeen] ?: 0,
         )
@@ -191,11 +207,71 @@ class SettingsRepository(private val context: Context) {
     suspend fun setWhatsNewSeenVersion(versionCode: Int) =
         edit { it[Keys.whatsNewSeen] = versionCode }
 
+    /**
+     * Сохранить настройки генератора под именем. Имя — ключ: сохранение поверх
+     * существующего его заменяет, а не плодит второй пресет с тем же названием.
+     */
+    suspend fun saveFortySixPreset(preset: FortySixPreset) = edit { prefs ->
+        val kept = decodePresets(prefs[Keys.fortySixPresets])
+            .filterNot { it.name.equals(preset.name, ignoreCase = true) }
+        prefs[Keys.fortySixPresets] = encodePresets(kept + preset)
+    }
+
+    suspend fun deleteFortySixPreset(name: String) = edit { prefs ->
+        val kept = decodePresets(prefs[Keys.fortySixPresets])
+            .filterNot { it.name.equals(name, ignoreCase = true) }
+        prefs[Keys.fortySixPresets] = encodePresets(kept)
+    }
+
     suspend fun setFortySixRecipeId(id: Long?) = edit { prefs ->
         if (id == null) prefs.remove(Keys.fortySixRecipeId) else prefs[Keys.fortySixRecipeId] = id
     }
 
     private suspend fun edit(block: (MutablePreferences) -> Unit) {
         context.dataStore.edit { preferences -> block(preferences) }
+    }
+
+    /**
+     * Пресеты лежат одной строкой JSON: их немного, читают их всегда списком,
+     * а по отдельности не ищут — заводить под это таблицу не за чем.
+     */
+    private fun encodePresets(presets: List<FortySixPreset>): String {
+        val array = JSONArray()
+        presets.sortedBy { it.name.lowercase() }.forEach { preset ->
+            array.put(
+                JSONObject()
+                    .put("name", preset.name)
+                    .put("dose", preset.params.doseGrams)
+                    .put("ratio", preset.params.ratio)
+                    .put("taste", preset.params.taste.name)
+                    .put("strength", preset.params.strength.name)
+                    .put("temp", preset.params.waterTempC)
+                    .put("lock", preset.lockRatio)
+            )
+        }
+        return array.toString()
+    }
+
+    private fun decodePresets(text: String?): List<FortySixPreset> {
+        if (text.isNullOrBlank()) return emptyList()
+        val array = runCatching { JSONArray(text) }.getOrNull() ?: return emptyList()
+        val defaults = FortySixParams()
+        return (0 until array.length()).mapNotNull { index ->
+            val item = array.optJSONObject(index) ?: return@mapNotNull null
+            val name = item.optString("name").takeIf { it.isNotBlank() } ?: return@mapNotNull null
+            FortySixPreset(
+                name = name,
+                params = FortySixParams(
+                    doseGrams = item.optDouble("dose", defaults.doseGrams.toDouble()).toFloat(),
+                    ratio = item.optDouble("ratio", defaults.ratio.toDouble()).toFloat(),
+                    taste = runCatching { FortySixTaste.valueOf(item.optString("taste")) }
+                        .getOrDefault(defaults.taste),
+                    strength = runCatching { FortySixStrength.valueOf(item.optString("strength")) }
+                        .getOrDefault(defaults.strength),
+                    waterTempC = item.optInt("temp", defaults.waterTempC),
+                ),
+                lockRatio = item.optBoolean("lock", false),
+            )
+        }
     }
 }

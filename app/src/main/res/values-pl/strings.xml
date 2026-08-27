@@ -63,6 +63,10 @@
     <string name="dose_dialog_title">Podaj dawkę</string>
 
     <string name="four_six_title">Generator 4:6</string>
+    <string name="four_six_presets">Presety</string>
+    <string name="four_six_preset_off">Bez presetu</string>
+    <string name="four_six_preset_save">Zapisz jako…</string>
+    <string name="four_six_preset_name">Nazwa ustawienia</string>
     <string name="four_six_button">4:6</string>
     <string name="four_six_recipe_name">V60 4:6</string>
     <string name="four_six_dose">Dawka</string>
@@ -228,6 +232,7 @@
     <string name="recipes_exported">Wyeksportowano przepisów: %1$d</string>
     <string name="recipes_imported">Zaimportowano przepisów: %1$d</string>
     <string name="recipes_import_failed">Nie udało się odczytać pliku z przepisami</string>
+    <string name="recipe_file_label">Przepis Pourista</string>
     <string name="recipes_export_failed">Nie udało się zapisać pliku</string>
     <string name="recipes_format_title">Format przepisów</string>
     <string name="recipes_format_copied">Opis formatu skopiowany</string>
@@ -260,6 +265,7 @@
     <string name="settings_scale_log">Dziennik wagi</string>
     <string name="settings_scale_log_hint">Zapisać wymianę z wagą do pliku i wysłać deweloperowi</string>
     <string name="settings_release_notes">Historia zmian</string>
+    <string name="notes_1_8_1">• Pliki przepisów (.pour) otwierają się w aplikacji, od razu na ekranie parzenia\n• Presety w generatorze 4:6: zapis, wybór i usuwanie\n• W arkuszu 4:6 «Gotowe» jest zawsze widoczne, a lista kroków nie skacze</string>
     <string name="notes_1_8_0">• Interfejs w 14 językach, wybór języka w ustawieniach\n• Kopia zapasowa: przepisy i cała historia w jednym pliku\n• Kroki przepisu jako ciąg ikon\n• Odświeżony wygląd: zaokrąglone ikony, większe liczby, nowe wyszukiwanie\n• Kolejność przepisów zmienia się długim naciśnięciem karty\n• Usuwanie w historii przeciągnięciem, z cofnięciem\n• Obsługa wag Acaia, Difluid Microbalance, Eureka Precisa i Varia AKU\n• Poprawiona waga zapisywana przy automatycznym końcu</string>
     <string name="notes_1_7_2">• Obrazek parzenia do udostępnienia\n• Automatyczne zakończenie można wyłączyć\n• Wykresy: siatka co 50 g, oś czasu, większa wysokość\n• Spływ osobnym krokiem w przepisie z nagrania\n• Naprawione automatyczne zakończenie przy dolewce po zmianie kroku</string>
     <string name="notes_1_7_1">• Przepis z nagranego parzenia — prosto z historii\n• Przytrzymaj wykres: pokaże masę i czas w tym punkcie\n• Usuwanie parzenia wprost z listy\n• Czas trwania kroku na liście kroków</string>

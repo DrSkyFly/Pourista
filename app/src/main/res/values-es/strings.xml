@@ -63,6 +63,10 @@
     <string name="dose_dialog_title">Introducir la dosis</string>
 
     <string name="four_six_title">Generador 4:6</string>
+    <string name="four_six_presets">Presets</string>
+    <string name="four_six_preset_off">Sin preset</string>
+    <string name="four_six_preset_save">Guardar como…</string>
+    <string name="four_six_preset_name">Nombre del ajuste</string>
     <string name="four_six_button">4:6</string>
     <string name="four_six_recipe_name">V60 4:6</string>
     <string name="four_six_dose">Dosis</string>
@@ -228,6 +232,7 @@
     <string name="recipes_exported">Recetas exportadas: %1$d</string>
     <string name="recipes_imported">Recetas importadas: %1$d</string>
     <string name="recipes_import_failed">No se pudo leer el archivo de recetas</string>
+    <string name="recipe_file_label">Receta de Pourista</string>
     <string name="recipes_export_failed">No se pudo guardar el archivo</string>
     <string name="recipes_format_title">Formato de las recetas</string>
     <string name="recipes_format_copied">Descripción del formato copiada</string>
@@ -260,6 +265,7 @@
     <string name="settings_scale_log">Registro de la báscula</string>
     <string name="settings_scale_log_hint">Guardar en un archivo lo que se intercambia con la báscula y enviarlo al desarrollador</string>
     <string name="settings_release_notes">Historial de cambios</string>
+    <string name="notes_1_8_1">• Los archivos de receta (.pour) se abren en la app y van directo a preparar\n• Presets en el generador 4:6: guardar, elegir y borrar\n• En la hoja 4:6 «Listo» siempre se ve y la lista de pasos ya no salta</string>
     <string name="notes_1_8_0">• La interfaz en 14 idiomas, con selector en los ajustes\n• Copia de seguridad: recetas e historial en un solo archivo\n• Los pasos de la receta como una línea de iconos\n• Aspecto renovado: iconos redondeados, cifras grandes, nueva búsqueda\n• El orden de las recetas cambia con una pulsación larga\n• Desliza para borrar en el historial, con deshacer\n• Compatibilidad con básculas Acaia, Difluid Microbalance, Eureka Precisa y Varia AKU\n• Corregido el peso que se guardaba al final automático</string>
     <string name="notes_1_7_2">• Una imagen de la preparación para compartir\n• El final automático se puede apagar\n• Gráficos: rejilla cada 50 g, eje de tiempo, más altura\n• El drenaje como paso aparte en la receta creada desde el historial\n• Arreglado el final automático al añadir agua tras el cambio de paso</string>
     <string name="notes_1_7_1">• Una receta a partir de una preparación grabada, directamente desde el historial\n• Mantén pulsado el gráfico: muestra el peso y el tiempo en ese punto\n• Borrar una preparación desde la propia lista\n• La duración del paso en la lista de pasos</string>

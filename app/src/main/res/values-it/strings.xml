@@ -63,6 +63,10 @@
     <string name="dose_dialog_title">Inserisci la dose</string>
 
     <string name="four_six_title">Generatore 4:6</string>
+    <string name="four_six_presets">Preset</string>
+    <string name="four_six_preset_off">Senza preset</string>
+    <string name="four_six_preset_save">Salva come…</string>
+    <string name="four_six_preset_name">Nome del preset</string>
     <string name="four_six_button">4:6</string>
     <string name="four_six_recipe_name">V60 4:6</string>
     <string name="four_six_dose">Dose</string>
@@ -228,6 +232,7 @@
     <string name="recipes_exported">Ricette esportate: %1$d</string>
     <string name="recipes_imported">Ricette importate: %1$d</string>
     <string name="recipes_import_failed">Impossibile leggere il file delle ricette</string>
+    <string name="recipe_file_label">Ricetta Pourista</string>
     <string name="recipes_export_failed">Impossibile salvare il file</string>
     <string name="recipes_format_title">Formato delle ricette</string>
     <string name="recipes_format_copied">Descrizione del formato copiata</string>
@@ -260,6 +265,7 @@
     <string name="settings_scale_log">Log della bilancia</string>
     <string name="settings_scale_log_hint">Scrivere in un file lo scambio con la bilancia e mandarlo allo sviluppatore</string>
     <string name="settings_release_notes">Cronologia delle versioni</string>
+    <string name="notes_1_8_1">• I file di ricetta (.pour) si aprono nell\'app, direttamente sulla schermata di estrazione\n• Preset nel generatore 4:6: salva, scegli ed elimina\n• Nel foglio 4:6 «Fatto» resta in vista e l\'elenco dei passaggi non salta più</string>
     <string name="notes_1_8_0">• L\'interfaccia in 14 lingue, con la scelta della lingua nelle impostazioni\n• Backup: ricette e cronologia in un unico file\n• I passaggi della ricetta come una sequenza di icone\n• Aspetto rinnovato: icone arrotondate, numeri più grandi, nuova ricerca\n• L\'ordine delle ricette si cambia con una pressione lunga\n• Scorri per eliminare nella cronologia, con annulla\n• Supporto per le bilance Acaia, Difluid Microbalance, Eureka Precisa e Varia AKU\n• Corretto il peso salvato alla fine automatica</string>
     <string name="notes_1_7_2">• Un\'immagine dell\'estrazione da condividere\n• La fine automatica si può spegnere\n• Grafici: griglia da 50 g, asse dei tempi, più alti\n• Lo scarico come passo a sé nella ricetta creata dalla cronologia\n• Sistemata la fine automatica quando si aggiunge acqua dopo il cambio di passo</string>
     <string name="notes_1_7_1">• Una ricetta da un\'estrazione registrata, direttamente dalla cronologia\n• Tieni premuto il grafico: mostra peso e tempo in quel punto\n• Elimina un\'estrazione dalla lista stessa\n• La durata del passo nell\'elenco dei passi</string>

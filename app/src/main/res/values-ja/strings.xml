@@ -63,6 +63,10 @@
     <string name="dose_dialog_title">粉量を入力</string>
 
     <string name="four_six_title">4:6ジェネレーター</string>
+    <string name="four_six_presets">プリセット</string>
+    <string name="four_six_preset_off">プリセットなし</string>
+    <string name="four_six_preset_save">名前を付けて保存…</string>
+    <string name="four_six_preset_name">プリセット名</string>
     <string name="four_six_button">4:6</string>
     <string name="four_six_recipe_name">V60 4:6</string>
     <string name="four_six_dose">粉量</string>
@@ -228,6 +232,7 @@
     <string name="recipes_exported">書き出したレシピ: %1$d</string>
     <string name="recipes_imported">読み込んだレシピ: %1$d</string>
     <string name="recipes_import_failed">レシピファイルを読めませんでした</string>
+    <string name="recipe_file_label">Pourista のレシピ</string>
     <string name="recipes_export_failed">ファイルを保存できませんでした</string>
     <string name="recipes_format_title">レシピの形式</string>
     <string name="recipes_format_copied">形式の説明をコピーしました</string>
@@ -260,6 +265,7 @@
     <string name="settings_scale_log">スケールのログ</string>
     <string name="settings_scale_log_hint">スケールとのやり取りをファイルに記録して開発者に送る</string>
     <string name="settings_release_notes">更新履歴</string>
+    <string name="notes_1_8_1">• レシピファイル（.pour）がアプリで直接開き、抽出画面まで一気に\n• 4:6 ジェネレーターのプリセット: 保存・選択・削除\n• 4:6 シートの「完了」が常に見え、工程リストが跳ねなくなりました</string>
     <string name="notes_1_8_0">• 14 言語に対応、設定から言語を選べます\n• バックアップ: レシピと履歴をひとつのファイルに\n• レシピの工程を丸アイコンの流れで表示\n• 見た目を刷新: 丸みのあるアイコン、大きな数字、新しい検索\n• レシピの並び替えはカードの長押しで\n• 履歴はスワイプで削除、取り消しも可能\n• Acaia、Difluid Microbalance、Eureka Precisa、Varia AKU に対応\n• 自動終了で記録される重量を修正</string>
     <string name="notes_1_7_2">• 抽出を画像にして共有\n• 自動終了をオフにできます\n• グラフ: 50gごとの目盛り、時間軸、高さアップ\n• 履歴から作るレシピで落ち切りが独立したステップに\n• ステップ切り替え後に注ぎ足したときの自動終了を修正</string>
     <string name="notes_1_7_1">• 記録した抽出からレシピを作成 — 履歴から直接\n• グラフを長押しすると、その位置の重量と時間を表示\n• 抽出を一覧からそのまま削除\n• ステップ一覧に所要時間を表示</string>

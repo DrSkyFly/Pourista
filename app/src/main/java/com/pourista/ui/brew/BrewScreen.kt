@@ -471,6 +471,9 @@ fun BrewScreen(
                     viewModel.generateFortySix(params, lockRatio)
                     showFortySix = false
                 },
+                presets = settings.fortySixPresets,
+                onSavePreset = viewModel::saveFortySixPreset,
+                onDeletePreset = viewModel::deleteFortySixPreset,
             )
         }
     }

@@ -3,6 +3,10 @@ POURISTA RECIPE FORMAT
 The file is plain JSON in UTF-8. It holds one object with the fields format,
 version and a list of recipes. Export from the app produces the same file.
 
+The extension is .pour. Tapping such a file opens it in Pourista: the recipe
+lands in the list and becomes the current one on the brewing screen. A file
+with any other name still works through "Import" in the recipes menu.
+
 {
   "format": "pourista.recipes",
   "version": 1,

@@ -2,6 +2,7 @@ package com.pourista
 
 import android.app.Application
 import android.content.Context
+import android.net.Uri
 import android.content.res.Configuration
 import android.util.Log
 import com.pourista.brew.BrewEngine
@@ -9,6 +10,7 @@ import com.pourista.brew.BrewEvent
 import com.pourista.brew.BrewPhase
 import com.pourista.brew.BrewState
 import com.pourista.data.db.AppDatabase
+import com.pourista.data.io.RecipeJson
 import com.pourista.data.model.BrewNotes
 import com.pourista.data.model.Recipe
 import com.pourista.data.prefs.AppSettings
@@ -39,6 +41,7 @@ import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import java.text.SimpleDateFormat
 import java.util.Date
 import java.util.Locale
@@ -119,6 +122,54 @@ class AppContainer(private val context: Context) {
 
     fun clearDraftReady() {
         _draftReady.value = false
+    }
+
+    private val _openedRecipes = MutableStateFlow<Int?>(null)
+
+    /**
+     * Сколько рецептов пришло файлом снаружи; ноль — файл не подошёл. Событие
+     * живёт до того, как его заберёт навигация: файл открывают и на холодном
+     * запуске, когда экрана ещё нет.
+     */
+    val openedRecipes: StateFlow<Int?> = _openedRecipes.asStateFlow()
+
+    fun clearOpenedRecipes() {
+        _openedRecipes.value = null
+    }
+
+    /**
+     * Файл рецепта, открытый снаружи приложения: из мессенджера, почты или
+     * файлового менеджера.
+     *
+     * Первый рецепт из файла сразу становится текущим: файл открывают, чтобы
+     * заварить по нему, а не чтобы положить в список и искать заново.
+     */
+    fun openRecipeFile(uri: Uri) {
+        scope.launch {
+            val text = withContext(Dispatchers.IO) {
+                runCatching {
+                    context.contentResolver.openInputStream(uri)
+                        ?.use { it.readBytes().decodeToString() }
+                }.getOrNull()
+            }
+            val parsed = text
+                ?.let { runCatching { RecipeJson.decode(it) }.getOrNull() }
+                .orEmpty()
+            if (parsed.isEmpty()) {
+                _openedRecipes.value = 0
+                return@launch
+            }
+            val ids = recipes.importAll(parsed)
+            ids.firstOrNull()
+                ?.let { id -> recipes.recipeById(id) }
+                ?.let { recipe ->
+                    brewEngine.reset()
+                    brewEngine.selectRecipe(recipe)
+                    settings.setLastRecipeId(recipe.id)
+                    recipes.markUsed(recipe.id)
+                }
+            _openedRecipes.value = ids.size
+        }
     }
 
     init {

@@ -63,6 +63,10 @@
     <string name="dose_dialog_title">Enter dose</string>
 
     <string name="four_six_title">4:6 generator</string>
+    <string name="four_six_presets">Presets</string>
+    <string name="four_six_preset_off">No preset</string>
+    <string name="four_six_preset_save">Save as…</string>
+    <string name="four_six_preset_name">Preset name</string>
     <string name="four_six_button">4:6</string>
     <string name="four_six_recipe_name">V60 4:6</string>
     <string name="four_six_dose">Dose</string>
@@ -228,6 +232,7 @@
     <string name="recipes_exported">Recipes exported: %1$d</string>
     <string name="recipes_imported">Recipes imported: %1$d</string>
     <string name="recipes_import_failed">Could not read the recipe file</string>
+    <string name="recipe_file_label">Pourista recipe</string>
     <string name="recipes_export_failed">Could not save the file</string>
     <string name="recipes_format_title">Recipe format</string>
     <string name="recipes_format_copied">Format description copied</string>
@@ -266,6 +271,7 @@
     <string name="settings_scale_log">Scale log</string>
     <string name="settings_scale_log_hint">Record the exchange with the scale to a file and send it to the developer</string>
     <string name="settings_release_notes">Release notes</string>
+    <string name="notes_1_8_1">• Recipe files (.pour) open straight in the app and land on the brewing screen\n• Presets in the 4:6 generator: save, pick and delete\n• In the 4:6 sheet “Done” stays in view and the step list no longer jumps</string>
     <string name="notes_1_8_0">• The interface in 14 languages, with a language picker in settings\n• Backup: recipes and the whole history in one file\n• Recipe steps as a timeline of badges\n• A refreshed look: rounded icons, bigger numbers, a new search field\n• Recipe order changes with a long press on the card\n• Swipe a brew away in history, with undo\n• Support for Acaia, Difluid Microbalance, Eureka Precisa and Varia AKU scales\n• Fixed the weight recorded at automatic finish</string>
     <string name="notes_1_7_2">• A brew image to share\n• Automatic finish can be switched off\n• Charts: a 50 g grid, a time axis, more height\n• Drawdown as its own step in a recipe from history\n• Fixed automatic finish when water is added after the step changes</string>
     <string name="notes_1_7_1">• A recipe from a recorded brew — straight from history\n• Hold the chart: it shows weight and time at that point\n• Delete a brew straight from the list\n• Step duration in the step list</string>

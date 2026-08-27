@@ -6,6 +6,7 @@ import androidx.compose.material.icons.rounded.LocalCafe
 import androidx.compose.material.icons.automirrored.rounded.MenuBook
 import androidx.compose.material.icons.rounded.Settings
 import androidx.compose.animation.core.tween
+import android.widget.Toast
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
 import androidx.compose.animation.slideInHorizontally
@@ -19,12 +20,14 @@ import androidx.compose.material3.ShortNavigationBar
 import androidx.compose.material3.ShortNavigationBarItem
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.lifecycle.viewmodel.compose.viewModel
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavDestination.Companion.hierarchy
 import androidx.navigation.NavGraph.Companion.findStartDestination
 import androidx.navigation.NavHostController
@@ -76,6 +79,25 @@ private enum class TopLevel(
 @Composable
 fun AppNavigation() {
     val navController = rememberNavController()
+
+    // Рецепт, открытый файлом снаружи, уже лежит в базе и выбран для
+    // заваривания — экрану остаётся показаться и сказать, что вышло.
+    val context = LocalContext.current
+    val container = context.appContainer
+    val opened by container.openedRecipes.collectAsStateWithLifecycle()
+    val importedText = stringResource(R.string.recipes_imported, opened ?: 0)
+    val failedText = stringResource(R.string.recipes_import_failed)
+    LaunchedEffect(opened) {
+        val count = opened ?: return@LaunchedEffect
+        container.clearOpenedRecipes()
+        if (count > 0) {
+            navController.navigateToTab(Routes.BREW)
+            Toast.makeText(context, importedText, Toast.LENGTH_SHORT).show()
+        } else {
+            Toast.makeText(context, failedText, Toast.LENGTH_LONG).show()
+        }
+    }
+
     // Набок разделы уезжают в боковую панель: по высоте в альбомном режиме
     // дорога каждая строка, а по ширине место есть.
     val wide = isWideLayout()

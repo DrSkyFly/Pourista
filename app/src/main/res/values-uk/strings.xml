@@ -63,6 +63,10 @@
     <string name="dose_dialog_title">Ввести дозу</string>
 
     <string name="four_six_title">Генератор 4:6</string>
+    <string name="four_six_presets">Пресети</string>
+    <string name="four_six_preset_off">Без пресета</string>
+    <string name="four_six_preset_save">Зберегти як…</string>
+    <string name="four_six_preset_name">Назва пресета</string>
     <string name="four_six_button">4:6</string>
     <string name="four_six_recipe_name">V60 4:6</string>
     <string name="four_six_dose">Доза</string>
@@ -228,6 +232,7 @@
     <string name="recipes_exported">Експортовано рецептів: %1$d</string>
     <string name="recipes_imported">Імпортовано рецептів: %1$d</string>
     <string name="recipes_import_failed">Не вдалося прочитати файл рецептів</string>
+    <string name="recipe_file_label">Рецепт Pourista</string>
     <string name="recipes_export_failed">Не вдалося зберегти файл</string>
     <string name="recipes_format_title">Формат рецептів</string>
     <string name="recipes_format_copied">Опис формату скопійовано</string>
@@ -260,6 +265,7 @@
     <string name="settings_scale_log">Журнал ваг</string>
     <string name="settings_scale_log_hint">Записати обмін з вагами у файл і надіслати розробнику</string>
     <string name="settings_release_notes">Історія змін</string>
+    <string name="notes_1_8_1">• Файли рецептів (.pour) відкриваються просто в застосунку, одразу на екрані заварювання\n• Пресети в генераторі 4:6: збереження, вибір і видалення\n• У листі 4:6 «Готово» завжди на видноті, а список етапів більше не стрибає</string>
     <string name="notes_1_8_0">• Інтерфейс 14 мовами, вибір мови в налаштуваннях\n• Резервна копія: рецепти та вся історія одним файлом\n• Етапи рецепта стрічкою з кружечками\n• Оновлений вигляд: заокруглені значки, великі цифри, новий пошук\n• Порядок рецептів — довгим натисканням на картку\n• Видалення в історії свайпом, зі скасуванням\n• Підтримка ваг Acaia, Difluid Microbalance, Eureka Precisa, Varia AKU\n• Виправлено вагу, яка записувалася при автофініші</string>
     <string name="notes_1_7_2">• Картинка заварювання для «поділитися»\n• Автофініш можна вимкнути\n• Графіки: сітка по 50 г, шкала часу, більша висота\n• Злив окремим кроком у рецепті із запису\n• Полагоджено автофініш при доливанні після зміни кроку</string>
     <string name="notes_1_7_1">• Рецепт за записаним проливом — просто з історії\n• Затисніть графік: покаже вагу й час у точці\n• Видалення заварювання просто зі списку\n• Тривалість кроку у списку кроків</string>

@@ -68,9 +68,13 @@ class RecipeRepository(private val dao: RecipeDao) {
         )
     )
 
-    /** Импортированные рецепты ложатся сверху, в порядке файла. */
-    suspend fun importAll(recipes: List<Recipe>): Int {
-        recipes.reversed().forEach { recipe ->
+    /**
+     * Импортированные рецепты ложатся сверху, в порядке файла. Возвращает их
+     * id: открытый снаружи файл сразу берут в работу, а для этого нужен рецепт,
+     * а не число.
+     */
+    suspend fun importAll(recipes: List<Recipe>): List<Long> =
+        recipes.reversed().map { recipe ->
             saveNewOnTop(
                 recipe.copy(
                     id = 0,
@@ -80,9 +84,7 @@ class RecipeRepository(private val dao: RecipeDao) {
                     steps = recipe.steps.map { it.copy(id = 0) },
                 )
             )
-        }
-        return recipes.size
-    }
+        }.reversed()
 
     /** Всё, что есть в базе, — для резервной копии. */
     suspend fun exportAll(): List<Recipe> = dao.allRecipes().map { it.toDomain() }

@@ -268,7 +268,7 @@ fun RecipeListScreen(
                     onDelete = { viewModel.delete(recipe) },
                     onExport = {
                         viewModel.prepareExport(listOf(recipe))
-                        exportLauncher.launch("${recipe.name.take(40)}.json")
+                        exportLauncher.launch("${recipe.name.take(40)}.pour")
                     },
                 )
             }
@@ -449,9 +449,17 @@ private fun RecipeCard(
     }
 }
 
-private const val EXPORT_MIME = "application/json"
-private val IMPORT_MIME = arrayOf("application/json", "text/plain", "*/*")
-private const val EXPORT_ALL_FILE = "pourista-recipes.json"
+/**
+ * Свой тип файла: по нему система узнаёт рецепт и предлагает открыть его
+ * в приложении. Внутри всё тот же JSON — его читают и пишут руками.
+ */
+private const val EXPORT_MIME = "application/vnd.pourista.recipe"
+
+/** Выбор файла: свой тип, а следом всё, чем его могли назвать по дороге. */
+private val IMPORT_MIME =
+    arrayOf(EXPORT_MIME, "application/json", "text/plain", "*/*")
+
+private const val EXPORT_ALL_FILE = "pourista-recipes.pour"
 
 /** Над списком рецептов стоит поле поиска: на него сдвинуты индексы LazyColumn. */
 private const val HEADER_ITEMS = 1

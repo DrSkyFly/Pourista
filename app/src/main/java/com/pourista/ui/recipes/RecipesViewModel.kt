@@ -147,7 +147,7 @@ class RecipesViewModel(private val container: AppContainer) : ViewModel() {
             _message.value = if (parsed == null) {
                 RecipesMessage(R.string.recipes_import_failed)
             } else {
-                RecipesMessage(R.string.recipes_imported, container.recipes.importAll(parsed))
+                RecipesMessage(R.string.recipes_imported, container.recipes.importAll(parsed).size)
             }
         }
     }

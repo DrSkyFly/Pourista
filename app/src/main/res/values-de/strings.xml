@@ -63,6 +63,10 @@
     <string name="dose_dialog_title">Einwaage eingeben</string>
 
     <string name="four_six_title">4:6-Generator</string>
+    <string name="four_six_presets">Presets</string>
+    <string name="four_six_preset_off">Ohne Preset</string>
+    <string name="four_six_preset_save">Speichern als…</string>
+    <string name="four_six_preset_name">Name der Vorlage</string>
     <string name="four_six_button">4:6</string>
     <string name="four_six_recipe_name">V60 4:6</string>
     <string name="four_six_dose">Einwaage</string>
@@ -228,6 +232,7 @@
     <string name="recipes_exported">Exportierte Rezepte: %1$d</string>
     <string name="recipes_imported">Importierte Rezepte: %1$d</string>
     <string name="recipes_import_failed">Die Rezeptdatei ließ sich nicht lesen</string>
+    <string name="recipe_file_label">Pourista-Rezept</string>
     <string name="recipes_export_failed">Die Datei ließ sich nicht speichern</string>
     <string name="recipes_format_title">Rezeptformat</string>
     <string name="recipes_format_copied">Formatbeschreibung kopiert</string>
@@ -260,6 +265,7 @@
     <string name="settings_scale_log">Waagen-Log</string>
     <string name="settings_scale_log_hint">Den Austausch mit der Waage in eine Datei schreiben und dem Entwickler schicken</string>
     <string name="settings_release_notes">Änderungsverlauf</string>
+    <string name="notes_1_8_1">• Rezeptdateien (.pour) öffnen direkt in der App und landen im Brühbildschirm\n• Presets im 4:6-Generator: speichern, wählen und löschen\n• Im 4:6-Blatt bleibt „Fertig“ sichtbar, die Schrittliste springt nicht mehr</string>
     <string name="notes_1_8_0">• Die Oberfläche in 14 Sprachen, Sprachwahl in den Einstellungen\n• Sicherung: Rezepte und der ganze Verlauf in einer Datei\n• Rezeptschritte als Kette mit Symbolen\n• Frischer Look: runde Symbole, größere Zahlen, neue Suche\n• Rezeptreihenfolge ändert sich per langem Druck auf die Karte\n• Brühung im Verlauf wegwischen, mit Rückgängig\n• Unterstützung für Acaia, Difluid Microbalance, Eureka Precisa und Varia AKU\n• Das beim Autofinish gespeicherte Gewicht stimmt wieder</string>
     <string name="notes_1_7_2">• Ein Bild der Brühung zum Teilen\n• Das automatische Ende lässt sich abschalten\n• Diagramme: 50-g-Raster, Zeitachse, mehr Höhe\n• Durchlauf als eigener Schritt im Rezept aus dem Verlauf\n• Automatisches Ende beim Nachgießen nach dem Schrittwechsel repariert</string>
     <string name="notes_1_7_1">• Rezept aus einer aufgenommenen Brühung — direkt aus dem Verlauf\n• Diagramm gedrückt halten: zeigt Gewicht und Zeit an dieser Stelle\n• Brühung direkt aus der Liste löschen\n• Dauer des Schritts in der Schrittliste</string>

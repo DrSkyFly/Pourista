@@ -63,6 +63,10 @@
     <string name="dose_dialog_title">Informar a dose</string>
 
     <string name="four_six_title">Gerador 4:6</string>
+    <string name="four_six_presets">Presets</string>
+    <string name="four_six_preset_off">Sem preset</string>
+    <string name="four_six_preset_save">Salvar como…</string>
+    <string name="four_six_preset_name">Nome do preset</string>
     <string name="four_six_button">4:6</string>
     <string name="four_six_recipe_name">V60 4:6</string>
     <string name="four_six_dose">Dose</string>
@@ -228,6 +232,7 @@
     <string name="recipes_exported">Receitas exportadas: %1$d</string>
     <string name="recipes_imported">Receitas importadas: %1$d</string>
     <string name="recipes_import_failed">Não foi possível ler o arquivo de receitas</string>
+    <string name="recipe_file_label">Receita do Pourista</string>
     <string name="recipes_export_failed">Não foi possível salvar o arquivo</string>
     <string name="recipes_format_title">Formato das receitas</string>
     <string name="recipes_format_copied">Descrição do formato copiada</string>
@@ -260,6 +265,7 @@
     <string name="settings_scale_log">Log da balança</string>
     <string name="settings_scale_log_hint">Gravar num arquivo a conversa com a balança e mandar para o desenvolvedor</string>
     <string name="settings_release_notes">Histórico de versões</string>
+    <string name="notes_1_8_1">• Arquivos de receita (.pour) abrem no app, direto na tela de preparo\n• Presets no gerador 4:6: salvar, escolher e excluir\n• Na folha 4:6 «Pronto» fica sempre visível e a lista de etapas não pula mais</string>
     <string name="notes_1_8_0">• A interface em 14 idiomas, com escolha do idioma nos ajustes\n• Backup: receitas e todo o histórico em um arquivo\n• As etapas da receita em fila de ícones\n• Visual renovado: ícones arredondados, números maiores, nova busca\n• A ordem das receitas muda com um toque longo no cartão\n• Deslize para excluir no histórico, com desfazer\n• Suporte às balanças Acaia, Difluid Microbalance, Eureka Precisa e Varia AKU\n• Corrigido o peso salvo no fim automático</string>
     <string name="notes_1_7_2">• Uma imagem do preparo para compartilhar\n• O fim automático pode ser desligado\n• Gráficos: grade de 50 g, eixo de tempo, mais altura\n• A drenagem como etapa própria na receita criada do histórico\n• Corrigido o fim automático ao acrescentar água depois da troca de etapa</string>
     <string name="notes_1_7_1">• Receita a partir de um preparo gravado — direto do histórico\n• Segure o gráfico: ele mostra peso e tempo naquele ponto\n• Apagar um preparo direto da lista\n• A duração da etapa na lista de etapas</string>

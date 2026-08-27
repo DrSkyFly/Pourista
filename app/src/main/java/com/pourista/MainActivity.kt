@@ -1,6 +1,8 @@
 package com.pourista
 
 import android.content.Context
+import android.content.Intent
+import android.net.Uri
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
@@ -16,6 +18,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import androidx.core.content.IntentCompat
 import com.pourista.core.AppLocale
 import com.pourista.scale.ScaleRepository
 import com.pourista.ui.AppNavigation
@@ -50,6 +53,8 @@ class MainActivity : ComponentActivity() {
             permissionLauncher.launch(ScaleRepository.requiredPermissions())
         }
 
+        openRecipeFrom(intent)
+
         setContent {
             val settings by container.settingsState.collectAsStateWithLifecycle()
             PouristaTheme(
@@ -62,6 +67,32 @@ class MainActivity : ComponentActivity() {
                 WhatsNewDialog()
             }
         }
+    }
+
+    /** Приложение уже было открыто, а файл нажали снаружи. */
+    override fun onNewIntent(intent: Intent) {
+        super.onNewIntent(intent)
+        setIntent(intent)
+        openRecipeFrom(intent)
+    }
+
+    /**
+     * Файл рецепта, на который нажали в мессенджере или файловом менеджере.
+     * «Открыть» приходит ссылкой на файл, «поделиться» — вложением; на деле
+     * это один и тот же файл, поэтому разбираем оба.
+     */
+    private fun openRecipeFrom(intent: Intent?) {
+        val uri = when (intent?.action) {
+            Intent.ACTION_VIEW -> intent.data
+            Intent.ACTION_SEND -> IntentCompat.getParcelableExtra(
+                intent,
+                Intent.EXTRA_STREAM,
+                Uri::class.java,
+            )
+
+            else -> null
+        } ?: return
+        container.openRecipeFile(uri)
     }
 
     /**

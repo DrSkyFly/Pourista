@@ -63,6 +63,10 @@
     <string name="dose_dialog_title">Dozu gir</string>
 
     <string name="four_six_title">4:6 üreteci</string>
+    <string name="four_six_presets">Ön ayarlar</string>
+    <string name="four_six_preset_off">Ön ayarsız</string>
+    <string name="four_six_preset_save">Farklı kaydet…</string>
+    <string name="four_six_preset_name">Hazır ayar adı</string>
     <string name="four_six_button">4:6</string>
     <string name="four_six_recipe_name">V60 4:6</string>
     <string name="four_six_dose">Doz</string>
@@ -228,6 +232,7 @@
     <string name="recipes_exported">Dışa aktarılan tarif: %1$d</string>
     <string name="recipes_imported">İçe aktarılan tarif: %1$d</string>
     <string name="recipes_import_failed">Tarif dosyası okunamadı</string>
+    <string name="recipe_file_label">Pourista tarifi</string>
     <string name="recipes_export_failed">Dosya kaydedilemedi</string>
     <string name="recipes_format_title">Tarif biçimi</string>
     <string name="recipes_format_copied">Biçim açıklaması kopyalandı</string>
@@ -260,6 +265,7 @@
     <string name="settings_scale_log">Terazi günlüğü</string>
     <string name="settings_scale_log_hint">Teraziyle yapılan alışverişi bir dosyaya yazıp geliştiriciye gönder</string>
     <string name="settings_release_notes">Sürüm geçmişi</string>
+    <string name="notes_1_8_1">• Tarif dosyaları (.pour) uygulamada açılıyor, doğrudan demleme ekranında\n• 4:6 üretecinde ön ayarlar: kaydet, seç ve sil\n• 4:6 sayfasında «Tamam» hep görünür, adım listesi artık zıplamıyor</string>
     <string name="notes_1_8_0">• Arayüz 14 dilde, ayarlardan dil seçimi\n• Yedek: tarifler ve tüm geçmiş tek dosyada\n• Tarif adımları simge dizisi olarak\n• Yenilenen görünüm: yuvarlak simgeler, büyük rakamlar, yeni arama\n• Tarif sırası karta uzun basarak değişiyor\n• Geçmişte kaydırarak silme, geri alma ile\n• Acaia, Difluid Microbalance, Eureka Precisa ve Varia AKU terazileri destekleniyor\n• Otomatik bitişte kaydedilen ağırlık düzeltildi</string>
     <string name="notes_1_7_2">• Paylaşmak için demleme görseli\n• Otomatik bitiş kapatılabiliyor\n• Grafikler: 50 g’lik ızgara, zaman ekseni, daha yüksek\n• Geçmişten çıkan tarifte süzülme ayrı bir adım\n• Adım değiştikten sonra su eklenince otomatik bitiş düzeltildi</string>
     <string name="notes_1_7_1">• Kaydedilmiş bir demlemeden tarif — doğrudan geçmişten\n• Grafiğe basılı tut: o noktadaki ağırlığı ve süreyi gösterir\n• Demlemeyi doğrudan listeden silme\n• Adım listesinde adımın süresi</string>
