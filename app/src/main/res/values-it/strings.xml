@@ -9,6 +9,8 @@
     <string name="action_save">Salva</string>
     <string name="action_reset">Reimposta</string>
     <string name="action_connect">Collega la bilancia</string>
+    <string name="scale_state_searching">Cerco la bilancia…</string>
+    <string name="scale_state_off">Nessuna bilancia collegata</string>
     <string name="action_tare">Tara</string>
     <string name="action_dose">Dose</string>
     <string name="action_start">Avvia</string>
@@ -17,6 +19,9 @@
     <string name="action_resume">Riprendi</string>
     <string name="action_finish">Termina</string>
     <string name="action_search">Cerca</string>
+    <string name="action_clear">Cancella</string>
+    <string name="action_undo">Annulla</string>
+    <string name="history_deleted">Estrazione eliminata</string>
     <string name="action_edit">Modifica</string>
     <string name="action_delete">Elimina</string>
     <string name="action_duplicate">Duplica</string>
@@ -129,6 +134,7 @@
     <string name="recipe_dose">Dose, g</string>
     <string name="recipe_water">Acqua, g</string>
     <string name="recipe_temp">Temperatura, °C</string>
+    <string name="recipe_temp_field">Temp., °C</string>
     <string name="recipe_ratio">Rapporto</string>
     <string name="recipe_ratio_value">Rapporto %1$s</string>
     <string name="recipe_grinder">Macinino</string>
@@ -168,6 +174,8 @@
     <string name="theme_light">Chiaro</string>
     <string name="theme_dark">Scuro</string>
     <string name="whats_new_title">Novità</string>
+    <string name="testers_title">Cercasi tester</string>
+    <string name="testers_body">Per pubblicare Pourista su Google Play servono tester: aprire l\'app almeno una volta al giorno per due settimane. Se vuoi dare una mano, scrivi all\'autore.</string>
 
     <string name="settings_palette">Palette</string>
     <string name="palette_copper">Caffè</string>
@@ -235,7 +243,6 @@
     <string name="backup_restored">Ripristinato: %1$d ricette, %2$d estrazioni</string>
     <string name="backup_restore_failed">Questo file non è un backup di Pourista</string>
     <string name="recipes_import_menu">Importa da un file</string>
-    <string name="action_reorder">Trascina per cambiare ordine</string>
     <string name="recipes_import_clipboard">Importa dagli appunti</string>
     <string name="recipes_clipboard_empty">Gli appunti sono vuoti</string>
     <string name="recipe_steps_expand">Mostra i passi</string>
@@ -253,6 +260,7 @@
     <string name="settings_scale_log">Log della bilancia</string>
     <string name="settings_scale_log_hint">Scrivere in un file lo scambio con la bilancia e mandarlo allo sviluppatore</string>
     <string name="settings_release_notes">Cronologia delle versioni</string>
+    <string name="notes_1_8_0">• L\'interfaccia in 14 lingue, con la scelta della lingua nelle impostazioni\n• Backup: ricette e cronologia in un unico file\n• I passaggi della ricetta come una sequenza di icone\n• Aspetto rinnovato: icone arrotondate, numeri più grandi, nuova ricerca\n• L\'ordine delle ricette si cambia con una pressione lunga\n• Scorri per eliminare nella cronologia, con annulla\n• Supporto per le bilance Acaia, Difluid Microbalance, Eureka Precisa e Varia AKU\n• Corretto il peso salvato alla fine automatica</string>
     <string name="notes_1_7_2">• Un\'immagine dell\'estrazione da condividere\n• La fine automatica si può spegnere\n• Grafici: griglia da 50 g, asse dei tempi, più alti\n• Lo scarico come passo a sé nella ricetta creata dalla cronologia\n• Sistemata la fine automatica quando si aggiunge acqua dopo il cambio di passo</string>
     <string name="notes_1_7_1">• Una ricetta da un\'estrazione registrata, direttamente dalla cronologia\n• Tieni premuto il grafico: mostra peso e tempo in quel punto\n• Elimina un\'estrazione dalla lista stessa\n• La durata del passo nell\'elenco dei passi</string>
     <string name="notes_1_7_0">• Modalità AeroPress: la pressata si vede sul grafico\n• Palette «Oliva»\n• La tastiera non copre più i campi di testo\n• Lo swirl non rovina più grafico e flusso\n• Peso giusto alla fine quando il dripper è già stato tolto</string>

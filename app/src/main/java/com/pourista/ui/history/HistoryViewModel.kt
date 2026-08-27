@@ -16,10 +16,10 @@ import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 
-@OptIn(ExperimentalCoroutinesApi::class)
 /** Температуры в записи может не быть — берём типовую для пуровера. */
 private const val DEFAULT_WATER_TEMP_C = 94
 
+@OptIn(ExperimentalCoroutinesApi::class)
 class HistoryViewModel(private val container: AppContainer) : ViewModel() {
 
     private val _query = MutableStateFlow("")
@@ -69,6 +69,14 @@ class HistoryViewModel(private val container: AppContainer) : ViewModel() {
 
     fun delete(record: BrewRecord) {
         viewModelScope.launch { container.brews.deleteBrew(record.id) }
+    }
+
+    /**
+     * Вернуть удалённое. Запись кладётся заново, вместе с графиками и
+     * заметками; id у неё будет другой, но человеку он не виден.
+     */
+    fun restore(record: BrewRecord) {
+        viewModelScope.launch { container.brews.restoreAll(listOf(record)) }
     }
 }
 

@@ -2,34 +2,42 @@ package com.pourista.ui.history
 
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Delete
-import androidx.compose.material.icons.filled.PlaylistAdd
-import androidx.compose.material.icons.filled.Search
+import androidx.compose.material.icons.rounded.Delete
+import androidx.compose.material.icons.rounded.History
+import androidx.compose.material.icons.automirrored.rounded.PlaylistAdd
 import androidx.compose.material3.Card
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.SnackbarHost
+import androidx.compose.material3.SnackbarHostState
+import androidx.compose.material3.SnackbarResult
+import androidx.compose.material3.SwipeToDismissBox
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
+import androidx.compose.material3.TopAppBarDefaults
+import androidx.compose.material3.rememberSwipeToDismissBoxState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.pourista.R
@@ -38,7 +46,10 @@ import com.pourista.core.formatGrams
 import com.pourista.core.formatRatio
 import com.pourista.core.formatTimerWithTenths
 import com.pourista.data.model.BrewRecord
+import com.pourista.ui.components.EmptyState
+import com.pourista.ui.components.SearchField
 import com.pourista.ui.components.SeriesChart
+import kotlinx.coroutines.launch
 import java.text.DateFormat
 import com.pourista.ui.theme.AppTheme
 import java.util.Date
@@ -55,13 +66,23 @@ fun HistoryScreen(
     val brews by viewModel.brews.collectAsStateWithLifecycle()
     val query by viewModel.query.collectAsStateWithLifecycle()
 
+    // Шапка уезжает при прокрутке: в истории каждая карточка высокая, и
+    // отдавать ей строку с одним словом на весь экран жалко.
+    val scrollBehavior = TopAppBarDefaults.enterAlwaysScrollBehavior()
+    val snackbarHostState = remember { SnackbarHostState() }
+    val scope = rememberCoroutineScope()
+    val deletedText = stringResource(R.string.history_deleted)
+    val undoText = stringResource(R.string.action_undo)
+
     Scaffold(
-        modifier = modifier,
+        modifier = modifier.nestedScroll(scrollBehavior.nestedScrollConnection),
+        snackbarHost = { SnackbarHost(snackbarHostState) },
         topBar = {
             TopAppBar(
                 title = { Text(stringResource(R.string.tab_history)) },
                 colors = AppTheme.topBarColors(),
                 modifier = AppTheme.topBarModifier(),
+                scrollBehavior = scrollBehavior,
             )
         },
         bottomBar = bottomBar,
@@ -78,45 +99,84 @@ fun HistoryScreen(
             verticalArrangement = Arrangement.spacedBy(12.dp),
         ) {
             item {
-                OutlinedTextField(
-                    value = query,
-                    onValueChange = viewModel::setQuery,
-                    modifier = Modifier.fillMaxWidth(),
-                    singleLine = true,
-                    leadingIcon = { Icon(Icons.Default.Search, null) },
-                    placeholder = { Text(stringResource(R.string.action_search)) },
-                )
+                SearchField(value = query, onValueChange = viewModel::setQuery)
             }
 
             if (brews.isEmpty()) {
                 item {
-                    Text(
+                    EmptyState(
+                        icon = Icons.Rounded.History,
                         text = stringResource(R.string.history_empty),
-                        style = MaterialTheme.typography.bodyMedium,
-                        color = MaterialTheme.colorScheme.onSurfaceVariant,
-                        textAlign = TextAlign.Center,
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .padding(top = 48.dp),
                     )
                 }
             }
 
             items(brews, key = { it.id }) { record ->
                 val recordedName = stringResource(R.string.recipe_recorded_name)
-                BrewHistoryCard(
-                    record = record,
-                    onClick = { onOpen(record.id) },
-                    onMakeRecipe = {
-                        val name = record.recipeName?.takeIf { it.isNotBlank() }
-                            ?: "$recordedName ${formatDateTime(record.brewedAt)}"
-                        if (viewModel.buildRecipe(record, name)) onOpenDraft()
+                SwipeToDelete(
+                    onDelete = {
+                        viewModel.delete(record)
+                        scope.launch {
+                            val result = snackbarHostState.showSnackbar(
+                                message = deletedText,
+                                actionLabel = undoText,
+                            )
+                            if (result == SnackbarResult.ActionPerformed) viewModel.restore(record)
+                        }
                     },
-                    onDelete = { viewModel.delete(record) },
-                )
+                    // Появление и уход карточки в списке анимируются: без этого
+                    // удалённая запись исчезает рывком, а соседние прыгают.
+                    modifier = Modifier.animateItem(),
+                ) {
+                    BrewHistoryCard(
+                        record = record,
+                        onClick = { onOpen(record.id) },
+                        onMakeRecipe = {
+                            val name = record.recipeName?.takeIf { it.isNotBlank() }
+                                ?: "$recordedName ${formatDateTime(record.brewedAt)}"
+                            if (viewModel.buildRecipe(record, name)) onOpenDraft()
+                        },
+                    )
+                }
             }
         }
     }
+}
+
+/**
+ * Смахивание записи влево вместо корзины в каждой карточке. Подтверждения нет:
+ * вместо вопроса даётся отмена в снек-баре — так быстрее и тому, кто смахнул
+ * нарочно, и тому, кто задел случайно.
+ */
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+private fun SwipeToDelete(
+    onDelete: () -> Unit,
+    modifier: Modifier = Modifier,
+    content: @Composable () -> Unit,
+) {
+    val state = rememberSwipeToDismissBoxState()
+    SwipeToDismissBox(
+        state = state,
+        modifier = modifier,
+        enableDismissFromStartToEnd = false,
+        onDismiss = { onDelete() },
+        backgroundContent = {
+            Box(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .padding(end = 24.dp),
+                contentAlignment = Alignment.CenterEnd,
+            ) {
+                Icon(
+                    imageVector = Icons.Rounded.Delete,
+                    contentDescription = stringResource(R.string.action_delete),
+                    tint = MaterialTheme.colorScheme.error,
+                )
+            }
+        },
+        content = { content() },
+    )
 }
 
 @Composable
@@ -124,7 +184,6 @@ private fun BrewHistoryCard(
     record: BrewRecord,
     onClick: () -> Unit,
     onMakeRecipe: () -> Unit,
-    onDelete: () -> Unit,
 ) {
     Card(
         modifier = Modifier
@@ -149,24 +208,17 @@ private fun BrewHistoryCard(
                 // Рецепт по проливу — только когда есть что разбирать:
                 // без весов график пустой, и собирать шаги не из чего.
                 if (record.weightSeries.size > 1) {
-                    IconButton(onClick = onMakeRecipe, modifier = Modifier.size(ICON_BUTTON, ICON_TOUCH)) {
+                    IconButton(onClick = onMakeRecipe) {
                         Icon(
-                            imageVector = Icons.Default.PlaylistAdd,
+                            imageVector = Icons.AutoMirrored.Rounded.PlaylistAdd,
                             contentDescription = stringResource(R.string.history_make_recipe),
                         )
                     }
                 }
-                IconButton(onClick = onDelete, modifier = Modifier.size(ICON_BUTTON, ICON_TOUCH)) {
-                    Icon(
-                        imageVector = Icons.Default.Delete,
-                        contentDescription = stringResource(R.string.action_delete),
-                        tint = MaterialTheme.colorScheme.onSurfaceVariant,
-                    )
-                }
                 Text(
                     text = formatTimerWithTenths(record.elapsedMs),
                     style = MaterialTheme.typography.titleMedium,
-                    modifier = Modifier.padding(start = 2.dp),
+                    modifier = Modifier.padding(start = 8.dp),
                 )
             }
 
@@ -205,12 +257,13 @@ private fun BrewHistoryCard(
             }
 
             if (record.weightSeries.size > 1) {
+                // В списке график — не чертёж, а росчерк: по нему узнают форму
+                // пролива, а цифры смотрят уже в карточке заваривания.
                 SeriesChart(
                     values = record.weightSeries,
                     modifier = Modifier.padding(top = 12.dp),
-                    // Плитка листается вместе со списком, и графику нужна
-                    // высота: на низком цифры оси жмутся друг к другу.
-                    height = 150.dp,
+                    height = 56.dp,
+                    showAxis = false,
                 )
             }
         }
@@ -219,11 +272,3 @@ private fun BrewHistoryCard(
 
 internal fun formatDateTime(millis: Long): String =
     DateFormat.getDateTimeInstance(DateFormat.MEDIUM, DateFormat.SHORT).format(Date(millis))
-
-/**
- * Кнопки в строке заголовка. Зазор между значками — это рамка кнопки, а не
- * сами значки: сужаем её до ширины значка с небольшим запасом, высоту под
- * палец оставляем прежней.
- */
-private val ICON_BUTTON = 30.dp
-private val ICON_TOUCH = 40.dp

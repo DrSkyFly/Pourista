@@ -9,6 +9,8 @@
     <string name="action_save">Kaydet</string>
     <string name="action_reset">Sıfırla</string>
     <string name="action_connect">Teraziye bağlan</string>
+    <string name="scale_state_searching">Terazi aranıyor…</string>
+    <string name="scale_state_off">Terazi bağlı değil</string>
     <string name="action_tare">Dara</string>
     <string name="action_dose">Doz</string>
     <string name="action_start">Başlat</string>
@@ -17,6 +19,9 @@
     <string name="action_resume">Devam</string>
     <string name="action_finish">Bitir</string>
     <string name="action_search">Ara</string>
+    <string name="action_clear">Temizle</string>
+    <string name="action_undo">Geri al</string>
+    <string name="history_deleted">Demleme silindi</string>
     <string name="action_edit">Düzenle</string>
     <string name="action_delete">Sil</string>
     <string name="action_duplicate">Çoğalt</string>
@@ -129,6 +134,7 @@
     <string name="recipe_dose">Doz, g</string>
     <string name="recipe_water">Su, g</string>
     <string name="recipe_temp">Sıcaklık, °C</string>
+    <string name="recipe_temp_field">Sıcaklık, °C</string>
     <string name="recipe_ratio">Oran</string>
     <string name="recipe_ratio_value">Oran %1$s</string>
     <string name="recipe_grinder">Değirmen</string>
@@ -168,6 +174,8 @@
     <string name="theme_light">Açık</string>
     <string name="theme_dark">Koyu</string>
     <string name="whats_new_title">Yenilikler</string>
+    <string name="testers_title">Test edenler aranıyor</string>
+    <string name="testers_body">Pourista\'yı Google Play\'de yayınlamak için test edenlere ihtiyaç var: iki hafta boyunca uygulamayı günde en az bir kez açmak yeter. Yardım etmek isteyen yazara ulaşsın.</string>
 
     <string name="settings_palette">Palet</string>
     <string name="palette_copper">Kahve</string>
@@ -235,7 +243,6 @@
     <string name="backup_restored">Geri yüklendi: %1$d tarif, %2$d demleme</string>
     <string name="backup_restore_failed">Bu dosya bir Pourista yedeği değil</string>
     <string name="recipes_import_menu">Dosyadan içe aktar</string>
-    <string name="action_reorder">Sırayı değiştirmek için sürükle</string>
     <string name="recipes_import_clipboard">Panodan içe aktar</string>
     <string name="recipes_clipboard_empty">Panoda metin yok</string>
     <string name="recipe_steps_expand">Adımları göster</string>
@@ -253,6 +260,7 @@
     <string name="settings_scale_log">Terazi günlüğü</string>
     <string name="settings_scale_log_hint">Teraziyle yapılan alışverişi bir dosyaya yazıp geliştiriciye gönder</string>
     <string name="settings_release_notes">Sürüm geçmişi</string>
+    <string name="notes_1_8_0">• Arayüz 14 dilde, ayarlardan dil seçimi\n• Yedek: tarifler ve tüm geçmiş tek dosyada\n• Tarif adımları simge dizisi olarak\n• Yenilenen görünüm: yuvarlak simgeler, büyük rakamlar, yeni arama\n• Tarif sırası karta uzun basarak değişiyor\n• Geçmişte kaydırarak silme, geri alma ile\n• Acaia, Difluid Microbalance, Eureka Precisa ve Varia AKU terazileri destekleniyor\n• Otomatik bitişte kaydedilen ağırlık düzeltildi</string>
     <string name="notes_1_7_2">• Paylaşmak için demleme görseli\n• Otomatik bitiş kapatılabiliyor\n• Grafikler: 50 g’lik ızgara, zaman ekseni, daha yüksek\n• Geçmişten çıkan tarifte süzülme ayrı bir adım\n• Adım değiştikten sonra su eklenince otomatik bitiş düzeltildi</string>
     <string name="notes_1_7_1">• Kaydedilmiş bir demlemeden tarif — doğrudan geçmişten\n• Grafiğe basılı tut: o noktadaki ağırlığı ve süreyi gösterir\n• Demlemeyi doğrudan listeden silme\n• Adım listesinde adımın süresi</string>
     <string name="notes_1_7_0">• AeroPress modu: presleme grafikte görünüyor\n• “Zeytin” paleti\n• Klavye artık giriş alanlarını kapatmıyor\n• Swirl artık grafiği ve akışı bozmuyor\n• Dripper kaldırıldıktan sonra bitirirken ağırlık doğru</string>

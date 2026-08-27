@@ -9,6 +9,8 @@
     <string name="action_save">Enregistrer</string>
     <string name="action_reset">Réinitialiser</string>
     <string name="action_connect">Connecter la balance</string>
+    <string name="scale_state_searching">Recherche de la balance…</string>
+    <string name="scale_state_off">Aucune balance connectée</string>
     <string name="action_tare">Tare</string>
     <string name="action_dose">Dose</string>
     <string name="action_start">Démarrer</string>
@@ -17,6 +19,9 @@
     <string name="action_resume">Reprendre</string>
     <string name="action_finish">Terminer</string>
     <string name="action_search">Rechercher</string>
+    <string name="action_clear">Effacer</string>
+    <string name="action_undo">Annuler</string>
+    <string name="history_deleted">Extraction supprimée</string>
     <string name="action_edit">Modifier</string>
     <string name="action_delete">Supprimer</string>
     <string name="action_duplicate">Dupliquer</string>
@@ -129,6 +134,7 @@
     <string name="recipe_dose">Dose, g</string>
     <string name="recipe_water">Eau, g</string>
     <string name="recipe_temp">Température, °C</string>
+    <string name="recipe_temp_field">Temp., °C</string>
     <string name="recipe_ratio">Ratio</string>
     <string name="recipe_ratio_value">Ratio %1$s</string>
     <string name="recipe_grinder">Moulin</string>
@@ -168,6 +174,8 @@
     <string name="theme_light">Clair</string>
     <string name="theme_dark">Sombre</string>
     <string name="whats_new_title">Nouveautés</string>
+    <string name="testers_title">Testeurs recherchés</string>
+    <string name="testers_body">Pour publier Pourista sur Google Play, il faut des testeurs : ouvrir l\'app au moins une fois par jour pendant deux semaines. Envie d\'aider ? Écrivez à l\'auteur.</string>
 
     <string name="settings_palette">Palette</string>
     <string name="palette_copper">Café</string>
@@ -235,7 +243,6 @@
     <string name="backup_restored">Restauré : %1$d recettes, %2$d extractions</string>
     <string name="backup_restore_failed">Ce fichier n\'est pas une sauvegarde Pourista</string>
     <string name="recipes_import_menu">Importer depuis un fichier</string>
-    <string name="action_reorder">Faites glisser pour réordonner</string>
     <string name="recipes_import_clipboard">Importer depuis le presse-papiers</string>
     <string name="recipes_clipboard_empty">Le presse-papiers est vide</string>
     <string name="recipe_steps_expand">Voir les étapes</string>
@@ -253,6 +260,7 @@
     <string name="settings_scale_log">Journal de la balance</string>
     <string name="settings_scale_log_hint">Écrire les échanges avec la balance dans un fichier et l\'envoyer au développeur</string>
     <string name="settings_release_notes">Historique des versions</string>
+    <string name="notes_1_8_0">• L\'interface en 14 langues, avec le choix de la langue dans les réglages\n• Sauvegarde : recettes et historique dans un seul fichier\n• Les étapes de la recette en fil d\'icônes\n• Look revu : icônes arrondies, chiffres plus grands, nouvelle recherche\n• L\'ordre des recettes se change par appui long sur la carte\n• Balayer pour supprimer dans l\'historique, avec annulation\n• Prise en charge des balances Acaia, Difluid Microbalance, Eureka Precisa et Varia AKU\n• Le poids enregistré à la fin automatique est corrigé</string>
     <string name="notes_1_7_2">• Une image de l\'extraction à partager\n• La fin automatique peut être coupée\n• Graphiques : grille de 50 g, axe du temps, plus de hauteur\n• L\'écoulement en étape à part dans une recette issue de l\'historique\n• Fin automatique corrigée quand on ajoute de l\'eau après un changement d\'étape</string>
     <string name="notes_1_7_1">• Une recette à partir d\'une extraction enregistrée — directement depuis l\'historique\n• Appui long sur le graphique : il montre le poids et le temps à cet endroit\n• Suppression d\'une extraction depuis la liste\n• La durée de l\'étape dans la liste des étapes</string>
     <string name="notes_1_7_0">• Mode AeroPress : le pressage est visible sur le graphique\n• Palette « Olive »\n• Le clavier ne cache plus les champs de saisie\n• Le swirl ne gâche plus le graphique ni le débit\n• Poids correct à la fin quand le dripper a déjà été retiré</string>

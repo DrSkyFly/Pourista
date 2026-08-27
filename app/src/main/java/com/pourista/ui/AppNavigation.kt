@@ -1,17 +1,22 @@
 package com.pourista.ui
 
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.History
-import androidx.compose.material.icons.filled.LocalCafe
-import androidx.compose.material.icons.automirrored.filled.MenuBook
-import androidx.compose.material.icons.filled.Settings
+import androidx.compose.material.icons.rounded.History
+import androidx.compose.material.icons.rounded.LocalCafe
+import androidx.compose.material.icons.automirrored.rounded.MenuBook
+import androidx.compose.material.icons.rounded.Settings
+import androidx.compose.animation.core.tween
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
+import androidx.compose.animation.slideInHorizontally
+import androidx.compose.animation.slideOutHorizontally
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material3.Icon
-import androidx.compose.material3.NavigationBar
-import androidx.compose.material3.NavigationBarItem
 import androidx.compose.material3.NavigationRail
 import androidx.compose.material3.NavigationRailItem
+import androidx.compose.material3.ShortNavigationBar
+import androidx.compose.material3.ShortNavigationBarItem
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -62,10 +67,10 @@ private enum class TopLevel(
     val icon: ImageVector,
     val labelRes: Int,
 ) {
-    BREW(Routes.BREW, Icons.Default.LocalCafe, R.string.tab_brew),
-    RECIPES(Routes.RECIPES, Icons.AutoMirrored.Filled.MenuBook, R.string.tab_recipes),
-    HISTORY(Routes.HISTORY, Icons.Default.History, R.string.tab_history),
-    SETTINGS(Routes.SETTINGS, Icons.Default.Settings, R.string.tab_settings),
+    BREW(Routes.BREW, Icons.Rounded.LocalCafe, R.string.tab_brew),
+    RECIPES(Routes.RECIPES, Icons.AutoMirrored.Rounded.MenuBook, R.string.tab_recipes),
+    HISTORY(Routes.HISTORY, Icons.Rounded.History, R.string.tab_history),
+    SETTINGS(Routes.SETTINGS, Icons.Rounded.Settings, R.string.tab_settings),
 }
 
 @Composable
@@ -93,7 +98,18 @@ private fun AppNavHost(
     navController: NavHostController,
     bottomBar: @Composable () -> Unit,
 ) {
-    NavHost(navController = navController, startDestination = Routes.BREW) {
+    NavHost(
+        navController = navController,
+        startDestination = Routes.BREW,
+        // Экран приходит справа, а уходит туда же по «назад»: так видно, что
+        // редактор и карточка лежат поверх раздела, а не заменяют его.
+        enterTransition = { fadeIn(tween(SCREEN_IN_MS)) + slideInHorizontally { it / SCREEN_SLIDE } },
+        exitTransition = { fadeOut(tween(SCREEN_OUT_MS)) },
+        popEnterTransition = { fadeIn(tween(SCREEN_IN_MS)) },
+        popExitTransition = {
+            fadeOut(tween(SCREEN_OUT_MS)) + slideOutHorizontally { it / SCREEN_SLIDE }
+        },
+    ) {
         composable(Routes.BREW) {
             val context = LocalContext.current
             val viewModel: BrewViewModel = viewModel { BrewViewModel(context.appContainer) }
@@ -203,10 +219,12 @@ private fun BottomBar(navController: NavHostController) {
     val backStackEntry by navController.currentBackStackEntryAsState()
     val currentDestination = backStackEntry?.destination
 
-    NavigationBar {
+    // Короткая панель вместо обычной: она ниже на добрый сантиметр, а внизу
+    // экрана заваривания этот сантиметр занят кнопками.
+    ShortNavigationBar {
         TopLevel.entries.forEach { item ->
             val selected = currentDestination?.hierarchy?.any { it.route == item.route } == true
-            NavigationBarItem(
+            ShortNavigationBarItem(
                 selected = selected,
                 onClick = { navController.navigateToTab(item.route) },
                 icon = { Icon(item.icon, contentDescription = null) },
@@ -215,6 +233,13 @@ private fun BottomBar(navController: NavHostController) {
         }
     }
 }
+
+/** Длительности переходов между экранами. */
+private const val SCREEN_IN_MS = 220
+private const val SCREEN_OUT_MS = 180
+
+/** Насколько экран сдвигается: доля ширины, а не вся ширина. */
+private const val SCREEN_SLIDE = 10
 
 private fun NavHostController.navigateToTab(route: String) {
     navigate(route) {

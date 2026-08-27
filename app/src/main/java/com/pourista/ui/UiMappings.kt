@@ -2,13 +2,13 @@ package com.pourista.ui
 
 import androidx.annotation.StringRes
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.ArrowDownward
-import androidx.compose.material.icons.filled.HourglassEmpty
-import androidx.compose.material.icons.filled.Refresh
-import androidx.compose.material.icons.filled.Spa
-import androidx.compose.material.icons.filled.Sync
-import androidx.compose.material.icons.filled.Timer
-import androidx.compose.material.icons.filled.WaterDrop
+import androidx.compose.material.icons.rounded.ArrowDownward
+import androidx.compose.material.icons.rounded.HourglassEmpty
+import androidx.compose.material.icons.rounded.Refresh
+import androidx.compose.material.icons.rounded.Spa
+import androidx.compose.material.icons.rounded.Sync
+import androidx.compose.material.icons.rounded.Timer
+import androidx.compose.material.icons.rounded.WaterDrop
 import androidx.compose.ui.graphics.vector.ImageVector
 import com.pourista.R
 import com.pourista.brew.NextPourHint
@@ -29,13 +29,13 @@ fun StepKind.labelRes(): Int = when (this) {
 }
 
 fun StepKind.icon(): ImageVector = when (this) {
-    StepKind.BLOOM -> Icons.Default.Spa
-    StepKind.POUR -> Icons.Default.WaterDrop
-    StepKind.WAIT -> Icons.Default.HourglassEmpty
-    StepKind.SWIRL -> Icons.Default.Refresh
-    StepKind.STIR -> Icons.Default.Sync
-    StepKind.DRAWDOWN -> Icons.Default.Timer
-    StepKind.PRESS -> Icons.Default.ArrowDownward
+    StepKind.BLOOM -> Icons.Rounded.Spa
+    StepKind.POUR -> Icons.Rounded.WaterDrop
+    StepKind.WAIT -> Icons.Rounded.HourglassEmpty
+    StepKind.SWIRL -> Icons.Rounded.Refresh
+    StepKind.STIR -> Icons.Rounded.Sync
+    StepKind.DRAWDOWN -> Icons.Rounded.Timer
+    StepKind.PRESS -> Icons.Rounded.ArrowDownward
 }
 
 @StringRes

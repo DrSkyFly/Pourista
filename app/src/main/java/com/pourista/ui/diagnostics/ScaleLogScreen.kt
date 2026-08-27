@@ -14,8 +14,8 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.automirrored.filled.ArrowBack
-import androidx.compose.material.icons.filled.Share
+import androidx.compose.material.icons.automirrored.rounded.ArrowBack
+import androidx.compose.material.icons.rounded.Share
 import androidx.compose.material3.Button
 import androidx.compose.material3.Card
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -72,7 +72,7 @@ fun ScaleLogScreen(
                 navigationIcon = {
                     IconButton(onClick = onClose) {
                         Icon(
-                            Icons.AutoMirrored.Filled.ArrowBack,
+                            Icons.AutoMirrored.Rounded.ArrowBack,
                             contentDescription = stringResource(R.string.action_cancel),
                         )
                     }
@@ -203,7 +203,7 @@ fun ScaleLogScreen(
                                     )
                                     runCatching { context.startActivity(chooser) }
                                 }) {
-                                    Icon(Icons.Default.Share, contentDescription = null)
+                                    Icon(Icons.Rounded.Share, contentDescription = null)
                                     Spacer(Modifier.size(8.dp))
                                     Text(stringResource(R.string.scale_log_share))
                                 }

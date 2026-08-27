@@ -9,6 +9,8 @@
     <string name="action_save">Guardar</string>
     <string name="action_reset">Restablecer</string>
     <string name="action_connect">Conectar la báscula</string>
+    <string name="scale_state_searching">Buscando la báscula…</string>
+    <string name="scale_state_off">Sin báscula conectada</string>
     <string name="action_tare">Tara</string>
     <string name="action_dose">Dosis</string>
     <string name="action_start">Iniciar</string>
@@ -17,6 +19,9 @@
     <string name="action_resume">Continuar</string>
     <string name="action_finish">Terminar</string>
     <string name="action_search">Buscar</string>
+    <string name="action_clear">Borrar</string>
+    <string name="action_undo">Deshacer</string>
+    <string name="history_deleted">Preparación eliminada</string>
     <string name="action_edit">Editar</string>
     <string name="action_delete">Eliminar</string>
     <string name="action_duplicate">Duplicar</string>
@@ -129,6 +134,7 @@
     <string name="recipe_dose">Dosis, g</string>
     <string name="recipe_water">Agua, g</string>
     <string name="recipe_temp">Temperatura, °C</string>
+    <string name="recipe_temp_field">Temp., °C</string>
     <string name="recipe_ratio">Ratio</string>
     <string name="recipe_ratio_value">Ratio %1$s</string>
     <string name="recipe_grinder">Molino</string>
@@ -168,6 +174,8 @@
     <string name="theme_light">Claro</string>
     <string name="theme_dark">Oscuro</string>
     <string name="whats_new_title">Novedades</string>
+    <string name="testers_title">Se buscan probadores</string>
+    <string name="testers_body">Para publicar Pourista en Google Play hacen falta probadores: abrir la app al menos una vez al día durante dos semanas. Si quieres ayudar, escribe al autor.</string>
 
     <string name="settings_palette">Paleta</string>
     <string name="palette_copper">Café</string>
@@ -235,7 +243,6 @@
     <string name="backup_restored">Restaurado: %1$d recetas, %2$d preparaciones</string>
     <string name="backup_restore_failed">Este archivo no es una copia de Pourista</string>
     <string name="recipes_import_menu">Importar desde un archivo</string>
-    <string name="action_reorder">Arrastra para cambiar el orden</string>
     <string name="recipes_import_clipboard">Importar desde el portapapeles</string>
     <string name="recipes_clipboard_empty">El portapapeles está vacío</string>
     <string name="recipe_steps_expand">Ver los pasos</string>
@@ -253,6 +260,7 @@
     <string name="settings_scale_log">Registro de la báscula</string>
     <string name="settings_scale_log_hint">Guardar en un archivo lo que se intercambia con la báscula y enviarlo al desarrollador</string>
     <string name="settings_release_notes">Historial de cambios</string>
+    <string name="notes_1_8_0">• La interfaz en 14 idiomas, con selector en los ajustes\n• Copia de seguridad: recetas e historial en un solo archivo\n• Los pasos de la receta como una línea de iconos\n• Aspecto renovado: iconos redondeados, cifras grandes, nueva búsqueda\n• El orden de las recetas cambia con una pulsación larga\n• Desliza para borrar en el historial, con deshacer\n• Compatibilidad con básculas Acaia, Difluid Microbalance, Eureka Precisa y Varia AKU\n• Corregido el peso que se guardaba al final automático</string>
     <string name="notes_1_7_2">• Una imagen de la preparación para compartir\n• El final automático se puede apagar\n• Gráficos: rejilla cada 50 g, eje de tiempo, más altura\n• El drenaje como paso aparte en la receta creada desde el historial\n• Arreglado el final automático al añadir agua tras el cambio de paso</string>
     <string name="notes_1_7_1">• Una receta a partir de una preparación grabada, directamente desde el historial\n• Mantén pulsado el gráfico: muestra el peso y el tiempo en ese punto\n• Borrar una preparación desde la propia lista\n• La duración del paso en la lista de pasos</string>
     <string name="notes_1_7_0">• Modo AeroPress: el prensado se ve en el gráfico\n• Paleta «Oliva»\n• El teclado ya no tapa los campos de texto\n• El swirl ya no estropea el gráfico ni el caudal\n• Peso correcto al terminar con el dripper ya retirado</string>

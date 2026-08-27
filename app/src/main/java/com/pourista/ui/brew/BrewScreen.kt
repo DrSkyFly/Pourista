@@ -6,6 +6,7 @@ import android.os.Build
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.animateColorAsState
 import androidx.compose.animation.core.LinearEasing
 import androidx.compose.animation.core.RepeatMode
 import androidx.compose.animation.core.animateFloat
@@ -16,6 +17,8 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.BoxWithConstraints
+import androidx.compose.foundation.text.BasicText
+import androidx.compose.foundation.text.TextAutoSize
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
@@ -33,15 +36,15 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Bluetooth
-import androidx.compose.material.icons.filled.BluetoothConnected
-import androidx.compose.material.icons.automirrored.filled.BluetoothSearching
-import androidx.compose.material.icons.filled.Check
-import androidx.compose.material.icons.filled.Info
-import androidx.compose.material.icons.filled.Pause
-import androidx.compose.material.icons.filled.PlayArrow
-import androidx.compose.material.icons.filled.RestartAlt
-import androidx.compose.material.icons.filled.Stop
+import androidx.compose.material.icons.rounded.Bluetooth
+import androidx.compose.material.icons.rounded.BluetoothConnected
+import androidx.compose.material.icons.automirrored.rounded.BluetoothSearching
+import androidx.compose.material.icons.rounded.Check
+import androidx.compose.material.icons.rounded.Info
+import androidx.compose.material.icons.rounded.Pause
+import androidx.compose.material.icons.rounded.PlayArrow
+import androidx.compose.material.icons.rounded.RestartAlt
+import androidx.compose.material.icons.rounded.Stop
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.AssistChip
 import androidx.compose.material3.AssistChipDefaults
@@ -84,6 +87,7 @@ import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import androidx.core.content.ContextCompat
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.pourista.R
@@ -216,7 +220,26 @@ fun BrewScreen(
             TopAppBar(
                 colors = AppTheme.topBarColors(),
                 modifier = AppTheme.topBarModifier(),
-                title = { Text(stringResource(R.string.tab_brew)) },
+                // Под названием — с какими весами работаем. Раньше об этом
+                // говорил только цвет значка, а имя весов не видел никто.
+                title = {
+                    Column {
+                        Text(stringResource(R.string.tab_brew))
+                        Text(
+                            text = when {
+                                scale.isConnected -> scale.deviceName
+                                    ?: stringResource(R.string.scale_state_off)
+
+                                scale.isBusy -> stringResource(R.string.scale_state_searching)
+                                else -> stringResource(R.string.scale_state_off)
+                            },
+                            style = MaterialTheme.typography.labelMedium,
+                            color = MaterialTheme.colorScheme.onSurfaceVariant,
+                            maxLines = 1,
+                            overflow = TextOverflow.Ellipsis,
+                        )
+                    }
+                },
                 actions = {
                     ConnectionAction(
                         status = scale.status,
@@ -224,7 +247,7 @@ fun BrewScreen(
                         onClick = onConnectClick,
                     )
                     IconButton(onClick = viewModel::reset) {
-                        Icon(Icons.Default.RestartAlt, stringResource(R.string.action_reset))
+                        Icon(Icons.Rounded.RestartAlt, stringResource(R.string.action_reset))
                     }
                 },
             )
@@ -471,11 +494,11 @@ private fun ConnectionAction(
     onClick: () -> Unit,
 ) {
     val icon = when (status) {
-        ConnectionStatus.CONNECTED -> Icons.Default.BluetoothConnected
+        ConnectionStatus.CONNECTED -> Icons.Rounded.BluetoothConnected
         ConnectionStatus.SCANNING, ConnectionStatus.CONNECTING, ConnectionStatus.RECONNECTING ->
-            Icons.AutoMirrored.Filled.BluetoothSearching
+            Icons.AutoMirrored.Rounded.BluetoothSearching
 
-        ConnectionStatus.IDLE -> Icons.Default.Bluetooth
+        ConnectionStatus.IDLE -> Icons.Rounded.Bluetooth
     }
     val connected = status == ConnectionStatus.CONNECTED
 
@@ -572,13 +595,15 @@ private fun RecipeSummaryCard(
                             maxLines = 1,
                         )
                     }
-                    FilledTonalButton(
+                    // Рамкой, а не заливкой: подложка плитки сама бывает
+                    // цвета tonal-кнопки, и на ней такие кнопки пропадают.
+                    OutlinedButton(
                         onClick = onFortySix,
                         contentPadding = TileButtonPadding,
                     ) {
                         Text(stringResource(R.string.four_six_button))
                     }
-                    FilledTonalButton(
+                    OutlinedButton(
                         onClick = onRecord,
                         contentPadding = TileButtonPadding,
                     ) {
@@ -595,7 +620,7 @@ private fun RecipeSummaryCard(
         Column(Modifier.padding(16.dp)) {
             Row(verticalAlignment = Alignment.CenterVertically) {
                 Column(Modifier.weight(1f)) {
-                    Text(text = recipe.name, style = MaterialTheme.typography.titleMedium)
+                    Text(text = recipe.name, style = MaterialTheme.typography.titleLarge)
                     Text(
                         text = recipe.brewer,
                         style = MaterialTheme.typography.bodySmall,
@@ -604,23 +629,27 @@ private fun RecipeSummaryCard(
                 }
                 TextButton(onClick = onPick) { Text(stringResource(R.string.brew_change_recipe)) }
             }
+            // Доза, вода и пропорция — то, ради чего в плитку и смотрят перед
+            // стартом: те же плитки, что в показаниях, и цифры такие же
+            // крупные. Температура с помолом остаются подписями: их читают
+            // один раз, когда мелют.
             Row(
                 modifier = Modifier
                     .fillMaxWidth()
                     .padding(top = 12.dp),
                 horizontalArrangement = Arrangement.spacedBy(8.dp),
             ) {
-                RecipeFact(
+                StatTile(
                     label = stringResource(R.string.recipe_dose),
-                    value = "${formatGrams(recipe.doseGrams)} ${stringResource(R.string.unit_gram)}",
+                    value = formatGrams(recipe.doseGrams),
                     modifier = Modifier.weight(1f),
                 )
-                RecipeFact(
+                StatTile(
                     label = stringResource(R.string.recipe_water),
-                    value = "${formatGrams(recipe.waterGrams, 0)} ${stringResource(R.string.unit_gram)}",
+                    value = formatGrams(recipe.waterGrams, 0),
                     modifier = Modifier.weight(1f),
                 )
-                RecipeFact(
+                StatTile(
                     label = stringResource(R.string.recipe_ratio),
                     value = formatRatio(recipe.doseGrams, recipe.waterGrams),
                     modifier = Modifier.weight(1f),
@@ -659,7 +688,7 @@ private fun RecipeSummaryCard(
                         .padding(top = 12.dp)
                 ) {
                     Icon(
-                        imageVector = Icons.Default.Info,
+                        imageVector = Icons.Rounded.Info,
                         contentDescription = null,
                         tint = MaterialTheme.colorScheme.onSurfaceVariant,
                         modifier = Modifier
@@ -731,7 +760,7 @@ private fun RecipeSummaryCard(
                 onClick = onKeepWater,
                 label = { Text(stringResource(R.string.brew_fixed_water)) },
                 leadingIcon = if (keepWater) {
-                    { Icon(Icons.Default.Check, contentDescription = null) }
+                    { Icon(Icons.Rounded.Check, contentDescription = null) }
                 } else {
                     null
                 },
@@ -859,7 +888,20 @@ private fun ReadoutCard(
                         color = MaterialTheme.colorScheme.onSurfaceVariant,
                     )
                     Row(verticalAlignment = Alignment.Bottom) {
-                        Text(text = formatGrams(weightGrams), style = WeightReadoutStyle)
+                        // Цифра ужимается, а не переносится: при системном
+                        // шрифте в полтора раза «1000,0» иначе ломает карточку.
+                        BasicText(
+                            text = formatGrams(weightGrams),
+                            style = WeightReadoutStyle.copy(
+                                color = MaterialTheme.colorScheme.onSurface,
+                            ),
+                            maxLines = 1,
+                            autoSize = TextAutoSize.StepBased(
+                                minFontSize = WeightReadoutMinSize,
+                                maxFontSize = WeightReadoutStyle.fontSize,
+                            ),
+                            modifier = Modifier.weight(1f, fill = false),
+                        )
                         Text(
                             text = unitLabel,
                             style = MaterialTheme.typography.titleMedium,
@@ -907,15 +949,13 @@ private fun ReadoutCard(
                 modifier = Modifier.fillMaxWidth(),
                 horizontalArrangement = Arrangement.SpaceBetween,
             ) {
-                Box(Modifier.weight(1f)) {
-                    TextButton(onClick = onDoseClick, contentPadding = PaddingValues(0.dp)) {
-                        StatTile(
-                            label = stringResource(R.string.readout_dose),
-                            value = formatGrams(doseGrams),
-                            unit = stringResource(R.string.unit_gram),
-                        )
-                    }
-                }
+                StatTile(
+                    label = stringResource(R.string.readout_dose),
+                    value = formatGrams(doseGrams),
+                    unit = stringResource(R.string.unit_gram),
+                    onClick = onDoseClick,
+                    modifier = Modifier.weight(1f),
+                )
                 StatTile(
                     label = stringResource(R.string.readout_flow),
                     value = formatGrams(flowRate),
@@ -951,7 +991,17 @@ private fun TimerReadoutCard(
                         style = MaterialTheme.typography.labelMedium,
                         color = MaterialTheme.colorScheme.onSurfaceVariant,
                     )
-                    Text(text = formatTimerWithTenths(elapsedMs), style = WeightReadoutStyle)
+                    BasicText(
+                        text = formatTimerWithTenths(elapsedMs),
+                        style = WeightReadoutStyle.copy(
+                            color = MaterialTheme.colorScheme.onSurface,
+                        ),
+                        maxLines = 1,
+                        autoSize = TextAutoSize.StepBased(
+                            minFontSize = WeightReadoutMinSize,
+                            maxFontSize = WeightReadoutStyle.fontSize,
+                        ),
+                    )
                 }
                 if (targetGrams != null) {
                     Column(horizontalAlignment = Alignment.End) {
@@ -972,13 +1022,12 @@ private fun TimerReadoutCard(
             HorizontalDivider(Modifier.padding(vertical = 12.dp))
             // Дозу вводят руками: её отмеряют кухонными весами или меркой,
             // а приложению она нужна, чтобы пересчитать рецепт под неё.
-            TextButton(onClick = onDoseClick, contentPadding = PaddingValues(0.dp)) {
-                StatTile(
-                    label = stringResource(R.string.readout_dose),
-                    value = formatGrams(doseGrams),
-                    unit = stringResource(R.string.unit_gram),
-                )
-            }
+            StatTile(
+                label = stringResource(R.string.readout_dose),
+                value = formatGrams(doseGrams),
+                unit = stringResource(R.string.unit_gram),
+                onClick = onDoseClick,
+            )
         }
     }
 }
@@ -998,18 +1047,27 @@ private fun GuidanceCard(
     // чем: время не идёт, и любой вес на весах выглядел бы опережением.
     val started = phase == BrewPhase.RUNNING || phase == BrewPhase.PAUSED
     val running = phase == BrewPhase.RUNNING
-    val paceColor = when {
-        !started -> MaterialTheme.colorScheme.primary
-        guidance.pace == Pace.TOO_FAST -> accents.tooFast
-        guidance.pace == Pace.TOO_SLOW -> accents.tooSlow
-        else -> accents.onTrack
-    }
-    val container = when {
-        !started -> MaterialTheme.colorScheme.surfaceContainer
-        guidance.pace == Pace.TOO_FAST -> accents.tooFastContainer
-        guidance.pace == Pace.TOO_SLOW -> accents.tooSlowContainer
-        else -> accents.onTrackContainer
-    }
+    // Цвет темпа меняется переходом: пролив то опережает план, то отстаёт, и
+    // карточка, мигающая на каждом качке весов, дёргает глаз сильнее, чем сам
+    // темп того стоит.
+    val paceColor by animateColorAsState(
+        targetValue = when {
+            !started -> MaterialTheme.colorScheme.primary
+            guidance.pace == Pace.TOO_FAST -> accents.tooFast
+            guidance.pace == Pace.TOO_SLOW -> accents.tooSlow
+            else -> accents.onTrack
+        },
+        label = "paceColor",
+    )
+    val container by animateColorAsState(
+        targetValue = when {
+            !started -> MaterialTheme.colorScheme.surfaceContainer
+            guidance.pace == Pace.TOO_FAST -> accents.tooFastContainer
+            guidance.pace == Pace.TOO_SLOW -> accents.tooSlowContainer
+            else -> accents.onTrackContainer
+        },
+        label = "paceContainer",
+    )
     // Когда влив уже закончен, называть шаг «Проливом» нельзя — мы ждём.
     val stepName = if (guidance.stepPhase == StepPhase.WAITING && guidance.step.kind.isPour) {
         stringResource(R.string.step_wait)
@@ -1414,9 +1472,9 @@ private fun BrewControls(
             ) {
                 Icon(
                     imageVector = if (phase == BrewPhase.RUNNING) {
-                        Icons.Default.Pause
+                        Icons.Rounded.Pause
                     } else {
-                        Icons.Default.PlayArrow
+                        Icons.Rounded.PlayArrow
                     },
                     contentDescription = null,
                 )
@@ -1439,7 +1497,7 @@ private fun BrewControls(
                     onClick = onToggleAutoStart,
                     label = { Text(stringResource(R.string.action_auto_start)) },
                     leadingIcon = if (autoStart) {
-                        { Icon(Icons.Default.Check, contentDescription = null) }
+                        { Icon(Icons.Rounded.Check, contentDescription = null) }
                     } else {
                         null
                     },
@@ -1450,7 +1508,7 @@ private fun BrewControls(
                     onClick = onFinish,
                     modifier = Modifier.height(52.dp),
                 ) {
-                    Icon(Icons.Default.Stop, contentDescription = null)
+                    Icon(Icons.Rounded.Stop, contentDescription = null)
                     Spacer(Modifier.size(8.dp))
                     Text(stringResource(R.string.action_finish))
                 }
@@ -1521,7 +1579,7 @@ private fun DoseDialog(
         },
         confirmButton = {
             TextButton(onClick = { onConfirm(text.toFloatOrNull() ?: 0f) }) {
-                Icon(Icons.Default.Check, null)
+                Icon(Icons.Rounded.Check, null)
                 Spacer(Modifier.size(6.dp))
                 Text(stringResource(R.string.action_ok))
             }
@@ -1534,3 +1592,6 @@ private fun DoseDialog(
 
 /** Сколько строк описания видно в свёрнутом виде. */
 private const val NOTES_LINES = 4
+
+/** Ниже этого главная цифра не ужимается: дальше её не разглядеть от чайника. */
+private val WeightReadoutMinSize = 40.sp

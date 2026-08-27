@@ -16,13 +16,13 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.automirrored.filled.ArrowBack
-import androidx.compose.material.icons.filled.Add
-import androidx.compose.material.icons.filled.ArrowDownward
-import androidx.compose.material.icons.filled.ArrowDropDown
-import androidx.compose.material.icons.filled.ArrowUpward
-import androidx.compose.material.icons.filled.Check
-import androidx.compose.material.icons.filled.Delete
+import androidx.compose.material.icons.automirrored.rounded.ArrowBack
+import androidx.compose.material.icons.rounded.Add
+import androidx.compose.material.icons.rounded.ArrowDownward
+import androidx.compose.material.icons.rounded.ArrowDropDown
+import androidx.compose.material.icons.rounded.ArrowUpward
+import androidx.compose.material.icons.rounded.Check
+import androidx.compose.material.icons.rounded.Delete
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.DropdownMenu
@@ -102,7 +102,7 @@ fun RecipeEditorScreen(
                 navigationIcon = {
                     IconButton(onClick = onClose) {
                         Icon(
-                            Icons.AutoMirrored.Filled.ArrowBack,
+                            Icons.AutoMirrored.Rounded.ArrowBack,
                             stringResource(R.string.action_back),
                         )
                     }
@@ -112,14 +112,14 @@ fun RecipeEditorScreen(
                     // он не должен занимать место в списке.
                     if (state.id > 0) {
                         IconButton(onClick = { viewModel.delete(onClose) }) {
-                            Icon(Icons.Default.Delete, stringResource(R.string.action_delete))
+                            Icon(Icons.Rounded.Delete, stringResource(R.string.action_delete))
                         }
                     }
                     IconButton(
                         onClick = { viewModel.save { onClose() } },
                         enabled = state.canSave,
                     ) {
-                        Icon(Icons.Default.Check, stringResource(R.string.action_save))
+                        Icon(Icons.Rounded.Check, stringResource(R.string.action_save))
                     }
                 },
             )
@@ -179,7 +179,9 @@ fun RecipeEditorScreen(
                         NumberField(
                             value = state.temp,
                             onValueChange = viewModel::setTemp,
-                            label = stringResource(R.string.recipe_temp),
+                            // Короткая подпись: полная в трети ширины экрана
+                            // переносится на две строки и режется.
+                            label = stringResource(R.string.recipe_temp_field),
                             modifier = Modifier.weight(1f),
                         )
                     }
@@ -418,7 +420,7 @@ private fun EditorState.stepRows(): List<StepRow> {
 @Composable
 private fun AddStepButton(text: String, onClick: () -> Unit) {
     OutlinedButton(onClick = onClick, modifier = Modifier.fillMaxWidth()) {
-        Icon(Icons.Default.Add, null)
+        Icon(Icons.Rounded.Add, null)
         Spacer(Modifier.size(6.dp))
         Text(text)
     }
@@ -464,7 +466,7 @@ private fun StepEditorCard(
                             onClick = { kindMenu = true },
                             contentPadding = PaddingValues(start = 4.dp, end = 12.dp),
                         ) {
-                            Icon(Icons.Default.ArrowDropDown, null)
+                            Icon(Icons.Rounded.ArrowDropDown, null)
                             Spacer(Modifier.size(4.dp))
                             Text(stringResource(step.kind.labelRes()))
                         }
@@ -490,14 +492,14 @@ private fun StepEditorCard(
                 )
                 if (!step.kind.isPinned) {
                     IconButton(onClick = onMoveUp, enabled = canMoveUp) {
-                        Icon(Icons.Default.ArrowUpward, stringResource(R.string.action_move_up))
+                        Icon(Icons.Rounded.ArrowUpward, stringResource(R.string.action_move_up))
                     }
                     IconButton(onClick = onMoveDown, enabled = canMoveDown) {
-                        Icon(Icons.Default.ArrowDownward, stringResource(R.string.action_move_down))
+                        Icon(Icons.Rounded.ArrowDownward, stringResource(R.string.action_move_down))
                     }
                 }
                 IconButton(onClick = onRemove) {
-                    Icon(Icons.Default.Delete, stringResource(R.string.action_delete))
+                    Icon(Icons.Rounded.Delete, stringResource(R.string.action_delete))
                 }
             }
 

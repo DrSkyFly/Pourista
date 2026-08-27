@@ -9,6 +9,8 @@
     <string name="action_save">Зберегти</string>
     <string name="action_reset">Скинути</string>
     <string name="action_connect">Підключитися до ваг</string>
+    <string name="scale_state_searching">Шукаємо ваги…</string>
+    <string name="scale_state_off">Ваги не підключені</string>
     <string name="action_tare">Тара</string>
     <string name="action_dose">Доза</string>
     <string name="action_start">Старт</string>
@@ -17,6 +19,9 @@
     <string name="action_resume">Продовжити</string>
     <string name="action_finish">Фініш</string>
     <string name="action_search">Пошук</string>
+    <string name="action_clear">Очистити</string>
+    <string name="action_undo">Скасувати</string>
+    <string name="history_deleted">Заварювання видалено</string>
     <string name="action_edit">Редагувати</string>
     <string name="action_delete">Видалити</string>
     <string name="action_duplicate">Дублювати</string>
@@ -129,6 +134,7 @@
     <string name="recipe_dose">Доза, г</string>
     <string name="recipe_water">Вода, г</string>
     <string name="recipe_temp">Температура, °C</string>
+    <string name="recipe_temp_field">Темп., °C</string>
     <string name="recipe_ratio">Пропорція</string>
     <string name="recipe_ratio_value">Пропорція %1$s</string>
     <string name="recipe_grinder">Кавомолка</string>
@@ -168,6 +174,8 @@
     <string name="theme_light">Світла</string>
     <string name="theme_dark">Темна</string>
     <string name="whats_new_title">Що нового</string>
+    <string name="testers_title">Потрібні тестувальники</string>
+    <string name="testers_body">Щоб Pourista потрапила в Google Play, потрібні тестувальники: два тижні поспіль відкривати застосунок хоча б раз на день. Готові допомогти — напишіть автору.</string>
 
     <string name="settings_palette">Палітра</string>
     <string name="palette_copper">Кавова</string>
@@ -235,7 +243,6 @@
     <string name="backup_restored">Відновлено: рецептів — %1$d, заварювань — %2$d</string>
     <string name="backup_restore_failed">Це не резервна копія Pourista</string>
     <string name="recipes_import_menu">Імпортувати з файлу</string>
-    <string name="action_reorder">Перетягніть, щоб змінити порядок</string>
     <string name="recipes_import_clipboard">Імпортувати з буфера обміну</string>
     <string name="recipes_clipboard_empty">У буфері обміну немає тексту</string>
     <string name="recipe_steps_expand">Показати кроки</string>
@@ -253,6 +260,7 @@
     <string name="settings_scale_log">Журнал ваг</string>
     <string name="settings_scale_log_hint">Записати обмін з вагами у файл і надіслати розробнику</string>
     <string name="settings_release_notes">Історія змін</string>
+    <string name="notes_1_8_0">• Інтерфейс 14 мовами, вибір мови в налаштуваннях\n• Резервна копія: рецепти та вся історія одним файлом\n• Етапи рецепта стрічкою з кружечками\n• Оновлений вигляд: заокруглені значки, великі цифри, новий пошук\n• Порядок рецептів — довгим натисканням на картку\n• Видалення в історії свайпом, зі скасуванням\n• Підтримка ваг Acaia, Difluid Microbalance, Eureka Precisa, Varia AKU\n• Виправлено вагу, яка записувалася при автофініші</string>
     <string name="notes_1_7_2">• Картинка заварювання для «поділитися»\n• Автофініш можна вимкнути\n• Графіки: сітка по 50 г, шкала часу, більша висота\n• Злив окремим кроком у рецепті із запису\n• Полагоджено автофініш при доливанні після зміни кроку</string>
     <string name="notes_1_7_1">• Рецепт за записаним проливом — просто з історії\n• Затисніть графік: покаже вагу й час у точці\n• Видалення заварювання просто зі списку\n• Тривалість кроку у списку кроків</string>
     <string name="notes_1_7_0">• Режим аеропреса: видно момент віджиму\n• Палітра «Оливкова»\n• Клавіатура більше не закриває поля вводу\n• Свірл не псує графік і швидкість\n• Правильна вага при фініші після знятої лійки</string>

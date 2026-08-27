@@ -8,12 +8,14 @@ import androidx.compose.animation.core.infiniteRepeatable
 import androidx.compose.animation.core.rememberInfiniteTransition
 import androidx.compose.animation.core.tween
 import androidx.compose.foundation.Canvas
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.material3.MaterialTheme
@@ -22,6 +24,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.geometry.CornerRadius
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.geometry.Rect
@@ -238,8 +241,29 @@ fun StatTile(
     modifier: Modifier = Modifier,
     unit: String? = null,
     valueColor: Color = MaterialTheme.colorScheme.onSurface,
+    /**
+     * По плитке нажимают: так вводят дозу. Нажатие живёт здесь, а не на кнопке
+     * снаружи, — кнопка обрезает содержимое по своей круглой форме, и от
+     * подписи откусывалась первая буква.
+     */
+    onClick: (() -> Unit)? = null,
 ) {
-    Column(modifier = modifier) {
+    Column(
+        modifier = modifier.then(
+            if (onClick == null) {
+                Modifier
+            } else {
+                // Нажимаемая область шире текста, но сам текст остаётся на
+                // месте: смещение назад ровно на добавленную рамку. Без рамки
+                // скруглённый край подложки откусывал бы первую букву.
+                Modifier
+                    .offset(x = -TileClickPadding, y = -TileClickInset)
+                    .clip(MaterialTheme.shapes.small)
+                    .clickable(onClick = onClick)
+                    .padding(horizontal = TileClickPadding, vertical = TileClickInset)
+            }
+        )
+    ) {
         Text(
             text = label,
             style = MaterialTheme.typography.labelMedium,
@@ -262,6 +286,10 @@ fun StatTile(
         }
     }
 }
+
+/** Рамка нажимаемой плитки: столько подложки остаётся слева и справа от текста. */
+private val TileClickPadding = 8.dp
+private val TileClickInset = 2.dp
 
 /** Полоска шагов рецепта: где мы сейчас и сколько осталось. */
 @Composable

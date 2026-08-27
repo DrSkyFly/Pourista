@@ -6,6 +6,7 @@ import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Shapes
 import androidx.compose.material3.TopAppBarColors
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.material3.dynamicDarkColorScheme
@@ -84,6 +85,19 @@ object AppTheme {
 
 private val BAR_CORNER = 24.dp
 
+/**
+ * Формы. Крупнее стандартных: у Material скругление карточки 12 dp осталось с
+ * первых версий, а нынешний язык системы — мягче и круглее. Кнопки и поля тут
+ * не участвуют, у них своя форма.
+ */
+private val PouristaShapes = Shapes(
+    extraSmall = RoundedCornerShape(8.dp),
+    small = RoundedCornerShape(12.dp),
+    medium = RoundedCornerShape(18.dp),
+    large = RoundedCornerShape(24.dp),
+    extraLarge = RoundedCornerShape(32.dp),
+)
+
 @Composable
 fun PouristaTheme(
     themeMode: ThemeMode = ThemeMode.SYSTEM,
@@ -134,6 +148,7 @@ fun PouristaTheme(
         MaterialTheme(
             colorScheme = colorScheme,
             typography = FutulaTypography,
+            shapes = PouristaShapes,
             content = content,
         )
     }

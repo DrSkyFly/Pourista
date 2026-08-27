@@ -9,6 +9,8 @@
     <string name="action_save">Zapisz</string>
     <string name="action_reset">Zresetuj</string>
     <string name="action_connect">Połącz z wagą</string>
+    <string name="scale_state_searching">Szukam wagi…</string>
+    <string name="scale_state_off">Waga niepodłączona</string>
     <string name="action_tare">Tara</string>
     <string name="action_dose">Dawka</string>
     <string name="action_start">Start</string>
@@ -17,6 +19,9 @@
     <string name="action_resume">Wznów</string>
     <string name="action_finish">Zakończ</string>
     <string name="action_search">Szukaj</string>
+    <string name="action_clear">Wyczyść</string>
+    <string name="action_undo">Cofnij</string>
+    <string name="history_deleted">Parzenie usunięte</string>
     <string name="action_edit">Edytuj</string>
     <string name="action_delete">Usuń</string>
     <string name="action_duplicate">Duplikuj</string>
@@ -129,6 +134,7 @@
     <string name="recipe_dose">Dawka, g</string>
     <string name="recipe_water">Woda, g</string>
     <string name="recipe_temp">Temperatura, °C</string>
+    <string name="recipe_temp_field">Temp., °C</string>
     <string name="recipe_ratio">Proporcja</string>
     <string name="recipe_ratio_value">Proporcja %1$s</string>
     <string name="recipe_grinder">Młynek</string>
@@ -168,6 +174,8 @@
     <string name="theme_light">Jasny</string>
     <string name="theme_dark">Ciemny</string>
     <string name="whats_new_title">Co nowego</string>
+    <string name="testers_title">Poszukiwani testerzy</string>
+    <string name="testers_body">Do publikacji Pouristy w Google Play potrzebni są testerzy: przez dwa tygodnie otwierać aplikację przynajmniej raz dziennie. Chcesz pomóc — napisz do autora.</string>
 
     <string name="settings_palette">Paleta</string>
     <string name="palette_copper">Kawowa</string>
@@ -235,7 +243,6 @@
     <string name="backup_restored">Przywrócono: przepisów — %1$d, parzeń — %2$d</string>
     <string name="backup_restore_failed">To nie jest kopia zapasowa Pouristy</string>
     <string name="recipes_import_menu">Importuj z pliku</string>
-    <string name="action_reorder">Przeciągnij, aby zmienić kolejność</string>
     <string name="recipes_import_clipboard">Importuj ze schowka</string>
     <string name="recipes_clipboard_empty">Schowek jest pusty</string>
     <string name="recipe_steps_expand">Pokaż kroki</string>
@@ -253,6 +260,7 @@
     <string name="settings_scale_log">Dziennik wagi</string>
     <string name="settings_scale_log_hint">Zapisać wymianę z wagą do pliku i wysłać deweloperowi</string>
     <string name="settings_release_notes">Historia zmian</string>
+    <string name="notes_1_8_0">• Interfejs w 14 językach, wybór języka w ustawieniach\n• Kopia zapasowa: przepisy i cała historia w jednym pliku\n• Kroki przepisu jako ciąg ikon\n• Odświeżony wygląd: zaokrąglone ikony, większe liczby, nowe wyszukiwanie\n• Kolejność przepisów zmienia się długim naciśnięciem karty\n• Usuwanie w historii przeciągnięciem, z cofnięciem\n• Obsługa wag Acaia, Difluid Microbalance, Eureka Precisa i Varia AKU\n• Poprawiona waga zapisywana przy automatycznym końcu</string>
     <string name="notes_1_7_2">• Obrazek parzenia do udostępnienia\n• Automatyczne zakończenie można wyłączyć\n• Wykresy: siatka co 50 g, oś czasu, większa wysokość\n• Spływ osobnym krokiem w przepisie z nagrania\n• Naprawione automatyczne zakończenie przy dolewce po zmianie kroku</string>
     <string name="notes_1_7_1">• Przepis z nagranego parzenia — prosto z historii\n• Przytrzymaj wykres: pokaże masę i czas w tym punkcie\n• Usuwanie parzenia wprost z listy\n• Czas trwania kroku na liście kroków</string>
     <string name="notes_1_7_0">• Tryb AeroPressa: na wykresie widać wyciskanie\n• Paleta „Oliwkowa”\n• Klawiatura nie zasłania już pól wpisywania\n• Swirl nie psuje już wykresu ani przepływu\n• Prawidłowa masa przy zakończeniu po zdjętym dripperze</string>

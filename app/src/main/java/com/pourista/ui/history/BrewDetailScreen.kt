@@ -14,11 +14,11 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.automirrored.filled.ArrowBack
-import androidx.compose.material.icons.filled.Check
-import androidx.compose.material.icons.filled.Delete
-import androidx.compose.material.icons.filled.PlaylistAdd
-import androidx.compose.material.icons.filled.Share
+import androidx.compose.material.icons.automirrored.rounded.ArrowBack
+import androidx.compose.material.icons.rounded.Check
+import androidx.compose.material.icons.rounded.Delete
+import androidx.compose.material.icons.automirrored.rounded.PlaylistAdd
+import androidx.compose.material.icons.rounded.Share
 import androidx.compose.material3.Card
 import androidx.compose.material3.Button
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -134,7 +134,7 @@ fun BrewDetailScreen(
                 navigationIcon = {
                     IconButton(onClick = onClose) {
                         Icon(
-                            Icons.AutoMirrored.Filled.ArrowBack,
+                            Icons.AutoMirrored.Rounded.ArrowBack,
                             stringResource(R.string.action_back),
                         )
                     }
@@ -170,7 +170,7 @@ fun BrewDetailScreen(
                             onClose()
                         }
                     ) {
-                        Icon(Icons.Default.Check, stringResource(R.string.action_save))
+                        Icon(Icons.Rounded.Check, stringResource(R.string.action_save))
                     }
                     // Картинку собираем заново, а не снимаем экран: снимок
                     // обрезан по высоте телефона и тащит поля с кнопками.
@@ -178,10 +178,10 @@ fun BrewDetailScreen(
                         onClick = { current?.let { shareBrew(context, it, imageColors, texts) } },
                         enabled = current?.weightSeries.orEmpty().size > 1,
                     ) {
-                        Icon(Icons.Default.Share, stringResource(R.string.history_share))
+                        Icon(Icons.Rounded.Share, stringResource(R.string.history_share))
                     }
                     IconButton(onClick = { viewModel.delete(onClose) }) {
-                        Icon(Icons.Default.Delete, stringResource(R.string.action_delete))
+                        Icon(Icons.Rounded.Delete, stringResource(R.string.action_delete))
                     }
                 },
             )
@@ -301,7 +301,7 @@ fun BrewDetailScreen(
                         onClick = { if (viewModel.buildRecipe(recipeName)) onOpenDraft() },
                         modifier = Modifier.fillMaxWidth(),
                     ) {
-                        Icon(Icons.Default.PlaylistAdd, contentDescription = null)
+                        Icon(Icons.AutoMirrored.Rounded.PlaylistAdd, contentDescription = null)
                         Spacer(Modifier.size(8.dp))
                         Text(stringResource(R.string.history_make_recipe))
                     }

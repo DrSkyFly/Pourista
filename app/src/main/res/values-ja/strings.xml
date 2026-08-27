@@ -9,6 +9,8 @@
     <string name="action_save">保存</string>
     <string name="action_reset">リセット</string>
     <string name="action_connect">スケールに接続</string>
+    <string name="scale_state_searching">スケールを探しています…</string>
+    <string name="scale_state_off">スケール未接続</string>
     <string name="action_tare">風袋</string>
     <string name="action_dose">粉量</string>
     <string name="action_start">スタート</string>
@@ -17,6 +19,9 @@
     <string name="action_resume">再開</string>
     <string name="action_finish">終了</string>
     <string name="action_search">検索</string>
+    <string name="action_clear">消去</string>
+    <string name="action_undo">元に戻す</string>
+    <string name="history_deleted">抽出を削除しました</string>
     <string name="action_edit">編集</string>
     <string name="action_delete">削除</string>
     <string name="action_duplicate">複製</string>
@@ -129,6 +134,7 @@
     <string name="recipe_dose">粉量（g）</string>
     <string name="recipe_water">湯量（g）</string>
     <string name="recipe_temp">湯温（°C）</string>
+    <string name="recipe_temp_field">湯温（°C）</string>
     <string name="recipe_ratio">比率</string>
     <string name="recipe_ratio_value">比率 %1$s</string>
     <string name="recipe_grinder">グラインダー</string>
@@ -168,6 +174,8 @@
     <string name="theme_light">ライト</string>
     <string name="theme_dark">ダーク</string>
     <string name="whats_new_title">新機能</string>
+    <string name="testers_title">テスター募集</string>
+    <string name="testers_body">Google Play で公開するにはテスターが必要です。二週間、一日一回はアプリを開いてもらえる方を探しています。協力できる方は作者までご連絡ください。</string>
 
     <string name="settings_palette">配色</string>
     <string name="palette_copper">コーヒー</string>
@@ -235,7 +243,6 @@
     <string name="backup_restored">復元しました: レシピ %1$d 件、抽出 %2$d 件</string>
     <string name="backup_restore_failed">これは Pourista のバックアップではありません</string>
     <string name="recipes_import_menu">ファイルから読み込む</string>
-    <string name="action_reorder">ドラッグで並べ替え</string>
     <string name="recipes_import_clipboard">クリップボードから読み込む</string>
     <string name="recipes_clipboard_empty">クリップボードは空です</string>
     <string name="recipe_steps_expand">ステップを表示</string>
@@ -253,6 +260,7 @@
     <string name="settings_scale_log">スケールのログ</string>
     <string name="settings_scale_log_hint">スケールとのやり取りをファイルに記録して開発者に送る</string>
     <string name="settings_release_notes">更新履歴</string>
+    <string name="notes_1_8_0">• 14 言語に対応、設定から言語を選べます\n• バックアップ: レシピと履歴をひとつのファイルに\n• レシピの工程を丸アイコンの流れで表示\n• 見た目を刷新: 丸みのあるアイコン、大きな数字、新しい検索\n• レシピの並び替えはカードの長押しで\n• 履歴はスワイプで削除、取り消しも可能\n• Acaia、Difluid Microbalance、Eureka Precisa、Varia AKU に対応\n• 自動終了で記録される重量を修正</string>
     <string name="notes_1_7_2">• 抽出を画像にして共有\n• 自動終了をオフにできます\n• グラフ: 50gごとの目盛り、時間軸、高さアップ\n• 履歴から作るレシピで落ち切りが独立したステップに\n• ステップ切り替え後に注ぎ足したときの自動終了を修正</string>
     <string name="notes_1_7_1">• 記録した抽出からレシピを作成 — 履歴から直接\n• グラフを長押しすると、その位置の重量と時間を表示\n• 抽出を一覧からそのまま削除\n• ステップ一覧に所要時間を表示</string>
     <string name="notes_1_7_0">• エアロプレスモード: プレスの瞬間がグラフに残ります\n• 配色「オリーブ」\n• キーボードが入力欄を隠さなくなりました\n• スワリングでグラフと流速が乱れなくなりました\n• ドリッパーを外したあとに終了しても重量が正しく残ります</string>

@@ -9,6 +9,8 @@
     <string name="action_save">Salvar</string>
     <string name="action_reset">Redefinir</string>
     <string name="action_connect">Conectar a balança</string>
+    <string name="scale_state_searching">Procurando a balança…</string>
+    <string name="scale_state_off">Nenhuma balança conectada</string>
     <string name="action_tare">Tara</string>
     <string name="action_dose">Dose</string>
     <string name="action_start">Iniciar</string>
@@ -17,6 +19,9 @@
     <string name="action_resume">Continuar</string>
     <string name="action_finish">Finalizar</string>
     <string name="action_search">Buscar</string>
+    <string name="action_clear">Limpar</string>
+    <string name="action_undo">Desfazer</string>
+    <string name="history_deleted">Preparo excluído</string>
     <string name="action_edit">Editar</string>
     <string name="action_delete">Excluir</string>
     <string name="action_duplicate">Duplicar</string>
@@ -129,6 +134,7 @@
     <string name="recipe_dose">Dose, g</string>
     <string name="recipe_water">Água, g</string>
     <string name="recipe_temp">Temperatura, °C</string>
+    <string name="recipe_temp_field">Temp., °C</string>
     <string name="recipe_ratio">Proporção</string>
     <string name="recipe_ratio_value">Proporção %1$s</string>
     <string name="recipe_grinder">Moedor</string>
@@ -168,6 +174,8 @@
     <string name="theme_light">Claro</string>
     <string name="theme_dark">Escuro</string>
     <string name="whats_new_title">Novidades</string>
+    <string name="testers_title">Procuram-se testadores</string>
+    <string name="testers_body">Para publicar o Pourista no Google Play são necessários testadores: abrir o app pelo menos uma vez por dia durante duas semanas. Quer ajudar? Escreva para o autor.</string>
 
     <string name="settings_palette">Paleta</string>
     <string name="palette_copper">Café</string>
@@ -235,7 +243,6 @@
     <string name="backup_restored">Restaurado: %1$d receitas, %2$d preparos</string>
     <string name="backup_restore_failed">Este arquivo não é um backup do Pourista</string>
     <string name="recipes_import_menu">Importar de um arquivo</string>
-    <string name="action_reorder">Arraste para mudar a ordem</string>
     <string name="recipes_import_clipboard">Importar da área de transferência</string>
     <string name="recipes_clipboard_empty">A área de transferência está vazia</string>
     <string name="recipe_steps_expand">Mostrar as etapas</string>
@@ -253,6 +260,7 @@
     <string name="settings_scale_log">Log da balança</string>
     <string name="settings_scale_log_hint">Gravar num arquivo a conversa com a balança e mandar para o desenvolvedor</string>
     <string name="settings_release_notes">Histórico de versões</string>
+    <string name="notes_1_8_0">• A interface em 14 idiomas, com escolha do idioma nos ajustes\n• Backup: receitas e todo o histórico em um arquivo\n• As etapas da receita em fila de ícones\n• Visual renovado: ícones arredondados, números maiores, nova busca\n• A ordem das receitas muda com um toque longo no cartão\n• Deslize para excluir no histórico, com desfazer\n• Suporte às balanças Acaia, Difluid Microbalance, Eureka Precisa e Varia AKU\n• Corrigido o peso salvo no fim automático</string>
     <string name="notes_1_7_2">• Uma imagem do preparo para compartilhar\n• O fim automático pode ser desligado\n• Gráficos: grade de 50 g, eixo de tempo, mais altura\n• A drenagem como etapa própria na receita criada do histórico\n• Corrigido o fim automático ao acrescentar água depois da troca de etapa</string>
     <string name="notes_1_7_1">• Receita a partir de um preparo gravado — direto do histórico\n• Segure o gráfico: ele mostra peso e tempo naquele ponto\n• Apagar um preparo direto da lista\n• A duração da etapa na lista de etapas</string>
     <string name="notes_1_7_0">• Modo AeroPress: a prensagem aparece no gráfico\n• Paleta “Oliva”\n• O teclado não cobre mais os campos de texto\n• O swirl não estraga mais o gráfico nem a vazão\n• Peso certo ao finalizar com o dripper já retirado</string>

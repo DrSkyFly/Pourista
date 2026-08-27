@@ -9,6 +9,8 @@
     <string name="action_save">Сохранить</string>
     <string name="action_reset">Сбросить</string>
     <string name="action_connect">Подключиться к весам</string>
+    <string name="scale_state_searching">Ищем весы…</string>
+    <string name="scale_state_off">Весы не подключены</string>
     <string name="action_tare">Тара</string>
     <string name="action_dose">Доза</string>
     <string name="action_start">Старт</string>
@@ -17,6 +19,9 @@
     <string name="action_resume">Продолжить</string>
     <string name="action_finish">Финиш</string>
     <string name="action_search">Поиск</string>
+    <string name="action_clear">Очистить</string>
+    <string name="action_undo">Отменить</string>
+    <string name="history_deleted">Заваривание удалено</string>
     <string name="action_edit">Изменить</string>
     <string name="action_delete">Удалить</string>
     <string name="action_duplicate">Дублировать</string>
@@ -129,6 +134,7 @@
     <string name="recipe_dose">Доза, г</string>
     <string name="recipe_water">Вода, г</string>
     <string name="recipe_temp">Температура, °C</string>
+    <string name="recipe_temp_field">Темп., °C</string>
     <string name="recipe_ratio">Пропорция</string>
     <string name="recipe_ratio_value">Пропорция %1$s</string>
     <string name="recipe_grinder">Кофемолка</string>
@@ -168,6 +174,8 @@
     <string name="theme_light">Светлая</string>
     <string name="theme_dark">Тёмная</string>
     <string name="whats_new_title">Что нового</string>
+    <string name="testers_title">Нужны тестировщики</string>
+    <string name="testers_body">Для публикации в Google Play нужны тестировщики: две недели подряд открывать приложение хотя бы раз в день. Готовы помочь — напишите автору.</string>
 
     <string name="settings_palette">Палитра</string>
     <string name="palette_copper">Кофейная</string>
@@ -235,7 +243,6 @@
     <string name="backup_restored">Восстановлено: рецептов — %1$d, завариваний — %2$d</string>
     <string name="backup_restore_failed">Это не резервная копия Pourista</string>
     <string name="recipes_import_menu">Импортировать из файла</string>
-    <string name="action_reorder">Перетащить, чтобы поменять порядок</string>
     <string name="recipes_import_clipboard">Импортировать из буфера обмена</string>
     <string name="recipes_clipboard_empty">В буфере обмена нет текста</string>
     <string name="recipe_steps_expand">Показать этапы</string>
@@ -253,6 +260,7 @@
     <string name="settings_scale_log">Журнал весов</string>
     <string name="settings_scale_log_hint">Записать обмен с весами в файл и отправить разработчику</string>
     <string name="settings_release_notes">История изменений</string>
+    <string name="notes_1_8_0">• Интерфейс на 14 языках, выбор языка в настройках\n• Резервная копия: рецепты и вся история одним файлом\n• Этапы рецепта лентой с кружками\n• Обновлённый вид: скруглённые значки, крупные цифры, новый поиск\n• Порядок рецептов — долгим нажатием на карточку\n• Удаление в истории смахиванием, с отменой\n• Поддержка весов Acaia, Difluid Microbalance, Eureka Precisa, Varia AKU\n• Починен вес, который записывался при автофинише</string>
     <string name="notes_1_7_2">• Картинка заваривания для «поделиться»\n• Автофиниш можно выключить\n• Графики: сетка по 50 г, шкала времени, больше высота\n• Слив отдельным шагом в рецепте из записи\n• Починен автофиниш при доливе после смены шага</string>
     <string name="notes_1_7_1">• Рецепт по записанному проливу — из истории\n• Зажми график: покажет вес и время в точке\n• Удаление заваривания прямо из списка\n• Длительность этапа в списке шагов</string>
     <string name="notes_1_7_0">• Режим аэропресса: виден момент отжима\n• Палитра «Оливковая»\n• Клавиатура больше не закрывает поля ввода\n• Свирл не портит график и скорость\n• Правильный вес при финише после снятой воронки</string>

@@ -17,10 +17,10 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Add
-import androidx.compose.material.icons.filled.Lock
-import androidx.compose.material.icons.filled.LockOpen
-import androidx.compose.material.icons.filled.Remove
+import androidx.compose.material.icons.rounded.Add
+import androidx.compose.material.icons.rounded.Lock
+import androidx.compose.material.icons.rounded.LockOpen
+import androidx.compose.material.icons.rounded.Remove
 import androidx.compose.material3.Button
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -219,7 +219,7 @@ private fun Stepper(
         ) {
             Row(verticalAlignment = Alignment.CenterVertically) {
                 IconButton(onClick = { onStep(-1) }, modifier = Modifier.size(STEPPER_TOUCH)) {
-                    Icon(Icons.Default.Remove, contentDescription = null)
+                    Icon(Icons.Rounded.Remove, contentDescription = null)
                 }
                 Text(
                     text = value,
@@ -229,7 +229,7 @@ private fun Stepper(
                     modifier = Modifier.weight(1f),
                 )
                 IconButton(onClick = { onStep(1) }, modifier = Modifier.size(STEPPER_TOUCH)) {
-                    Icon(Icons.Default.Add, contentDescription = null)
+                    Icon(Icons.Rounded.Add, contentDescription = null)
                 }
             }
         }
@@ -266,7 +266,7 @@ private fun Readout(
             if (locked != null) {
                 Spacer(Modifier.size(2.dp))
                 Icon(
-                    imageVector = if (locked) Icons.Default.Lock else Icons.Default.LockOpen,
+                    imageVector = if (locked) Icons.Rounded.Lock else Icons.Rounded.LockOpen,
                     contentDescription = stringResource(R.string.four_six_lock_ratio),
                     tint = if (locked) {
                         MaterialTheme.colorScheme.primary

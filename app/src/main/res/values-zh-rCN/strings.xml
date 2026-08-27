@@ -9,6 +9,8 @@
     <string name="action_save">保存</string>
     <string name="action_reset">重置</string>
     <string name="action_connect">连接咖啡秤</string>
+    <string name="scale_state_searching">正在寻找秤…</string>
+    <string name="scale_state_off">未连接秤</string>
     <string name="action_tare">去皮</string>
     <string name="action_dose">粉量</string>
     <string name="action_start">开始</string>
@@ -17,6 +19,9 @@
     <string name="action_resume">继续</string>
     <string name="action_finish">结束</string>
     <string name="action_search">搜索</string>
+    <string name="action_clear">清除</string>
+    <string name="action_undo">撤销</string>
+    <string name="history_deleted">已删除这次冲煮</string>
     <string name="action_edit">编辑</string>
     <string name="action_delete">删除</string>
     <string name="action_duplicate">复制</string>
@@ -129,6 +134,7 @@
     <string name="recipe_dose">粉量（g）</string>
     <string name="recipe_water">水量（g）</string>
     <string name="recipe_temp">水温（°C）</string>
+    <string name="recipe_temp_field">水温（°C）</string>
     <string name="recipe_ratio">粉水比</string>
     <string name="recipe_ratio_value">粉水比 %1$s</string>
     <string name="recipe_grinder">磨豆机</string>
@@ -168,6 +174,8 @@
     <string name="theme_light">浅色</string>
     <string name="theme_dark">深色</string>
     <string name="whats_new_title">更新内容</string>
+    <string name="testers_title">招募测试者</string>
+    <string name="testers_body">上架 Google Play 需要测试者：连续两周，每天至少打开一次应用。愿意帮忙的请联系作者。</string>
 
     <string name="settings_palette">配色</string>
     <string name="palette_copper">咖啡</string>
@@ -235,7 +243,6 @@
     <string name="backup_restored">已恢复：配方 %1$d 个，冲煮 %2$d 次</string>
     <string name="backup_restore_failed">这不是 Pourista 的备份文件</string>
     <string name="recipes_import_menu">从文件导入</string>
-    <string name="action_reorder">拖动可以调整顺序</string>
     <string name="recipes_import_clipboard">从剪贴板导入</string>
     <string name="recipes_clipboard_empty">剪贴板是空的</string>
     <string name="recipe_steps_expand">展开步骤</string>
@@ -253,6 +260,7 @@
     <string name="settings_scale_log">咖啡秤日志</string>
     <string name="settings_scale_log_hint">把与秤之间的通信记进文件，发给开发者</string>
     <string name="settings_release_notes">更新历史</string>
+    <string name="notes_1_8_0">• 界面支持 14 种语言，可在设置里切换\n• 备份：配方和全部记录存成一个文件\n• 配方步骤以圆形图标串联显示\n• 外观焕新：圆润图标、更大的数字、新的搜索框\n• 长按卡片调整配方顺序\n• 记录可滑动删除，并可撤销\n• 支持 Acaia、Difluid Microbalance、Eureka Precisa、Varia AKU\n• 修正了自动结束时记录的重量</string>
     <string name="notes_1_7_2">• 可以把这次冲煮做成图片分享\n• 自动结束可以关掉\n• 曲线图：50g 一格、时间轴、更高\n• 从记录生成的配方里，滴滤单独成一步\n• 修好了换步之后补水时的自动结束</string>
     <string name="notes_1_7_1">• 用记录下来的冲煮直接生成配方 — 就在记录里\n• 按住曲线：显示那一点的重量和时间\n• 在列表里直接删掉一次冲煮\n• 步骤列表里显示每步时长</string>
     <string name="notes_1_7_0">• 爱乐压模式：下压的那一下能在曲线上看到\n• “橄榄”配色\n• 键盘不再挡住输入框\n• 摇匀不会再毁掉曲线和流速\n• 滤杯拿走之后再结束，重量也是对的</string>

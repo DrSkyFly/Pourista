@@ -9,6 +9,8 @@
     <string name="action_save">Opslaan</string>
     <string name="action_reset">Herstellen</string>
     <string name="action_connect">Weegschaal verbinden</string>
+    <string name="scale_state_searching">Weegschaal zoeken…</string>
+    <string name="scale_state_off">Geen weegschaal verbonden</string>
     <string name="action_tare">Tarra</string>
     <string name="action_dose">Dosis</string>
     <string name="action_start">Start</string>
@@ -17,6 +19,9 @@
     <string name="action_resume">Hervatten</string>
     <string name="action_finish">Afronden</string>
     <string name="action_search">Zoeken</string>
+    <string name="action_clear">Wissen</string>
+    <string name="action_undo">Ongedaan maken</string>
+    <string name="history_deleted">Zetsel verwijderd</string>
     <string name="action_edit">Bewerken</string>
     <string name="action_delete">Verwijderen</string>
     <string name="action_duplicate">Dupliceren</string>
@@ -129,6 +134,7 @@
     <string name="recipe_dose">Dosis, g</string>
     <string name="recipe_water">Water, g</string>
     <string name="recipe_temp">Temperatuur, °C</string>
+    <string name="recipe_temp_field">Temp., °C</string>
     <string name="recipe_ratio">Verhouding</string>
     <string name="recipe_ratio_value">Verhouding %1$s</string>
     <string name="recipe_grinder">Molen</string>
@@ -168,6 +174,8 @@
     <string name="theme_light">Licht</string>
     <string name="theme_dark">Donker</string>
     <string name="whats_new_title">Wat is er nieuw</string>
+    <string name="testers_title">Testers gezocht</string>
+    <string name="testers_body">Om Pourista in Google Play te krijgen zijn testers nodig: twee weken lang de app minstens één keer per dag openen. Wil je helpen? Schrijf de maker.</string>
 
     <string name="settings_palette">Palet</string>
     <string name="palette_copper">Koffie</string>
@@ -235,7 +243,6 @@
     <string name="backup_restored">Teruggezet: %1$d recepten, %2$d zetsels</string>
     <string name="backup_restore_failed">Dit bestand is geen Pourista-back-up</string>
     <string name="recipes_import_menu">Uit een bestand importeren</string>
-    <string name="action_reorder">Sleep om de volgorde te wijzigen</string>
     <string name="recipes_import_clipboard">Van het klembord importeren</string>
     <string name="recipes_clipboard_empty">Het klembord is leeg</string>
     <string name="recipe_steps_expand">Stappen tonen</string>
@@ -253,6 +260,7 @@
     <string name="settings_scale_log">Logboek van de weegschaal</string>
     <string name="settings_scale_log_hint">Het verkeer met de weegschaal in een bestand schrijven en naar de ontwikkelaar sturen</string>
     <string name="settings_release_notes">Versiegeschiedenis</string>
+    <string name="notes_1_8_0">• De interface in 14 talen, met taalkeuze in de instellingen\n• Back-up: recepten en de hele geschiedenis in één bestand\n• Receptstappen als een reeks pictogrammen\n• Fris uiterlijk: ronde pictogrammen, grotere cijfers, nieuwe zoekbalk\n• Receptvolgorde wijzigt met lang drukken op de kaart\n• Veeg een zetsel weg in de geschiedenis, met ongedaan maken\n• Ondersteuning voor Acaia, Difluid Microbalance, Eureka Precisa en Varia AKU\n• Het gewicht bij automatische afsluiting klopt weer</string>
     <string name="notes_1_7_2">• Een plaatje van het zetsel om te delen\n• Automatisch afronden kan uit\n• Grafieken: raster per 50 g, tijdas, meer hoogte\n• Doorloop als eigen stap in een recept uit de geschiedenis\n• Automatisch afronden hersteld als er water bij komt na een stapwissel</string>
     <string name="notes_1_7_1">• Een recept uit een opgenomen zetsel — rechtstreeks uit de geschiedenis\n• Houd de grafiek vast: hij toont gewicht en tijd op dat punt\n• Een zetsel meteen uit de lijst verwijderen\n• De duur van de stap in de stappenlijst</string>
     <string name="notes_1_7_0">• AeroPress-modus: het persen is in de grafiek te zien\n• Palet ‘Olijf’\n• Het toetsenbord bedekt de invoervelden niet meer\n• Swirlen verpest de grafiek en de flow niet meer\n• Kloppend gewicht bij het afronden als de dripper er al af is</string>

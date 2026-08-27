@@ -11,6 +11,11 @@ private val defaults = Typography()
 /** Цифры фиксированной ширины: показания веса и таймера не должны дёргаться. */
 private const val TabularFigures = "tnum"
 
+/**
+ * Заголовки тяжелее стандартных. Material держит для них отдельные
+ * «эмфазированные» начертания, но в этой версии библиотеки они закрыты, а весом
+ * получается то же самое: заголовок отличается от текста не только размером.
+ */
 val FutulaTypography = Typography(
     displayLarge = defaults.displayLarge.copy(fontFeatureSettings = TabularFigures),
     displayMedium = defaults.displayMedium.copy(fontFeatureSettings = TabularFigures),
@@ -18,7 +23,9 @@ val FutulaTypography = Typography(
     headlineLarge = defaults.headlineLarge.copy(fontFeatureSettings = TabularFigures),
     headlineMedium = defaults.headlineMedium.copy(fontFeatureSettings = TabularFigures),
     headlineSmall = defaults.headlineSmall.copy(fontFeatureSettings = TabularFigures),
-    titleLarge = defaults.titleLarge.copy(fontWeight = FontWeight.SemiBold),
+    titleLarge = defaults.titleLarge.copy(fontWeight = FontWeight.Bold),
+    titleMedium = defaults.titleMedium.copy(fontWeight = FontWeight.SemiBold),
+    titleSmall = defaults.titleSmall.copy(fontWeight = FontWeight.SemiBold),
     labelLarge = defaults.labelLarge.copy(fontWeight = FontWeight.Medium),
 )
 

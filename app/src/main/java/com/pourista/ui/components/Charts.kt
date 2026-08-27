@@ -23,6 +23,8 @@ import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.Path
 import androidx.compose.ui.graphics.PathEffect
+import androidx.compose.ui.graphics.StrokeCap
+import androidx.compose.ui.graphics.StrokeJoin
 import androidx.compose.ui.graphics.drawscope.DrawScope
 import androidx.compose.ui.graphics.drawscope.Stroke
 import androidx.compose.ui.input.pointer.PointerInputScope
@@ -185,7 +187,9 @@ internal fun DrawScope.drawSeries(
     val stepX = plotWidth / (values.size - 1).toFloat()
     val line = Path()
     val area = Path()
-    area.moveTo(plotLeft, size.height)
+    // От дна графика, а не от низа холста: под ним лежит поле подписей
+    // времени, и заливка уезжала бы в него скошенным краем.
+    area.moveTo(plotLeft, plotBottom)
     values.forEachIndexed { index, value ->
         val x = plotLeft + index * stepX
         val y = yOf(value.coerceAtLeast(0f))
@@ -196,7 +200,17 @@ internal fun DrawScope.drawSeries(
     area.close()
 
     drawPath(path = area, brush = Brush.verticalGradient(listOf(fillColor, Color.Transparent)))
-    drawPath(path = line, color = lineColor, style = Stroke(width = 2.5.dp.toPx()))
+    // Скругления на изломах: у скорости пролива пики острые, и без них
+    // вершины выглядят обрубленными.
+    drawPath(
+        path = line,
+        color = lineColor,
+        style = Stroke(
+            width = 2.5.dp.toPx(),
+            cap = StrokeCap.Round,
+            join = StrokeJoin.Round,
+        ),
+    )
 
     // Время внизу: без него не понять, когда начался тот или иной этап.
     if (showAxis && durationSec > 0) {

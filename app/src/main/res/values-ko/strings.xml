@@ -9,6 +9,8 @@
     <string name="action_save">저장</string>
     <string name="action_reset">초기화</string>
     <string name="action_connect">저울 연결</string>
+    <string name="scale_state_searching">저울을 찾는 중…</string>
+    <string name="scale_state_off">저울이 연결되지 않음</string>
     <string name="action_tare">영점</string>
     <string name="action_dose">원두량</string>
     <string name="action_start">시작</string>
@@ -17,6 +19,9 @@
     <string name="action_resume">계속</string>
     <string name="action_finish">종료</string>
     <string name="action_search">검색</string>
+    <string name="action_clear">지우기</string>
+    <string name="action_undo">실행 취소</string>
+    <string name="history_deleted">추출을 삭제했습니다</string>
     <string name="action_edit">편집</string>
     <string name="action_delete">삭제</string>
     <string name="action_duplicate">복제</string>
@@ -129,6 +134,7 @@
     <string name="recipe_dose">원두량(g)</string>
     <string name="recipe_water">물(g)</string>
     <string name="recipe_temp">물 온도(°C)</string>
+    <string name="recipe_temp_field">물 온도(°C)</string>
     <string name="recipe_ratio">비율</string>
     <string name="recipe_ratio_value">비율 %1$s</string>
     <string name="recipe_grinder">그라인더</string>
@@ -168,6 +174,8 @@
     <string name="theme_light">밝게</string>
     <string name="theme_dark">어둡게</string>
     <string name="whats_new_title">새로운 기능</string>
+    <string name="testers_title">테스터를 찾습니다</string>
+    <string name="testers_body">Google Play 출시를 위해 테스터가 필요합니다. 2주 동안 하루에 한 번은 앱을 열어 주시면 됩니다. 도와주실 분은 제작자에게 연락해 주세요.</string>
 
     <string name="settings_palette">색상</string>
     <string name="palette_copper">커피</string>
@@ -235,7 +243,6 @@
     <string name="backup_restored">복원했습니다: 레시피 %1$d개, 추출 %2$d개</string>
     <string name="backup_restore_failed">Pourista 백업 파일이 아닙니다</string>
     <string name="recipes_import_menu">파일에서 가져오기</string>
-    <string name="action_reorder">끌어서 순서 바꾸기</string>
     <string name="recipes_import_clipboard">클립보드에서 가져오기</string>
     <string name="recipes_clipboard_empty">클립보드가 비어 있습니다</string>
     <string name="recipe_steps_expand">단계 보기</string>
@@ -253,6 +260,7 @@
     <string name="settings_scale_log">저울 로그</string>
     <string name="settings_scale_log_hint">저울과 주고받은 내용을 파일로 기록해 개발자에게 보내기</string>
     <string name="settings_release_notes">업데이트 기록</string>
+    <string name="notes_1_8_0">• 14개 언어 지원, 설정에서 언어 선택\n• 백업: 레시피와 기록 전체를 파일 하나로\n• 레시피 단계를 원형 아이콘의 흐름으로 표시\n• 새로워진 모습: 둥근 아이콘, 큰 숫자, 새 검색창\n• 레시피 순서는 카드를 길게 눌러 변경\n• 기록은 밀어서 삭제, 실행 취소 가능\n• Acaia, Difluid Microbalance, Eureka Precisa, Varia AKU 지원\n• 자동 종료로 기록되던 무게를 수정</string>
     <string name="notes_1_7_2">• 추출을 이미지로 만들어 공유\n• 자동 종료를 끌 수 있습니다\n• 그래프: 50g 눈금, 시간 축, 높이 확대\n• 기록에서 만든 레시피에 드로우다운이 별도 단계로\n• 단계가 바뀐 뒤 물을 더 부을 때 자동 종료 오류 수정</string>
     <string name="notes_1_7_1">• 기록한 추출로 레시피 만들기 — 기록에서 바로\n• 그래프를 길게 누르면 그 지점의 무게와 시간 표시\n• 목록에서 바로 추출 삭제\n• 단계 목록에 걸린 시간 표시</string>
     <string name="notes_1_7_0">• 에어로프레스 모드: 누르는 순간이 그래프에 남습니다\n• ‘올리브’ 색상\n• 키보드가 입력란을 가리지 않습니다\n• 스월링이 그래프와 유속을 망치지 않습니다\n• 드리퍼를 내린 뒤 종료해도 무게가 정확합니다</string>

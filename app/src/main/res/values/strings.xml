@@ -9,6 +9,8 @@
     <string name="action_save">Save</string>
     <string name="action_reset">Reset</string>
     <string name="action_connect">Connect to scale</string>
+    <string name="scale_state_searching">Looking for the scale…</string>
+    <string name="scale_state_off">No scale connected</string>
     <string name="action_tare">Tare</string>
     <string name="action_dose">Dose</string>
     <string name="action_start">Start</string>
@@ -17,6 +19,9 @@
     <string name="action_resume">Resume</string>
     <string name="action_finish">Finish</string>
     <string name="action_search">Search</string>
+    <string name="action_clear">Clear</string>
+    <string name="action_undo">Undo</string>
+    <string name="history_deleted">Brew deleted</string>
     <string name="action_edit">Edit</string>
     <string name="action_delete">Delete</string>
     <string name="action_duplicate">Duplicate</string>
@@ -129,6 +134,7 @@
     <string name="recipe_dose">Dose, g</string>
     <string name="recipe_water">Water, g</string>
     <string name="recipe_temp">Temperature, °C</string>
+    <string name="recipe_temp_field">Temp., °C</string>
     <string name="recipe_ratio">Ratio</string>
     <string name="recipe_ratio_value">Ratio %1$s</string>
     <string name="recipe_grinder">Grinder</string>
@@ -168,6 +174,8 @@
     <string name="theme_light">Light</string>
     <string name="theme_dark">Dark</string>
     <string name="whats_new_title">What\'s new</string>
+    <string name="testers_title">Testers wanted</string>
+    <string name="testers_body">Pourista needs testers to reach Google Play: open the app at least once a day for two weeks. Happy to help? Write to the author.</string>
 
     <string name="settings_palette">Palette</string>
     <string name="palette_copper">Coffee</string>
@@ -235,7 +243,6 @@
     <string name="backup_restored">Restored: %1$d recipes, %2$d brews</string>
     <string name="backup_restore_failed">This file is not a Pourista backup</string>
     <string name="recipes_import_menu">Import from a file</string>
-    <string name="action_reorder">Drag to reorder</string>
     <string name="recipes_import_clipboard">Import from the clipboard</string>
     <string name="recipes_clipboard_empty">The clipboard is empty</string>
     <string name="recipe_steps_expand">Show steps</string>
@@ -259,6 +266,7 @@
     <string name="settings_scale_log">Scale log</string>
     <string name="settings_scale_log_hint">Record the exchange with the scale to a file and send it to the developer</string>
     <string name="settings_release_notes">Release notes</string>
+    <string name="notes_1_8_0">• The interface in 14 languages, with a language picker in settings\n• Backup: recipes and the whole history in one file\n• Recipe steps as a timeline of badges\n• A refreshed look: rounded icons, bigger numbers, a new search field\n• Recipe order changes with a long press on the card\n• Swipe a brew away in history, with undo\n• Support for Acaia, Difluid Microbalance, Eureka Precisa and Varia AKU scales\n• Fixed the weight recorded at automatic finish</string>
     <string name="notes_1_7_2">• A brew image to share\n• Automatic finish can be switched off\n• Charts: a 50 g grid, a time axis, more height\n• Drawdown as its own step in a recipe from history\n• Fixed automatic finish when water is added after the step changes</string>
     <string name="notes_1_7_1">• A recipe from a recorded brew — straight from history\n• Hold the chart: it shows weight and time at that point\n• Delete a brew straight from the list\n• Step duration in the step list</string>
     <string name="notes_1_7_0">• AeroPress mode: the press shows up on the chart\n• Olive palette\n• The keyboard no longer covers input fields\n• Swirling no longer spoils the chart and the flow rate\n• Correct weight when finishing after the dripper is lifted</string>

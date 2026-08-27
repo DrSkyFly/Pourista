@@ -9,6 +9,8 @@
     <string name="action_save">Speichern</string>
     <string name="action_reset">Zurücksetzen</string>
     <string name="action_connect">Mit Waage verbinden</string>
+    <string name="scale_state_searching">Waage wird gesucht…</string>
+    <string name="scale_state_off">Keine Waage verbunden</string>
     <string name="action_tare">Tara</string>
     <string name="action_dose">Einwaage</string>
     <string name="action_start">Start</string>
@@ -17,6 +19,9 @@
     <string name="action_resume">Weiter</string>
     <string name="action_finish">Beenden</string>
     <string name="action_search">Suchen</string>
+    <string name="action_clear">Löschen</string>
+    <string name="action_undo">Rückgängig</string>
+    <string name="history_deleted">Brühung gelöscht</string>
     <string name="action_edit">Bearbeiten</string>
     <string name="action_delete">Löschen</string>
     <string name="action_duplicate">Duplizieren</string>
@@ -129,6 +134,7 @@
     <string name="recipe_dose">Einwaage, g</string>
     <string name="recipe_water">Wasser, g</string>
     <string name="recipe_temp">Temperatur, °C</string>
+    <string name="recipe_temp_field">Temp., °C</string>
     <string name="recipe_ratio">Verhältnis</string>
     <string name="recipe_ratio_value">Verhältnis %1$s</string>
     <string name="recipe_grinder">Mühle</string>
@@ -168,6 +174,8 @@
     <string name="theme_light">Hell</string>
     <string name="theme_dark">Dunkel</string>
     <string name="whats_new_title">Neu in dieser Version</string>
+    <string name="testers_title">Tester gesucht</string>
+    <string name="testers_body">Für die Veröffentlichung bei Google Play braucht Pourista Tester: zwei Wochen lang die App mindestens einmal täglich öffnen. Wer mitmachen mag, schreibt dem Autor.</string>
 
     <string name="settings_palette">Palette</string>
     <string name="palette_copper">Kaffee</string>
@@ -235,7 +243,6 @@
     <string name="backup_restored">Zurückgeholt: %1$d Rezepte, %2$d Brühungen</string>
     <string name="backup_restore_failed">Das ist keine Pourista-Sicherung</string>
     <string name="recipes_import_menu">Aus einer Datei importieren</string>
-    <string name="action_reorder">Ziehen, um die Reihenfolge zu ändern</string>
     <string name="recipes_import_clipboard">Aus der Zwischenablage importieren</string>
     <string name="recipes_clipboard_empty">In der Zwischenablage steht kein Text</string>
     <string name="recipe_steps_expand">Schritte zeigen</string>
@@ -253,6 +260,7 @@
     <string name="settings_scale_log">Waagen-Log</string>
     <string name="settings_scale_log_hint">Den Austausch mit der Waage in eine Datei schreiben und dem Entwickler schicken</string>
     <string name="settings_release_notes">Änderungsverlauf</string>
+    <string name="notes_1_8_0">• Die Oberfläche in 14 Sprachen, Sprachwahl in den Einstellungen\n• Sicherung: Rezepte und der ganze Verlauf in einer Datei\n• Rezeptschritte als Kette mit Symbolen\n• Frischer Look: runde Symbole, größere Zahlen, neue Suche\n• Rezeptreihenfolge ändert sich per langem Druck auf die Karte\n• Brühung im Verlauf wegwischen, mit Rückgängig\n• Unterstützung für Acaia, Difluid Microbalance, Eureka Precisa und Varia AKU\n• Das beim Autofinish gespeicherte Gewicht stimmt wieder</string>
     <string name="notes_1_7_2">• Ein Bild der Brühung zum Teilen\n• Das automatische Ende lässt sich abschalten\n• Diagramme: 50-g-Raster, Zeitachse, mehr Höhe\n• Durchlauf als eigener Schritt im Rezept aus dem Verlauf\n• Automatisches Ende beim Nachgießen nach dem Schrittwechsel repariert</string>
     <string name="notes_1_7_1">• Rezept aus einer aufgenommenen Brühung — direkt aus dem Verlauf\n• Diagramm gedrückt halten: zeigt Gewicht und Zeit an dieser Stelle\n• Brühung direkt aus der Liste löschen\n• Dauer des Schritts in der Schrittliste</string>
     <string name="notes_1_7_0">• AeroPress-Modus: das Pressen ist im Diagramm zu sehen\n• Palette „Olive“\n• Die Tastatur verdeckt keine Eingabefelder mehr\n• Schwenken verdirbt Diagramm und Flussrate nicht mehr\n• Richtiges Gewicht beim Beenden nach abgenommenem Dripper</string>

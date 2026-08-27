@@ -15,21 +15,21 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.rounded.MenuBook
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
-import androidx.compose.material.icons.filled.Add
-import androidx.compose.material.icons.filled.DragHandle
-import androidx.compose.material.icons.filled.FileDownload
-import androidx.compose.material.icons.filled.FileUpload
-import androidx.compose.material.icons.filled.ContentCopy
-import androidx.compose.material.icons.filled.ContentPaste
-import androidx.compose.material.icons.filled.Delete
-import androidx.compose.material.icons.filled.Edit
-import androidx.compose.material.icons.filled.MoreVert
-import androidx.compose.material.icons.filled.PlayArrow
-import androidx.compose.material.icons.filled.Search
-import androidx.compose.material.icons.filled.Star
-import androidx.compose.material.icons.filled.StarBorder
+import androidx.compose.material.icons.rounded.Add
+import androidx.compose.material.icons.rounded.FileDownload
+import androidx.compose.material.icons.rounded.FileUpload
+import androidx.compose.material.icons.rounded.ContentCopy
+import androidx.compose.material.icons.rounded.ContentPaste
+import androidx.compose.material.icons.rounded.Delete
+import androidx.compose.material.icons.rounded.Edit
+import androidx.compose.material.icons.rounded.MoreVert
+import androidx.compose.material.icons.rounded.PlayArrow
+import androidx.compose.material.icons.rounded.Search
+import androidx.compose.material.icons.rounded.Star
+import androidx.compose.material.icons.rounded.StarBorder
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.DropdownMenu
@@ -37,6 +37,7 @@ import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.ExtendedFloatingActionButton
 import androidx.compose.material3.HorizontalDivider
+import androidx.compose.material3.FilledTonalIconButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
@@ -47,6 +48,7 @@ import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.SuggestionChip
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
+import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
@@ -57,6 +59,9 @@ import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.hapticfeedback.HapticFeedbackType
+import androidx.compose.ui.platform.LocalHapticFeedback
+import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.platform.LocalClipboardManager
 import androidx.compose.ui.platform.LocalContext
@@ -70,9 +75,11 @@ import com.pourista.core.formatClock
 import com.pourista.core.formatGrams
 import com.pourista.core.formatRatio
 import com.pourista.data.model.Recipe
+import com.pourista.ui.components.EmptyState
 import com.pourista.ui.components.RecipeStepsList
+import com.pourista.ui.components.SearchField
 import com.pourista.ui.components.StepsToggle
-import com.pourista.ui.components.dragHandle
+import com.pourista.ui.components.reorderByLongPress
 import com.pourista.ui.theme.AppTheme
 import com.pourista.ui.components.rememberReorderState
 
@@ -93,6 +100,9 @@ fun RecipeListScreen(
     val snackbarHostState = remember { SnackbarHostState() }
     val context = LocalContext.current
     val clipboard = LocalClipboardManager.current
+    // Карточка взята для перестановки — это должно ощущаться, а не только
+    // выглядеть: палец в этот момент закрывает саму карточку.
+    val haptics = LocalHapticFeedback.current
     var fileMenuOpen by remember { mutableStateOf(false) }
 
     val listState = rememberLazyListState()
@@ -132,20 +142,24 @@ fun RecipeListScreen(
         viewModel.clearMessage()
     }
 
+    // Шапка уезжает при прокрутке: экран длинный, а в шапке одно слово.
+    val scrollBehavior = TopAppBarDefaults.enterAlwaysScrollBehavior()
+
     Scaffold(
-        modifier = modifier,
+        modifier = modifier.nestedScroll(scrollBehavior.nestedScrollConnection),
         snackbarHost = { SnackbarHost(snackbarHostState) },
         topBar = {
             TopAppBar(
                 colors = AppTheme.topBarColors(),
                 modifier = AppTheme.topBarModifier(),
+                scrollBehavior = scrollBehavior,
                 title = { Text(stringResource(R.string.tab_recipes)) },
                 actions = {
                     // Меню с подписями: одни стрелки читались как перестановка
                     // рецептов, хотя это обмен файлами.
                     Box {
                         IconButton(onClick = { fileMenuOpen = true }) {
-                            Icon(Icons.Default.MoreVert, stringResource(R.string.action_more))
+                            Icon(Icons.Rounded.MoreVert, stringResource(R.string.action_more))
                         }
                         DropdownMenu(
                             expanded = fileMenuOpen,
@@ -153,7 +167,7 @@ fun RecipeListScreen(
                         ) {
                             DropdownMenuItem(
                                 text = { Text(stringResource(R.string.recipes_import_menu)) },
-                                leadingIcon = { Icon(Icons.Default.FileDownload, null) },
+                                leadingIcon = { Icon(Icons.Rounded.FileDownload, null) },
                                 onClick = {
                                     fileMenuOpen = false
                                     importLauncher.launch(IMPORT_MIME)
@@ -161,7 +175,7 @@ fun RecipeListScreen(
                             )
                             DropdownMenuItem(
                                 text = { Text(stringResource(R.string.recipes_import_clipboard)) },
-                                leadingIcon = { Icon(Icons.Default.ContentPaste, null) },
+                                leadingIcon = { Icon(Icons.Rounded.ContentPaste, null) },
                                 onClick = {
                                     fileMenuOpen = false
                                     viewModel.importText(clipboard.getText()?.text)
@@ -169,7 +183,7 @@ fun RecipeListScreen(
                             )
                             DropdownMenuItem(
                                 text = { Text(stringResource(R.string.recipes_export_all)) },
-                                leadingIcon = { Icon(Icons.Default.FileUpload, null) },
+                                leadingIcon = { Icon(Icons.Rounded.FileUpload, null) },
                                 onClick = {
                                     fileMenuOpen = false
                                     viewModel.prepareExportAll()
@@ -185,7 +199,7 @@ fun RecipeListScreen(
         floatingActionButton = {
             ExtendedFloatingActionButton(
                 onClick = onCreate,
-                icon = { Icon(Icons.Default.Add, null) },
+                icon = { Icon(Icons.Rounded.Add, null) },
                 text = { Text(stringResource(R.string.recipe_new)) },
             )
         },
@@ -203,26 +217,16 @@ fun RecipeListScreen(
             verticalArrangement = Arrangement.spacedBy(12.dp),
         ) {
             item {
-                OutlinedTextField(
-                    value = query,
-                    onValueChange = viewModel::setQuery,
-                    modifier = Modifier.fillMaxWidth(),
-                    singleLine = true,
-                    leadingIcon = { Icon(Icons.Default.Search, null) },
-                    placeholder = { Text(stringResource(R.string.action_search)) },
-                )
+                SearchField(value = query, onValueChange = viewModel::setQuery)
             }
 
             if (recipes.isEmpty()) {
                 item {
-                    Text(
+                    EmptyState(
+                        icon = Icons.AutoMirrored.Rounded.MenuBook,
                         text = stringResource(R.string.recipe_empty),
-                        style = MaterialTheme.typography.bodyMedium,
-                        color = MaterialTheme.colorScheme.onSurfaceVariant,
-                        textAlign = TextAlign.Center,
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .padding(top = 48.dp),
+                        actionText = stringResource(R.string.recipe_new),
+                        onAction = onCreate,
                     )
                 }
             }
@@ -234,17 +238,24 @@ fun RecipeListScreen(
                     dragging = dragging,
                     // При поиске список показан не целиком, и перестановка
                     // внутри выборки перемешала бы порядок остальных рецептов.
-                    dragHandle = if (query.isBlank()) {
-                        Modifier.dragHandle(reorder, recipe.id)
+                    reorderModifier = if (query.isBlank()) {
+                        Modifier.reorderByLongPress(reorder, recipe.id) {
+                            haptics.performHapticFeedback(HapticFeedbackType.LongPress)
+                        }
                     } else {
                         null
                     },
-                    modifier = Modifier.graphicsLayer {
-                        if (dragging) {
-                            translationY = reorder.draggedOffset
-                            shadowElevation = DRAG_ELEVATION
-                        }
-                    },
+                    // Перетаскиваемую карточку двигает палец, остальные —
+                    // список: их перестановка должна быть плавной, иначе
+                    // соседи прыгают на новое место рывком.
+                    modifier = Modifier
+                        .then(if (dragging) Modifier else Modifier.animateItem())
+                        .graphicsLayer {
+                            if (dragging) {
+                                translationY = reorder.draggedOffset
+                                shadowElevation = DRAG_ELEVATION
+                            }
+                        },
                     onOpen = { onEdit(recipe.id) },
                     onBrew = {
                         viewModel.brewWith(recipe)
@@ -269,7 +280,8 @@ fun RecipeListScreen(
 private fun RecipeCard(
     recipe: Recipe,
     dragging: Boolean,
-    dragHandle: Modifier?,
+    /** Перетаскивание карточки, если порядок сейчас можно менять. */
+    reorderModifier: Modifier?,
     modifier: Modifier,
     onOpen: () -> Unit,
     onBrew: () -> Unit,
@@ -284,8 +296,11 @@ private fun RecipeCard(
     var expanded by rememberSaveable { mutableStateOf(false) }
 
     Card(
+        // Долгое нажатие раньше обычного: карточку берут для перестановки,
+        // а короткое нажатие по-прежнему открывает рецепт.
         modifier = modifier
             .fillMaxWidth()
+            .then(reorderModifier ?: Modifier)
             .clickable(onClick = onOpen),
         colors = if (dragging) {
             CardDefaults.cardColors(
@@ -297,24 +312,6 @@ private fun RecipeCard(
     ) {
         Column(Modifier.padding(16.dp)) {
             Row(verticalAlignment = Alignment.CenterVertically) {
-                // Тянуть можно только за ручку: иначе жест конфликтует с
-                // прокруткой списка.
-                if (dragHandle != null) {
-                    // Палец должен попадать в ручку не целясь, поэтому под
-                    // иконкой площадка размером с кнопку.
-                    Box(
-                        contentAlignment = Alignment.Center,
-                        modifier = dragHandle
-                            .size(40.dp)
-                            .padding(end = 8.dp),
-                    ) {
-                        Icon(
-                            imageVector = Icons.Default.DragHandle,
-                            contentDescription = stringResource(R.string.action_reorder),
-                            tint = MaterialTheme.colorScheme.onSurfaceVariant,
-                        )
-                    }
-                }
                 Column(Modifier.weight(1f)) {
                     Text(text = recipe.name, style = MaterialTheme.typography.titleMedium)
                     Text(
@@ -325,7 +322,7 @@ private fun RecipeCard(
                 }
                 IconButton(onClick = onToggleFavorite) {
                     Icon(
-                        imageVector = if (recipe.isFavorite) Icons.Default.Star else Icons.Default.StarBorder,
+                        imageVector = if (recipe.isFavorite) Icons.Rounded.Star else Icons.Rounded.StarBorder,
                         contentDescription = stringResource(R.string.action_favorite),
                         tint = if (recipe.isFavorite) {
                             MaterialTheme.colorScheme.primary
@@ -336,12 +333,12 @@ private fun RecipeCard(
                 }
                 Box {
                     IconButton(onClick = { menuOpen = true }) {
-                        Icon(Icons.Default.MoreVert, stringResource(R.string.action_more))
+                        Icon(Icons.Rounded.MoreVert, stringResource(R.string.action_more))
                     }
                     DropdownMenu(expanded = menuOpen, onDismissRequest = { menuOpen = false }) {
                         DropdownMenuItem(
                             text = { Text(stringResource(R.string.action_edit)) },
-                            leadingIcon = { Icon(Icons.Default.Edit, null) },
+                            leadingIcon = { Icon(Icons.Rounded.Edit, null) },
                             onClick = {
                                 menuOpen = false
                                 onOpen()
@@ -349,7 +346,7 @@ private fun RecipeCard(
                         )
                         DropdownMenuItem(
                             text = { Text(stringResource(R.string.action_duplicate)) },
-                            leadingIcon = { Icon(Icons.Default.ContentCopy, null) },
+                            leadingIcon = { Icon(Icons.Rounded.ContentCopy, null) },
                             onClick = {
                                 menuOpen = false
                                 onDuplicate()
@@ -357,7 +354,7 @@ private fun RecipeCard(
                         )
                         DropdownMenuItem(
                             text = { Text(stringResource(R.string.action_export)) },
-                            leadingIcon = { Icon(Icons.Default.FileUpload, null) },
+                            leadingIcon = { Icon(Icons.Rounded.FileUpload, null) },
                             onClick = {
                                 menuOpen = false
                                 onExport()
@@ -367,7 +364,7 @@ private fun RecipeCard(
                         // способ заваривания не должен занимать место навсегда.
                         DropdownMenuItem(
                             text = { Text(stringResource(R.string.action_delete)) },
-                            leadingIcon = { Icon(Icons.Default.Delete, null) },
+                            leadingIcon = { Icon(Icons.Rounded.Delete, null) },
                             onClick = {
                                 menuOpen = false
                                 onDelete()
@@ -432,11 +429,12 @@ private fun RecipeCard(
                 if (recipe.steps.isNotEmpty()) {
                     StepsToggle(expanded = expanded, onToggle = { expanded = !expanded })
                 }
-                IconButton(onClick = onBrew) {
+                // Заварить — главное действие карточки, и выглядеть оно должно
+                // кнопкой, а не значком в ряду со звёздочкой и меню.
+                FilledTonalIconButton(onClick = onBrew) {
                     Icon(
-                        Icons.Default.PlayArrow,
+                        Icons.Rounded.PlayArrow,
                         contentDescription = stringResource(R.string.action_brew_this),
-                        tint = MaterialTheme.colorScheme.primary,
                     )
                 }
             }

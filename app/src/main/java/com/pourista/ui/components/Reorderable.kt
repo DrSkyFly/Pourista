@@ -1,6 +1,6 @@
 package com.pourista.ui.components
 
-import androidx.compose.foundation.gestures.detectDragGestures
+import androidx.compose.foundation.gestures.detectDragGesturesAfterLongPress
 import androidx.compose.foundation.gestures.scrollBy
 import androidx.compose.foundation.lazy.LazyListItemInfo
 import androidx.compose.foundation.lazy.LazyListState
@@ -128,10 +128,23 @@ fun rememberReorderState(
     return state
 }
 
-/** Ручка перетаскивания: тянуть можно только за неё, чтобы не мешать прокрутке. */
-fun Modifier.dragHandle(state: ReorderState, key: Any): Modifier = pointerInput(key) {
-    detectDragGestures(
-        onDragStart = { state.start(key) },
+/**
+ * Перетаскивание по долгому нажатию.
+ *
+ * Ручки у карточки нет: она занимала место в строке, а нужна была раз в год.
+ * Долгое нажатие с прокруткой не спорит — список едет от обычного движения
+ * пальца, а карточка берётся только после задержки.
+ */
+fun Modifier.reorderByLongPress(
+    state: ReorderState,
+    key: Any,
+    onStart: () -> Unit = {},
+): Modifier = pointerInput(key) {
+    detectDragGesturesAfterLongPress(
+        onDragStart = {
+            onStart()
+            state.start(key)
+        },
         onDrag = { change, amount ->
             change.consume()
             state.drag(amount.y)

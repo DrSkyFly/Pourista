@@ -23,7 +23,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.ArrowDropDown
+import androidx.compose.material.icons.rounded.ArrowDropDown
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Card
@@ -41,6 +41,7 @@ import androidx.compose.material3.Switch
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.material3.TopAppBar
+import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
@@ -49,6 +50,8 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.input.nestedscroll.nestedScroll
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.platform.LocalClipboardManager
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalUriHandler
@@ -105,13 +108,17 @@ fun SettingsScreen(
         ReleaseNotesDialog(onDismiss = { showNotes = false })
     }
 
+    // Шапка уезжает при прокрутке: экран длинный, а в шапке одно слово.
+    val scrollBehavior = TopAppBarDefaults.enterAlwaysScrollBehavior()
+
     Scaffold(
-        modifier = modifier,
+        modifier = modifier.nestedScroll(scrollBehavior.nestedScrollConnection),
         topBar = {
             TopAppBar(
                 title = { Text(stringResource(R.string.tab_settings)) },
                 colors = AppTheme.topBarColors(),
                 modifier = AppTheme.topBarModifier(),
+                scrollBehavior = scrollBehavior,
             )
         },
         bottomBar = bottomBar,
@@ -236,6 +243,27 @@ fun SettingsScreen(
             }
 
             item {
+                SettingsSection(stringResource(R.string.settings_scale)) {
+                    SwitchRow(
+                        title = stringResource(R.string.settings_auto_connect),
+                        checked = settings.autoConnectOnLaunch,
+                        onCheckedChange = viewModel::setAutoConnect,
+                    )
+                    SwitchRow(
+                        title = stringResource(R.string.settings_stop_on_disconnect),
+                        checked = settings.stopTimerOnDisconnect,
+                        onCheckedChange = viewModel::setStopTimerOnDisconnect,
+                    )
+                    SwitchRow(
+                        title = stringResource(R.string.settings_fix_unit),
+                        subtitle = stringResource(R.string.settings_fix_unit_hint),
+                        checked = settings.keepScaleInGrams,
+                        onCheckedChange = viewModel::setKeepScaleInGrams,
+                    )
+                }
+            }
+
+            item {
                 SettingsSection(stringResource(R.string.settings_backup)) {
                     Text(
                         text = stringResource(R.string.settings_backup_hint),
@@ -255,27 +283,6 @@ fun SettingsScreen(
                             .fillMaxWidth()
                             .padding(top = 8.dp),
                     ) { Text(stringResource(R.string.settings_backup_import)) }
-                }
-            }
-
-            item {
-                SettingsSection(stringResource(R.string.settings_scale)) {
-                    SwitchRow(
-                        title = stringResource(R.string.settings_auto_connect),
-                        checked = settings.autoConnectOnLaunch,
-                        onCheckedChange = viewModel::setAutoConnect,
-                    )
-                    SwitchRow(
-                        title = stringResource(R.string.settings_stop_on_disconnect),
-                        checked = settings.stopTimerOnDisconnect,
-                        onCheckedChange = viewModel::setStopTimerOnDisconnect,
-                    )
-                    SwitchRow(
-                        title = stringResource(R.string.settings_fix_unit),
-                        subtitle = stringResource(R.string.settings_fix_unit_hint),
-                        checked = settings.keepScaleInGrams,
-                        onCheckedChange = viewModel::setKeepScaleInGrams,
-                    )
                 }
             }
 
@@ -575,7 +582,7 @@ private fun <T> ChoiceRow(
                 Text(current)
                 Spacer(Modifier.size(4.dp))
                 Icon(
-                    imageVector = Icons.Default.ArrowDropDown,
+                    imageVector = Icons.Rounded.ArrowDropDown,
                     contentDescription = null,
                 )
             }
