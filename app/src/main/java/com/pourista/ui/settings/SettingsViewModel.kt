@@ -46,6 +46,12 @@ class SettingsViewModel(private val container: AppContainer) : ViewModel() {
     fun setPaceTolerance(value: Float) = update { container.settings.setPaceTolerance(value) }
     fun setAutoFinish(value: Boolean) = update { container.settings.setAutoFinish(value) }
 
+    /** Отказ от весов рвёт и текущую связь: иначе значок останется висеть. */
+    fun setUseScale(value: Boolean) = update {
+        container.settings.setUseScale(value)
+        if (!value) container.scale.disconnect()
+    }
+
     fun setAutoConnect(value: Boolean) = update { container.settings.setAutoConnect(value) }
     fun setStopTimerOnDisconnect(value: Boolean) =
         update { container.settings.setStopTimerOnDisconnect(value) }

@@ -200,6 +200,12 @@
     <string name="settings_pace_tolerance_value">±%1$d %%</string>
     <string name="settings_near_target">Aviso antes del objetivo</string>
     <string name="settings_near_target_hint">Cuántos gramos antes del objetivo del paso hay que avisar</string>
+    <string name="scale_question_title">¿Tienes una báscula con Bluetooth?</string>
+    <string name="scale_question_text">Con báscula la app muestra el peso y el caudal. Sin ella queda un temporizador que sigue la receta. Puedes cambiar la respuesta en los ajustes.</string>
+    <string name="scale_question_yes">Sí</string>
+    <string name="scale_question_no">No</string>
+    <string name="settings_no_scale">No usar báscula</string>
+    <string name="settings_no_scale_hint">El icono de Bluetooth desaparece y no se busca ninguna báscula</string>
     <string name="settings_auto_connect">Conectar al abrir la app</string>
     <string name="settings_stop_on_disconnect">Parar el cronómetro si se pierde la conexión</string>
     <string name="settings_fix_unit">Mantener la báscula en gramos</string>
@@ -265,6 +271,7 @@
     <string name="settings_scale_log">Registro de la báscula</string>
     <string name="settings_scale_log_hint">Guardar en un archivo lo que se intercambia con la báscula y enviarlo al desarrollador</string>
     <string name="settings_release_notes">Historial de cambios</string>
+    <string name="notes_1_8_2">• En el primer inicio la app pregunta si tienes báscula Bluetooth y solo después pide permisos\n• Ajuste «No usar báscula»: sin icono de Bluetooth y sin búsqueda\n• El paso de agitación ahora se llama Swirl</string>
     <string name="notes_1_8_1">• Los archivos de receta (.pour) se abren en la app y van directo a preparar\n• Presets en el generador 4:6: guardar, elegir y borrar\n• En la hoja 4:6 «Listo» siempre se ve y la lista de pasos ya no salta</string>
     <string name="notes_1_8_0">• La interfaz en 14 idiomas, con selector en los ajustes\n• Copia de seguridad: recetas e historial en un solo archivo\n• Los pasos de la receta como una línea de iconos\n• Aspecto renovado: iconos redondeados, cifras grandes, nueva búsqueda\n• El orden de las recetas cambia con una pulsación larga\n• Desliza para borrar en el historial, con deshacer\n• Compatibilidad con básculas Acaia, Difluid Microbalance, Eureka Precisa y Varia AKU\n• Corregido el peso que se guardaba al final automático</string>
     <string name="notes_1_7_2">• Una imagen de la preparación para compartir\n• El final automático se puede apagar\n• Gráficos: rejilla cada 50 g, eje de tiempo, más altura\n• El drenaje como paso aparte en la receta creada desde el historial\n• Arreglado el final automático al añadir agua tras el cambio de paso</string>

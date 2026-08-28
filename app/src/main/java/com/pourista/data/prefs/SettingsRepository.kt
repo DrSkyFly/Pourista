@@ -51,6 +51,13 @@ data class AppSettings(
      * Кому мешает — выключает и жмёт «Финиш» руками.
      */
     val autoFinish: Boolean = true,
+    /** На вопрос про весы уже ответили — второй раз не спрашиваем. */
+    val scaleAsked: Boolean = false,
+    /**
+     * Работаем ли с весами вообще. Выключено — приложение становится
+     * таймером: не ищет весы, не просит Bluetooth и не показывает значок.
+     */
+    val useScale: Boolean = true,
     val autoConnectOnLaunch: Boolean = true,
     val stopTimerOnDisconnect: Boolean = true,
     val keepScaleInGrams: Boolean = true,
@@ -75,7 +82,13 @@ data class AppSettings(
     val fortySixRecipeId: Long? = null,
     /** Версия, для которой уже показали «Что нового». */
     val whatsNewSeenVersion: Int = 0,
-)
+) {
+    /**
+     * Пора спросить про весы: ответа ещё не было, и приложение ни разу не
+     * запускалось. Обновившимся вопрос не задаём — у них всё уже настроено.
+     */
+    val needScaleQuestion: Boolean get() = !scaleAsked && whatsNewSeenVersion == 0
+}
 
 private val Context.dataStore: DataStore<Preferences> by preferencesDataStore(name = "settings")
 
@@ -93,6 +106,8 @@ class SettingsRepository(private val context: Context) {
         val nearTargetGrams = floatPreferencesKey("near_target_grams")
         val paceTolerance = floatPreferencesKey("pace_tolerance")
         val autoFinish = booleanPreferencesKey("auto_finish")
+        val scaleAsked = booleanPreferencesKey("scale_asked")
+        val useScale = booleanPreferencesKey("use_scale")
         val autoConnect = booleanPreferencesKey("auto_connect")
         val stopTimerOnDisconnect = booleanPreferencesKey("stop_timer_on_disconnect")
         val keepScaleInGrams = booleanPreferencesKey("keep_scale_in_grams")
@@ -126,6 +141,8 @@ class SettingsRepository(private val context: Context) {
             nearTargetGrams = prefs[Keys.nearTargetGrams] ?: DEFAULT_NEAR_TARGET_GRAMS,
             paceTolerance = prefs[Keys.paceTolerance] ?: DEFAULT_PACE_TOLERANCE,
             autoFinish = prefs[Keys.autoFinish] ?: true,
+            scaleAsked = prefs[Keys.scaleAsked] ?: false,
+            useScale = prefs[Keys.useScale] ?: true,
             autoConnectOnLaunch = prefs[Keys.autoConnect] ?: true,
             stopTimerOnDisconnect = prefs[Keys.stopTimerOnDisconnect] ?: true,
             keepScaleInGrams = prefs[Keys.keepScaleInGrams] ?: true,
@@ -170,6 +187,10 @@ class SettingsRepository(private val context: Context) {
     suspend fun setPaceTolerance(share: Float) = edit { it[Keys.paceTolerance] = share }
 
     suspend fun setAutoFinish(enabled: Boolean) = edit { it[Keys.autoFinish] = enabled }
+
+    suspend fun setUseScale(enabled: Boolean) = edit { it[Keys.useScale] = enabled }
+
+    suspend fun setScaleAsked() = edit { it[Keys.scaleAsked] = true }
 
     suspend fun setAutoConnect(enabled: Boolean) = edit { it[Keys.autoConnect] = enabled }
 

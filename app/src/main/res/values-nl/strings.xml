@@ -200,6 +200,12 @@
     <string name="settings_pace_tolerance_value">±%1$d %%</string>
     <string name="settings_near_target">Signaal voor het doel</string>
     <string name="settings_near_target_hint">Hoeveel gram voor het doel van de stap er gewaarschuwd wordt</string>
+    <string name="scale_question_title">Heb je een bluetooth-weegschaal?</string>
+    <string name="scale_question_text">Met een weegschaal toont de app gewicht en flow. Zonder blijft het een timer die het recept volgt. Het antwoord kun je in de instellingen wijzigen.</string>
+    <string name="scale_question_yes">Ja</string>
+    <string name="scale_question_no">Nee</string>
+    <string name="settings_no_scale">Geen weegschaal gebruiken</string>
+    <string name="settings_no_scale_hint">Het Bluetooth-pictogram verdwijnt, er wordt geen weegschaal gezocht</string>
     <string name="settings_auto_connect">Verbinden bij het starten</string>
     <string name="settings_stop_on_disconnect">Timer stoppen als de verbinding wegvalt</string>
     <string name="settings_fix_unit">Weegschaal in grammen houden</string>
@@ -265,6 +271,7 @@
     <string name="settings_scale_log">Logboek van de weegschaal</string>
     <string name="settings_scale_log_hint">Het verkeer met de weegschaal in een bestand schrijven en naar de ontwikkelaar sturen</string>
     <string name="settings_release_notes">Versiegeschiedenis</string>
+    <string name="notes_1_8_2">• Bij de eerste start vraagt de app of je een bluetooth-weegschaal hebt en pas daarna om rechten\n• Instelling ‘Geen weegschaal gebruiken’: geen Bluetooth-pictogram en geen zoeken\n• De swirlstap heet nu Swirl</string>
     <string name="notes_1_8_1">• Receptbestanden (.pour) openen meteen in de app, op het zetscherm\n• Presets in de 4:6-generator: opslaan, kiezen en verwijderen\n• In het 4:6-venster blijft „Klaar“ zichtbaar en springt de stappenlijst niet meer</string>
     <string name="notes_1_8_0">• De interface in 14 talen, met taalkeuze in de instellingen\n• Back-up: recepten en de hele geschiedenis in één bestand\n• Receptstappen als een reeks pictogrammen\n• Fris uiterlijk: ronde pictogrammen, grotere cijfers, nieuwe zoekbalk\n• Receptvolgorde wijzigt met lang drukken op de kaart\n• Veeg een zetsel weg in de geschiedenis, met ongedaan maken\n• Ondersteuning voor Acaia, Difluid Microbalance, Eureka Precisa en Varia AKU\n• Het gewicht bij automatische afsluiting klopt weer</string>
     <string name="notes_1_7_2">• Een plaatje van het zetsel om te delen\n• Automatisch afronden kan uit\n• Grafieken: raster per 50 g, tijdas, meer hoogte\n• Doorloop als eigen stap in een recept uit de geschiedenis\n• Automatisch afronden hersteld als er water bij komt na een stapwissel</string>

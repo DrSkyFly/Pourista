@@ -404,7 +404,11 @@ class AppContainer(private val context: Context) {
 
     private fun autoConnect() {
         scope.launch {
-            if (settings.current().autoConnectOnLaunch) scale.startScan()
+            val current = settings.current()
+            // Пока про весы не спросили, в эфир не лезем: разрешений всё
+            // равно нет, а поиск засорил бы журнал.
+            if (current.needScaleQuestion) return@launch
+            if (current.useScale && current.autoConnectOnLaunch) scale.startScan()
         }
     }
 

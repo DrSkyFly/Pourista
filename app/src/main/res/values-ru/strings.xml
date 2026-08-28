@@ -112,7 +112,7 @@
 
     <string name="step_pour">Пролив</string>
     <string name="step_wait">Пауза</string>
-    <string name="step_swirl">Покачать</string>
+    <string name="step_swirl">Свирл</string>
     <string name="step_stir">Размешать</string>
     <string name="step_bloom">Блуминг</string>
     <string name="step_drawdown">Слив</string>
@@ -200,6 +200,12 @@
     <string name="settings_pace_tolerance_value">±%1$d %%</string>
     <string name="settings_near_target">Сигнал перед целью</string>
     <string name="settings_near_target_hint">За сколько граммов до цели шага предупредить</string>
+    <string name="scale_question_title">Есть ли у вас весы с Bluetooth?</string>
+    <string name="scale_question_text">С весами приложение показывает вес и скорость пролива. Без них остаётся таймер по рецепту. Ответ можно поменять в настройках.</string>
+    <string name="scale_question_yes">Есть</string>
+    <string name="scale_question_no">Нет</string>
+    <string name="settings_no_scale">Не использовать весы</string>
+    <string name="settings_no_scale_hint">Значок Bluetooth пропадает, весы не ищутся</string>
     <string name="settings_auto_connect">Подключаться при запуске</string>
     <string name="settings_stop_on_disconnect">Останавливать таймер при потере связи</string>
     <string name="settings_fix_unit">Держать весы в граммах</string>
@@ -265,6 +271,7 @@
     <string name="settings_scale_log">Журнал весов</string>
     <string name="settings_scale_log_hint">Записать обмен с весами в файл и отправить разработчику</string>
     <string name="settings_release_notes">История изменений</string>
+    <string name="notes_1_8_2">• При первом запуске приложение спрашивает, есть ли весы с Bluetooth, и только потом просит разрешения\n• Настройка «Не использовать весы»: значка Bluetooth нет, весы не ищутся\n• Шаг «Покачать» теперь называется «Свирл»</string>
     <string name="notes_1_8_1">• Файлы рецептов (.pour) открываются прямо в приложении, сразу на экране заваривания\n• Пресеты в генераторе 4:6: сохранение, выбор и удаление\n• В листе 4:6 «Готово» всегда на виду, а список этапов больше не прыгает</string>
     <string name="notes_1_8_0">• Интерфейс на 14 языках, выбор языка в настройках\n• Резервная копия: рецепты и вся история одним файлом\n• Этапы рецепта лентой с кружками\n• Обновлённый вид: скруглённые значки, крупные цифры, новый поиск\n• Порядок рецептов — долгим нажатием на карточку\n• Удаление в истории смахиванием, с отменой\n• Поддержка весов Acaia, Difluid Microbalance, Eureka Precisa, Varia AKU\n• Починен вес, который записывался при автофинише</string>
     <string name="notes_1_7_2">• Картинка заваривания для «поделиться»\n• Автофиниш можно выключить\n• Графики: сетка по 50 г, шкала времени, больше высота\n• Слив отдельным шагом в рецепте из записи\n• Починен автофиниш при доливе после смены шага</string>

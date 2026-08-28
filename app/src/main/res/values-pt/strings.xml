@@ -200,6 +200,12 @@
     <string name="settings_pace_tolerance_value">±%1$d %%</string>
     <string name="settings_near_target">Aviso antes do alvo</string>
     <string name="settings_near_target_hint">Quantos gramas antes do alvo da etapa avisar</string>
+    <string name="scale_question_title">Você tem uma balança com Bluetooth?</string>
+    <string name="scale_question_text">Com balança o app mostra o peso e a vazão. Sem ela fica um cronômetro que segue a receita. A resposta pode ser mudada nos ajustes.</string>
+    <string name="scale_question_yes">Tenho</string>
+    <string name="scale_question_no">Não tenho</string>
+    <string name="settings_no_scale">Não usar balança</string>
+    <string name="settings_no_scale_hint">O ícone de Bluetooth some e nenhuma balança é procurada</string>
     <string name="settings_auto_connect">Conectar ao abrir o app</string>
     <string name="settings_stop_on_disconnect">Parar o cronômetro se a conexão cair</string>
     <string name="settings_fix_unit">Manter a balança em gramas</string>
@@ -265,6 +271,7 @@
     <string name="settings_scale_log">Log da balança</string>
     <string name="settings_scale_log_hint">Gravar num arquivo a conversa com a balança e mandar para o desenvolvedor</string>
     <string name="settings_release_notes">Histórico de versões</string>
+    <string name="notes_1_8_2">• No primeiro início o app pergunta se você tem balança Bluetooth e só depois pede permissões\n• Ajuste “Não usar balança”: sem ícone de Bluetooth e sem busca\n• O passo de giro agora se chama Swirl</string>
     <string name="notes_1_8_1">• Arquivos de receita (.pour) abrem no app, direto na tela de preparo\n• Presets no gerador 4:6: salvar, escolher e excluir\n• Na folha 4:6 «Pronto» fica sempre visível e a lista de etapas não pula mais</string>
     <string name="notes_1_8_0">• A interface em 14 idiomas, com escolha do idioma nos ajustes\n• Backup: receitas e todo o histórico em um arquivo\n• As etapas da receita em fila de ícones\n• Visual renovado: ícones arredondados, números maiores, nova busca\n• A ordem das receitas muda com um toque longo no cartão\n• Deslize para excluir no histórico, com desfazer\n• Suporte às balanças Acaia, Difluid Microbalance, Eureka Precisa e Varia AKU\n• Corrigido o peso salvo no fim automático</string>
     <string name="notes_1_7_2">• Uma imagem do preparo para compartilhar\n• O fim automático pode ser desligado\n• Gráficos: grade de 50 g, eixo de tempo, mais altura\n• A drenagem como etapa própria na receita criada do histórico\n• Corrigido o fim automático ao acrescentar água depois da troca de etapa</string>

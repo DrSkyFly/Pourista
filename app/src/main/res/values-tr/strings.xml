@@ -200,6 +200,12 @@
     <string name="settings_pace_tolerance_value">±%%%1$d</string>
     <string name="settings_near_target">Hedeften önce uyarı</string>
     <string name="settings_near_target_hint">Adımın hedefinden kaç gram önce uyarılacağı</string>
+    <string name="scale_question_title">Bluetooth’lu teraziniz var mı?</string>
+    <string name="scale_question_text">Terazi varken uygulama ağırlığı ve akış hızını gösterir. Yokken tarifi izleyen bir kronometre olarak kalır. Yanıtı ayarlardan değiştirebilirsiniz.</string>
+    <string name="scale_question_yes">Var</string>
+    <string name="scale_question_no">Yok</string>
+    <string name="settings_no_scale">Terazi kullanma</string>
+    <string name="settings_no_scale_hint">Bluetooth simgesi kaybolur, terazi aranmaz</string>
     <string name="settings_auto_connect">Açılışta bağlan</string>
     <string name="settings_stop_on_disconnect">Bağlantı koparsa kronometreyi durdur</string>
     <string name="settings_fix_unit">Teraziyi gramda tut</string>
@@ -265,6 +271,7 @@
     <string name="settings_scale_log">Terazi günlüğü</string>
     <string name="settings_scale_log_hint">Teraziyle yapılan alışverişi bir dosyaya yazıp geliştiriciye gönder</string>
     <string name="settings_release_notes">Sürüm geçmişi</string>
+    <string name="notes_1_8_2">• İlk açılışta uygulama Bluetooth teraziniz olup olmadığını sorar, izinleri ancak sonra ister\n• “Terazi kullanma” ayarı: Bluetooth simgesi yok, arama yok\n• Çevirme adımının adı artık Swirl</string>
     <string name="notes_1_8_1">• Tarif dosyaları (.pour) uygulamada açılıyor, doğrudan demleme ekranında\n• 4:6 üretecinde ön ayarlar: kaydet, seç ve sil\n• 4:6 sayfasında «Tamam» hep görünür, adım listesi artık zıplamıyor</string>
     <string name="notes_1_8_0">• Arayüz 14 dilde, ayarlardan dil seçimi\n• Yedek: tarifler ve tüm geçmiş tek dosyada\n• Tarif adımları simge dizisi olarak\n• Yenilenen görünüm: yuvarlak simgeler, büyük rakamlar, yeni arama\n• Tarif sırası karta uzun basarak değişiyor\n• Geçmişte kaydırarak silme, geri alma ile\n• Acaia, Difluid Microbalance, Eureka Precisa ve Varia AKU terazileri destekleniyor\n• Otomatik bitişte kaydedilen ağırlık düzeltildi</string>
     <string name="notes_1_7_2">• Paylaşmak için demleme görseli\n• Otomatik bitiş kapatılabiliyor\n• Grafikler: 50 g’lik ızgara, zaman ekseni, daha yüksek\n• Geçmişten çıkan tarifte süzülme ayrı bir adım\n• Adım değiştikten sonra su eklenince otomatik bitiş düzeltildi</string>

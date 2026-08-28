@@ -25,8 +25,8 @@ android {
         applicationId = "com.pourista"
         minSdk = 29
         targetSdk = 37
-        versionCode = 13
-        versionName = "1.8.1"
+        versionCode = 14
+        versionName = "1.8.2"
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
     }
 

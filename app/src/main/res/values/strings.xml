@@ -200,6 +200,12 @@
     <string name="settings_pace_tolerance_value">±%1$d %%</string>
     <string name="settings_near_target">Cue before the target</string>
     <string name="settings_near_target_hint">How many grams before the step target to warn</string>
+    <string name="scale_question_title">Do you have a Bluetooth scale?</string>
+    <string name="scale_question_text">With a scale the app shows the weight and the pour rate. Without one it stays a timer that follows the recipe. You can change the answer in settings.</string>
+    <string name="scale_question_yes">I do</string>
+    <string name="scale_question_no">I do not</string>
+    <string name="settings_no_scale">Do not use a scale</string>
+    <string name="settings_no_scale_hint">The Bluetooth icon disappears, the app does not look for a scale</string>
     <string name="settings_auto_connect">Connect on app start</string>
     <string name="settings_stop_on_disconnect">Stop the timer when the connection drops</string>
     <string name="settings_fix_unit">Keep the scale in grams</string>
@@ -271,6 +277,7 @@
     <string name="settings_scale_log">Scale log</string>
     <string name="settings_scale_log_hint">Record the exchange with the scale to a file and send it to the developer</string>
     <string name="settings_release_notes">Release notes</string>
+    <string name="notes_1_8_2">• At first launch the app asks whether you have a Bluetooth scale, and only then requests permissions\n• Setting “Do not use a scale”: no Bluetooth icon, no searching\n• The swirl step is now called Swirl</string>
     <string name="notes_1_8_1">• Recipe files (.pour) open straight in the app and land on the brewing screen\n• Presets in the 4:6 generator: save, pick and delete\n• In the 4:6 sheet “Done” stays in view and the step list no longer jumps</string>
     <string name="notes_1_8_0">• The interface in 14 languages, with a language picker in settings\n• Backup: recipes and the whole history in one file\n• Recipe steps as a timeline of badges\n• A refreshed look: rounded icons, bigger numbers, a new search field\n• Recipe order changes with a long press on the card\n• Swipe a brew away in history, with undo\n• Support for Acaia, Difluid Microbalance, Eureka Precisa and Varia AKU scales\n• Fixed the weight recorded at automatic finish</string>
     <string name="notes_1_7_2">• A brew image to share\n• Automatic finish can be switched off\n• Charts: a 50 g grid, a time axis, more height\n• Drawdown as its own step in a recipe from history\n• Fixed automatic finish when water is added after the step changes</string>

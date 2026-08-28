@@ -200,6 +200,12 @@
     <string name="settings_pace_tolerance_value">±%1$d %%</string>
     <string name="settings_near_target">Segnale prima dell\'obiettivo</string>
     <string name="settings_near_target_hint">Quanti grammi prima dell\'obiettivo del passo avvisare</string>
+    <string name="scale_question_title">Hai una bilancia Bluetooth?</string>
+    <string name="scale_question_text">Con la bilancia l\'app mostra peso e flusso. Senza resta un timer che segue la ricetta. La risposta si cambia nelle impostazioni.</string>
+    <string name="scale_question_yes">Sì</string>
+    <string name="scale_question_no">No</string>
+    <string name="settings_no_scale">Non usare la bilancia</string>
+    <string name="settings_no_scale_hint">L\'icona Bluetooth sparisce e nessuna bilancia viene cercata</string>
     <string name="settings_auto_connect">Collegati all\'avvio</string>
     <string name="settings_stop_on_disconnect">Ferma il cronometro se cade la connessione</string>
     <string name="settings_fix_unit">Tieni la bilancia in grammi</string>
@@ -265,6 +271,7 @@
     <string name="settings_scale_log">Log della bilancia</string>
     <string name="settings_scale_log_hint">Scrivere in un file lo scambio con la bilancia e mandarlo allo sviluppatore</string>
     <string name="settings_release_notes">Cronologia delle versioni</string>
+    <string name="notes_1_8_2">• Al primo avvio l\'app chiede se hai una bilancia Bluetooth e solo dopo chiede i permessi\n• Impostazione «Non usare la bilancia»: niente icona Bluetooth né ricerca\n• Il passo di rotazione ora si chiama Swirl</string>
     <string name="notes_1_8_1">• I file di ricetta (.pour) si aprono nell\'app, direttamente sulla schermata di estrazione\n• Preset nel generatore 4:6: salva, scegli ed elimina\n• Nel foglio 4:6 «Fatto» resta in vista e l\'elenco dei passaggi non salta più</string>
     <string name="notes_1_8_0">• L\'interfaccia in 14 lingue, con la scelta della lingua nelle impostazioni\n• Backup: ricette e cronologia in un unico file\n• I passaggi della ricetta come una sequenza di icone\n• Aspetto rinnovato: icone arrotondate, numeri più grandi, nuova ricerca\n• L\'ordine delle ricette si cambia con una pressione lunga\n• Scorri per eliminare nella cronologia, con annulla\n• Supporto per le bilance Acaia, Difluid Microbalance, Eureka Precisa e Varia AKU\n• Corretto il peso salvato alla fine automatica</string>
     <string name="notes_1_7_2">• Un\'immagine dell\'estrazione da condividere\n• La fine automatica si può spegnere\n• Grafici: griglia da 50 g, asse dei tempi, più alti\n• Lo scarico come passo a sé nella ricetta creata dalla cronologia\n• Sistemata la fine automatica quando si aggiunge acqua dopo il cambio di passo</string>

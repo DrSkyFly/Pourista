@@ -200,6 +200,12 @@
     <string name="settings_pace_tolerance_value">±%1$d %%</string>
     <string name="settings_near_target">Signal vor dem Ziel</string>
     <string name="settings_near_target_hint">Wie viele Gramm vor dem Ziel des Schritts gewarnt wird</string>
+    <string name="scale_question_title">Hast du eine Bluetooth-Waage?</string>
+    <string name="scale_question_text">Mit Waage zeigt die App Gewicht und Flussrate. Ohne bleibt ein Timer, der dem Rezept folgt. Die Antwort lässt sich in den Einstellungen ändern.</string>
+    <string name="scale_question_yes">Ja</string>
+    <string name="scale_question_no">Nein</string>
+    <string name="settings_no_scale">Ohne Waage brühen</string>
+    <string name="settings_no_scale_hint">Das Bluetooth-Symbol verschwindet, es wird keine Waage gesucht</string>
     <string name="settings_auto_connect">Beim Start verbinden</string>
     <string name="settings_stop_on_disconnect">Timer anhalten, wenn die Verbindung abreißt</string>
     <string name="settings_fix_unit">Waage in Gramm halten</string>
@@ -265,6 +271,7 @@
     <string name="settings_scale_log">Waagen-Log</string>
     <string name="settings_scale_log_hint">Den Austausch mit der Waage in eine Datei schreiben und dem Entwickler schicken</string>
     <string name="settings_release_notes">Änderungsverlauf</string>
+    <string name="notes_1_8_2">• Beim ersten Start fragt die App nach einer Bluetooth-Waage und bittet erst danach um Berechtigungen\n• Einstellung „Ohne Waage brühen“: kein Bluetooth-Symbol, keine Suche\n• Der Schwenk-Schritt heißt jetzt Swirl</string>
     <string name="notes_1_8_1">• Rezeptdateien (.pour) öffnen direkt in der App und landen im Brühbildschirm\n• Presets im 4:6-Generator: speichern, wählen und löschen\n• Im 4:6-Blatt bleibt „Fertig“ sichtbar, die Schrittliste springt nicht mehr</string>
     <string name="notes_1_8_0">• Die Oberfläche in 14 Sprachen, Sprachwahl in den Einstellungen\n• Sicherung: Rezepte und der ganze Verlauf in einer Datei\n• Rezeptschritte als Kette mit Symbolen\n• Frischer Look: runde Symbole, größere Zahlen, neue Suche\n• Rezeptreihenfolge ändert sich per langem Druck auf die Karte\n• Brühung im Verlauf wegwischen, mit Rückgängig\n• Unterstützung für Acaia, Difluid Microbalance, Eureka Precisa und Varia AKU\n• Das beim Autofinish gespeicherte Gewicht stimmt wieder</string>
     <string name="notes_1_7_2">• Ein Bild der Brühung zum Teilen\n• Das automatische Ende lässt sich abschalten\n• Diagramme: 50-g-Raster, Zeitachse, mehr Höhe\n• Durchlauf als eigener Schritt im Rezept aus dem Verlauf\n• Automatisches Ende beim Nachgießen nach dem Schrittwechsel repariert</string>

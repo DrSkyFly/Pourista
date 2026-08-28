@@ -244,22 +244,33 @@ fun SettingsScreen(
 
             item {
                 SettingsSection(stringResource(R.string.settings_scale)) {
+                    // Галка перевёрнутая: у кого весов нет, тот ищет в списке
+                    // «не использовать», а не «использовать» с выключателем.
                     SwitchRow(
-                        title = stringResource(R.string.settings_auto_connect),
-                        checked = settings.autoConnectOnLaunch,
-                        onCheckedChange = viewModel::setAutoConnect,
+                        title = stringResource(R.string.settings_no_scale),
+                        subtitle = stringResource(R.string.settings_no_scale_hint),
+                        checked = !settings.useScale,
+                        onCheckedChange = { viewModel.setUseScale(!it) },
                     )
-                    SwitchRow(
-                        title = stringResource(R.string.settings_stop_on_disconnect),
-                        checked = settings.stopTimerOnDisconnect,
-                        onCheckedChange = viewModel::setStopTimerOnDisconnect,
-                    )
-                    SwitchRow(
-                        title = stringResource(R.string.settings_fix_unit),
-                        subtitle = stringResource(R.string.settings_fix_unit_hint),
-                        checked = settings.keepScaleInGrams,
-                        onCheckedChange = viewModel::setKeepScaleInGrams,
-                    )
+                    // Остальное про весы без весов не нужно — прячем.
+                    if (settings.useScale) {
+                        SwitchRow(
+                            title = stringResource(R.string.settings_auto_connect),
+                            checked = settings.autoConnectOnLaunch,
+                            onCheckedChange = viewModel::setAutoConnect,
+                        )
+                        SwitchRow(
+                            title = stringResource(R.string.settings_stop_on_disconnect),
+                            checked = settings.stopTimerOnDisconnect,
+                            onCheckedChange = viewModel::setStopTimerOnDisconnect,
+                        )
+                        SwitchRow(
+                            title = stringResource(R.string.settings_fix_unit),
+                            subtitle = stringResource(R.string.settings_fix_unit_hint),
+                            checked = settings.keepScaleInGrams,
+                            onCheckedChange = viewModel::setKeepScaleInGrams,
+                        )
+                    }
                 }
             }
 

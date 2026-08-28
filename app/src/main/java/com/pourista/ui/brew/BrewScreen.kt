@@ -225,27 +225,33 @@ fun BrewScreen(
                 title = {
                     Column {
                         Text(stringResource(R.string.tab_brew))
-                        Text(
-                            text = when {
-                                scale.isConnected -> scale.deviceName
-                                    ?: stringResource(R.string.scale_state_off)
+                        // Без весов вторая строка и значок только мешают:
+                        // сообщать о поиске того, чего у человека нет, незачем.
+                        if (settings.useScale) {
+                            Text(
+                                text = when {
+                                    scale.isConnected -> scale.deviceName
+                                        ?: stringResource(R.string.scale_state_off)
 
-                                scale.isBusy -> stringResource(R.string.scale_state_searching)
-                                else -> stringResource(R.string.scale_state_off)
-                            },
-                            style = MaterialTheme.typography.labelMedium,
-                            color = MaterialTheme.colorScheme.onSurfaceVariant,
-                            maxLines = 1,
-                            overflow = TextOverflow.Ellipsis,
-                        )
+                                    scale.isBusy -> stringResource(R.string.scale_state_searching)
+                                    else -> stringResource(R.string.scale_state_off)
+                                },
+                                style = MaterialTheme.typography.labelMedium,
+                                color = MaterialTheme.colorScheme.onSurfaceVariant,
+                                maxLines = 1,
+                                overflow = TextOverflow.Ellipsis,
+                            )
+                        }
                     }
                 },
                 actions = {
-                    ConnectionAction(
-                        status = scale.status,
-                        battery = scale.batteryPercent,
-                        onClick = onConnectClick,
-                    )
+                    if (settings.useScale) {
+                        ConnectionAction(
+                            status = scale.status,
+                            battery = scale.batteryPercent,
+                            onClick = onConnectClick,
+                        )
+                    }
                     IconButton(onClick = viewModel::reset) {
                         Icon(Icons.Rounded.RestartAlt, stringResource(R.string.action_reset))
                     }

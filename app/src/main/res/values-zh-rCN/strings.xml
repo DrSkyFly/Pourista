@@ -200,6 +200,12 @@
     <string name="settings_pace_tolerance_value">±%1$d %%</string>
     <string name="settings_near_target">接近目标时提示</string>
     <string name="settings_near_target_hint">离这一步的目标还有几克时提醒</string>
+    <string name="scale_question_title">你有蓝牙咖啡秤吗？</string>
+    <string name="scale_question_text">有秤时，应用会显示重量和注水速度；没有秤，它就是一个跟着配方走的计时器。答案可以在设置中修改。</string>
+    <string name="scale_question_yes">有</string>
+    <string name="scale_question_no">没有</string>
+    <string name="settings_no_scale">不使用咖啡秤</string>
+    <string name="settings_no_scale_hint">蓝牙图标消失，也不再搜索咖啡秤</string>
     <string name="settings_auto_connect">启动时自动连接</string>
     <string name="settings_stop_on_disconnect">连接断开就暂停计时</string>
     <string name="settings_fix_unit">让秤保持克</string>
@@ -265,6 +271,7 @@
     <string name="settings_scale_log">咖啡秤日志</string>
     <string name="settings_scale_log_hint">把与秤之间的通信记进文件，发给开发者</string>
     <string name="settings_release_notes">更新历史</string>
+    <string name="notes_1_8_2">• 首次启动时先询问是否有蓝牙咖啡秤，之后才申请权限\n• 设置「不使用咖啡秤」：没有蓝牙图标，也不搜索\n• 摇匀步骤改名为 Swirl</string>
     <string name="notes_1_8_1">• 配方文件（.pour）直接在应用里打开，并跳到冲煮页\n• 4:6 生成器的预设：保存、选择和删除\n• 4:6 面板里「完成」始终可见，步骤列表不再跳动</string>
     <string name="notes_1_8_0">• 界面支持 14 种语言，可在设置里切换\n• 备份：配方和全部记录存成一个文件\n• 配方步骤以圆形图标串联显示\n• 外观焕新：圆润图标、更大的数字、新的搜索框\n• 长按卡片调整配方顺序\n• 记录可滑动删除，并可撤销\n• 支持 Acaia、Difluid Microbalance、Eureka Precisa、Varia AKU\n• 修正了自动结束时记录的重量</string>
     <string name="notes_1_7_2">• 可以把这次冲煮做成图片分享\n• 自动结束可以关掉\n• 曲线图：50g 一格、时间轴、更高\n• 从记录生成的配方里，滴滤单独成一步\n• 修好了换步之后补水时的自动结束</string>

@@ -18,11 +18,13 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import androidx.lifecycle.lifecycleScope
 import androidx.core.content.IntentCompat
 import com.pourista.core.AppLocale
 import com.pourista.scale.ScaleRepository
 import com.pourista.ui.AppNavigation
 import com.pourista.ui.components.ReleaseNotesDialog
+import com.pourista.ui.components.ScaleQuestionDialog
 import com.pourista.ui.theme.PouristaTheme
 import kotlinx.coroutines.launch
 
@@ -30,7 +32,8 @@ class MainActivity : ComponentActivity() {
 
     private val permissionLauncher =
         registerForActivityResult(ActivityResultContracts.RequestMultiplePermissions()) { granted ->
-            if (granted.values.all { it } && container.settingsState.value.autoConnectOnLaunch) {
+            val settings = container.settingsState.value
+            if (granted.values.all { it } && settings.useScale && settings.autoConnectOnLaunch) {
                 container.scale.startScan()
             }
         }
@@ -49,8 +52,16 @@ class MainActivity : ComponentActivity() {
         enableEdgeToEdge()
         super.onCreate(savedInstanceState)
 
-        if (!container.scale.hasPermissions()) {
-            permissionLauncher.launch(ScaleRepository.requiredPermissions())
+        // Разрешения просим, только когда про весы уже спросили и ответили
+        // «есть». Настройки читаем из хранилища: в общем состоянии на свежей
+        // установке ещё значения по умолчанию, и окно выскочило бы раньше
+        // вопроса.
+        lifecycleScope.launch {
+            val settings = container.settings.current()
+            val ready = settings.useScale && !settings.needScaleQuestion
+            if (ready && !container.scale.hasPermissions()) {
+                permissionLauncher.launch(ScaleRepository.requiredPermissions())
+            }
         }
 
         openRecipeFrom(intent)
@@ -64,7 +75,7 @@ class MainActivity : ComponentActivity() {
                 Surface(color = MaterialTheme.colorScheme.background) {
                     AppNavigation()
                 }
-                WhatsNewDialog()
+                FirstRun()
             }
         }
     }
@@ -93,6 +104,34 @@ class MainActivity : ComponentActivity() {
             else -> null
         } ?: return
         container.openRecipeFile(uri)
+    }
+
+    /**
+     * Первый запуск: сперва спрашиваем про весы и только по ответу «есть»
+     * просим Bluetooth. Пока хранилище не прочитано, не показываем ничего —
+     * иначе вопрос мигнёт и у тех, кто давно ответил.
+     */
+    @Composable
+    private fun FirstRun() {
+        var ask by remember { mutableStateOf<Boolean?>(null) }
+        val scope = rememberCoroutineScope()
+
+        LaunchedEffect(Unit) { ask = container.settings.current().needScaleQuestion }
+
+        val answer = { hasScale: Boolean ->
+            ask = false
+            scope.launch {
+                container.settings.setUseScale(hasScale)
+                container.settings.setScaleAsked()
+            }
+            if (hasScale) permissionLauncher.launch(ScaleRepository.requiredPermissions())
+        }
+
+        when (ask) {
+            null -> Unit
+            true -> ScaleQuestionDialog(onYes = { answer(true) }, onNo = { answer(false) })
+            false -> WhatsNewDialog()
+        }
     }
 
     /**

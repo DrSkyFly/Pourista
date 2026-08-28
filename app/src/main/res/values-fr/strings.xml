@@ -200,6 +200,12 @@
     <string name="settings_pace_tolerance_value">±%1$d %%</string>
     <string name="settings_near_target">Signal avant la cible</string>
     <string name="settings_near_target_hint">Combien de grammes avant la cible de l\'étape prévenir</string>
+    <string name="scale_question_title">Avez-vous une balance Bluetooth ?</string>
+    <string name="scale_question_text">Avec une balance, l\'app affiche le poids et le débit. Sans balance, il reste un minuteur qui suit la recette. La réponse se change dans les réglages.</string>
+    <string name="scale_question_yes">Oui</string>
+    <string name="scale_question_no">Non</string>
+    <string name="settings_no_scale">Ne pas utiliser de balance</string>
+    <string name="settings_no_scale_hint">L\'icône Bluetooth disparaît, aucune balance n\'est recherchée</string>
     <string name="settings_auto_connect">Se connecter au lancement</string>
     <string name="settings_stop_on_disconnect">Arrêter le chrono si la connexion tombe</string>
     <string name="settings_fix_unit">Garder la balance en grammes</string>
@@ -265,6 +271,7 @@
     <string name="settings_scale_log">Journal de la balance</string>
     <string name="settings_scale_log_hint">Écrire les échanges avec la balance dans un fichier et l\'envoyer au développeur</string>
     <string name="settings_release_notes">Historique des versions</string>
+    <string name="notes_1_8_2">• Au premier lancement, l\'app demande si vous avez une balance Bluetooth et ne réclame les autorisations qu\'ensuite\n• Réglage « Ne pas utiliser de balance » : plus d\'icône Bluetooth ni de recherche\n• L\'étape de rotation s\'appelle désormais Swirl</string>
     <string name="notes_1_8_1">• Les fichiers de recette (.pour) s\'ouvrent dans l\'app, direction l\'écran d\'extraction\n• Presets dans le générateur 4:6 : enregistrer, choisir et supprimer\n• Dans la feuille 4:6, « Terminé » reste visible et la liste des étapes ne saute plus</string>
     <string name="notes_1_8_0">• L\'interface en 14 langues, avec le choix de la langue dans les réglages\n• Sauvegarde : recettes et historique dans un seul fichier\n• Les étapes de la recette en fil d\'icônes\n• Look revu : icônes arrondies, chiffres plus grands, nouvelle recherche\n• L\'ordre des recettes se change par appui long sur la carte\n• Balayer pour supprimer dans l\'historique, avec annulation\n• Prise en charge des balances Acaia, Difluid Microbalance, Eureka Precisa et Varia AKU\n• Le poids enregistré à la fin automatique est corrigé</string>
     <string name="notes_1_7_2">• Une image de l\'extraction à partager\n• La fin automatique peut être coupée\n• Graphiques : grille de 50 g, axe du temps, plus de hauteur\n• L\'écoulement en étape à part dans une recette issue de l\'historique\n• Fin automatique corrigée quand on ajoute de l\'eau après un changement d\'étape</string>

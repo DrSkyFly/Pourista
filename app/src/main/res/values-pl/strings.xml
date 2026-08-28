@@ -200,6 +200,12 @@
     <string name="settings_pace_tolerance_value">±%1$d %%</string>
     <string name="settings_near_target">Sygnał przed celem</string>
     <string name="settings_near_target_hint">Na ile gramów przed celem kroku ostrzec</string>
+    <string name="scale_question_title">Czy masz wagę z Bluetooth?</string>
+    <string name="scale_question_text">Z wagą aplikacja pokazuje masę i przepływ. Bez niej zostaje minutnik prowadzony przez przepis. Odpowiedź można zmienić w ustawieniach.</string>
+    <string name="scale_question_yes">Mam</string>
+    <string name="scale_question_no">Nie mam</string>
+    <string name="settings_no_scale">Nie używaj wagi</string>
+    <string name="settings_no_scale_hint">Ikona Bluetooth znika, waga nie jest wyszukiwana</string>
     <string name="settings_auto_connect">Łącz przy uruchomieniu</string>
     <string name="settings_stop_on_disconnect">Zatrzymaj stoper po utracie połączenia</string>
     <string name="settings_fix_unit">Trzymaj wagę w gramach</string>
@@ -265,6 +271,7 @@
     <string name="settings_scale_log">Dziennik wagi</string>
     <string name="settings_scale_log_hint">Zapisać wymianę z wagą do pliku i wysłać deweloperowi</string>
     <string name="settings_release_notes">Historia zmian</string>
+    <string name="notes_1_8_2">• Przy pierwszym uruchomieniu aplikacja pyta o wagę Bluetooth i dopiero potem prosi o uprawnienia\n• Ustawienie „Nie używaj wagi”: bez ikony Bluetooth i bez wyszukiwania\n• Krok obracania nazywa się teraz Swirl</string>
     <string name="notes_1_8_1">• Pliki przepisów (.pour) otwierają się w aplikacji, od razu na ekranie parzenia\n• Presety w generatorze 4:6: zapis, wybór i usuwanie\n• W arkuszu 4:6 «Gotowe» jest zawsze widoczne, a lista kroków nie skacze</string>
     <string name="notes_1_8_0">• Interfejs w 14 językach, wybór języka w ustawieniach\n• Kopia zapasowa: przepisy i cała historia w jednym pliku\n• Kroki przepisu jako ciąg ikon\n• Odświeżony wygląd: zaokrąglone ikony, większe liczby, nowe wyszukiwanie\n• Kolejność przepisów zmienia się długim naciśnięciem karty\n• Usuwanie w historii przeciągnięciem, z cofnięciem\n• Obsługa wag Acaia, Difluid Microbalance, Eureka Precisa i Varia AKU\n• Poprawiona waga zapisywana przy automatycznym końcu</string>
     <string name="notes_1_7_2">• Obrazek parzenia do udostępnienia\n• Automatyczne zakończenie można wyłączyć\n• Wykresy: siatka co 50 g, oś czasu, większa wysokość\n• Spływ osobnym krokiem w przepisie z nagrania\n• Naprawione automatyczne zakończenie przy dolewce po zmianie kroku</string>
