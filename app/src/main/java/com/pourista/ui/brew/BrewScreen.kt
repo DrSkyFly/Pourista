@@ -82,6 +82,8 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalView
+import androidx.compose.ui.layout.layout
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.style.TextOverflow
@@ -120,6 +122,22 @@ import com.pourista.ui.theme.MetricValueStyle
 import com.pourista.ui.theme.WeightReadoutStyle
 import kotlinx.coroutines.flow.collectLatest
 
+/** Ширина кнопки в шапке: у неё вокруг значка много воздуха, и три подряд
+ *  расходятся через весь экран. Область нажатия по высоте остаётся полной. */
+private val ACTION_WIDTH = 40.dp
+
+/**
+ * Ужать кнопку по ширине, оставив содержимое по центру. Кнопка меряется как
+ * обычно, но соседям сообщает ширину поменьше — значки сходятся плотнее.
+ */
+private fun Modifier.narrowAction(): Modifier = layout { measurable, constraints ->
+    val placeable = measurable.measure(constraints)
+    val width = ACTION_WIDTH.roundToPx()
+    layout(width, placeable.height) {
+        placeable.place((width - placeable.width) / 2, 0)
+    }
+}
+
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun BrewScreen(
@@ -139,6 +157,7 @@ fun BrewScreen(
     val cues = rememberBrewCuePlayer()
     var showRecipePicker by remember { mutableStateOf(false) }
     var showFortySix by remember { mutableStateOf(false) }
+    var showGrind by remember { mutableStateOf(false) }
     var showDoseDialog by remember { mutableStateOf(false) }
 
     // Развёрнутый рецепт нужен до старта — свериться с планом пролива. Со
@@ -252,7 +271,19 @@ fun BrewScreen(
                             onClick = onConnectClick,
                         )
                     }
-                    IconButton(onClick = viewModel::reset) {
+                    IconButton(
+                        onClick = { showGrind = true },
+                        modifier = Modifier.narrowAction(),
+                    ) {
+                        Icon(
+                            painter = painterResource(R.drawable.ic_hand_grinder),
+                            contentDescription = stringResource(R.string.grind_title),
+                        )
+                    }
+                    IconButton(
+                        onClick = viewModel::reset,
+                        modifier = Modifier.narrowAction(),
+                    ) {
                         Icon(Icons.Rounded.RestartAlt, stringResource(R.string.action_reset))
                     }
                 },
@@ -484,6 +515,21 @@ fun BrewScreen(
         }
     }
 
+    if (showGrind) {
+        val sheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true)
+        ModalBottomSheet(
+            onDismissRequest = { showGrind = false },
+            sheetState = sheetState,
+        ) {
+            GrindSheetContent(
+                fromId = settings.grindFromId,
+                toId = settings.grindToId,
+                setting = settings.grindSetting,
+                onRemember = viewModel::rememberGrindPair,
+            )
+        }
+    }
+
     if (showDoseDialog) {
         DoseDialog(
             initial = brew.doseGrams,
@@ -535,7 +581,7 @@ private fun ConnectionAction(
                 color = MaterialTheme.colorScheme.onSurfaceVariant,
             )
         }
-        IconButton(onClick = onClick) {
+        IconButton(onClick = onClick, modifier = Modifier.narrowAction()) {
             Icon(
                 imageVector = icon,
                 contentDescription = stringResource(R.string.action_connect),

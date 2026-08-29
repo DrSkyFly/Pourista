@@ -52,7 +52,7 @@
     <string name="brew_no_recipe_hint">Выберите рецепт, и приложение будет подсказывать, когда и сколько воды заливать.</string>
     <string name="brew_pick_recipe">Выбрать рецепт</string>
     <string name="brew_change_recipe">Сменить</string>
-    <string name="brew_without_recipe">Готовить без рецепта</string>
+    <string name="brew_without_recipe">Без рецепта</string>
     <string name="brew_record_recipe">Записать</string>
     <string name="brew_recording_title">Идёт запись рецепта</string>
     <string name="brew_recording_hint">Заваривайте как обычно. Приложение само отметит проливы и паузы, а «Финиш» откроет готовый рецепт.</string>
@@ -91,6 +91,31 @@
     <string name="four_six_summary">%1$sг воды · проливов %2$d · %3$s</string>
     <string name="four_six_notes">%1$s · %2$s. Проливы в 0:00, 0:45 и дальше поровну до 3:30.</string>
     <string name="four_six_generate">Готово</string>
+
+    <string name="grind_title">Пересчёт помола</string>
+    <string name="grind_from">С кофемолки</string>
+    <string name="grind_to">На кофемолку</string>
+    <string name="grind_pick_both">Выберите обе кофемолки</string>
+    <string name="grind_apply">Подставить</string>
+    <string name="grind_brand">Фирма</string>
+    <string name="grind_model">Модель</string>
+    <string name="grind_setting">Настройка</string>
+    <string name="grind_setting_hint">Как на кофемолке, до %1$s</string>
+    <string name="grind_result">Рекомендуемая настройка</string>
+    <string name="grind_microns">%1$d мкм</string>
+    <string name="grind_source_microns">%1$s на исходной — это %2$d мкм</string>
+    <string name="grind_nearest">Ближайшее деление: точнее шкала не даёт</string>
+    <string name="grind_enter_setting">Введите настройку исходной кофемолки</string>
+    <string name="grind_bad_setting">Такой настройки у этой кофемолки нет</string>
+    <string name="grind_swap">Поменять местами</string>
+
+    <string name="grind_use_turkish">турка</string>
+    <string name="grind_use_espresso">эспрессо</string>
+    <string name="grind_use_moka">гейзер</string>
+    <string name="grind_use_v60">V60</string>
+    <string name="grind_use_pour_over">пуровер</string>
+    <string name="grind_use_french_press">френч-пресс</string>
+    <string name="grind_use_cold_brew">колд брю</string>
 
     <string name="guidance_step_position">Шаг %1$d из %2$d</string>
     <string name="guidance_seconds_left">сек осталось</string>

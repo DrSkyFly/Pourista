@@ -82,6 +82,12 @@ data class AppSettings(
     val fortySixRecipeId: Long? = null,
     /** Версия, для которой уже показали «Что нового». */
     val whatsNewSeenVersion: Int = 0,
+    /** Кофемолка, с которой пересчитывали помол в прошлый раз. */
+    val grindFromId: String = "",
+    /** Своя кофемолка: на неё пересчитываем. */
+    val grindToId: String = "",
+    /** Последняя настройка, введённая в пересчёте помола. */
+    val grindSetting: String = "",
 ) {
     /**
      * Пора спросить про весы: ответа ещё не было, и приложение ни разу не
@@ -124,6 +130,9 @@ class SettingsRepository(private val context: Context) {
         val fortySixRecipeId = longPreferencesKey("forty_six_recipe_id")
         val fortySixPresets = stringPreferencesKey("forty_six_presets")
         val whatsNewSeen = intPreferencesKey("whats_new_seen")
+        val grindFrom = stringPreferencesKey("grind_from")
+        val grindTo = stringPreferencesKey("grind_to")
+        val grindSetting = stringPreferencesKey("grind_setting")
     }
 
     val settings: Flow<AppSettings> = context.dataStore.data.map { prefs ->
@@ -165,6 +174,9 @@ class SettingsRepository(private val context: Context) {
             fortySixPresets = decodePresets(prefs[Keys.fortySixPresets]),
             fortySixRecipeId = prefs[Keys.fortySixRecipeId]?.takeIf { it > 0 },
             whatsNewSeenVersion = prefs[Keys.whatsNewSeen] ?: 0,
+            grindFromId = prefs[Keys.grindFrom] ?: "",
+            grindToId = prefs[Keys.grindTo] ?: "",
+            grindSetting = prefs[Keys.grindSetting] ?: "",
         )
     }
 
@@ -224,6 +236,12 @@ class SettingsRepository(private val context: Context) {
 
     suspend fun setFortySixLockRatio(locked: Boolean) =
         edit { it[Keys.fortySixLockRatio] = locked }
+
+    suspend fun setGrindPair(fromId: String, toId: String, setting: String) = edit { prefs ->
+        prefs[Keys.grindFrom] = fromId
+        prefs[Keys.grindTo] = toId
+        prefs[Keys.grindSetting] = setting
+    }
 
     suspend fun setWhatsNewSeenVersion(versionCode: Int) =
         edit { it[Keys.whatsNewSeen] = versionCode }

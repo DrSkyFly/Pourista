@@ -92,6 +92,31 @@
     <string name="four_six_notes">%1$s · %2$s. Pours at 0:00, 0:45 and then evenly until 3:30.</string>
     <string name="four_six_generate">Done</string>
 
+    <string name="grind_title">Grind converter</string>
+    <string name="grind_from">From grinder</string>
+    <string name="grind_to">To grinder</string>
+    <string name="grind_pick_both">Choose both grinders</string>
+    <string name="grind_apply">Apply</string>
+    <string name="grind_brand">Brand</string>
+    <string name="grind_model">Model</string>
+    <string name="grind_setting">Setting</string>
+    <string name="grind_setting_hint">As printed on the grinder, up to %1$s</string>
+    <string name="grind_result">Recommended setting</string>
+    <string name="grind_microns">%1$d µm</string>
+    <string name="grind_source_microns">%1$s on the source grinder is %2$d µm</string>
+    <string name="grind_nearest">Nearest step: the scale does not go finer</string>
+    <string name="grind_enter_setting">Enter the setting from the source grinder</string>
+    <string name="grind_bad_setting">This grinder has no such setting</string>
+    <string name="grind_swap">Swap</string>
+
+    <string name="grind_use_turkish">Turkish</string>
+    <string name="grind_use_espresso">espresso</string>
+    <string name="grind_use_moka">moka pot</string>
+    <string name="grind_use_v60">V60</string>
+    <string name="grind_use_pour_over">pour over</string>
+    <string name="grind_use_french_press">French press</string>
+    <string name="grind_use_cold_brew">cold brew</string>
+
     <string name="guidance_step_position">Step %1$d of %2$d</string>
     <string name="guidance_seconds_left">sec left</string>
     <string name="guidance_seconds_total">sec long</string>

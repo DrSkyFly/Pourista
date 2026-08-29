@@ -92,6 +92,31 @@
     <string name="four_six_notes">%1$s · %2$s. Schenken op 0:00, 0:45 en daarna gelijkmatig tot 3:30.</string>
     <string name="four_six_generate">Klaar</string>
 
+    <string name="grind_title">Maalgraad omrekenen</string>
+    <string name="grind_from">Van molen</string>
+    <string name="grind_to">Naar molen</string>
+    <string name="grind_pick_both">Kies beide molens</string>
+    <string name="grind_apply">Toepassen</string>
+    <string name="grind_brand">Merk</string>
+    <string name="grind_model">Model</string>
+    <string name="grind_setting">Instelling</string>
+    <string name="grind_setting_hint">Zoals op de molen, tot %1$s</string>
+    <string name="grind_result">Aanbevolen instelling</string>
+    <string name="grind_microns">%1$d µm</string>
+    <string name="grind_source_microns">%1$s op de bronmolen is %2$d µm</string>
+    <string name="grind_nearest">Dichtstbijzijnde klik: fijner kan de schaal niet</string>
+    <string name="grind_enter_setting">Voer de instelling van de bronmolen in</string>
+    <string name="grind_bad_setting">Deze instelling bestaat niet op deze molen</string>
+    <string name="grind_swap">Omwisselen</string>
+
+    <string name="grind_use_turkish">Turks</string>
+    <string name="grind_use_espresso">espresso</string>
+    <string name="grind_use_moka">moka</string>
+    <string name="grind_use_v60">V60</string>
+    <string name="grind_use_pour_over">pour over</string>
+    <string name="grind_use_french_press">cafetière</string>
+    <string name="grind_use_cold_brew">cold brew</string>
+
     <string name="guidance_step_position">Stap %1$d van %2$d</string>
     <string name="guidance_seconds_left">sec over</string>
     <string name="guidance_seconds_total">sec lang</string>

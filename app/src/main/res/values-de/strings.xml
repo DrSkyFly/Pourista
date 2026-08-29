@@ -92,6 +92,31 @@
     <string name="four_six_notes">%1$s · %2$s. Güsse bei 0:00, 0:45 und dann gleichmäßig bis 3:30.</string>
     <string name="four_six_generate">Fertig</string>
 
+    <string name="grind_title">Mahlgrad umrechnen</string>
+    <string name="grind_from">Von Mühle</string>
+    <string name="grind_to">Zu Mühle</string>
+    <string name="grind_pick_both">Beide Mühlen wählen</string>
+    <string name="grind_apply">Übernehmen</string>
+    <string name="grind_brand">Marke</string>
+    <string name="grind_model">Modell</string>
+    <string name="grind_setting">Einstellung</string>
+    <string name="grind_setting_hint">Wie auf der Mühle, bis %1$s</string>
+    <string name="grind_result">Empfohlene Einstellung</string>
+    <string name="grind_microns">%1$d µm</string>
+    <string name="grind_source_microns">%1$s an der Ausgangsmühle sind %2$d µm</string>
+    <string name="grind_nearest">Nächste Raste: feiner wird die Skala nicht</string>
+    <string name="grind_enter_setting">Einstellung der Ausgangsmühle eingeben</string>
+    <string name="grind_bad_setting">Diese Einstellung gibt es an der Mühle nicht</string>
+    <string name="grind_swap">Tauschen</string>
+
+    <string name="grind_use_turkish">Ibrik</string>
+    <string name="grind_use_espresso">Espresso</string>
+    <string name="grind_use_moka">Herdkanne</string>
+    <string name="grind_use_v60">V60</string>
+    <string name="grind_use_pour_over">Handfilter</string>
+    <string name="grind_use_french_press">French Press</string>
+    <string name="grind_use_cold_brew">Cold Brew</string>
+
     <string name="guidance_step_position">Schritt %1$d von %2$d</string>
     <string name="guidance_seconds_left">Sek. übrig</string>
     <string name="guidance_seconds_total">Sek. lang</string>

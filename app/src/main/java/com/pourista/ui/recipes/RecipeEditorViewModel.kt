@@ -162,6 +162,13 @@ class RecipeEditorViewModel(
     fun setTemp(value: String) = _state.update { it.copy(temp = value.filter(Char::isDigit)) }
     fun setGrinder(value: String) = _state.update { it.copy(grinder = value) }
     fun setGrind(value: String) = _state.update { it.copy(grind = value) }
+
+    /** Настройки нужны пересчёту помола: он помнит выбранные кофемолки. */
+    val settings = container.settingsState
+
+    fun rememberGrindPair(fromId: String, toId: String, setting: String) {
+        viewModelScope.launch { container.settings.setGrindPair(fromId, toId, setting) }
+    }
     fun setBean(value: String) = _state.update { it.copy(bean = value) }
     fun setRoaster(value: String) = _state.update { it.copy(roaster = value) }
     fun setNotes(value: String) = _state.update { it.copy(notes = value) }

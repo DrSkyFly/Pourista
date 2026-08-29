@@ -92,6 +92,31 @@
     <string name="four_six_notes">%1$s · %2$s. Dökümler 0:00, 0:45 ve sonrasında 3:30’a kadar eşit aralıklarla.</string>
     <string name="four_six_generate">Hazır</string>
 
+    <string name="grind_title">Öğütme çevirici</string>
+    <string name="grind_from">Değirmenden</string>
+    <string name="grind_to">Değirmene</string>
+    <string name="grind_pick_both">Her iki değirmeni seçin</string>
+    <string name="grind_apply">Uygula</string>
+    <string name="grind_brand">Marka</string>
+    <string name="grind_model">Model</string>
+    <string name="grind_setting">Ayar</string>
+    <string name="grind_setting_hint">Değirmendeki gibi, %1$s değerine kadar</string>
+    <string name="grind_result">Önerilen ayar</string>
+    <string name="grind_microns">%1$d µm</string>
+    <string name="grind_source_microns">Kaynak değirmende %1$s, %2$d µm demek</string>
+    <string name="grind_nearest">En yakın kademe: skala daha ince değil</string>
+    <string name="grind_enter_setting">Kaynak değirmenin ayarını girin</string>
+    <string name="grind_bad_setting">Bu değirmende böyle bir ayar yok</string>
+    <string name="grind_swap">Yer değiştir</string>
+
+    <string name="grind_use_turkish">Türk kahvesi</string>
+    <string name="grind_use_espresso">espresso</string>
+    <string name="grind_use_moka">moka</string>
+    <string name="grind_use_v60">V60</string>
+    <string name="grind_use_pour_over">filtre</string>
+    <string name="grind_use_french_press">French press</string>
+    <string name="grind_use_cold_brew">soğuk demleme</string>
+
     <string name="guidance_step_position">Adım %1$d / %2$d</string>
     <string name="guidance_seconds_left">sn kaldı</string>
     <string name="guidance_seconds_total">sn sürüyor</string>

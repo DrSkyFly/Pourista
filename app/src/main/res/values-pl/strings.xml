@@ -92,6 +92,31 @@
     <string name="four_six_notes">%1$s · %2$s. Nalewy o 0:00, 0:45, a dalej równo aż do 3:30.</string>
     <string name="four_six_generate">Gotowe</string>
 
+    <string name="grind_title">Przelicznik zmielenia</string>
+    <string name="grind_from">Z młynka</string>
+    <string name="grind_to">Na młynek</string>
+    <string name="grind_pick_both">Wybierz oba młynki</string>
+    <string name="grind_apply">Zastosuj</string>
+    <string name="grind_brand">Marka</string>
+    <string name="grind_model">Model</string>
+    <string name="grind_setting">Ustawienie</string>
+    <string name="grind_setting_hint">Jak na młynku, do %1$s</string>
+    <string name="grind_result">Zalecane ustawienie</string>
+    <string name="grind_microns">%1$d µm</string>
+    <string name="grind_source_microns">%1$s na młynku źródłowym to %2$d µm</string>
+    <string name="grind_nearest">Najbliższy klik: skala nie jest dokładniejsza</string>
+    <string name="grind_enter_setting">Wpisz ustawienie młynka źródłowego</string>
+    <string name="grind_bad_setting">Tego ustawienia nie ma na tym młynku</string>
+    <string name="grind_swap">Zamień</string>
+
+    <string name="grind_use_turkish">po turecku</string>
+    <string name="grind_use_espresso">espresso</string>
+    <string name="grind_use_moka">kawiarka</string>
+    <string name="grind_use_v60">V60</string>
+    <string name="grind_use_pour_over">przelew</string>
+    <string name="grind_use_french_press">french press</string>
+    <string name="grind_use_cold_brew">cold brew</string>
+
     <string name="guidance_step_position">Krok %1$d z %2$d</string>
     <string name="guidance_seconds_left">s zostało</string>
     <string name="guidance_seconds_total">s trwa</string>

@@ -28,6 +28,7 @@ import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
@@ -37,6 +38,7 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Switch
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
+import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -44,11 +46,15 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
+import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.pourista.R
+import com.pourista.grind.GrinderCatalog
+import com.pourista.ui.brew.GrindSheetContent
 import com.pourista.ui.listSidePadding
 import com.pourista.core.formatClock
 import com.pourista.core.formatGrams
@@ -68,6 +74,8 @@ fun RecipeEditorScreen(
     modifier: Modifier = Modifier,
 ) {
     val state by viewModel.state.collectAsStateWithLifecycle()
+    val settings by viewModel.settings.collectAsStateWithLifecycle()
+    var showGrind by remember { mutableStateOf(false) }
     val stepRows = state.stepRows()
 
     val stepCard: @Composable (StepRow) -> Unit = { row ->
@@ -262,6 +270,16 @@ fun RecipeEditorScreen(
                             .fillMaxWidth()
                             .padding(top = 8.dp),
                     )
+                    // Помол чаще всего списывают с чужого рецепта под свою
+                    // кофемолку — пересчёт заполняет оба поля сам.
+                    Row(
+                        modifier = Modifier.fillMaxWidth(),
+                        horizontalArrangement = Arrangement.End,
+                    ) {
+                        TextButton(onClick = { showGrind = true }) {
+                            Text(stringResource(R.string.grind_title))
+                        }
+                    }
                 }
             }
 
@@ -392,6 +410,21 @@ fun RecipeEditorScreen(
                 }
             }
         }
+    }
+
+    if (showGrind) {
+        GrindConverterSheet(
+            settings = settings,
+            known = GrinderCatalog.find(LocalContext.current, state.grinder),
+            recipeGrind = state.grind,
+            onRemember = viewModel::rememberGrindPair,
+            onApply = { grinder, setting ->
+                viewModel.setGrinder(grinder)
+                viewModel.setGrind(setting)
+                showGrind = false
+            },
+            onDismiss = { showGrind = false },
+        )
     }
 }
 
@@ -597,6 +630,31 @@ private fun NumberField(
         keyboardOptions = KeyboardOptions(keyboardType = androidx.compose.ui.text.input.KeyboardType.Decimal),
         modifier = modifier,
     )
+}
+
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+private fun GrindConverterSheet(
+    settings: com.pourista.data.prefs.AppSettings,
+    known: com.pourista.grind.Grinder?,
+    recipeGrind: String,
+    onRemember: (String, String, String) -> Unit,
+    onApply: (String, String) -> Unit,
+    onDismiss: () -> Unit,
+) {
+    val sheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true)
+    ModalBottomSheet(onDismissRequest = onDismiss, sheetState = sheetState) {
+        // Кофемолку из рецепта узнали — она и есть исходная, вместе с её
+        // помолом. Не узнали — открываем на том, чем пользовались в прошлый раз.
+        GrindSheetContent(
+            fromId = known?.id ?: settings.grindFromId,
+            toId = settings.grindToId,
+            setting = if (known != null) recipeGrind else settings.grindSetting,
+            onRemember = onRemember,
+            onApply = { grinder, setting -> onApply(grinder.name, setting) },
+            onCancel = onDismiss,
+        )
+    }
 }
 
 @Composable

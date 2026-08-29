@@ -92,6 +92,31 @@
     <string name="four_six_notes">%1$s · %2$s. Despejos em 0:00, 0:45 e depois em intervalos iguais até 3:30.</string>
     <string name="four_six_generate">Pronto</string>
 
+    <string name="grind_title">Conversão de moagem</string>
+    <string name="grind_from">Do moinho</string>
+    <string name="grind_to">Para o moinho</string>
+    <string name="grind_pick_both">Escolha os dois moinhos</string>
+    <string name="grind_apply">Aplicar</string>
+    <string name="grind_brand">Marca</string>
+    <string name="grind_model">Modelo</string>
+    <string name="grind_setting">Ajuste</string>
+    <string name="grind_setting_hint">Como no moinho, até %1$s</string>
+    <string name="grind_result">Ajuste recomendado</string>
+    <string name="grind_microns">%1$d µm</string>
+    <string name="grind_source_microns">%1$s no moinho de origem são %2$d µm</string>
+    <string name="grind_nearest">Ponto mais próximo: a escala não é mais fina</string>
+    <string name="grind_enter_setting">Digite o ajuste do moinho de origem</string>
+    <string name="grind_bad_setting">Esse ajuste não existe neste moinho</string>
+    <string name="grind_swap">Trocar</string>
+
+    <string name="grind_use_turkish">turco</string>
+    <string name="grind_use_espresso">espresso</string>
+    <string name="grind_use_moka">moka</string>
+    <string name="grind_use_v60">V60</string>
+    <string name="grind_use_pour_over">coado</string>
+    <string name="grind_use_french_press">prensa francesa</string>
+    <string name="grind_use_cold_brew">cold brew</string>
+
     <string name="guidance_step_position">Etapa %1$d de %2$d</string>
     <string name="guidance_seconds_left">s restantes</string>
     <string name="guidance_seconds_total">s no total</string>

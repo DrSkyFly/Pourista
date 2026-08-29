@@ -92,6 +92,31 @@
     <string name="four_six_notes">%1$s · %2$s。0:00、0:45 注水，之后均匀分段到 3:30。</string>
     <string name="four_six_generate">完成</string>
 
+    <string name="grind_title">研磨度换算</string>
+    <string name="grind_from">源磨豆机</string>
+    <string name="grind_to">目标磨豆机</string>
+    <string name="grind_pick_both">请选择两台磨豆机</string>
+    <string name="grind_apply">应用</string>
+    <string name="grind_brand">品牌</string>
+    <string name="grind_model">型号</string>
+    <string name="grind_setting">设置</string>
+    <string name="grind_setting_hint">按磨豆机上的刻度，最大 %1$s</string>
+    <string name="grind_result">推荐设置</string>
+    <string name="grind_microns">%1$d µm</string>
+    <string name="grind_source_microns">源磨豆机的 %1$s 等于 %2$d µm</string>
+    <string name="grind_nearest">最接近的一格，刻度无法更精细</string>
+    <string name="grind_enter_setting">请输入源磨豆机的设置</string>
+    <string name="grind_bad_setting">该磨豆机没有这个设置</string>
+    <string name="grind_swap">互换</string>
+
+    <string name="grind_use_turkish">土耳其咖啡</string>
+    <string name="grind_use_espresso">浓缩</string>
+    <string name="grind_use_moka">摩卡壶</string>
+    <string name="grind_use_v60">V60</string>
+    <string name="grind_use_pour_over">手冲</string>
+    <string name="grind_use_french_press">法压壶</string>
+    <string name="grind_use_cold_brew">冷萃</string>
+
     <string name="guidance_step_position">第 %1$d 步，共 %2$d 步</string>
     <string name="guidance_seconds_left">秒剩余</string>
     <string name="guidance_seconds_total">秒时长</string>

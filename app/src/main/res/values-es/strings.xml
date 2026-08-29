@@ -92,6 +92,31 @@
     <string name="four_six_notes">%1$s · %2$s. Vertidos en 0:00, 0:45 y luego a intervalos iguales hasta 3:30.</string>
     <string name="four_six_generate">Listo</string>
 
+    <string name="grind_title">Conversión de molienda</string>
+    <string name="grind_from">Desde el molino</string>
+    <string name="grind_to">Al molino</string>
+    <string name="grind_pick_both">Elige los dos molinos</string>
+    <string name="grind_apply">Aplicar</string>
+    <string name="grind_brand">Marca</string>
+    <string name="grind_model">Modelo</string>
+    <string name="grind_setting">Ajuste</string>
+    <string name="grind_setting_hint">Como en el molino, hasta %1$s</string>
+    <string name="grind_result">Ajuste recomendado</string>
+    <string name="grind_microns">%1$d µm</string>
+    <string name="grind_source_microns">%1$s en el molino de origen son %2$d µm</string>
+    <string name="grind_nearest">Paso más cercano: la escala no da más precisión</string>
+    <string name="grind_enter_setting">Introduce el ajuste del molino de origen</string>
+    <string name="grind_bad_setting">Ese ajuste no existe en este molino</string>
+    <string name="grind_swap">Intercambiar</string>
+
+    <string name="grind_use_turkish">turco</string>
+    <string name="grind_use_espresso">espresso</string>
+    <string name="grind_use_moka">moka</string>
+    <string name="grind_use_v60">V60</string>
+    <string name="grind_use_pour_over">vertido</string>
+    <string name="grind_use_french_press">prensa francesa</string>
+    <string name="grind_use_cold_brew">cold brew</string>
+
     <string name="guidance_step_position">Paso %1$d de %2$d</string>
     <string name="guidance_seconds_left">s restantes</string>
     <string name="guidance_seconds_total">s en total</string>

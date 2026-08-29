@@ -92,6 +92,31 @@
     <string name="four_six_notes">%1$s · %2$s. Versate a 0:00, 0:45 e poi a intervalli uguali fino a 3:30.</string>
     <string name="four_six_generate">Fatto</string>
 
+    <string name="grind_title">Conversione macinatura</string>
+    <string name="grind_from">Dal macinacaffè</string>
+    <string name="grind_to">Al macinacaffè</string>
+    <string name="grind_pick_both">Scegli entrambi i macinacaffè</string>
+    <string name="grind_apply">Applica</string>
+    <string name="grind_brand">Marca</string>
+    <string name="grind_model">Modello</string>
+    <string name="grind_setting">Impostazione</string>
+    <string name="grind_setting_hint">Come sul macinacaffè, fino a %1$s</string>
+    <string name="grind_result">Impostazione consigliata</string>
+    <string name="grind_microns">%1$d µm</string>
+    <string name="grind_source_microns">%1$s sul macinacaffè di partenza sono %2$d µm</string>
+    <string name="grind_nearest">Scatto più vicino: la scala non è più fine</string>
+    <string name="grind_enter_setting">Inserisci l\'impostazione del macinacaffè di partenza</string>
+    <string name="grind_bad_setting">Questa impostazione non esiste su questo macinacaffè</string>
+    <string name="grind_swap">Scambia</string>
+
+    <string name="grind_use_turkish">turco</string>
+    <string name="grind_use_espresso">espresso</string>
+    <string name="grind_use_moka">moka</string>
+    <string name="grind_use_v60">V60</string>
+    <string name="grind_use_pour_over">filtro</string>
+    <string name="grind_use_french_press">caffettiera a stantuffo</string>
+    <string name="grind_use_cold_brew">cold brew</string>
+
     <string name="guidance_step_position">Passo %1$d di %2$d</string>
     <string name="guidance_seconds_left">s rimasti</string>
     <string name="guidance_seconds_total">s in tutto</string>

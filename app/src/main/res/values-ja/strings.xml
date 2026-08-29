@@ -92,6 +92,31 @@
     <string name="four_six_notes">%1$s・%2$s。0:00、0:45、以降は3:30まで等間隔で注湯。</string>
     <string name="four_six_generate">完了</string>
 
+    <string name="grind_title">挽き目の換算</string>
+    <string name="grind_from">変換元のグラインダー</string>
+    <string name="grind_to">変換先のグラインダー</string>
+    <string name="grind_pick_both">両方のグラインダーを選んでください</string>
+    <string name="grind_apply">反映</string>
+    <string name="grind_brand">メーカー</string>
+    <string name="grind_model">モデル</string>
+    <string name="grind_setting">設定値</string>
+    <string name="grind_setting_hint">グラインダーの表記どおり、%1$s まで</string>
+    <string name="grind_result">推奨設定</string>
+    <string name="grind_microns">%1$d µm</string>
+    <string name="grind_source_microns">変換元の %1$s は %2$d µm</string>
+    <string name="grind_nearest">最も近い目盛りです。これより細かくは合いません</string>
+    <string name="grind_enter_setting">変換元グラインダーの設定を入力してください</string>
+    <string name="grind_bad_setting">このグラインダーにその設定はありません</string>
+    <string name="grind_swap">入れ替え</string>
+
+    <string name="grind_use_turkish">トルココーヒー</string>
+    <string name="grind_use_espresso">エスプレッソ</string>
+    <string name="grind_use_moka">マキネッタ</string>
+    <string name="grind_use_v60">V60</string>
+    <string name="grind_use_pour_over">ハンドドリップ</string>
+    <string name="grind_use_french_press">フレンチプレス</string>
+    <string name="grind_use_cold_brew">コールドブリュー</string>
+
     <string name="guidance_step_position">ステップ %1$d / %2$d</string>
     <string name="guidance_seconds_left">残り秒</string>
     <string name="guidance_seconds_total">秒間</string>

@@ -92,6 +92,31 @@
     <string name="four_six_notes">%1$s · %2$s. 0:00, 0:45에 붓고 이후 3:30까지 같은 간격으로.</string>
     <string name="four_six_generate">완료</string>
 
+    <string name="grind_title">분쇄도 변환</string>
+    <string name="grind_from">원본 그라인더</string>
+    <string name="grind_to">대상 그라인더</string>
+    <string name="grind_pick_both">두 그라인더를 모두 선택하세요</string>
+    <string name="grind_apply">적용</string>
+    <string name="grind_brand">브랜드</string>
+    <string name="grind_model">모델</string>
+    <string name="grind_setting">설정값</string>
+    <string name="grind_setting_hint">그라인더에 표시된 대로, %1$s 까지</string>
+    <string name="grind_result">권장 설정</string>
+    <string name="grind_microns">%1$d µm</string>
+    <string name="grind_source_microns">원본의 %1$s는 %2$d µm입니다</string>
+    <string name="grind_nearest">가장 가까운 클릭입니다. 눈금이 더 촘촘하지 않습니다</string>
+    <string name="grind_enter_setting">원본 그라인더의 설정을 입력하세요</string>
+    <string name="grind_bad_setting">이 그라인더에는 없는 설정입니다</string>
+    <string name="grind_swap">서로 바꾸기</string>
+
+    <string name="grind_use_turkish">터키식</string>
+    <string name="grind_use_espresso">에스프레소</string>
+    <string name="grind_use_moka">모카포트</string>
+    <string name="grind_use_v60">V60</string>
+    <string name="grind_use_pour_over">푸어오버</string>
+    <string name="grind_use_french_press">프렌치프레스</string>
+    <string name="grind_use_cold_brew">콜드브루</string>
+
     <string name="guidance_step_position">%2$d단계 중 %1$d번째</string>
     <string name="guidance_seconds_left">초 남음</string>
     <string name="guidance_seconds_total">초 동안</string>

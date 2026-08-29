@@ -138,6 +138,14 @@ class BrewViewModel(private val container: AppContainer) : ViewModel() {
         }
     }
 
+    /** Пересчёт помола запоминает обе кофемолки и настройку: окно закрывается,
+     *  а искать свою модель в списке заново не хочется. */
+    fun rememberGrindPair(fromId: String, toId: String, setting: String) {
+        viewModelScope.launch {
+            container.settings.setGrindPair(fromId, toId, setting)
+        }
+    }
+
     fun clearSaved() {
         _saved.value = false
     }
