@@ -296,6 +296,8 @@
     <string name="settings_scale_log">咖啡秤日志</string>
     <string name="settings_scale_log_hint">把与秤之间的通信记进文件，发给开发者</string>
     <string name="settings_release_notes">更新历史</string>
+    <string name="notes_1_9_1">• 屏幕上的流速反应快了一倍\n• Timemore Black Mirror Dot 和 Basic 3 的流速直接来自咖啡秤\n• 修正流速：冲煮刚开始时偏低，手机繁忙时偏高</string>
+    <string name="notes_1_9_0">• 研磨度换算：选择两台磨豆机的品牌和型号，输入自己的刻度即可得到对应刻度——图标在冲煮界面顶部\n• 同时显示颗粒大小（µm）以及适合该研磨度的冲煮方式。66 个品牌 206 款型号，无需联网\n• 配方编辑器的研磨度栏下方新增「研磨度换算」按钮：源磨豆机取自配方，「应用」会把结果写回各栏</string>
     <string name="notes_1_8_2">• 首次启动时先询问是否有蓝牙咖啡秤，之后才申请权限\n• 设置「不使用咖啡秤」：没有蓝牙图标，也不搜索\n• 摇匀步骤改名为 Swirl</string>
     <string name="notes_1_8_1">• 配方文件（.pour）直接在应用里打开，并跳到冲煮页\n• 4:6 生成器的预设：保存、选择和删除\n• 4:6 面板里「完成」始终可见，步骤列表不再跳动</string>
     <string name="notes_1_8_0">• 界面支持 14 种语言，可在设置里切换\n• 备份：配方和全部记录存成一个文件\n• 配方步骤以圆形图标串联显示\n• 外观焕新：圆润图标、更大的数字、新的搜索框\n• 长按卡片调整配方顺序\n• 记录可滑动删除，并可撤销\n• 支持 Acaia、Difluid Microbalance、Eureka Precisa、Varia AKU\n• 修正了自动结束时记录的重量</string>

@@ -296,6 +296,8 @@
     <string name="settings_scale_log">スケールのログ</string>
     <string name="settings_scale_log_hint">スケールとのやり取りをファイルに記録して開発者に送る</string>
     <string name="settings_release_notes">更新履歴</string>
+    <string name="notes_1_9_1">• 画面の流量が 2 倍の速さで反応します\n• Timemore Black Mirror Dot と Basic 3 では流量をスケールから直接受け取ります\n• 流量の誤りを修正: 抽出の開始直後は低く、負荷のかかった端末では高く出ていました</string>
+    <string name="notes_1_9_0">• 挽き目の換算: 2 台のグラインダーのメーカーとモデルを選び、設定値を入れると対応する目盛りが出ます。アイコンは抽出画面の上部にあります\n• 粒径 (µm) と、その挽き目に合う抽出方法も表示します。66 メーカー 206 モデル、ネットワークなしで動きます\n• レシピ編集画面の挽き目欄の下に「挽き目の換算」ボタン。元のグラインダーはレシピから取り、「反映」で結果を各欄に書き込みます</string>
     <string name="notes_1_8_2">• 初回起動時に Bluetooth スケールの有無を尋ね、その後で権限を求めます\n• 設定「スケールを使わない」: Bluetooth アイコンも検索もなし\n• スワリングの手順名を Swirl に変更</string>
     <string name="notes_1_8_1">• レシピファイル（.pour）がアプリで直接開き、抽出画面まで一気に\n• 4:6 ジェネレーターのプリセット: 保存・選択・削除\n• 4:6 シートの「完了」が常に見え、工程リストが跳ねなくなりました</string>
     <string name="notes_1_8_0">• 14 言語に対応、設定から言語を選べます\n• バックアップ: レシピと履歴をひとつのファイルに\n• レシピの工程を丸アイコンの流れで表示\n• 見た目を刷新: 丸みのあるアイコン、大きな数字、新しい検索\n• レシピの並び替えはカードの長押しで\n• 履歴はスワイプで削除、取り消しも可能\n• Acaia、Difluid Microbalance、Eureka Precisa、Varia AKU に対応\n• 自動終了で記録される重量を修正</string>

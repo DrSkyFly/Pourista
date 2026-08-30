@@ -34,6 +34,11 @@ data class ScaleState(
     val deviceName: String? = null,
     /** Текущий вес на весах в граммах. */
     val weightGrams: Float = 0f,
+    /**
+     * Скорость влива в граммах в секунду, если весы считают её сами. Null —
+     * весы её не шлют, и движок считает скорость по приросту веса.
+     */
+    val flowRate: Float? = null,
     val batteryPercent: Int? = null,
 ) {
     val isConnected: Boolean get() = status == ConnectionStatus.CONNECTED
@@ -321,6 +326,9 @@ class ScaleRepository(context: Context) {
                             } else {
                                 ConnectionStatus.RECONNECTING
                             },
+                            // Последний вес на экране оставляем, а скорость
+                            // без новых пакетов означала бы влив, которого нет.
+                            flowRate = null,
                             batteryPercent = null,
                         )
                     }
@@ -382,6 +390,7 @@ class ScaleRepository(context: Context) {
                         _state.update { state ->
                             state.copy(
                                 weightGrams = reading.grams,
+                                flowRate = reading.flowRate,
                                 batteryPercent = reading.batteryPercent ?: state.batteryPercent,
                             )
                         }

@@ -296,6 +296,8 @@
     <string name="settings_scale_log">저울 로그</string>
     <string name="settings_scale_log_hint">저울과 주고받은 내용을 파일로 기록해 개발자에게 보내기</string>
     <string name="settings_release_notes">업데이트 기록</string>
+    <string name="notes_1_9_1">• 화면의 유속이 두 배 빠르게 반응합니다\n• Timemore Black Mirror Dot 과 Basic 3 에서는 유속을 저울에서 바로 받아옵니다\n• 유속 오류 수정: 추출을 시작할 때는 낮게, 부하가 걸린 기기에서는 높게 나왔습니다</string>
+    <string name="notes_1_9_0">• 분쇄도 변환: 두 그라인더의 브랜드와 모델을 고르고 설정값을 넣으면 대응되는 값이 나옵니다. 아이콘은 추출 화면 상단에 있습니다\n• 입자 크기(µm)와 그 분쇄도에 맞는 추출 방식도 함께 나옵니다. 66개 브랜드 206개 모델, 네트워크 없이 동작합니다\n• 레시피 편집기의 분쇄도 항목 아래에 ‘분쇄도 변환’ 버튼: 원본 그라인더는 레시피에서 가져오고 ‘적용’이 결과를 입력란에 씁니다</string>
     <string name="notes_1_8_2">• 첫 실행에서 블루투스 저울 여부를 먼저 묻고, 그다음에 권한을 요청합니다\n• 설정 ‘저울 사용 안 함’: 블루투스 아이콘도 검색도 없음\n• 스월링 단계 이름을 Swirl 로 변경</string>
     <string name="notes_1_8_1">• 레시피 파일(.pour)이 앱에서 바로 열리고 추출 화면으로 이어집니다\n• 4:6 제너레이터 프리셋: 저장, 선택, 삭제\n• 4:6 시트에서 «완료»가 항상 보이고 단계 목록이 튀지 않습니다</string>
     <string name="notes_1_8_0">• 14개 언어 지원, 설정에서 언어 선택\n• 백업: 레시피와 기록 전체를 파일 하나로\n• 레시피 단계를 원형 아이콘의 흐름으로 표시\n• 새로워진 모습: 둥근 아이콘, 큰 숫자, 새 검색창\n• 레시피 순서는 카드를 길게 눌러 변경\n• 기록은 밀어서 삭제, 실행 취소 가능\n• Acaia, Difluid Microbalance, Eureka Precisa, Varia AKU 지원\n• 자동 종료로 기록되던 무게를 수정</string>

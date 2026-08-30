@@ -7,8 +7,9 @@ import java.util.UUID
  *
  * Говорит кадрами: два байта заголовка, код операции, номер команды, длина
  * данных и два байта в конце под CRC-16. Вес приходит четырьмя байтами
- * старшим вперёд в десятых долях грамма, заряд — отдельным кадром, который
- * весы дописывают в хвост к кадру веса.
+ * старшим вперёд в десятых долях грамма, следом двумя байтами скорость влива
+ * в десятых грамма в секунду, заряд — отдельным кадром, который весы
+ * дописывают в хвост к кадру веса.
  *
  * Контрольную сумму весы шлют нулями (проверено по записи с живого
  * устройства), поэтому на приёме её не сверяем — иначе не прошёл бы ни один
@@ -64,7 +65,7 @@ object TimemoreDotDriver : ScaleDriver {
                         (data[1].toInt() and 0xff shl 16) or
                         (data[2].toInt() and 0xff shl 8) or
                         (data[3].toInt() and 0xff)
-                    reading = WeightReading(grams = tenths / 10f)
+                    reading = WeightReading(grams = tenths / 10f, flowRate = flowRate(data))
                 }
 
                 CMD_BATTERY -> if (battery == null) battery = batteryPercent(data)
@@ -96,6 +97,25 @@ object TimemoreDotDriver : ScaleDriver {
     override fun onConnectCommands(): List<ByteArray> = listOf(
         frame(opcode = OPCODE_WRITE, command = CMD_MODE, data = byteArrayOf(MODE_STANDARD, 0x00)),
     )
+
+    /**
+     * Скорость влива, которую весы посчитали сами. Считают они её быстрее, чем
+     * она видна по приросту веса: пока приложение усредняет секунду, весы уже
+     * показывают число.
+     *
+     * Знак учитываем: когда с весов снимают воду, скорость уходит в минус. В
+     * записи с живого устройства поле один раз показало 999 — груз положили
+     * разом, и весы уперлись в свой потолок. Отдаём как есть: предел
+     * правдоподобия проверяет движок.
+     *
+     * В коротком кадре скорости нет — тогда null.
+     */
+    private fun flowRate(data: ByteArray): Float? {
+        if (data.size < WEIGHT_DATA_SIZE + FLOW_DATA_SIZE) return null
+        val tenths = (data[WEIGHT_DATA_SIZE].toInt() and 0xff shl 8) or
+            (data[WEIGHT_DATA_SIZE + 1].toInt() and 0xff)
+        return tenths.toShort() / 10f
+    }
 
     private fun batteryPercent(data: ByteArray): Int? =
         data.getOrNull(1)?.let { it.toInt() and 0xff }?.takeIf { it in 0..100 }
@@ -150,6 +170,7 @@ object TimemoreDotDriver : ScaleDriver {
     private const val HEADER_SIZE = 6
     private const val CRC_SIZE = 2
     private const val WEIGHT_DATA_SIZE = 4
+    private const val FLOW_DATA_SIZE = 2
     private const val HEADER_FIRST = 0xA5.toByte()
     private const val HEADER_SECOND = 0x5A.toByte()
     private const val OPCODE_REPLY = 0x01

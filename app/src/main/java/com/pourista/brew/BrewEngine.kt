@@ -162,9 +162,8 @@ class BrewEngine(
     private var startedAtElapsedRealtime = 0L
     private var accumulatedMs = 0L
 
-    /** Показания веса с частотой тика, для расчёта скорости пролива. */
-    private val weightSamples = ArrayDeque<Float>()
-    private val flowSamples = ArrayDeque<Float>()
+    /** Скорость влива: число весов, если они его считают, иначе своя оценка. */
+    private val flow = FlowRate()
     private val flowForAverage = mutableListOf<Float>()
 
     private var lastChartSecond = -1
@@ -362,8 +361,7 @@ class BrewEngine(
         tickerJob = null
         accumulatedMs = 0L
         startedAtElapsedRealtime = 0L
-        weightSamples.clear()
-        flowSamples.clear()
+        flow.reset()
         flowForAverage.clear()
         lastChartSecond = -1
         lastStepIndex = -1
@@ -417,24 +415,8 @@ class BrewEngine(
         val aeropress = current.recipe?.aeropressMode == true
         val weight = if (aeropress) raw else pouredWeight.onSample(raw, nowMs)
 
-        weightSamples.addLast(weight)
-        while (weightSamples.size > SAMPLE_WINDOW) weightSamples.removeFirst()
-
-        // Скорость пролива: прирост веса за последнюю секунду, сглаженный по десяти отсчётам.
-        val secondAgo = if (weightSamples.size > TICKS_PER_SECOND) {
-            weightSamples.elementAt(weightSamples.size - 1 - TICKS_PER_SECOND)
-        } else {
-            weightSamples.first()
-        }
-        // Скачок веса на десятки граммов за секунду из чайника не наливают:
-        // так выглядит только возврат показаний после долгой просадки. В
-        // скорость и в график такое попадать не должно.
-        val jump = (weight - secondAgo).coerceAtLeast(0f)
-        val instantFlow = if (jump > MAX_PLAUSIBLE_FLOW) 0f else jump
-        flowSamples.addLast(instantFlow)
-        while (flowSamples.size > TICKS_PER_SECOND) flowSamples.removeFirst()
-        val flowRate = flowSamples.average().toFloat()
-        if (instantFlow >= MIN_FLOW_FOR_AVERAGE) flowForAverage += instantFlow
+        val flowRate = flow.onSample(weight, scale.state.value.flowRate, nowMs)
+        if (flowRate >= MIN_FLOW_FOR_AVERAGE) flowForAverage += flowRate
         val flowAvg = if (flowForAverage.isEmpty()) 0f else flowForAverage.average().toFloat()
 
         val second = (elapsed / 1000).toInt()
@@ -742,12 +724,7 @@ class BrewEngine(
 
     private companion object {
         const val TICK_MS = 100L
-        const val TICKS_PER_SECOND = 10
-        const val SAMPLE_WINDOW = 60
         const val MIN_FLOW_FOR_AVERAGE = 0.1f
-
-        /** Быстрее этого не льют: 25 г/с — это полтора литра в минуту. */
-        const val MAX_PLAUSIBLE_FLOW = 25f
         const val COUNTDOWN_FROM = 3
 
         /** Насколько близко к цели считается «долил» при остановившемся весе. */

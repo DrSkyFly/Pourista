@@ -152,6 +152,38 @@ class ScaleDriversTest {
     }
 
     @Test
+    fun `Timemore Dot берёт скорость влива из кадра веса`() {
+        // Кадры из записи протокола с живых весов: покой, разгон влива и его
+        // конец. Скорость лежит следом за весом, в десятых грамма в секунду.
+        val idle = dotReading("A55A01010009000008D100000000000000")
+        assertEquals(225.7f, idle.grams, 0.01f)
+        assertEquals(0f, idle.flowRate!!, 0.01f)
+
+        val pouring = dotReading("A55A0101000900000956007A0000000000")
+        assertEquals(239.0f, pouring.grams, 0.01f)
+        assertEquals(12.2f, pouring.flowRate!!, 0.01f)
+
+        val trailing = dotReading("A55A0101000900000D54000E0000000000")
+        assertEquals(341.2f, trailing.grams, 0.01f)
+        assertEquals(1.4f, trailing.flowRate!!, 0.01f)
+
+        // Груз положили разом — весы упирают скорость в потолок, 99,9 г/с.
+        // Драйвер отдаёт как есть: правдоподобие проверяет движок.
+        assertEquals(99.9f, dotReading("A55A010100090000045303E70000000000").flowRate!!, 0.01f)
+
+        // Воду снимают с весов — скорость уходит в минус.
+        val negative = timemoreFrame(
+            command = 0x01,
+            data = byteArrayOf(0, 0, 0, 0, 0xFF.toByte(), 0xF6.toByte(), 0, 0, 0),
+        )
+        assertEquals(-1f, TimemoreDotDriver.parseWeight(negative)!!.flowRate!!, 0.01f)
+
+        // В коротком кадре скорости нет — и выдумывать её нечем.
+        val short = timemoreFrame(command = 0x01, data = ByteArray(4))
+        assertNull(TimemoreDotDriver.parseWeight(short)!!.flowRate)
+    }
+
+    @Test
     fun `Timemore Dot берёт заряд из хвоста пакета с весом`() {
         // Заряд весы дописывают вторым кадром к первому, отдельным не шлют.
         val packet = ScaleDrivers.hexToBytes(
@@ -195,8 +227,10 @@ class ScaleDriversTest {
         assertEquals((crc and 0xff).toByte(), command[7])
     }
 
-    private fun dotWeight(hex: String): Float =
-        TimemoreDotDriver.parseWeight(ScaleDrivers.hexToBytes(hex))!!.grams
+    private fun dotWeight(hex: String): Float = dotReading(hex).grams
+
+    private fun dotReading(hex: String): WeightReading =
+        TimemoreDotDriver.parseWeight(ScaleDrivers.hexToBytes(hex))!!
 
     private fun ByteArray.toHex(): String = joinToString("") { "%02x".format(it) }
 
