@@ -25,6 +25,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.unit.dp
 import com.pourista.R
+import com.pourista.BuildConfig
 import com.pourista.ui.ReleaseNotes
 
 /**
@@ -44,7 +45,7 @@ fun ReleaseNotesDialog(onDismiss: () -> Unit) {
                     .verticalScroll(rememberScrollState()),
                 verticalArrangement = Arrangement.spacedBy(12.dp),
             ) {
-                TestersCall()
+                if (BuildConfig.TESTERS_CALL) TestersCall()
                 ReleaseNotes.all.forEach { release ->
                     Column(verticalArrangement = Arrangement.spacedBy(2.dp)) {
                         Text(

@@ -38,12 +38,16 @@ android {
             dimension = "store"
             // Ссылка на страницу релизов: обновление оттуда ставят руками.
             buildConfigField("boolean", "UPDATE_LINK", "true")
+            // Тестировщиков ищем среди тех, кто ставит APK руками.
+            buildConfigField("boolean", "TESTERS_CALL", "true")
         }
         create("play") {
             dimension = "store"
             // В магазине обновлениями занимается сам магазин, а звать людей за
             // APK мимо него правилами Play и не разрешено.
             buildConfigField("boolean", "UPDATE_LINK", "false")
+            // Кто ставит из Play, тот уже тестировщик: звать его незачем.
+            buildConfigField("boolean", "TESTERS_CALL", "false")
         }
     }
     signingConfigs {
