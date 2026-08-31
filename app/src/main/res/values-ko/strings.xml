@@ -11,6 +11,7 @@
     <string name="action_connect">저울 연결</string>
     <string name="scale_state_searching">저울을 찾는 중…</string>
     <string name="scale_state_off">저울이 연결되지 않음</string>
+    <string name="scale_state_bluetooth_off">Bluetooth가 꺼져 있음</string>
     <string name="action_tare">영점</string>
     <string name="action_dose">원두량</string>
     <string name="action_start">시작</string>

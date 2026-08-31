@@ -1,5 +1,7 @@
 package com.pourista.brew
 
+import kotlin.math.abs
+
 /**
  * Вес для расчётов: неубывающий, пока идёт заваривание.
  *
@@ -16,6 +18,11 @@ package com.pourista.brew
  * Ждём столько же, сколько сторож конца заваривания: свирл на полной воронке
  * занимает три-четыре секунды, и за две вес успевал стать «новой правдой» —
  * график проваливался, а возврат выглядел вливом в сотни граммов.
+ *
+ * «Держится» проверяется по двум условиям сразу, и оба обязательны. Вес не
+ * возвращался к максимуму — иначе просадка кончилась. И вес всё это время
+ * стоял на одном уровне — иначе он не держится, а едет вниз, и брать за
+ * правду показание, снятое на полпути, нельзя.
  */
 internal class MonotonicWeight(
     /** Мелкие просадки не считаем даже кратковременными. */
@@ -27,6 +34,9 @@ internal class MonotonicWeight(
     private var maxGrams = 0f
     private var belowSinceMs = 0L
 
+    /** Уровень, с которого идёт отсчёт: просадка держится, пока вес на нём. */
+    private var belowGrams = 0f
+
     /** Показание для расчётов: скорости, графиков, определения конца влива. */
     fun onSample(rawGrams: Float, nowMs: Long): Float {
         if (rawGrams >= maxGrams) {
@@ -35,10 +45,18 @@ internal class MonotonicWeight(
             return maxGrams
         }
 
-        if (maxGrams - rawGrams <= toleranceGrams) return maxGrams
+        // Вернулись в допуск — просадки больше нет. Отсчёт снимаем: иначе он
+        // доживёт до следующей просадки и зачтёт ей чужое время.
+        if (maxGrams - rawGrams <= toleranceGrams) {
+            belowSinceMs = 0L
+            return maxGrams
+        }
 
-        if (belowSinceMs == 0L) {
+        // Уровень сменился: вес не стоит внизу, а всё ещё падает. Отсчёт
+        // начинается заново — для того уровня, на котором вес сейчас.
+        if (belowSinceMs == 0L || abs(rawGrams - belowGrams) > toleranceGrams) {
             belowSinceMs = nowMs
+            belowGrams = rawGrams
             return maxGrams
         }
         if (nowMs - belowSinceMs < rebaseAfterMs) return maxGrams
@@ -52,6 +70,7 @@ internal class MonotonicWeight(
     fun reset() {
         maxGrams = 0f
         belowSinceMs = 0L
+        belowGrams = 0f
     }
 
     private companion object {

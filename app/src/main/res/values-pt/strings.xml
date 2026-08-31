@@ -11,6 +11,7 @@
     <string name="action_connect">Conectar a balança</string>
     <string name="scale_state_searching">Procurando a balança…</string>
     <string name="scale_state_off">Nenhuma balança conectada</string>
+    <string name="scale_state_bluetooth_off">Bluetooth desativado</string>
     <string name="action_tare">Tara</string>
     <string name="action_dose">Dose</string>
     <string name="action_start">Iniciar</string>

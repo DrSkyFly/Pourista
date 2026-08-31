@@ -11,6 +11,7 @@
     <string name="action_connect">Підключитися до ваг</string>
     <string name="scale_state_searching">Шукаємо ваги…</string>
     <string name="scale_state_off">Ваги не підключені</string>
+    <string name="scale_state_bluetooth_off">Bluetooth вимкнено</string>
     <string name="action_tare">Тара</string>
     <string name="action_dose">Доза</string>
     <string name="action_start">Старт</string>

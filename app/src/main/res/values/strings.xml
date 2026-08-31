@@ -11,6 +11,7 @@
     <string name="action_connect">Connect to scale</string>
     <string name="scale_state_searching">Looking for the scale…</string>
     <string name="scale_state_off">No scale connected</string>
+    <string name="scale_state_bluetooth_off">Bluetooth is off</string>
     <string name="action_tare">Tare</string>
     <string name="action_dose">Dose</string>
     <string name="action_start">Start</string>
@@ -302,6 +303,7 @@
     <string name="settings_scale_log">Scale log</string>
     <string name="settings_scale_log_hint">Record the exchange with the scale to a file and send it to the developer</string>
     <string name="settings_release_notes">Release notes</string>
+    <string name="notes_1_9_2">• The recorded weight came out too low: it was taken while the dripper was already being lifted\n• The tail of the weight chart came down in steps\n• Started with Bluetooth off, the app got stuck searching and never found the scale once Bluetooth was on\n• Tapping the Bluetooth icon after turning the adapter off crashed the app</string>
     <string name="notes_1_9_1">• The flow rate on screen reacts twice as fast\n• On Timemore Black Mirror Dot and Basic 3 the flow rate now comes straight from the scale\n• Fixed the flow rate: it read low at the start of a brew and high on a busy phone</string>
     <string name="notes_1_9_0">• Grind converter: pick the brand and model of both grinders, enter your setting and read off the matching one — the icon sits in the brewing header\n• It also shows the particle size in microns and the brew methods that grind suits. 206 models from 66 brands, works without a network\n• A “Grind converter” button in the recipe editor, under the grind field: the source grinder is taken from the recipe, and “Apply” writes the result into the fields</string>
     <string name="notes_1_8_2">• At first launch the app asks whether you have a Bluetooth scale, and only then requests permissions\n• Setting “Do not use a scale”: no Bluetooth icon, no searching\n• The swirl step is now called Swirl</string>

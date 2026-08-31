@@ -38,6 +38,7 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.rounded.Bluetooth
 import androidx.compose.material.icons.rounded.BluetoothConnected
+import androidx.compose.material.icons.rounded.BluetoothDisabled
 import androidx.compose.material.icons.automirrored.rounded.BluetoothSearching
 import androidx.compose.material.icons.rounded.Check
 import androidx.compose.material.icons.rounded.Info
@@ -253,6 +254,10 @@ fun BrewScreen(
                                         ?: stringResource(R.string.scale_state_off)
 
                                     scale.isBusy -> stringResource(R.string.scale_state_searching)
+
+                                    scale.status == ConnectionStatus.BLUETOOTH_OFF ->
+                                        stringResource(R.string.scale_state_bluetooth_off)
+
                                     else -> stringResource(R.string.scale_state_off)
                                 },
                                 style = MaterialTheme.typography.labelMedium,
@@ -553,6 +558,7 @@ private fun ConnectionAction(
         ConnectionStatus.SCANNING, ConnectionStatus.CONNECTING, ConnectionStatus.RECONNECTING ->
             Icons.AutoMirrored.Rounded.BluetoothSearching
 
+        ConnectionStatus.BLUETOOTH_OFF -> Icons.Rounded.BluetoothDisabled
         ConnectionStatus.IDLE -> Icons.Rounded.Bluetooth
     }
     val connected = status == ConnectionStatus.CONNECTED

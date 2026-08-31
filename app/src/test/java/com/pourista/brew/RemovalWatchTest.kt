@@ -158,8 +158,9 @@ class RemovalWatchTest {
         var now = watch.pourUpTo(430f)
         watch.arm(430f)
 
+        // После чайника вес садится чуть ниже максимума и там и остаётся.
         now += 1_000L
-        assertFalse(watch.onSample(430f, now))
+        assertFalse(watch.onSample(429.7f, now))
 
         // Весы отдают снятие не одним скачком: пока воронку поднимают, приходит
         // два-три промежуточных показания. Первое из них ещё выше порога, и
@@ -176,14 +177,53 @@ class RemovalWatchTest {
         val watch = RemovalWatch()
         var now = watch.pourUpTo(430f)
         watch.arm(430f)
+        now += 1_000L
+        assertFalse(watch.onSample(429.7f, now))
 
         // Не всякое падение внутри порога — снятие: чашку могли подвинуть, и
-        // новый вес держится. Пятнадцать секунд — это уже не рябь.
+        // новый вес держится на одном уровне. Пятнадцать секунд — это уже не
+        // рябь и не спуск на пути вниз.
         repeat(15) {
             now += 1_000L
             assertFalse(watch.onSample(403f, now))
         }
         assertEquals(403f, watch.weightBeforeDrop, 0.01f)
+    }
+
+    @Test
+    fun `после долгого слива снятие не занижает вес в истории`() {
+        val watch = RemovalWatch()
+        var now = 0L
+
+        // Пролив. Максимум ставится на струе: падающая вода добавляет пару
+        // граммов, и после чайника вес садится чуть ниже. К самому максимуму
+        // он больше не вернётся — весь слив показания идут в пределах допуска.
+        for (grams in listOf(45f, 100f, 148f, 200f, 251.4f)) {
+            now += 30_000L
+            assertFalse(watch.onSample(grams, now))
+        }
+        now += 1_000L
+        assertFalse(watch.onSample(251.2f, now))
+        watch.arm(251.2f)
+
+        // Одна шумная посылка ниже допуска и минута слива.
+        now += 3_000L
+        assertFalse(watch.onSample(249.9f, now))
+        repeat(60) {
+            now += 1_000L
+            assertFalse(watch.onSample(251.0f, now))
+        }
+
+        // Воронку сняли. Первое показание на пути вниз ещё выше порога — и
+        // раньше именно оно уезжало в историю вместо налитого.
+        now += 100L
+        assertFalse(watch.onSample(230f, now))
+        assertEquals(251.4f, watch.weightBeforeDrop, 0.01f)
+
+        val droppedAt = now + 100L
+        assertFalse(watch.onSample(5f, droppedAt))
+        assertTrue(watch.onSample(5f, droppedAt + 5_000L))
+        assertEquals(251.4f, watch.weightBeforeDrop, 0.01f)
     }
 
     @Test

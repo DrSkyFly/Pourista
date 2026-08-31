@@ -11,6 +11,7 @@
     <string name="action_connect">スケールに接続</string>
     <string name="scale_state_searching">スケールを探しています…</string>
     <string name="scale_state_off">スケール未接続</string>
+    <string name="scale_state_bluetooth_off">Bluetooth がオフです</string>
     <string name="action_tare">風袋</string>
     <string name="action_dose">粉量</string>
     <string name="action_start">スタート</string>

@@ -11,6 +11,7 @@
     <string name="action_connect">Conectar la báscula</string>
     <string name="scale_state_searching">Buscando la báscula…</string>
     <string name="scale_state_off">Sin báscula conectada</string>
+    <string name="scale_state_bluetooth_off">Bluetooth desactivado</string>
     <string name="action_tare">Tara</string>
     <string name="action_dose">Dosis</string>
     <string name="action_start">Iniciar</string>

@@ -11,6 +11,7 @@
     <string name="action_connect">Connecter la balance</string>
     <string name="scale_state_searching">Recherche de la balance…</string>
     <string name="scale_state_off">Aucune balance connectée</string>
+    <string name="scale_state_bluetooth_off">Bluetooth désactivé</string>
     <string name="action_tare">Tare</string>
     <string name="action_dose">Dose</string>
     <string name="action_start">Démarrer</string>

@@ -11,6 +11,7 @@
     <string name="action_connect">连接咖啡秤</string>
     <string name="scale_state_searching">正在寻找秤…</string>
     <string name="scale_state_off">未连接秤</string>
+    <string name="scale_state_bluetooth_off">蓝牙已关闭</string>
     <string name="action_tare">去皮</string>
     <string name="action_dose">粉量</string>
     <string name="action_start">开始</string>

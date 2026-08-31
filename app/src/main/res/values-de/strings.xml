@@ -11,6 +11,7 @@
     <string name="action_connect">Mit Waage verbinden</string>
     <string name="scale_state_searching">Waage wird gesucht…</string>
     <string name="scale_state_off">Keine Waage verbunden</string>
+    <string name="scale_state_bluetooth_off">Bluetooth ist aus</string>
     <string name="action_tare">Tara</string>
     <string name="action_dose">Einwaage</string>
     <string name="action_start">Start</string>

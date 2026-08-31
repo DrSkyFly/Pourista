@@ -11,6 +11,7 @@
     <string name="action_connect">Teraziye bağlan</string>
     <string name="scale_state_searching">Terazi aranıyor…</string>
     <string name="scale_state_off">Terazi bağlı değil</string>
+    <string name="scale_state_bluetooth_off">Bluetooth kapalı</string>
     <string name="action_tare">Dara</string>
     <string name="action_dose">Doz</string>
     <string name="action_start">Başlat</string>

@@ -63,6 +63,48 @@ class MonotonicWeightTest {
     }
 
     @Test
+    fun `возврат в допуск отменяет отсчёт просадки`() {
+        val weight = MonotonicWeight()
+
+        // Максимум ставится на струе: падающая вода добавляет пару граммов, и
+        // после чайника вес садится чуть ниже. К самому максимуму он больше
+        // никогда не вернётся — но это не просадка.
+        weight.onSample(251.4f, 0)
+        assertEquals(251.4f, weight.onSample(251.2f, 1_000), 0.001f)
+
+        // Одна шумная посылка ниже допуска — отсчёт пошёл.
+        assertEquals(251.4f, weight.onSample(249.9f, 4_000), 0.001f)
+
+        // Минута слива в пределах допуска. Отсчёт при этом должен сняться:
+        // иначе он доживёт до снятия воронки уже истёкшим.
+        var now = 5_000L
+        repeat(60) {
+            now += 1_000L
+            assertEquals(251.4f, weight.onSample(251.0f, now), 0.001f)
+        }
+
+        // Воронку сняли. Первое показание на пути вниз — не новая правда.
+        assertEquals(251.4f, weight.onSample(230f, now + 100), 0.001f)
+    }
+
+    @Test
+    fun `показание на пути вниз новой правдой не становится`() {
+        val weight = MonotonicWeight()
+        weight.onSample(251.4f, 0)
+
+        // Воронку поднимают: весы отдают спуск десятком посылок за секунду.
+        // Ни одна из них внизу не держится, и правдой быть не может.
+        assertEquals(251.4f, weight.onSample(230f, 60_000), 0.001f)
+        assertEquals(251.4f, weight.onSample(180f, 60_100), 0.001f)
+        assertEquals(251.4f, weight.onSample(90f, 60_200), 0.001f)
+        assertEquals(251.4f, weight.onSample(5f, 60_300), 0.001f)
+
+        // А снятая воронка внизу держится — вот это уже новая точка отсчёта.
+        assertEquals(251.4f, weight.onSample(5f, 64_000), 0.001f)
+        assertEquals(5f, weight.onSample(5f, 65_400), 0.001f)
+    }
+
+    @Test
     fun `сброс возвращает отсчёт к нулю`() {
         val weight = MonotonicWeight()
         weight.onSample(250f, 0)

@@ -2,7 +2,9 @@ package com.pourista.scale
 
 import android.Manifest
 import android.annotation.SuppressLint
+import android.bluetooth.BluetoothAdapter
 import android.bluetooth.BluetoothGattCharacteristic
+import android.bluetooth.BluetoothManager
 import android.bluetooth.le.ScanResult
 import android.content.Context
 import android.content.pm.PackageManager
@@ -16,6 +18,7 @@ import com.welie.blessed.BluetoothPeripheral
 import com.welie.blessed.ConnectionState
 import com.welie.blessed.WriteType
 import com.welie.blessed.asUInt8
+import kotlinx.coroutines.CoroutineExceptionHandler
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
@@ -27,7 +30,16 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 
-enum class ConnectionStatus { IDLE, SCANNING, CONNECTING, CONNECTED, RECONNECTING }
+enum class ConnectionStatus {
+    IDLE,
+
+    /** Bluetooth выключен на телефоне: искать нечем, и это не наша неполадка. */
+    BLUETOOTH_OFF,
+    SCANNING,
+    CONNECTING,
+    CONNECTED,
+    RECONNECTING,
+}
 
 data class ScaleState(
     val status: ConnectionStatus = ConnectionStatus.IDLE,
@@ -57,7 +69,21 @@ class ScaleRepository(context: Context) {
 
     private val appContext = context.applicationContext
     private val central = BluetoothCentralManager(appContext)
-    private val scope = CoroutineScope(SupervisorJob() + Dispatchers.Default)
+    private val adapter: BluetoothAdapter? =
+        (appContext.getSystemService(Context.BLUETOOTH_SERVICE) as? BluetoothManager)?.adapter
+
+    /**
+     * Последний рубеж. Библиотека связи бросает исключения из корутин —
+     * например когда просишь разорвать связь с устройством, о котором она уже
+     * забыла. Без обработчика такое исключение уходит в обработчик потока,
+     * то есть в вылет приложения.
+     */
+    private val scope = CoroutineScope(
+        SupervisorJob() + Dispatchers.Default +
+            CoroutineExceptionHandler { _, error ->
+                Log.e(TAG, "Сбой в работе с весами", error)
+            },
+    )
 
     private val _state = MutableStateFlow(ScaleState())
     val state: StateFlow<ScaleState> = _state.asStateFlow()
@@ -101,6 +127,47 @@ class ScaleRepository(context: Context) {
     /** Сколько пакетов уже записано: экран диагностики показывает счётчик. */
     val diagnosticsPackets: StateFlow<Int> = _diagnosticsPackets.asStateFlow()
 
+    init {
+        /*
+          При выключенном Bluetooth библиотека связи молча ничего не делает:
+          ни исключения, ни ошибки в обратном вызове. А включение она не
+          отслеживает — в её обработчике STATE_ON только запись в журнал.
+          Поэтому за адаптером следим сами.
+        */
+        central.observeAdapterState { adapterState ->
+            when (adapterState) {
+                BluetoothAdapter.STATE_ON -> onBluetoothOn()
+                BluetoothAdapter.STATE_OFF -> onBluetoothOff()
+            }
+        }
+    }
+
+    /**
+     * Bluetooth включили. Поиск возобновляем только если сами же его и не
+     * начали из-за выключенного адаптера: в остальных случаях весы человеку
+     * сейчас не нужны, и лезть в эфир незачем.
+     */
+    private fun onBluetoothOn() {
+        if (_state.value.status != ConnectionStatus.BLUETOOTH_OFF) return
+        Log.d(TAG, "Bluetooth включили, возобновляем поиск")
+        startScan()
+    }
+
+    /**
+     * Bluetooth выключили. Библиотека при этом забывает про устройство, и
+     * просить её разорвать связь уже нельзя — она бросает исключение. Поэтому
+     * ссылку на весы отпускаем здесь же.
+     */
+    private fun onBluetoothOff() {
+        Log.d(TAG, "Bluetooth выключили")
+        reconnectJob?.cancel()
+        heartbeatJob?.cancel()
+        peripheral = null
+        _state.update { ScaleState(status = ConnectionStatus.BLUETOOTH_OFF) }
+    }
+
+    private fun bluetoothEnabled(): Boolean = adapter?.isEnabled == true
+
     fun keepGrams(enabled: Boolean) {
         keepGrams = enabled
         if (!enabled) return
@@ -122,6 +189,13 @@ class ScaleRepository(context: Context) {
     fun startScan() {
         if (!hasPermissions()) {
             Log.d(TAG, "Нет разрешений на Bluetooth, поиск не запускаем")
+            return
+        }
+        // Без этой проверки статус встал бы в «ищем», поиск при этом не пошёл
+        // бы вовсе, и следующий вызов упёрся бы в проверку строчкой ниже.
+        if (!bluetoothEnabled()) {
+            Log.d(TAG, "Bluetooth выключен, поиск не запускаем")
+            _state.update { it.copy(status = ConnectionStatus.BLUETOOTH_OFF) }
             return
         }
         if (_state.value.isConnected || _state.value.status == ConnectionStatus.SCANNING) return
@@ -170,8 +244,13 @@ class ScaleRepository(context: Context) {
         userDisconnected = true
         reconnectJob?.cancel()
         heartbeatJob?.cancel()
-        central.stopScan()
-        peripheral?.let { device -> scope.launch { central.cancelConnection(device) } }
+        runCatching { central.stopScan() }
+        // Устройство библиотека могла уже забыть — так бывает после выключения
+        // адаптера. Тогда на просьбу разорвать связь она бросает исключение.
+        peripheral?.let { device ->
+            scope.launch { runCatching { central.cancelConnection(device) } }
+        }
+        peripheral = null
         _state.update { ScaleState() }
     }
 
@@ -343,7 +422,10 @@ class ScaleRepository(context: Context) {
         reconnectJob = scope.launch {
             delay(RECONNECT_DELAY_MS)
             if (userDisconnected) return@launch
-            if (central.getPeripheral(device.address).getState() == ConnectionState.DISCONNECTED) {
+            // Устройство, о котором библиотека не знает, она отдавать
+            // отказывается — с исключением, а не с null.
+            val known = runCatching { central.getPeripheral(device.address) }.getOrNull()
+            if (known?.getState() == ConnectionState.DISCONNECTED) {
                 connect(device)
             }
         }
