@@ -137,6 +137,11 @@ Scale protocols other than Futula were worked out from open implementations:
 [aioacaia](https://github.com/zweckj/aioacaia) and the published
 [BooKoo](https://github.com/BooKooCode/OpenSource) protocol.
 
+## Privacy
+
+The app collects no data and has no internet access. Everything stays on the
+device. [Privacy policy](https://drskyfly.github.io/Pourista/privacy.en.html).
+
 ## License
 
 This app is made free for everyone who brews coffee, and nobody gets to make
