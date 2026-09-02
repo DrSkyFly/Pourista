@@ -21,6 +21,7 @@ RECIPE
   temp       integer. Water temperature, °C. Defaults to 94.
   grinder    string. Grinder.
   grind      string. Grind setting: "24 clicks", "6.5", "medium".
+  filter     string. Paper filter: "Hario", "Cafec Abaca", "Kalita Wave".
   bean       string. Coffee.
   roaster    string. Roaster.
   notes      string. Notes, several lines allowed.
@@ -73,6 +74,7 @@ EXAMPLE
       "water": 250,
       "temp": 95,
       "grind": "medium",
+      "filter": "Hario",
       "notes": "50 g bloom, two pours, a gentle swirl at the end.",
       "autoStart": true,
       "steps": [

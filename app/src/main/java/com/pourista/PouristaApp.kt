@@ -35,9 +35,9 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.distinctUntilChanged
+import kotlinx.coroutines.flow.emptyFlow
 import kotlinx.coroutines.flow.filterIsInstance
 import kotlinx.coroutines.flow.flatMapLatest
-import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
@@ -165,7 +165,7 @@ class AppContainer(private val context: Context) {
                 ?.let { recipe ->
                     brewEngine.reset()
                     brewEngine.selectRecipe(recipe)
-                    settings.setLastRecipeId(recipe.id)
+                    settings.setLastRecipe(recipe.id)
                     recipes.markUsed(recipe.id)
                 }
             _openedRecipes.value = ids.size
@@ -220,13 +220,14 @@ class AppContainer(private val context: Context) {
             weightSeries = state.weightSeries,
             flowSeries = state.flowSeries,
             flowRateAvg = state.flowRateAvg,
-            recipeId = recipe?.id,
+            recipeId = recipe?.id?.takeIf { it > 0 },
             recipeName = recipe?.name,
             notes = BrewNotes(
                 bean = recipe?.beanName,
                 roaster = recipe?.roaster,
                 grinder = recipe?.grinderName,
                 grindSetting = recipe?.grindSetting,
+                filterName = recipe?.filterName,
                 brewer = recipe?.brewer,
                 waterTemp = recipe?.waterTempC?.toString(),
             ),
@@ -236,41 +237,21 @@ class AppContainer(private val context: Context) {
     /**
      * Собирает рецепт по методу 4:6 и кладёт его в базу.
      *
-     * Строка в базе одна и та же: генератор — это верстак, а не фабрика
-     * одноразовых рецептов, засоряющих список. Настройки при этом запоминаются,
-     * чтобы в следующий раз заварить так же.
+     * В список рецептов сборка не попадает и своего id не имеет: генератор —
+     * это верстак, а не способ завести рецепт. Заваривание по ней идёт как по
+     * любому другому рецепту, повторить — открыть генератор снова, ручки в нём
+     * остались прежними, а кому нужны свои наборы, у генератора есть пресеты.
      */
-    suspend fun buildFortySixRecipe(params: FortySixParams): Recipe? {
-        val existing = settings.current().fortySixRecipeId?.let { recipes.recipeById(it) }
-        val fresh = FortySixGenerator.recipe(
-            params = params,
-            name = localized.getString(R.string.four_six_recipe_name),
-            grindSetting = localized.getString(R.string.grind_coarse),
-            notes = localized.getString(
-                R.string.four_six_notes,
-                localized.getString(params.taste.labelRes()),
-                localized.getString(params.strength.labelRes()),
-            ),
-        )
-        // Избранное, место в списке и дату заведения оставляем прежними: с точки
-        // зрения человека рецепт не новый, у него просто поменялись числа.
-        val id = if (existing == null) {
-            recipes.saveNewOnTop(fresh)
-        } else {
-            recipes.save(
-                fresh.copy(
-                    id = existing.id,
-                    isFavorite = existing.isFavorite,
-                    sortOrder = existing.sortOrder,
-                    createdAt = existing.createdAt,
-                    lastUsedAt = existing.lastUsedAt,
-                )
-            )
-        }
-        settings.setFortySix(params)
-        settings.setFortySixRecipeId(id)
-        return recipes.recipeById(id)
-    }
+    fun fortySixRecipe(params: FortySixParams): Recipe = FortySixGenerator.recipe(
+        params = params,
+        name = localized.getString(R.string.four_six_recipe_name),
+        grindSetting = localized.getString(R.string.grind_coarse),
+        notes = localized.getString(
+            R.string.four_six_notes,
+            localized.getString(params.taste.labelRes()),
+            localized.getString(params.strength.labelRes()),
+        ),
+    )
 
     /** Записанный пролив превращаем в черновик рецепта — его подхватит редактор. */
     private fun prepareRecordedDraft() {
@@ -298,7 +279,9 @@ class AppContainer(private val context: Context) {
                 .map { it.recipe?.id }
                 .distinctUntilChanged()
                 .flatMapLatest { id ->
-                    if (id == null || id == 0L) flowOf(null) else recipes.observeRecipe(id)
+                    // У сборки генератора id нет: в базе за ней следить не за
+                    // чем, а подменить её на null тем более нельзя.
+                    if (id == null || id == 0L) emptyFlow() else recipes.observeRecipe(id)
                 }
                 .collect { fresh -> brewEngine.selectRecipe(fresh) }
         }
@@ -360,6 +343,12 @@ class AppContainer(private val context: Context) {
                 .map { it.paceTolerance }
                 .distinctUntilChanged()
                 .collect { brewEngine.paceTolerance = it }
+        }
+        scope.launch {
+            settings.settings
+                .map { it.flowSmoothing }
+                .distinctUntilChanged()
+                .collect { brewEngine.flowSmoothing = it }
         }
         scope.launch {
             settings.settings

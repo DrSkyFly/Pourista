@@ -171,6 +171,9 @@
     <string name="recipe_grind">Помел</string>
     <string name="recipe_grind_hint">Наприклад: 24 кліки, 6.5, середній</string>
     <string name="recipe_grind_value">Помел: %1$s</string>
+    <string name="recipe_filter">Фільтр</string>
+    <string name="recipe_filter_hint">Наприклад: Hario, Cafec Abaca, Kalita Wave</string>
+    <string name="recipe_filter_value">Фільтр: %1$s</string>
     <string name="recipe_bean">Кава</string>
     <string name="recipe_roaster">Обсмажувач</string>
     <string name="recipe_notes">Нотатки</string>
@@ -182,7 +185,7 @@
     <string name="recipe_preview">Графік проливу</string>
     <string name="recipe_scaled_note">Перераховано під дозу: %1$sг → %2$sг води</string>
     <string name="recipe_section_main">Основне</string>
-    <string name="recipe_section_grind">Помел</string>
+    <string name="recipe_section_grind">Помел і фільтр</string>
     <string name="recipe_section_steps">Кроки</string>
     <string name="recipe_section_extra">Кава й нотатки</string>
 
@@ -224,6 +227,12 @@
     <string name="settings_pace_tolerance">Допуск за швидкістю</string>
     <string name="settings_pace_tolerance_hint">Наскільки швидкість може розійтися з рецептом, перш ніж застосунок попросить лити швидше або повільніше</string>
     <string name="settings_pace_tolerance_value">±%1$d %%</string>
+    <string name="settings_flow_smoothing">Згладжування швидкості</string>
+    <string name="settings_flow_smoothing_hint">Наскільки усереднювати показану швидкість: сильніше — цифра рівніша, слабше — ближче до реальної</string>
+    <string name="flow_smoothing_none">Немає</string>
+    <string name="flow_smoothing_light">Слабке</string>
+    <string name="flow_smoothing_normal">Звичайне</string>
+    <string name="flow_smoothing_strong">Сильне</string>
     <string name="settings_near_target">Сигнал перед ціллю</string>
     <string name="settings_near_target_hint">За скільки грамів до цілі кроку попередити</string>
     <string name="scale_question_title">Чи є у вас ваги з Bluetooth?</string>
@@ -319,7 +328,7 @@
     <string name="scale_log_intro">Запис потрібен, коли ваги не заводяться або показують дурню. У файл потрапляють відповіді ваг і те, як застосунок їх зрозумів. Особистих даних там немає.</string>
     <string name="scale_log_connected">Ваги на зв’язку: %1$s</string>
     <string name="scale_log_disconnected">Ваги не підключено. Без зв’язку запишеться лише те, що ваги оголошують в ефірі.</string>
-    <string name="scale_log_steps">1. Увімкніть ваги й дочекайтеся зв’язку.\n2. Натисніть «Почати запис».\n3. Зачекайте 5 секунд, нічого не ставлячи на ваги.\n4. Натисніть «Тара» тут, потім кнопку тари на самих вагах.\n5. Поставте предмет відомої ваги й потримайте 5 секунд.\n6. Додайте ще трохи й знову зачекайте.\n7. Зніміть усе з ваг.\n8. Натисніть «Зупинити».</string>
+    <string name="scale_log_steps">1. Увімкніть ваги й дочекайтеся зв’язку.\n2. Натисніть «Почати запис».\n3. Зачекайте 5 секунд, нічого не ставлячи на ваги.\n4. Поставте предмет відомої ваги й потримайте 5 секунд.\n5. Натисніть «Тара» тут і зачекайте ще 5 секунд.\n6. Якщо на вагах є кнопка тари — натисніть і її.\n7. Додайте ще трохи й знову зачекайте.\n8. Зніміть усе з ваг.\n9. Натисніть «Зупинити».</string>
     <string name="scale_log_start">Почати запис</string>
     <string name="scale_log_stop">Зупинити</string>
     <string name="scale_log_recording">Триває запис, пакетів: %1$d</string>

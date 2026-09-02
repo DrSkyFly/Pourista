@@ -108,6 +108,7 @@ private fun BrewNotes.toEntity(brewId: Long) = BrewNotesEntity(
     roaster = roaster,
     grinder = grinder,
     grindSetting = grindSetting,
+    filterName = filterName,
     brewer = brewer,
     waterTemp = waterTemp,
     note = extra,

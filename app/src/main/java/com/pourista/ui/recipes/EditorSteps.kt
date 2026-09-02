@@ -78,6 +78,29 @@ fun EditableStep.withWater(text: String): EditableStep {
     }
 }
 
+/**
+ * Подрезает влив под длительность шага.
+ *
+ * Длительность человек знает точно — «этот шаг тридцать секунд», — а время
+ * влива в рецептах чаще проставлено на глаз. Поэтому спорит не шаг с вливом,
+ * а влив с шагом: он укорачивается до длительности, а скорость пересчитывается
+ * под тот же объём.
+ *
+ * Дальше шаг считается заданным через время: поправят объём — время влива
+ * останется прежним, и влив по-прежнему уложится в шаг.
+ */
+fun EditableStep.pourFittedToDuration(): EditableStep {
+    if (!kind.isPour || deltaGrams <= 0f) return this
+    val seconds = durationSec
+    // Пустая длительность — это ещё не «ноль секунд», а недонабранное поле.
+    if (seconds <= 0 || pourSeconds <= seconds) return this
+    return copy(
+        pourSec = seconds.toString(),
+        flow = trimNumber(deltaGrams / seconds),
+        lastPourInput = PourInput.TIME,
+    )
+}
+
 /** Заполняет время влива под текущие объём и скорость: при загрузке рецепта. */
 fun EditableStep.syncPourSeconds(): EditableStep =
     if (kind.isPour && deltaGrams > 0f) copy(pourSec = secondsFor(deltaGrams, flowRate)) else this

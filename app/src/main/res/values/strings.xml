@@ -171,6 +171,9 @@
     <string name="recipe_grind">Grind setting</string>
     <string name="recipe_grind_hint">For example: 24 clicks, 6.5, medium</string>
     <string name="recipe_grind_value">Grind: %1$s</string>
+    <string name="recipe_filter">Filter</string>
+    <string name="recipe_filter_hint">For example: Hario, Cafec Abaca, Kalita Wave</string>
+    <string name="recipe_filter_value">Filter: %1$s</string>
     <string name="recipe_bean">Coffee</string>
     <string name="recipe_roaster">Roaster</string>
     <string name="recipe_notes">Notes</string>
@@ -182,7 +185,7 @@
     <string name="recipe_preview">Pour schedule</string>
     <string name="recipe_scaled_note">Rescaled to the actual dose: %1$sg → %2$sg of water</string>
     <string name="recipe_section_main">Basics</string>
-    <string name="recipe_section_grind">Grind</string>
+    <string name="recipe_section_grind">Grind and filter</string>
     <string name="recipe_section_steps">Steps</string>
     <string name="recipe_section_extra">Coffee and notes</string>
 
@@ -224,6 +227,12 @@
     <string name="settings_pace_tolerance">Flow rate tolerance</string>
     <string name="settings_pace_tolerance_hint">How far the flow rate may drift from the recipe before the app asks to pour faster or slower</string>
     <string name="settings_pace_tolerance_value">±%1$d %%</string>
+    <string name="settings_flow_smoothing">Flow rate smoothing</string>
+    <string name="settings_flow_smoothing_hint">How much to average the shown flow rate: more is steadier to read, less is closer to the real value</string>
+    <string name="flow_smoothing_none">Off</string>
+    <string name="flow_smoothing_light">Light</string>
+    <string name="flow_smoothing_normal">Normal</string>
+    <string name="flow_smoothing_strong">Strong</string>
     <string name="settings_near_target">Cue before the target</string>
     <string name="settings_near_target_hint">How many grams before the step target to warn</string>
     <string name="scale_question_title">Do you have a Bluetooth scale?</string>
@@ -303,6 +312,7 @@
     <string name="settings_scale_log">Scale log</string>
     <string name="settings_scale_log_hint">Record the exchange with the scale to a file and send it to the developer</string>
     <string name="settings_release_notes">Release notes</string>
+    <string name="notes_1_9_3">• Tare on the Timemore Black Mirror Dot worked only every other time\n• The app stopped sending commands to the scale until it was restarted\n• The flow rate readout jumped: smoothing is now in the settings\n• Recipes now have a Filter field\n• A step shorter than its pour now trims the pour instead of refusing</string>
     <string name="notes_1_9_2">• The recorded weight came out too low: it was taken while the dripper was already being lifted\n• The tail of the weight chart came down in steps\n• Started with Bluetooth off, the app got stuck searching and never found the scale once Bluetooth was on\n• Tapping the Bluetooth icon after turning the adapter off crashed the app</string>
     <string name="notes_1_9_1">• The flow rate on screen reacts twice as fast\n• On Timemore Black Mirror Dot and Basic 3 the flow rate now comes straight from the scale\n• Fixed the flow rate: it read low at the start of a brew and high on a busy phone</string>
     <string name="notes_1_9_0">• Grind conversion between grinders: the icon in the brewing header. 206 models from 66 brands\n• A “Grind converter” button in the recipe editor, under the grind field</string>
@@ -326,7 +336,7 @@
     <string name="scale_log_intro">Record this when a scale will not connect or reports nonsense. The file holds what the scale sends and how the app read it. No personal data goes in.</string>
     <string name="scale_log_connected">Scale connected: %1$s</string>
     <string name="scale_log_disconnected">No scale connected. Without a connection only what the scale advertises gets recorded.</string>
-    <string name="scale_log_steps">1. Switch the scale on and wait for the connection.\n2. Tap "Start recording".\n3. Wait 5 seconds with nothing on the scale.\n4. Tap "Tare" here, then the tare button on the scale itself.\n5. Put a known weight on it and wait 5 seconds.\n6. Add a little more and wait again.\n7. Take everything off.\n8. Tap "Stop".</string>
+    <string name="scale_log_steps">1. Switch the scale on and wait for the connection.\n2. Tap "Start recording".\n3. Wait 5 seconds with nothing on the scale.\n4. Put a known weight on it and wait 5 seconds.\n5. Tap "Tare" here and wait 5 more seconds.\n6. If the scale has a tare button of its own, press that too.\n7. Add a little more and wait again.\n8. Take everything off.\n9. Tap "Stop".</string>
     <string name="scale_log_start">Start recording</string>
     <string name="scale_log_stop">Stop</string>
     <string name="scale_log_recording">Recording, packets: %1$d</string>

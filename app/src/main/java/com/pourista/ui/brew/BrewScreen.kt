@@ -692,8 +692,8 @@ private fun RecipeSummaryCard(
             }
             // Доза, вода и пропорция — то, ради чего в плитку и смотрят перед
             // стартом: те же плитки, что в показаниях, и цифры такие же
-            // крупные. Температура с помолом остаются подписями: их читают
-            // один раз, когда мелют.
+            // крупные. Температура, помол и фильтр остаются подписями: их
+            // читают один раз, пока мелют и складывают воронку.
             Row(
                 modifier = Modifier
                     .fillMaxWidth()
@@ -727,12 +727,22 @@ private fun RecipeSummaryCard(
                     value = "${recipe.waterTempC} °C",
                     modifier = Modifier.weight(1f),
                 )
+                val filter = recipe.filterName?.takeIf { it.isNotBlank() }
                 RecipeFact(
                     label = stringResource(R.string.recipe_grind),
                     value = recipe.grindSetting?.takeIf { it.isNotBlank() }
                         ?: stringResource(R.string.value_not_set),
-                    modifier = Modifier.weight(2f),
+                    // Помол занимает всю ширину, пока фильтр не задан: писать
+                    // «не задано» у поля, которого в рецепте обычно нет, незачем.
+                    modifier = Modifier.weight(if (filter == null) 2f else 1f),
                 )
+                if (filter != null) {
+                    RecipeFact(
+                        label = stringResource(R.string.recipe_filter),
+                        value = filter,
+                        modifier = Modifier.weight(1f),
+                    )
+                }
             }
 
             // Заметки к рецепту — это то, что нужно знать до начала: сколько
@@ -839,16 +849,22 @@ private fun RecipeSummaryCard(
                     .padding(top = 8.dp),
                 horizontalArrangement = Arrangement.spacedBy(8.dp),
             ) {
-                FilledTonalButton(
-                    onClick = { onEdit(recipe.id) },
-                    contentPadding = TileButtonPadding,
-                    modifier = Modifier.weight(1f),
-                ) {
-                    Text(text = stringResource(R.string.action_open_recipe), maxLines = 1)
+                // Сборку генератора открывать нечем: в списке рецептов её нет,
+                // а меняют её там же, где собрали, — соседней кнопкой.
+                val editable = recipe.id > 0
+                if (editable) {
+                    FilledTonalButton(
+                        onClick = { onEdit(recipe.id) },
+                        contentPadding = TileButtonPadding,
+                        modifier = Modifier.weight(1f),
+                    ) {
+                        Text(text = stringResource(R.string.action_open_recipe), maxLines = 1)
+                    }
                 }
                 FilledTonalButton(
                     onClick = onFortySix,
                     contentPadding = TileButtonPadding,
+                    modifier = if (editable) Modifier else Modifier.weight(1f),
                 ) {
                     Text(stringResource(R.string.four_six_button))
                 }

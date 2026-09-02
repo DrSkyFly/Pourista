@@ -171,6 +171,9 @@
     <string name="recipe_grind">Molienda</string>
     <string name="recipe_grind_hint">Por ejemplo: 24 clics, 6.5, media</string>
     <string name="recipe_grind_value">Molienda: %1$s</string>
+    <string name="recipe_filter">Filtro</string>
+    <string name="recipe_filter_hint">Por ejemplo: Hario, Cafec Abaca, Kalita Wave</string>
+    <string name="recipe_filter_value">Filtro: %1$s</string>
     <string name="recipe_bean">Café</string>
     <string name="recipe_roaster">Tostador</string>
     <string name="recipe_notes">Notas</string>
@@ -182,7 +185,7 @@
     <string name="recipe_preview">Plan de vertido</string>
     <string name="recipe_scaled_note">Recalculado a la dosis real: %1$s g → %2$s g de agua</string>
     <string name="recipe_section_main">Básico</string>
-    <string name="recipe_section_grind">Molienda</string>
+    <string name="recipe_section_grind">Molienda y filtro</string>
     <string name="recipe_section_steps">Pasos</string>
     <string name="recipe_section_extra">Café y notas</string>
 
@@ -224,6 +227,12 @@
     <string name="settings_pace_tolerance">Tolerancia del caudal</string>
     <string name="settings_pace_tolerance_hint">Cuánto puede desviarse el caudal de la receta antes de que la app pida verter más rápido o más despacio</string>
     <string name="settings_pace_tolerance_value">±%1$d %%</string>
+    <string name="settings_flow_smoothing">Suavizado del caudal</string>
+    <string name="settings_flow_smoothing_hint">Cuánto se promedia el caudal mostrado: más suave se lee mejor, menos se acerca al valor real</string>
+    <string name="flow_smoothing_none">No</string>
+    <string name="flow_smoothing_light">Ligero</string>
+    <string name="flow_smoothing_normal">Normal</string>
+    <string name="flow_smoothing_strong">Fuerte</string>
     <string name="settings_near_target">Aviso antes del objetivo</string>
     <string name="settings_near_target_hint">Cuántos gramos antes del objetivo del paso hay que avisar</string>
     <string name="scale_question_title">¿Tienes una báscula con Bluetooth?</string>
@@ -319,7 +328,7 @@
     <string name="scale_log_intro">Grábalo cuando la báscula no se conecte o muestre disparates. En el archivo queda lo que envía la báscula y cómo lo ha leído la app. Datos personales no entran.</string>
     <string name="scale_log_connected">Báscula conectada: %1$s</string>
     <string name="scale_log_disconnected">No hay ninguna báscula conectada. Sin conexión solo se graba lo que la báscula anuncia al aire.</string>
-    <string name="scale_log_steps">1. Enciende la báscula y espera a que conecte.\n2. Toca «Empezar a grabar».\n3. Espera 5 segundos sin poner nada encima.\n4. Toca «Tara» aquí y luego el botón de tara de la propia báscula.\n5. Pon un peso conocido y espera 5 segundos.\n6. Añade un poco más y espera otra vez.\n7. Retíralo todo.\n8. Toca «Parar».</string>
+    <string name="scale_log_steps">1. Enciende la báscula y espera a que conecte.\n2. Toca «Empezar a grabar».\n3. Espera 5 segundos sin poner nada encima.\n4. Pon un peso conocido y espera 5 segundos.\n5. Toca «Tara» aquí y espera otros 5 segundos.\n6. Si la báscula tiene botón de tara, púlsalo también.\n7. Añade un poco más y espera otra vez.\n8. Retíralo todo.\n9. Toca «Parar».</string>
     <string name="scale_log_start">Empezar a grabar</string>
     <string name="scale_log_stop">Parar</string>
     <string name="scale_log_recording">Grabando, paquetes: %1$d</string>

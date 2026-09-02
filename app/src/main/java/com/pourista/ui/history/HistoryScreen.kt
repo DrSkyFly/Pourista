@@ -247,10 +247,16 @@ private fun BrewHistoryCard(
                 )
             }
 
-            val grind = record.notes.grindSetting
-            if (!grind.isNullOrBlank()) {
+            // Помол без кофемолки — половина сведений: «22» на разных мельницах
+            // означает разное. Пишем одной строкой, чтобы карточка не росла.
+            val grind = listOfNotNull(
+                record.notes.grinder?.takeIf { it.isNotBlank() },
+                record.notes.grindSetting?.takeIf { it.isNotBlank() }
+                    ?.let { stringResource(R.string.recipe_grind_value, it) },
+            ).joinToString(" · ").takeIf { it.isNotBlank() }
+            if (grind != null) {
                 Text(
-                    text = stringResource(R.string.recipe_grind_value, grind),
+                    text = grind,
                     style = MaterialTheme.typography.bodySmall,
                     color = MaterialTheme.colorScheme.onSurfaceVariant,
                 )

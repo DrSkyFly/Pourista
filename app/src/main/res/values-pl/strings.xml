@@ -171,6 +171,9 @@
     <string name="recipe_grind">Mielenie</string>
     <string name="recipe_grind_hint">Na przykład: 24 kliki, 6.5, średnie</string>
     <string name="recipe_grind_value">Mielenie: %1$s</string>
+    <string name="recipe_filter">Filtr</string>
+    <string name="recipe_filter_hint">Na przykład: Hario, Cafec Abaca, Kalita Wave</string>
+    <string name="recipe_filter_value">Filtr: %1$s</string>
     <string name="recipe_bean">Kawa</string>
     <string name="recipe_roaster">Palarnia</string>
     <string name="recipe_notes">Notatki</string>
@@ -182,7 +185,7 @@
     <string name="recipe_preview">Plan nalewów</string>
     <string name="recipe_scaled_note">Przeliczone na rzeczywistą dawkę: %1$s g → %2$s g wody</string>
     <string name="recipe_section_main">Podstawy</string>
-    <string name="recipe_section_grind">Mielenie</string>
+    <string name="recipe_section_grind">Mielenie i filtr</string>
     <string name="recipe_section_steps">Kroki</string>
     <string name="recipe_section_extra">Kawa i notatki</string>
 
@@ -224,6 +227,12 @@
     <string name="settings_pace_tolerance">Tolerancja przepływu</string>
     <string name="settings_pace_tolerance_hint">O ile przepływ może odbiegać od przepisu, zanim aplikacja poprosi, by lać szybciej lub wolniej</string>
     <string name="settings_pace_tolerance_value">±%1$d %%</string>
+    <string name="settings_flow_smoothing">Wygładzanie przepływu</string>
+    <string name="settings_flow_smoothing_hint">Jak mocno uśredniać pokazywany przepływ: mocniej — liczba jest spokojniejsza, słabiej — bliżej rzeczywistej</string>
+    <string name="flow_smoothing_none">Brak</string>
+    <string name="flow_smoothing_light">Słabe</string>
+    <string name="flow_smoothing_normal">Zwykłe</string>
+    <string name="flow_smoothing_strong">Mocne</string>
     <string name="settings_near_target">Sygnał przed celem</string>
     <string name="settings_near_target_hint">Na ile gramów przed celem kroku ostrzec</string>
     <string name="scale_question_title">Czy masz wagę z Bluetooth?</string>
@@ -319,7 +328,7 @@
     <string name="scale_log_intro">Nagraj, gdy waga nie chce się połączyć albo pokazuje bzdury. W pliku ląduje to, co waga wysyła, i jak aplikacja to odczytała. Danych osobowych tam nie ma.</string>
     <string name="scale_log_connected">Waga połączona: %1$s</string>
     <string name="scale_log_disconnected">Żadna waga nie jest połączona. Bez połączenia zapisze się tylko to, co waga rozgłasza w eterze.</string>
-    <string name="scale_log_steps">1. Włącz wagę i poczekaj na połączenie.\n2. Naciśnij „Zacznij nagrywanie”.\n3. Odczekaj 5 sekund, nic nie stawiając na wadze.\n4. Naciśnij tutaj „Tara”, a potem przycisk tary na samej wadze.\n5. Postaw przedmiot o znanej masie i poczekaj 5 sekund.\n6. Dołóż jeszcze trochę i znowu poczekaj.\n7. Zdejmij wszystko.\n8. Naciśnij „Zatrzymaj”.</string>
+    <string name="scale_log_steps">1. Włącz wagę i poczekaj na połączenie.\n2. Naciśnij „Zacznij nagrywanie”.\n3. Odczekaj 5 sekund, nic nie stawiając na wadze.\n4. Postaw przedmiot o znanej masie i poczekaj 5 sekund.\n5. Naciśnij tutaj „Tara” i poczekaj jeszcze 5 sekund.\n6. Jeśli waga ma własny przycisk tary, naciśnij i jego.\n7. Dołóż jeszcze trochę i znowu poczekaj.\n8. Zdejmij wszystko.\n9. Naciśnij „Zatrzymaj”.</string>
     <string name="scale_log_start">Zacznij nagrywanie</string>
     <string name="scale_log_stop">Zatrzymaj</string>
     <string name="scale_log_recording">Trwa nagrywanie, pakietów: %1$d</string>

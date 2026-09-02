@@ -98,6 +98,8 @@ fun BrewDetailScreen(
             current?.notes?.grinder?.takeIf { it.isNotBlank() },
             current?.notes?.grindSetting?.takeIf { it.isNotBlank() }
                 ?.let { stringResource(R.string.recipe_grind_value, it) },
+            current?.notes?.filterName?.takeIf { it.isNotBlank() }
+                ?.let { stringResource(R.string.recipe_filter_value, it) },
         ).joinToString(" · ").takeIf { it.isNotBlank() },
         weightTitle = stringResource(R.string.chart_weight),
         flowTitle = stringResource(R.string.chart_flow),
@@ -109,6 +111,7 @@ fun BrewDetailScreen(
     var roaster by remember { mutableStateOf("") }
     var grinder by remember { mutableStateOf("") }
     var grind by remember { mutableStateOf("") }
+    var filter by remember { mutableStateOf("") }
     var brewer by remember { mutableStateOf("") }
     var temp by remember { mutableStateOf("") }
     var extra by remember { mutableStateOf("") }
@@ -119,6 +122,7 @@ fun BrewDetailScreen(
         roaster = notes.roaster.orEmpty()
         grinder = notes.grinder.orEmpty()
         grind = notes.grindSetting.orEmpty()
+        filter = notes.filterName.orEmpty()
         brewer = notes.brewer.orEmpty()
         temp = notes.waterTemp.orEmpty()
         extra = notes.extra.orEmpty()
@@ -147,6 +151,7 @@ fun BrewDetailScreen(
                             roaster != saved.roaster.orEmpty() ||
                             grinder != saved.grinder.orEmpty() ||
                             grind != saved.grindSetting.orEmpty() ||
+                            filter != saved.filterName.orEmpty() ||
                             brewer != saved.brewer.orEmpty() ||
                             temp != saved.waterTemp.orEmpty() ||
                             extra != saved.extra.orEmpty()
@@ -160,6 +165,7 @@ fun BrewDetailScreen(
                                     roaster = roaster.takeIf { it.isNotBlank() },
                                     grinder = grinder.takeIf { it.isNotBlank() },
                                     grindSetting = grind.takeIf { it.isNotBlank() },
+                                    filterName = filter.takeIf { it.isNotBlank() },
                                     brewer = brewer.takeIf { it.isNotBlank() },
                                     waterTemp = temp.takeIf { it.isNotBlank() },
                                     extra = extra.takeIf { it.isNotBlank() },
@@ -322,6 +328,7 @@ fun BrewDetailScreen(
                         NotesField(brewer, { brewer = it }, R.string.recipe_brewer)
                         NotesField(grinder, { grinder = it }, R.string.recipe_grinder)
                         NotesField(grind, { grind = it }, R.string.recipe_grind)
+                        NotesField(filter, { filter = it }, R.string.recipe_filter)
                         NotesField(temp, { temp = it }, R.string.recipe_temp)
                         NotesField(extra, { extra = it }, R.string.history_extra_note)
                     }

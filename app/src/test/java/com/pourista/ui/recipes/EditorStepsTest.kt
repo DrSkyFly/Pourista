@@ -116,6 +116,42 @@ class EditorStepsTest {
     }
 
     @Test
+    fun `влив подрезается под длительность шага`() {
+        // 50 г при 5 г/с — это 10 секунд, а шаг стал шестисекундным.
+        val short = pour.copy(duration = "6").pourFittedToDuration()
+
+        assertEquals("6", short.pourSec)
+        assertEquals("50 г за 6 секунд", "8.3", short.flow)
+        assertFalse(short.pourTooLong)
+    }
+
+    @Test
+    fun `влив короче шага не трогаем`() {
+        val roomy = pour.copy(duration = "30")
+
+        assertEquals(roomy, roomy.pourFittedToDuration())
+    }
+
+    @Test
+    fun `недонабранная длительность не пересчитывает скорость`() {
+        // Поле очистили, чтобы набрать заново: это ещё не «ноль секунд».
+        val typing = pour.copy(duration = "")
+
+        assertEquals(typing, typing.pourFittedToDuration())
+    }
+
+    @Test
+    fun `после подрезки объём меняет скорость, а не время`() {
+        val short = pour.copy(duration = "6").pourFittedToDuration()
+
+        // Влив уже занимает весь шаг, и добавленный объём должен уложиться
+        // в те же шесть секунд.
+        val more = short.withWater("60")
+        assertEquals("6", more.pourSec)
+        assertEquals("10", more.flow)
+    }
+
+    @Test
     fun `недописанное число не затирает соседнее поле`() {
         val cleared = pour.withFlow("")
 

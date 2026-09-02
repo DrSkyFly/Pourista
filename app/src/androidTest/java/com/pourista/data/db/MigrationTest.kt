@@ -127,6 +127,72 @@ class MigrationTest {
         }
     }
 
+    /** Фильтр добавляется колонкой: у старых рецептов он пустой. */
+    @Test
+    fun migrate9To10_addsFilter() {
+        helper.createDatabase(TEST_DB_FILTER, 9).use { db ->
+            db.execSQL(
+                """
+                INSERT INTO recipes
+                (name, brewer, dose_grams, water_grams, water_temp_c, grinder_name,
+                 grind_setting, bean_name, roaster, notes, is_built_in, is_favorite,
+                 auto_start, aeropress_mode, sort_order, created_at, updated_at, last_used_at)
+                VALUES ('V60', 'Hario V60-02', 15.0, 250.0, 95, NULL,
+                        '24', NULL, NULL, NULL, 0, 0, 1, 0, 10, 1700000000000, 1700000000000, NULL)
+                """.trimIndent()
+            )
+        }
+
+        val db = helper.runMigrationsAndValidate(
+            TEST_DB_FILTER,
+            10,
+            true,
+            AppDatabase.MIGRATION_9_10,
+        )
+
+        db.query("SELECT name, grind_setting, filter_name FROM recipes").use { cursor ->
+            assertTrue("Рецепт должен пережить миграцию", cursor.moveToFirst())
+            assertEquals("V60", cursor.getString(0))
+            assertEquals("24", cursor.getString(1))
+            assertTrue("Фильтра у старого рецепта нет", cursor.isNull(2))
+        }
+    }
+
+    /** Фильтр дописывается и в заметки: у старых записей он пустой. */
+    @Test
+    fun migrate10To11_addsFilterToNotes() {
+        helper.createDatabase(TEST_DB_NOTES_FILTER, 10).use { db ->
+            db.execSQL(
+                """
+                INSERT INTO brews
+                (brewed_at, dose_grams, weight_grams, elapsed_ms, flow_rate_avg,
+                 weight_series, flow_series, recipe_id, recipe_name)
+                VALUES (1700000000000, 15.0, 250.0, 185400, 2.1, '0;250', '0;2.1', NULL, 'V60')
+                """.trimIndent()
+            )
+            db.execSQL(
+                """
+                INSERT INTO brew_notes
+                (brew_id, bean, roaster, grinder, grind_setting, brewer, water_temp, note)
+                VALUES (1, 'Ethiopia', 'Roaster', 'Comandante', '24', 'V60', '95', NULL)
+                """.trimIndent()
+            )
+        }
+
+        val db = helper.runMigrationsAndValidate(
+            TEST_DB_NOTES_FILTER,
+            11,
+            true,
+            AppDatabase.MIGRATION_10_11,
+        )
+
+        db.query("SELECT grind_setting, filter_name FROM brew_notes").use { cursor ->
+            assertTrue("Заметка должна пережить миграцию", cursor.moveToFirst())
+            assertEquals("24", cursor.getString(0))
+            assertTrue("Фильтра у старой записи нет", cursor.isNull(1))
+        }
+    }
+
     /** Заметка без заваривания не должна ломать внешний ключ новой таблицы. */
     @Test
     fun migrate7To8_dropsOrphanNotes() {
@@ -153,5 +219,7 @@ class MigrationTest {
         const val TEST_DB = "migration-test.db"
         const val TEST_DB_ORPHAN = "migration-test-orphan.db"
         const val TEST_DB_AEROPRESS = "migration-test-aeropress.db"
+        const val TEST_DB_FILTER = "migration-test-filter.db"
+        const val TEST_DB_NOTES_FILTER = "migration-test-notes-filter.db"
     }
 }

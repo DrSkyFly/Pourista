@@ -171,6 +171,9 @@
     <string name="recipe_grind">Помол</string>
     <string name="recipe_grind_hint">Например: 24 клика, 6.5, средний</string>
     <string name="recipe_grind_value">Помол: %1$s</string>
+    <string name="recipe_filter">Фильтр</string>
+    <string name="recipe_filter_hint">Например: Hario, Cafec Abaca, Kalita Wave</string>
+    <string name="recipe_filter_value">Фильтр: %1$s</string>
     <string name="recipe_bean">Кофе</string>
     <string name="recipe_roaster">Обжарщик</string>
     <string name="recipe_notes">Заметки</string>
@@ -182,7 +185,7 @@
     <string name="recipe_preview">График пролива</string>
     <string name="recipe_scaled_note">Пересчитано под дозу: %1$sг → %2$sг воды</string>
     <string name="recipe_section_main">Основное</string>
-    <string name="recipe_section_grind">Помол</string>
+    <string name="recipe_section_grind">Помол и фильтр</string>
     <string name="recipe_section_steps">Шаги</string>
     <string name="recipe_section_extra">Кофе и заметки</string>
 
@@ -224,6 +227,12 @@
     <string name="settings_pace_tolerance">Допуск по скорости</string>
     <string name="settings_pace_tolerance_hint">Насколько скорость может разойтись с рецептом, прежде чем приложение попросит лить быстрее или медленнее</string>
     <string name="settings_pace_tolerance_value">±%1$d %%</string>
+    <string name="settings_flow_smoothing">Сглаживание скорости</string>
+    <string name="settings_flow_smoothing_hint">Насколько усреднять показанную скорость: сильнее — цифра ровнее, слабее — ближе к реальной</string>
+    <string name="flow_smoothing_none">Нет</string>
+    <string name="flow_smoothing_light">Слабое</string>
+    <string name="flow_smoothing_normal">Обычное</string>
+    <string name="flow_smoothing_strong">Сильное</string>
     <string name="settings_near_target">Сигнал перед целью</string>
     <string name="settings_near_target_hint">За сколько граммов до цели шага предупредить</string>
     <string name="scale_question_title">Есть ли у вас весы с Bluetooth?</string>
@@ -297,6 +306,7 @@
     <string name="settings_scale_log">Журнал весов</string>
     <string name="settings_scale_log_hint">Записать обмен с весами в файл и отправить разработчику</string>
     <string name="settings_release_notes">История изменений</string>
+    <string name="notes_1_9_3">• Тара на Timemore Black Mirror Dot срабатывала через раз\n• Приложение переставало слать команды весам до перезапуска\n• Скорость пролива на экране прыгала: в настройках появилось сглаживание\n• В рецепте появилось поле «Фильтр»\n• Длительность шага короче влива: влив подрезается сам</string>
     <string name="notes_1_9_2">• В историю попадал заниженный вес: он снимался, когда воронку уже поднимали\n• Хвост графика веса спускался ступенями\n• Приложение, запущенное при выключенном Bluetooth, зависало в поиске и не находило весы после включения\n• Нажатие на значок Bluetooth после выключения адаптера роняло приложение</string>
     <string name="notes_1_9_1">• Скорость влива на экране отзывается вдвое быстрее\n• На весах Timemore Black Mirror Dot и Basic 3 скорость влива приходит прямо с весов\n• Исправлена скорость влива: в начале заваривания она была занижена, а на загруженном телефоне завышена</string>
     <string name="notes_1_9_0">• Пересчёт помола между кофемолками: значок в шапке заваривания. 206 моделей 66 фирм\n• Кнопка «Пересчёт помола» в редакторе рецепта, под полем помола</string>
@@ -320,7 +330,7 @@
     <string name="scale_log_intro">Запись нужна, когда весы не заводятся или показывают ерунду. В файл попадают ответы весов и то, как приложение их поняло. Личных данных там нет.</string>
     <string name="scale_log_connected">Весы на связи: %1$s</string>
     <string name="scale_log_disconnected">Весы не подключены. Без связи запишется только то, что весы объявляют в эфире.</string>
-    <string name="scale_log_steps">1. Включите весы и дождитесь связи.\n2. Нажмите «Начать запись».\n3. Подождите 5 секунд, ничего не ставя на весы.\n4. Нажмите «Тара» здесь, потом кнопку тары на самих весах.\n5. Поставьте предмет известного веса и держите 5 секунд.\n6. Добавьте ещё немного и снова подождите.\n7. Снимите всё с весов.\n8. Нажмите «Остановить».</string>
+    <string name="scale_log_steps">1. Включите весы и дождитесь связи.\n2. Нажмите «Начать запись».\n3. Подождите 5 секунд, ничего не ставя на весы.\n4. Поставьте предмет известного веса и держите 5 секунд.\n5. Нажмите «Тара» здесь и подождите ещё 5 секунд.\n6. Если на весах есть кнопка тары — нажмите и её.\n7. Добавьте ещё немного и снова подождите.\n8. Снимите всё с весов.\n9. Нажмите «Остановить».</string>
     <string name="scale_log_start">Начать запись</string>
     <string name="scale_log_stop">Остановить</string>
     <string name="scale_log_recording">Идёт запись, пакетов: %1$d</string>

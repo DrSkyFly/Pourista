@@ -94,6 +94,7 @@ object BackupJson {
             item.putOpt("roaster", notes.roaster)
             item.putOpt("grinder", notes.grinder)
             item.putOpt("grind", notes.grindSetting)
+            item.putOpt("filter", notes.filterName)
             item.putOpt("brewer", notes.brewer)
             item.putOpt("temp", notes.waterTemp)
             item.putOpt("note", notes.extra)
@@ -122,6 +123,7 @@ object BackupJson {
                 roaster = notes?.optStringOrNull("roaster"),
                 grinder = notes?.optStringOrNull("grinder"),
                 grindSetting = notes?.optStringOrNull("grind"),
+                filterName = notes?.optStringOrNull("filter"),
                 brewer = notes?.optStringOrNull("brewer"),
                 waterTemp = notes?.optStringOrNull("temp"),
                 extra = notes?.optStringOrNull("note"),

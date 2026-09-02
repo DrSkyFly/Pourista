@@ -171,6 +171,9 @@
     <string name="recipe_grind">분쇄도</string>
     <string name="recipe_grind_hint">예: 24클릭, 6.5, 중간</string>
     <string name="recipe_grind_value">분쇄도: %1$s</string>
+    <string name="recipe_filter">필터</string>
+    <string name="recipe_filter_hint">예: Hario, Cafec Abaca, Kalita Wave</string>
+    <string name="recipe_filter_value">필터: %1$s</string>
     <string name="recipe_bean">원두</string>
     <string name="recipe_roaster">로스터리</string>
     <string name="recipe_notes">메모</string>
@@ -182,7 +185,7 @@
     <string name="recipe_preview">푸어 일정</string>
     <string name="recipe_scaled_note">실제 원두량에 맞춰 다시 계산: %1$sg → 물 %2$sg</string>
     <string name="recipe_section_main">기본</string>
-    <string name="recipe_section_grind">분쇄도</string>
+    <string name="recipe_section_grind">분쇄도와 필터</string>
     <string name="recipe_section_steps">단계</string>
     <string name="recipe_section_extra">원두와 메모</string>
 
@@ -224,6 +227,12 @@
     <string name="settings_pace_tolerance">유속 허용 범위</string>
     <string name="settings_pace_tolerance_hint">유속이 레시피에서 얼마나 벗어나면 더 빠르게, 또는 더 천천히 부으라고 알릴지</string>
     <string name="settings_pace_tolerance_value">±%1$d %%</string>
+    <string name="settings_flow_smoothing">유량 평활화</string>
+    <string name="settings_flow_smoothing_hint">표시되는 유량을 얼마나 평균할지. 강할수록 숫자가 안정되고, 약할수록 실제 값에 가까워집니다</string>
+    <string name="flow_smoothing_none">없음</string>
+    <string name="flow_smoothing_light">약하게</string>
+    <string name="flow_smoothing_normal">보통</string>
+    <string name="flow_smoothing_strong">강하게</string>
     <string name="settings_near_target">목표 직전 신호</string>
     <string name="settings_near_target_hint">단계 목표까지 몇 그램 남았을 때 알릴지</string>
     <string name="scale_question_title">블루투스 저울이 있나요?</string>
@@ -319,7 +328,7 @@
     <string name="scale_log_intro">저울이 연결되지 않거나 이상한 값을 보일 때 기록하세요. 파일에는 저울이 보낸 내용과 앱이 읽은 방식이 담깁니다. 개인정보는 들어가지 않습니다.</string>
     <string name="scale_log_connected">저울 연결됨: %1$s</string>
     <string name="scale_log_disconnected">연결된 저울이 없습니다. 연결이 없으면 저울이 전파로 알리는 내용만 기록됩니다.</string>
-    <string name="scale_log_steps">1. 저울을 켜고 연결을 기다립니다.\n2. ‘기록 시작’을 누릅니다.\n3. 아무것도 올리지 않은 채 5초 기다립니다.\n4. 여기서 ‘영점’을 누르고, 이어서 저울 본체의 영점 버튼을 누릅니다.\n5. 무게를 아는 물건을 올리고 5초 기다립니다.\n6. 조금 더 올리고 다시 기다립니다.\n7. 전부 내립니다.\n8. ‘정지’를 누릅니다.</string>
+    <string name="scale_log_steps">1. 저울을 켜고 연결을 기다립니다.\n2. ‘기록 시작’을 누릅니다.\n3. 아무것도 올리지 않은 채 5초 기다립니다.\n4. 무게를 아는 물건을 올리고 5초 기다립니다.\n5. 여기서 ‘영점’을 누르고 5초 더 기다립니다.\n6. 저울에 영점 버튼이 있으면 그것도 누릅니다.\n7. 조금 더 올리고 다시 기다립니다.\n8. 전부 내립니다.\n9. ‘정지’를 누릅니다.</string>
     <string name="scale_log_start">기록 시작</string>
     <string name="scale_log_stop">정지</string>
     <string name="scale_log_recording">기록 중, 패킷: %1$d</string>

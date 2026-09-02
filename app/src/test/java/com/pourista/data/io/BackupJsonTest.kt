@@ -21,6 +21,7 @@ class BackupJsonTest {
         waterGrams = 250f,
         waterTempC = 93,
         grindSetting = "крупный",
+        filterName = "Hario",
         isFavorite = true,
         sortOrder = 20,
         createdAt = 1_700_000_000_000L,
@@ -55,7 +56,13 @@ class BackupJsonTest {
         flowRateAvg = 4.7f,
         recipeId = 7,
         recipeName = "V60 · утро",
-        notes = BrewNotes(bean = "Эфиопия Гуджи", roaster = "Кофейный сноб", extra = "кисло"),
+        notes = BrewNotes(
+            bean = "Эфиопия Гуджи",
+            roaster = "Кофейный сноб",
+            grindSetting = "24 клика",
+            filterName = "Cafec Abaca",
+            extra = "кисло",
+        ),
     )
 
     @Test
@@ -66,6 +73,7 @@ class BackupJsonTest {
         assertEquals(recipe.name, back.name)
         assertEquals(recipe.doseGrams, back.doseGrams, 0.01f)
         assertEquals(recipe.waterTempC, back.waterTempC)
+        assertEquals(recipe.filterName, back.filterName)
         assertTrue("избранное не должно теряться", back.isFavorite)
         assertEquals(recipe.sortOrder, back.sortOrder)
         assertEquals(recipe.createdAt, back.createdAt)
@@ -86,6 +94,8 @@ class BackupJsonTest {
         assertEquals(brew.weightSeries, back.weightSeries)
         assertEquals(brew.flowSeries, back.flowSeries)
         assertEquals("Эфиопия Гуджи", back.notes.bean)
+        assertEquals("24 клика", back.notes.grindSetting)
+        assertEquals("Cafec Abaca", back.notes.filterName)
         assertEquals("кисло", back.notes.extra)
         assertEquals(brew.recipeName, back.recipeName)
         // Рецепт на новой установке лежит под другим id: связь не переносим.

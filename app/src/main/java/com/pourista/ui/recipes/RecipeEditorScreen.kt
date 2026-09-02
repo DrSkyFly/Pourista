@@ -14,6 +14,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.rounded.ArrowBack
@@ -46,7 +47,10 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
+import androidx.compose.ui.focus.onFocusChanged
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.LocalFocusManager
+import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
@@ -86,6 +90,7 @@ fun RecipeEditorScreen(
             canMoveUp = viewModel.canMoveStep(row.step.key, -1),
             canMoveDown = viewModel.canMoveStep(row.step.key, 1),
             onChange = { transform -> viewModel.updateStep(row.step.key, transform) },
+            onDurationEntered = { viewModel.onDurationEntered(row.step.key) },
             onMoveUp = { viewModel.moveStep(row.step.key, -1) },
             onMoveDown = { viewModel.moveStep(row.step.key, 1) },
             onRemove = { viewModel.removeStep(row.step.key) },
@@ -265,6 +270,16 @@ fun RecipeEditorScreen(
                         onValueChange = viewModel::setGrind,
                         label = { Text(stringResource(R.string.recipe_grind)) },
                         supportingText = { Text(stringResource(R.string.recipe_grind_hint)) },
+                        singleLine = true,
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(top = 8.dp),
+                    )
+                    OutlinedTextField(
+                        value = state.filter,
+                        onValueChange = viewModel::setFilter,
+                        label = { Text(stringResource(R.string.recipe_filter)) },
+                        supportingText = { Text(stringResource(R.string.recipe_filter_hint)) },
                         singleLine = true,
                         modifier = Modifier
                             .fillMaxWidth()
@@ -467,6 +482,7 @@ private fun StepEditorCard(
     canMoveUp: Boolean,
     canMoveDown: Boolean,
     onChange: ((EditableStep) -> EditableStep) -> Unit,
+    onDurationEntered: () -> Unit,
     onMoveUp: () -> Unit,
     onMoveDown: () -> Unit,
     onRemove: () -> Unit,
@@ -540,10 +556,14 @@ private fun StepEditorCard(
                 modifier = Modifier.fillMaxWidth(),
                 horizontalArrangement = Arrangement.spacedBy(8.dp),
             ) {
+                // Влив под длительность подгоняется по концу ввода, а не по
+                // каждой набранной цифре: длительность правят и по нескольку
+                // раз подряд.
                 NumberField(
                     value = step.duration,
                     onValueChange = { value -> onChange { it.copy(duration = value) } },
                     label = stringResource(R.string.step_duration),
+                    onEntered = onDurationEntered,
                     modifier = Modifier.weight(1f),
                 )
                 if (step.kind.isPour) {
@@ -621,14 +641,31 @@ private fun NumberField(
     onValueChange: (String) -> Unit,
     label: String,
     modifier: Modifier = Modifier,
+    /** Ввод закончен: ушли из поля или нажали «Готово». */
+    onEntered: (() -> Unit)? = null,
 ) {
+    val focus = LocalFocusManager.current
+    // Уход из поля, в котором и не были, вводом не считается: иначе первая же
+    // отрисовка списка шагов пересчитала бы всё сама.
+    var wasFocused by remember { mutableStateOf(false) }
     OutlinedTextField(
         value = value,
         onValueChange = onValueChange,
         label = { Text(label) },
         singleLine = true,
-        keyboardOptions = KeyboardOptions(keyboardType = androidx.compose.ui.text.input.KeyboardType.Decimal),
-        modifier = modifier,
+        keyboardOptions = KeyboardOptions(
+            keyboardType = androidx.compose.ui.text.input.KeyboardType.Decimal,
+            imeAction = if (onEntered != null) ImeAction.Done else ImeAction.Default,
+        ),
+        keyboardActions = KeyboardActions(onDone = { focus.clearFocus() }),
+        modifier = modifier.onFocusChanged { focusState ->
+            if (focusState.isFocused) {
+                wasFocused = true
+            } else if (wasFocused) {
+                wasFocused = false
+                onEntered?.invoke()
+            }
+        },
     )
 }
 

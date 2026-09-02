@@ -41,7 +41,8 @@ class RecipesViewModel(private val container: AppContainer) : ViewModel() {
                     recipe.name.lowercase().contains(needle) ||
                         recipe.brewer.lowercase().contains(needle) ||
                         recipe.beanName?.lowercase()?.contains(needle) == true ||
-                        recipe.grindSetting?.lowercase()?.contains(needle) == true
+                        recipe.grindSetting?.lowercase()?.contains(needle) == true ||
+                        recipe.filterName?.lowercase()?.contains(needle) == true
                 }
             }
         }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(5_000), emptyList())
@@ -88,7 +89,7 @@ class RecipesViewModel(private val container: AppContainer) : ViewModel() {
         container.brewEngine.reset()
         container.brewEngine.selectRecipe(recipe)
         viewModelScope.launch {
-            container.settings.setLastRecipeId(recipe.id)
+            container.settings.setLastRecipe(recipe.id)
             container.recipes.markUsed(recipe.id)
         }
     }

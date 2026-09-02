@@ -14,6 +14,7 @@ import androidx.datastore.preferences.core.stringSetPreferencesKey
 import androidx.datastore.preferences.preferencesDataStore
 import com.pourista.brew.DEFAULT_NEAR_TARGET_GRAMS
 import com.pourista.brew.DEFAULT_PACE_TOLERANCE
+import com.pourista.brew.FlowSmoothing
 import com.pourista.data.presets.FortySixParams
 import com.pourista.data.presets.FortySixStrength
 import com.pourista.data.presets.FortySixTaste
@@ -46,6 +47,8 @@ data class AppSettings(
     val nearTargetGrams: Float = DEFAULT_NEAR_TARGET_GRAMS,
     /** Допустимое расхождение скорости пролива с рецептом, доля от целевой. */
     val paceTolerance: Float = DEFAULT_PACE_TOLERANCE,
+    /** Насколько усреднять показанную скорость пролива. */
+    val flowSmoothing: FlowSmoothing = FlowSmoothing.NORMAL,
     /**
      * Заканчивать заваривание самому, когда с весов сняли воронку или чашку.
      * Кому мешает — выключает и жмёт «Финиш» руками.
@@ -62,6 +65,11 @@ data class AppSettings(
     val stopTimerOnDisconnect: Boolean = true,
     val keepScaleInGrams: Boolean = true,
     val lastRecipeId: Long? = null,
+    /**
+     * Последним выбирали не рецепт из списка, а сборку генератора 4:6. В базе
+     * её нет, и на следующем запуске она собирается заново из [fortySix].
+     */
+    val lastRecipeFortySix: Boolean = false,
     val presetsVersion: Int = 0,
     /** Язык, на котором лежат тексты встроенных рецептов в базе. */
     val presetsLocale: String = "",
@@ -78,8 +86,6 @@ data class AppSettings(
     val fortySixLockRatio: Boolean = false,
     /** Сохранённые настройки генератора, по имени. */
     val fortySixPresets: List<FortySixPreset> = emptyList(),
-    /** Рецепт, в который пишет генератор 4:6: он один и переписывается. */
-    val fortySixRecipeId: Long? = null,
     /** Версия, для которой уже показали «Что нового». */
     val whatsNewSeenVersion: Int = 0,
     /** Кофемолка, с которой пересчитывали помол в прошлый раз. */
@@ -111,6 +117,7 @@ class SettingsRepository(private val context: Context) {
         val countdownCue = booleanPreferencesKey("countdown_cue")
         val nearTargetGrams = floatPreferencesKey("near_target_grams")
         val paceTolerance = floatPreferencesKey("pace_tolerance")
+        val flowSmoothing = stringPreferencesKey("flow_smoothing")
         val autoFinish = booleanPreferencesKey("auto_finish")
         val scaleAsked = booleanPreferencesKey("scale_asked")
         val useScale = booleanPreferencesKey("use_scale")
@@ -118,6 +125,7 @@ class SettingsRepository(private val context: Context) {
         val stopTimerOnDisconnect = booleanPreferencesKey("stop_timer_on_disconnect")
         val keepScaleInGrams = booleanPreferencesKey("keep_scale_in_grams")
         val lastRecipeId = longPreferencesKey("last_recipe_id")
+        val lastRecipeFortySix = booleanPreferencesKey("last_recipe_forty_six")
         val presetsVersion = intPreferencesKey("presets_version")
         val presetsLocale = stringPreferencesKey("presets_locale")
         val keepRecipeWater = booleanPreferencesKey("keep_recipe_water")
@@ -127,7 +135,6 @@ class SettingsRepository(private val context: Context) {
         val fortySixTaste = stringPreferencesKey("forty_six_taste")
         val fortySixStrength = stringPreferencesKey("forty_six_strength")
         val fortySixLockRatio = booleanPreferencesKey("forty_six_lock_ratio")
-        val fortySixRecipeId = longPreferencesKey("forty_six_recipe_id")
         val fortySixPresets = stringPreferencesKey("forty_six_presets")
         val whatsNewSeen = intPreferencesKey("whats_new_seen")
         val grindFrom = stringPreferencesKey("grind_from")
@@ -149,6 +156,9 @@ class SettingsRepository(private val context: Context) {
             countdownCue = prefs[Keys.countdownCue] ?: true,
             nearTargetGrams = prefs[Keys.nearTargetGrams] ?: DEFAULT_NEAR_TARGET_GRAMS,
             paceTolerance = prefs[Keys.paceTolerance] ?: DEFAULT_PACE_TOLERANCE,
+            flowSmoothing = prefs[Keys.flowSmoothing]?.let { value ->
+                runCatching { FlowSmoothing.valueOf(value) }.getOrNull()
+            } ?: FlowSmoothing.NORMAL,
             autoFinish = prefs[Keys.autoFinish] ?: true,
             scaleAsked = prefs[Keys.scaleAsked] ?: false,
             useScale = prefs[Keys.useScale] ?: true,
@@ -156,6 +166,7 @@ class SettingsRepository(private val context: Context) {
             stopTimerOnDisconnect = prefs[Keys.stopTimerOnDisconnect] ?: true,
             keepScaleInGrams = prefs[Keys.keepScaleInGrams] ?: true,
             lastRecipeId = prefs[Keys.lastRecipeId]?.takeIf { it > 0 },
+            lastRecipeFortySix = prefs[Keys.lastRecipeFortySix] ?: false,
             presetsVersion = prefs[Keys.presetsVersion] ?: 0,
             presetsLocale = prefs[Keys.presetsLocale] ?: "",
             keepRecipeWater = prefs[Keys.keepRecipeWater] ?: false,
@@ -172,7 +183,6 @@ class SettingsRepository(private val context: Context) {
             ),
             fortySixLockRatio = prefs[Keys.fortySixLockRatio] ?: false,
             fortySixPresets = decodePresets(prefs[Keys.fortySixPresets]),
-            fortySixRecipeId = prefs[Keys.fortySixRecipeId]?.takeIf { it > 0 },
             whatsNewSeenVersion = prefs[Keys.whatsNewSeen] ?: 0,
             grindFromId = prefs[Keys.grindFrom] ?: "",
             grindToId = prefs[Keys.grindTo] ?: "",
@@ -198,6 +208,9 @@ class SettingsRepository(private val context: Context) {
 
     suspend fun setPaceTolerance(share: Float) = edit { it[Keys.paceTolerance] = share }
 
+    suspend fun setFlowSmoothing(smoothing: FlowSmoothing) =
+        edit { it[Keys.flowSmoothing] = smoothing.name }
+
     suspend fun setAutoFinish(enabled: Boolean) = edit { it[Keys.autoFinish] = enabled }
 
     suspend fun setUseScale(enabled: Boolean) = edit { it[Keys.useScale] = enabled }
@@ -211,8 +224,13 @@ class SettingsRepository(private val context: Context) {
 
     suspend fun setKeepScaleInGrams(enabled: Boolean) = edit { it[Keys.keepScaleInGrams] = enabled }
 
-    suspend fun setLastRecipeId(id: Long?) = edit { prefs ->
+    /**
+     * Что было выбрано в прошлый раз. Сборка генератора 4:6 в базе не лежит и
+     * своего id не имеет — её отмечаем флажком и собираем заново при запуске.
+     */
+    suspend fun setLastRecipe(id: Long?, fortySix: Boolean = false) = edit { prefs ->
         if (id == null) prefs.remove(Keys.lastRecipeId) else prefs[Keys.lastRecipeId] = id
+        prefs[Keys.lastRecipeFortySix] = fortySix
     }
 
     suspend fun setPresetsVersion(version: Int) = edit { it[Keys.presetsVersion] = version }
@@ -260,10 +278,6 @@ class SettingsRepository(private val context: Context) {
         val kept = decodePresets(prefs[Keys.fortySixPresets])
             .filterNot { it.name.equals(name, ignoreCase = true) }
         prefs[Keys.fortySixPresets] = encodePresets(kept)
-    }
-
-    suspend fun setFortySixRecipeId(id: Long?) = edit { prefs ->
-        if (id == null) prefs.remove(Keys.fortySixRecipeId) else prefs[Keys.fortySixRecipeId] = id
     }
 
     private suspend fun edit(block: (MutablePreferences) -> Unit) {

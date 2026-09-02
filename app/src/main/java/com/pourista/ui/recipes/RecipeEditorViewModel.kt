@@ -12,6 +12,7 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
+import kotlinx.coroutines.flow.updateAndGet
 import kotlinx.coroutines.launch
 
 data class EditorState(
@@ -24,6 +25,7 @@ data class EditorState(
     val temp: String = "94",
     val grinder: String = "",
     val grind: String = "",
+    val filter: String = "",
     val bean: String = "",
     val roaster: String = "",
     val notes: String = "",
@@ -141,6 +143,7 @@ class RecipeEditorViewModel(
             temp = waterTempC.toString(),
             grinder = grinderName.orEmpty(),
             grind = grindSetting.orEmpty(),
+            filter = filterName.orEmpty(),
             bean = beanName.orEmpty(),
             roaster = roaster.orEmpty(),
             notes = notes.orEmpty(),
@@ -162,6 +165,7 @@ class RecipeEditorViewModel(
     fun setTemp(value: String) = _state.update { it.copy(temp = value.filter(Char::isDigit)) }
     fun setGrinder(value: String) = _state.update { it.copy(grinder = value) }
     fun setGrind(value: String) = _state.update { it.copy(grind = value) }
+    fun setFilter(value: String) = _state.update { it.copy(filter = value) }
 
     /** Настройки нужны пересчёту помола: он помнит выбранные кофемолки. */
     val settings = container.settingsState
@@ -203,6 +207,20 @@ class RecipeEditorViewModel(
         state.copy(steps = state.steps.map { if (it.key == key) transform(it) else it })
     }
 
+    /**
+     * Ввод длительности закончен: подгоняем под неё влив.
+     *
+     * Во время набора молчим. Длительность правят по нескольку раз подряд, и
+     * «3» на пути к «30» успело бы пересчитать скорость втрое.
+     */
+    fun onDurationEntered(key: Long) = _state.update { state ->
+        state.copy(
+            steps = state.steps.map {
+                if (it.key == key) it.pourFittedToDuration() else it
+            }
+        )
+    }
+
     /** Растянуть объёмы проливов так, чтобы их сумма совпала с заданной водой. */
     fun distributeWater() = _state.update { state ->
         val pours = state.steps.filter { it.kind.isPour }
@@ -221,7 +239,11 @@ class RecipeEditorViewModel(
     }
 
     fun save(onSaved: (Long) -> Unit) {
-        val state = _state.value
+        // Сохранение — тоже конец ввода: длительность могли поправить и уйти
+        // отсюда сразу кнопкой, не тронув других полей.
+        val state = _state.updateAndGet { current ->
+            current.copy(steps = current.steps.map { it.pourFittedToDuration() })
+        }
         if (!state.canSave) return
         viewModelScope.launch {
             val recipe = state.toRecipe()
@@ -272,6 +294,7 @@ class RecipeEditorViewModel(
             waterTempC = tempValue,
             grinderName = grinder.trim().takeIf { it.isNotBlank() },
             grindSetting = grind.trim().takeIf { it.isNotBlank() },
+            filterName = filter.trim().takeIf { it.isNotBlank() },
             beanName = bean.trim().takeIf { it.isNotBlank() },
             roaster = roaster.trim().takeIf { it.isNotBlank() },
             notes = notes.trim().takeIf { it.isNotBlank() },

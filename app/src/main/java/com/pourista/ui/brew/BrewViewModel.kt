@@ -36,9 +36,16 @@ class BrewViewModel(private val container: AppContainer) : ViewModel() {
 
     init {
         viewModelScope.launch {
-            val lastId = container.settings.current().lastRecipeId
-            if (lastId != null && container.brewEngine.state.value.recipe == null) {
-                container.recipes.recipeById(lastId)?.let(container.brewEngine::selectRecipe)
+            if (container.brewEngine.state.value.recipe != null) return@launch
+            val saved = container.settings.current()
+            // Сборку генератора в базе не ищем — её там нет. Собираем заново
+            // по тем же ручкам: числа выйдут те же.
+            if (saved.lastRecipeFortySix) {
+                container.brewEngine.selectRecipe(container.fortySixRecipe(saved.fortySix))
+            } else {
+                saved.lastRecipeId?.let { id ->
+                    container.recipes.recipeById(id)?.let(container.brewEngine::selectRecipe)
+                }
             }
         }
         // Сохраняет заваривание контейнер: финиш бывает и автоматическим, когда
@@ -84,7 +91,9 @@ class BrewViewModel(private val container: AppContainer) : ViewModel() {
      */
     fun finish() = container.brewEngine.finish()
 
-    fun selectRecipe(recipe: Recipe?) {
+    fun selectRecipe(recipe: Recipe?) = selectRecipe(recipe, fromGenerator = false)
+
+    private fun selectRecipe(recipe: Recipe?, fromGenerator: Boolean) {
         // Законченное заваривание с выбором нового рецепта закрывается само:
         // держать на экране следы прошлой чашки незачем.
         if (brew.value.phase == BrewPhase.FINISHED) {
@@ -92,8 +101,11 @@ class BrewViewModel(private val container: AppContainer) : ViewModel() {
         }
         container.brewEngine.selectRecipe(recipe)
         viewModelScope.launch {
-            container.settings.setLastRecipeId(recipe?.id)
-            recipe?.let { container.recipes.markUsed(it.id) }
+            // У сборки генератора id нулевой: ни запоминать её по номеру, ни
+            // отмечать использованной нечего.
+            val id = recipe?.id?.takeIf { it > 0 }
+            container.settings.setLastRecipe(id = id, fortySix = fromGenerator)
+            id?.let { container.recipes.markUsed(it) }
         }
     }
 
@@ -111,12 +123,15 @@ class BrewViewModel(private val container: AppContainer) : ViewModel() {
     /**
      * Пересобирает рецепт 4:6 по новым настройкам и сразу берёт его в работу:
      * генератор открывают, когда собираются заваривать, а не про запас.
+     *
+     * В список рецептов сборка не попадает. Ручки запоминаются — этого хватает,
+     * чтобы повторить, — а свои наборы у генератора хранятся пресетами.
      */
     fun generateFortySix(params: FortySixParams, lockRatio: Boolean) {
+        selectRecipe(container.fortySixRecipe(params), fromGenerator = true)
         viewModelScope.launch {
+            container.settings.setFortySix(params)
             container.settings.setFortySixLockRatio(lockRatio)
-            val recipe = container.buildFortySixRecipe(params) ?: return@launch
-            selectRecipe(recipe)
         }
     }
 

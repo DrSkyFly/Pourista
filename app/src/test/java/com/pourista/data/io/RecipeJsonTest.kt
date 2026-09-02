@@ -18,6 +18,7 @@ class RecipeJsonTest {
         waterGrams = 250f,
         waterTempC = 95,
         grindSetting = "средний",
+        filterName = "Cafec Abaca",
         autoStart = true,
         steps = listOf(
             RecipeStep(
@@ -53,6 +54,7 @@ class RecipeJsonTest {
         assertEquals(hoffmann.waterGrams, restored.waterGrams, 0.01f)
         assertEquals(hoffmann.waterTempC, restored.waterTempC)
         assertEquals(hoffmann.grindSetting, restored.grindSetting)
+        assertEquals(hoffmann.filterName, restored.filterName)
         assertEquals(hoffmann.steps.map { it.kind }, restored.steps.map { it.kind })
         assertEquals(
             hoffmann.steps.map { it.targetWaterGrams },

@@ -171,6 +171,9 @@
     <string name="recipe_grind">Maalgraad</string>
     <string name="recipe_grind_hint">Bijvoorbeeld: 24 klikken, 6.5, middel</string>
     <string name="recipe_grind_value">Maalgraad: %1$s</string>
+    <string name="recipe_filter">Filter</string>
+    <string name="recipe_filter_hint">Bijvoorbeeld: Hario, Cafec Abaca, Kalita Wave</string>
+    <string name="recipe_filter_value">Filter: %1$s</string>
     <string name="recipe_bean">Koffie</string>
     <string name="recipe_roaster">Branderij</string>
     <string name="recipe_notes">Notities</string>
@@ -182,7 +185,7 @@
     <string name="recipe_preview">Schenkschema</string>
     <string name="recipe_scaled_note">Omgerekend naar de echte dosis: %1$s g → %2$s g water</string>
     <string name="recipe_section_main">Basis</string>
-    <string name="recipe_section_grind">Maalgraad</string>
+    <string name="recipe_section_grind">Maling en filter</string>
     <string name="recipe_section_steps">Stappen</string>
     <string name="recipe_section_extra">Koffie en notities</string>
 
@@ -224,6 +227,12 @@
     <string name="settings_pace_tolerance">Speling in de flow</string>
     <string name="settings_pace_tolerance_hint">Hoe ver de flow van het recept mag afwijken voordat de app vraagt om sneller of langzamer te schenken</string>
     <string name="settings_pace_tolerance_value">±%1$d %%</string>
+    <string name="settings_flow_smoothing">Afvlakking van de doorstroming</string>
+    <string name="settings_flow_smoothing_hint">Hoeveel de getoonde doorstroming wordt gemiddeld: meer leest rustiger, minder ligt dichter bij de werkelijke waarde</string>
+    <string name="flow_smoothing_none">Uit</string>
+    <string name="flow_smoothing_light">Licht</string>
+    <string name="flow_smoothing_normal">Normaal</string>
+    <string name="flow_smoothing_strong">Sterk</string>
     <string name="settings_near_target">Signaal voor het doel</string>
     <string name="settings_near_target_hint">Hoeveel gram voor het doel van de stap er gewaarschuwd wordt</string>
     <string name="scale_question_title">Heb je een bluetooth-weegschaal?</string>
@@ -319,7 +328,7 @@
     <string name="scale_log_intro">Neem dit op als de weegschaal niet verbindt of onzin laat zien. In het bestand staat wat de weegschaal stuurt en hoe de app het gelezen heeft. Persoonlijke gegevens komen er niet in.</string>
     <string name="scale_log_connected">Weegschaal verbonden: %1$s</string>
     <string name="scale_log_disconnected">Geen weegschaal verbonden. Zonder verbinding wordt alleen opgenomen wat de weegschaal de lucht in stuurt.</string>
-    <string name="scale_log_steps">1. Zet de weegschaal aan en wacht op de verbinding.\n2. Tik op ‘Opname starten’.\n3. Wacht 5 seconden zonder er iets op te zetten.\n4. Tik hier op ‘Tarra’ en daarna op de tarra-knop van de weegschaal zelf.\n5. Zet er een bekend gewicht op en wacht 5 seconden.\n6. Leg er nog wat bij en wacht opnieuw.\n7. Haal alles eraf.\n8. Tik op ‘Stoppen’.</string>
+    <string name="scale_log_steps">1. Zet de weegschaal aan en wacht op de verbinding.\n2. Tik op ‘Opname starten’.\n3. Wacht 5 seconden zonder er iets op te zetten.\n4. Zet er een bekend gewicht op en wacht 5 seconden.\n5. Tik hier op ‘Tarra’ en wacht nog 5 seconden.\n6. Heeft de weegschaal een eigen tarra-knop, druk die dan ook in.\n7. Leg er nog wat bij en wacht opnieuw.\n8. Haal alles eraf.\n9. Tik op ‘Stoppen’.</string>
     <string name="scale_log_start">Opname starten</string>
     <string name="scale_log_stop">Stoppen</string>
     <string name="scale_log_recording">Opname loopt, pakketten: %1$d</string>

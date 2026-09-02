@@ -51,7 +51,7 @@ class FlowRateTest {
 
     @Test
     fun `число весов важнее своей оценки`() {
-        val flow = FlowRate()
+        val flow = FlowRate(smoothing = FlowSmoothing.NONE)
         pour(flow, gramsPerSecond = 10f, tickMs = 100, forMs = 1_000)
 
         // Весы посчитали сами — берём их число.
@@ -60,6 +60,35 @@ class FlowRateTest {
         assertEquals(0f, flow.onSample(12f, -3f, 1_200), 0.01f)
         // Потолок весов на резком изменении веса — не скорость влива.
         assertEquals(10f, flow.onSample(13f, 99.9f, 1_300), 0.01f)
+    }
+
+    @Test
+    fun `число весов сглаживается наравне со своей оценкой`() {
+        val flow = FlowRate(smoothing = FlowSmoothing.NORMAL)
+        pour(flow, gramsPerSecond = 10f, tickMs = 100, forMs = 2_000)
+
+        // Весы показали вдвое меньше: до 1.9.2 это уходило на экран как есть,
+        // и цифра прыгала с каждым пакетом. Теперь показание идёт к новому
+        // числу постепенно.
+        val first = flow.onSample(20f, 5f, 2_100)
+        assertTrue(first > 9f)
+        assertTrue(first < 10f)
+
+        // Секунду спустя от прежних десяти в окне ничего не остаётся.
+        var at = 2_200L
+        var shown = first
+        while (at <= 3_200) {
+            shown = flow.onSample(20f, 5f, at)
+            at += 100
+        }
+        assertEquals(5f, shown, 0.01f)
+    }
+
+    @Test
+    fun `без сглаживания число весов идёт на экран как есть`() {
+        val flow = FlowRate(smoothing = FlowSmoothing.NONE)
+        pour(flow, gramsPerSecond = 10f, tickMs = 100, forMs = 2_000)
+        assertEquals(5f, flow.onSample(20f, 5f, 2_100), 0.01f)
     }
 
     @Test
@@ -96,8 +125,9 @@ class FlowRateTest {
         val flow = FlowRate()
         pour(flow, gramsPerSecond = 10f, tickMs = 100, forMs = 2_000)
 
-        // Чайник закрыли: вес стоит.
-        assertEquals(0f, pour(flow, gramsPerSecond = 0f, tickMs = 100, forMs = 1_100, fromMs = 2_100, fromGrams = 20f), 0.01f)
+        // Чайник закрыли: вес стоит. Хвост влива держится в окне сглаживания,
+        // поэтому нулю показание равно не сразу.
+        assertEquals(0f, pour(flow, gramsPerSecond = 0f, tickMs = 100, forMs = 2_500, fromMs = 2_100, fromGrams = 20f), 0.01f)
     }
 
     @Test

@@ -29,7 +29,7 @@ data class BrewEntity(
     @ColumnInfo(name = "recipe_name") val recipeName: String? = null,
 )
 
-/** Заметки к завариванию: зерно, обжарщик, кофемолка, помол, температура. */
+/** Заметки к завариванию: зерно, обжарщик, кофемолка, помол, фильтр, температура. */
 @Entity(
     tableName = "brew_notes",
     foreignKeys = [
@@ -49,6 +49,7 @@ data class BrewNotesEntity(
     @ColumnInfo(name = "roaster") val roaster: String?,
     @ColumnInfo(name = "grinder") val grinder: String?,
     @ColumnInfo(name = "grind_setting") val grindSetting: String?,
+    @ColumnInfo(name = "filter_name") val filterName: String? = null,
     @ColumnInfo(name = "brewer") val brewer: String?,
     @ColumnInfo(name = "water_temp") val waterTemp: String?,
     @ColumnInfo(name = "note") val note: String?,
@@ -71,6 +72,8 @@ data class RecipeEntity(
     @ColumnInfo(name = "water_temp_c") val waterTempC: Int,
     @ColumnInfo(name = "grinder_name") val grinderName: String?,
     @ColumnInfo(name = "grind_setting") val grindSetting: String?,
+    /** Бумага: «Hario», «Cafec Abaca». От неё чашка меняется не меньше, чем от помола. */
+    @ColumnInfo(name = "filter_name") val filterName: String? = null,
     @ColumnInfo(name = "bean_name") val beanName: String?,
     @ColumnInfo(name = "roaster") val roaster: String?,
     @ColumnInfo(name = "notes") val notes: String?,

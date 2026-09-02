@@ -10,7 +10,7 @@ import androidx.sqlite.db.SupportSQLiteDatabase
 import java.io.File
 
 @Database(
-    version = 9,
+    version = 11,
     entities = [
         BrewEntity::class,
         BrewNotesEntity::class,
@@ -34,7 +34,7 @@ abstract class AppDatabase : RoomDatabase() {
             renamePreviousFile(context)
             return Room
                 .databaseBuilder(context, AppDatabase::class.java, NAME)
-                .addMigrations(MIGRATION_7_8, MIGRATION_8_9)
+                .addMigrations(MIGRATION_7_8, MIGRATION_8_9, MIGRATION_9_10, MIGRATION_10_11)
                 .build()
         }
 
@@ -55,6 +55,20 @@ abstract class AppDatabase : RoomDatabase() {
                 if (!from.exists()) true else from.renameTo(File(target.path + suffix))
             }
             Log.i(TAG, if (moved) "База переименована в $NAME" else "Не удалось переименовать базу")
+        }
+
+        /** Версия 11: фильтр дописывается и в заметки к завариванию. */
+        internal val MIGRATION_10_11 = object : Migration(10, 11) {
+            override fun migrate(db: SupportSQLiteDatabase) {
+                db.execSQL("ALTER TABLE `brew_notes` ADD COLUMN `filter_name` TEXT")
+            }
+        }
+
+        /** Версия 10: у рецепта появился фильтр. */
+        internal val MIGRATION_9_10 = object : Migration(9, 10) {
+            override fun migrate(db: SupportSQLiteDatabase) {
+                db.execSQL("ALTER TABLE `recipes` ADD COLUMN `filter_name` TEXT")
+            }
         }
 
         /** Версия 9: у рецепта появился режим аэропресса. */

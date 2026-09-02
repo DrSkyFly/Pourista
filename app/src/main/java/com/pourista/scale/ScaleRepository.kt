@@ -23,12 +23,15 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.SupervisorJob
+import kotlinx.coroutines.TimeoutCancellationException
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withTimeout
+import kotlin.math.abs
 
 enum class ConnectionStatus {
     IDLE,
@@ -91,6 +94,7 @@ class ScaleRepository(context: Context) {
     private var peripheral: BluetoothPeripheral? = null
     private var reconnectJob: Job? = null
     private var heartbeatJob: Job? = null
+    private var tareJob: Job? = null
 
     /**
      * Протокол подключённых весов. До первой находки — наш собственный: он
@@ -162,6 +166,7 @@ class ScaleRepository(context: Context) {
         Log.d(TAG, "Bluetooth выключили")
         reconnectJob?.cancel()
         heartbeatJob?.cancel()
+        tareJob?.cancel()
         peripheral = null
         _state.update { ScaleState(status = ConnectionStatus.BLUETOOTH_OFF) }
     }
@@ -244,6 +249,7 @@ class ScaleRepository(context: Context) {
         userDisconnected = true
         reconnectJob?.cancel()
         heartbeatJob?.cancel()
+        tareJob?.cancel()
         runCatching { central.stopScan() }
         // Устройство библиотека могла уже забыть — так бывает после выключения
         // адаптера. Тогда на просьбу разорвать связь она бросает исключение.
@@ -254,10 +260,39 @@ class ScaleRepository(context: Context) {
         _state.update { ScaleState() }
     }
 
+    /**
+     * Обнуление весов.
+     *
+     * Команда уходит без подтверждения: услышали её весы или нет, ответа не
+     * будет. Поэтому смотрим на показания. Вес встал на ноль — тара прошла.
+     * Вес остался прежним — команду не услышали, шлём ещё раз. Вес уехал —
+     * на весы что-то положили или сняли, и повторять уже нельзя: обнулим не
+     * то, что человек хотел.
+     */
     fun tare() {
-        val current = peripheral ?: return
-        val command = driver.tareCommand() ?: return
-        scope.launch { sendCommand(current, command) }
+        diagnostics?.event("нажата «Тара»")
+        val current = peripheral ?: run {
+            diagnostics?.event("тара не ушла: весы не на связи")
+            return
+        }
+        val command = driver.tareCommand() ?: run {
+            diagnostics?.event("тара не ушла: ${driver.title} обнуления не умеет")
+            return
+        }
+        tareJob?.cancel()
+        tareJob = scope.launch {
+            val before = _state.value.weightGrams
+            repeat(TARE_ATTEMPTS) { attempt ->
+                if (!_state.value.isConnected) return@launch
+                if (attempt > 0) diagnostics?.event("тара не сработала, шлём ещё раз")
+                sendCommand(current, command)
+                delay(TARE_CHECK_MS)
+                val now = _state.value.weightGrams
+                if (abs(now) <= TARE_TOLERANCE_GRAMS) return@launch
+                if (abs(now - before) > TARE_TOLERANCE_GRAMS) return@launch
+            }
+            diagnostics?.event("тара так и не сработала")
+        }
     }
 
     /**
@@ -447,10 +482,11 @@ class ScaleRepository(context: Context) {
                         val reading = active.parseWeight(value) ?: run {
                             // Заряд у части весов приходит отдельным кадром
                             // в ту же характеристику, что и вес.
-                            active.parseBattery(value)?.let { percent ->
+                            val percent = active.parseBattery(value)
+                            if (percent != null) {
                                 _state.update { it.copy(batteryPercent = percent) }
                             }
-                            logPacket(value, null)
+                            logPacket(value, null, percent)
                             return@observe
                         }
                         logPacket(value, reading)
@@ -495,16 +531,19 @@ class ScaleRepository(context: Context) {
                     observeEverything(device, log)
                 }
 
-                // Весы, у которых единица только переключается по кругу,
-                // вслепую трогать нельзя: граммы превратились бы в унции.
-                if (keepGrams && !active.unitCommandIsToggle) {
-                    active.unitCommand(WeightUnit.GRAM)?.let { sendCommand(device, it) }
+                val startup = buildList {
+                    // Весы, у которых единица только переключается по кругу,
+                    // вслепую трогать нельзя: граммы превратились бы в унции.
+                    if (keepGrams && !active.unitCommandIsToggle) {
+                        active.unitCommand(WeightUnit.GRAM)?.let(::add)
+                    }
+                    addAll(active.onConnectCommands())
                 }
                 // Знакомство у части весов идёт по шагам, и торопить его нельзя:
                 // подряд отправленные команды они пропускают.
-                active.onConnectCommands().forEach {
-                    sendCommand(device, it)
-                    delay(COMMAND_GAP_MS)
+                startup.forEachIndexed { index, command ->
+                    if (index > 0) delay(COMMAND_GAP_MS)
+                    sendCommand(device, command)
                 }
                 startHeartbeat(device, active)
             } catch (e: Exception) {
@@ -565,10 +604,15 @@ class ScaleRepository(context: Context) {
      * Диагностика протокола: раз в секунду печатает сырой пакет и то, как он
      * разобран. Нужна при проверке на живых весах, в релизе не собирается.
      */
-    private fun logPacket(value: ByteArray, reading: WeightReading?) {
+    private fun logPacket(value: ByteArray, reading: WeightReading?, battery: Int? = null) {
+        // Заряд весы шлют своим кадром в ту же характеристику. Разбирается он
+        // не как вес, но разбирается: «не удалось» тут было бы неправдой.
+        val parsed = when {
+            reading != null -> "%.1f г, единица %s".format(reading.grams, reading.unitOnScale)
+            battery != null -> "заряд $battery %"
+            else -> "разобрать не удалось"
+        }
         diagnostics?.let { log ->
-            val parsed = reading?.let { "%.1f г, единица %s".format(it.grams, it.unitOnScale) }
-                ?: "разобрать не удалось"
             log.packet(driver.weightCharacteristic.toString(), value, parsed)
             _diagnosticsPackets.value = log.packetCount
         }
@@ -577,8 +621,6 @@ class ScaleRepository(context: Context) {
         if (now - lastPacketLogAt < PACKET_LOG_INTERVAL_MS) return
         lastPacketLogAt = now
         val hex = value.joinToString(" ") { "%02x".format(it) }
-        val parsed = reading?.let { "%.1f г, единица на весах %s".format(it.grams, it.unitOnScale) }
-            ?: "разобрать не удалось"
         Log.d(TAG, "Пакет веса [$hex] → $parsed")
     }
 
@@ -587,35 +629,57 @@ class ScaleRepository(context: Context) {
         command: ByteArray,
         silent: Boolean = false,
     ) {
+        val target = driver.commandCharacteristic ?: run {
+            diagnostics?.event("команда не отправлена: у драйвера нет характеристики команд")
+            return
+        }
+        val characteristic = device.getCharacteristic(driver.service, target) ?: run {
+            diagnostics?.event("команда не отправлена: характеристики $target нет у устройства")
+            return
+        }
+        // Часть весов принимает команды только без подтверждения — у
+        // Timemore характеристика команд иначе и не умеет.
+        val write = when {
+            driver.writeWithoutResponse &&
+                characteristic.supports(PROPERTY_WRITE_NO_RESPONSE) -> WriteType.WITHOUT_RESPONSE
+
+            characteristic.supports(BluetoothGattCharacteristic.PROPERTY_WRITE) ->
+                WriteType.WITH_RESPONSE
+
+            else -> WriteType.WITHOUT_RESPONSE
+        }
+        // В журнал пишем до отправки, а не после: команда, которая застряла в
+        // очереди, иначе не оставила бы следа вовсе.
+        if (!silent) diagnostics?.command(target.toString(), command, write.toString())
         try {
-            val target = driver.commandCharacteristic ?: run {
-                diagnostics?.event("команда не отправлена: у драйвера нет характеристики команд")
-                return
+            withTimeout(COMMAND_TIMEOUT_MS) {
+                repeat(driver.commandRepeats.coerceAtLeast(1)) { attempt ->
+                    if (attempt > 0) delay(COMMAND_GAP_MS)
+                    device.writeCharacteristic(characteristic, command, write)
+                }
             }
-            val characteristic = device.getCharacteristic(driver.service, target) ?: run {
-                diagnostics?.event("команда не отправлена: характеристики $target нет у устройства")
-                return
-            }
-            // Часть весов принимает команды только без подтверждения — у
-            // Timemore характеристика команд иначе и не умеет.
-            val write = when {
-                driver.writeWithoutResponse &&
-                    characteristic.supports(PROPERTY_WRITE_NO_RESPONSE) -> WriteType.WITHOUT_RESPONSE
-
-                characteristic.supports(BluetoothGattCharacteristic.PROPERTY_WRITE) ->
-                    WriteType.WITH_RESPONSE
-
-                else -> WriteType.WITHOUT_RESPONSE
-            }
-            repeat(driver.commandRepeats.coerceAtLeast(1)) { attempt ->
-                if (attempt > 0) delay(COMMAND_GAP_MS)
-                device.writeCharacteristic(characteristic, command, write)
-            }
-            if (!silent) diagnostics?.command(target.toString(), command, "отправлено, $write")
+        } catch (e: TimeoutCancellationException) {
+            Log.d(TAG, "Команда встала в очереди, поднимаем связь заново")
+            diagnostics?.event("команда встала в очереди, связь поднимаем заново")
+            recoverStuckLink(device)
         } catch (e: Exception) {
             Log.d(TAG, "Команда не доставлена: $e")
             diagnostics?.event("команда не ушла: $e")
         }
+    }
+
+    /**
+     * Очередь команд встала.
+     *
+     * Библиотека связи ведёт команды по одной и следующую берёт только после
+     * ответа системы на предыдущую. Ответ иногда не приходит — очередь встаёт
+     * навсегда, и с этого мига не уходит ни одна команда, включая тару.
+     * Разбирает очередь библиотека только вместе со связью, поэтому связь и
+     * рвём: обратно её поднимет [scheduleReconnect].
+     */
+    @SuppressLint("MissingPermission")
+    private suspend fun recoverStuckLink(device: BluetoothPeripheral) {
+        runCatching { central.cancelConnection(device) }
     }
 
     private fun BluetoothGattCharacteristic.notifies(): Boolean =
@@ -649,6 +713,21 @@ class ScaleRepository(context: Context) {
 
         /** Пауза между командами: подряд весы их теряют. */
         private const val COMMAND_GAP_MS = 200L
+
+        /**
+         * Сколько ждём отправки. Обычная команда уходит за миллисекунды, так
+         * что этот срок означает не медленную связь, а вставшую очередь.
+         */
+        private const val COMMAND_TIMEOUT_MS = 5_000L
+
+        /** Сколько раз повторить тару, если весы её не услышали. */
+        private const val TARE_ATTEMPTS = 3
+
+        /** Сколько ждать, прежде чем смотреть, сработала ли тара. */
+        private const val TARE_CHECK_MS = 600L
+
+        /** Ноль на весах не идеальный, да и показания дрожат. */
+        private const val TARE_TOLERANCE_GRAMS = 0.5f
 
         /** Как часто можно просить весы вернуться в граммы. */
         private const val UNIT_COMMAND_PAUSE_MS = 3_000L

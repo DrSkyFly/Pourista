@@ -171,6 +171,9 @@
     <string name="recipe_grind">Öğütme</string>
     <string name="recipe_grind_hint">Örneğin: 24 klik, 6.5, orta</string>
     <string name="recipe_grind_value">Öğütme: %1$s</string>
+    <string name="recipe_filter">Filtre</string>
+    <string name="recipe_filter_hint">Örneğin: Hario, Cafec Abaca, Kalita Wave</string>
+    <string name="recipe_filter_value">Filtre: %1$s</string>
     <string name="recipe_bean">Kahve</string>
     <string name="recipe_roaster">Kavurucu</string>
     <string name="recipe_notes">Notlar</string>
@@ -182,7 +185,7 @@
     <string name="recipe_preview">Döküm planı</string>
     <string name="recipe_scaled_note">Gerçek doza göre yeniden hesaplandı: %1$s g → %2$s g su</string>
     <string name="recipe_section_main">Temel</string>
-    <string name="recipe_section_grind">Öğütme</string>
+    <string name="recipe_section_grind">Öğütme ve filtre</string>
     <string name="recipe_section_steps">Adımlar</string>
     <string name="recipe_section_extra">Kahve ve notlar</string>
 
@@ -224,6 +227,12 @@
     <string name="settings_pace_tolerance">Akış toleransı</string>
     <string name="settings_pace_tolerance_hint">Uygulama daha hızlı ya da daha yavaş dökmeni istemeden önce akış tariften ne kadar sapabilir</string>
     <string name="settings_pace_tolerance_value">±%%%1$d</string>
+    <string name="settings_flow_smoothing">Akış hızı yumuşatma</string>
+    <string name="settings_flow_smoothing_hint">Gösterilen akış hızı ne kadar ortalanacak: daha güçlüsü okumayı kolaylaştırır, daha zayıfı gerçek değere daha yakındır</string>
+    <string name="flow_smoothing_none">Yok</string>
+    <string name="flow_smoothing_light">Hafif</string>
+    <string name="flow_smoothing_normal">Normal</string>
+    <string name="flow_smoothing_strong">Güçlü</string>
     <string name="settings_near_target">Hedeften önce uyarı</string>
     <string name="settings_near_target_hint">Adımın hedefinden kaç gram önce uyarılacağı</string>
     <string name="scale_question_title">Bluetooth’lu teraziniz var mı?</string>
@@ -319,7 +328,7 @@
     <string name="scale_log_intro">Terazi bağlanmıyorsa ya da saçma değerler gösteriyorsa bunu kaydet. Dosyada terazinin gönderdikleri ve uygulamanın bunları nasıl okuduğu yer alır. Kişisel veri girmez.</string>
     <string name="scale_log_connected">Terazi bağlı: %1$s</string>
     <string name="scale_log_disconnected">Bağlı terazi yok. Bağlantı olmadan yalnızca terazinin havaya duyurduğu bilgiler kaydedilir.</string>
-    <string name="scale_log_steps">1. Teraziyi aç ve bağlanmasını bekle.\n2. “Kaydı başlat”a dokun.\n3. Üstünde hiçbir şey yokken 5 saniye bekle.\n4. Burada “Dara”ya, sonra terazinin kendi dara düğmesine bas.\n5. Ağırlığı bilinen bir şey koy ve 5 saniye bekle.\n6. Biraz daha ekle ve yine bekle.\n7. Her şeyi kaldır.\n8. “Durdur”a dokun.</string>
+    <string name="scale_log_steps">1. Teraziyi aç ve bağlanmasını bekle.\n2. “Kaydı başlat”a dokun.\n3. Üstünde hiçbir şey yokken 5 saniye bekle.\n4. Ağırlığı bilinen bir şey koy ve 5 saniye bekle.\n5. Burada “Dara”ya dokun ve 5 saniye daha bekle.\n6. Terazinin kendi dara düğmesi varsa ona da bas.\n7. Biraz daha ekle ve yine bekle.\n8. Her şeyi kaldır.\n9. “Durdur”a dokun.</string>
     <string name="scale_log_start">Kaydı başlat</string>
     <string name="scale_log_stop">Durdur</string>
     <string name="scale_log_recording">Kayıt sürüyor, paket: %1$d</string>

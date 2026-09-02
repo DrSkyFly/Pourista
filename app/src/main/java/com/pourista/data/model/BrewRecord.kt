@@ -8,12 +8,14 @@ data class BrewNotes(
     val roaster: String? = null,
     val grinder: String? = null,
     val grindSetting: String? = null,
+    /** Бумага: «Hario», «Cafec Abaca». */
+    val filterName: String? = null,
     val brewer: String? = null,
     val waterTemp: String? = null,
     val extra: String? = null,
 ) {
     val isEmpty: Boolean
-        get() = listOf(bean, roaster, grinder, grindSetting, brewer, waterTemp, extra)
+        get() = listOf(bean, roaster, grinder, grindSetting, filterName, brewer, waterTemp, extra)
             .all { it.isNullOrBlank() }
 }
 
@@ -57,6 +59,7 @@ fun BrewNotesEntity.toDomain(): BrewNotes = BrewNotes(
     roaster = roaster,
     grinder = grinder,
     grindSetting = grindSetting,
+    filterName = filterName,
     brewer = brewer,
     waterTemp = waterTemp,
     extra = note,

@@ -62,6 +62,7 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.pourista.BuildConfig
 import com.pourista.R
+import com.pourista.brew.FlowSmoothing
 import com.pourista.appContainer
 import com.pourista.core.AppLocale
 import com.pourista.ui.components.ReleaseNotesDialog
@@ -210,6 +211,13 @@ fun SettingsScreen(
                         current = percentLabel(settings.paceTolerance),
                         options = PACE_TOLERANCE_OPTIONS.map { percentLabel(it) to it },
                         onSelect = viewModel::setPaceTolerance,
+                    )
+                    ChoiceRow(
+                        title = stringResource(R.string.settings_flow_smoothing),
+                        subtitle = stringResource(R.string.settings_flow_smoothing_hint),
+                        current = stringResource(settings.flowSmoothing.labelRes()),
+                        options = FlowSmoothing.entries.map { stringResource(it.labelRes()) to it },
+                        onSelect = viewModel::setFlowSmoothing,
                     )
                     ChoiceRow(
                         title = stringResource(R.string.settings_near_target),
@@ -620,6 +628,13 @@ private val PACE_TOLERANCE_OPTIONS = listOf(0.05f, 0.1f, 0.15f, 0.2f, 0.3f)
 @Composable
 private fun percentLabel(share: Float): String =
     stringResource(R.string.settings_pace_tolerance_value, kotlin.math.round(share * 100).toInt())
+
+private fun FlowSmoothing.labelRes(): Int = when (this) {
+    FlowSmoothing.NONE -> R.string.flow_smoothing_none
+    FlowSmoothing.LIGHT -> R.string.flow_smoothing_light
+    FlowSmoothing.NORMAL -> R.string.flow_smoothing_normal
+    FlowSmoothing.STRONG -> R.string.flow_smoothing_strong
+}
 
 private fun AppPalette.labelRes(): Int = when (this) {
     AppPalette.COPPER -> R.string.palette_copper

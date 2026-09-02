@@ -171,6 +171,9 @@
     <string name="recipe_grind">Mouture</string>
     <string name="recipe_grind_hint">Par exemple : 24 clics, 6.5, moyenne</string>
     <string name="recipe_grind_value">Mouture : %1$s</string>
+    <string name="recipe_filter">Filtre</string>
+    <string name="recipe_filter_hint">Par exemple : Hario, Cafec Abaca, Kalita Wave</string>
+    <string name="recipe_filter_value">Filtre : %1$s</string>
     <string name="recipe_bean">Café</string>
     <string name="recipe_roaster">Torréfacteur</string>
     <string name="recipe_notes">Notes</string>
@@ -182,7 +185,7 @@
     <string name="recipe_preview">Plan de versement</string>
     <string name="recipe_scaled_note">Recalculé pour la dose réelle : %1$s g → %2$s g d\'eau</string>
     <string name="recipe_section_main">Essentiel</string>
-    <string name="recipe_section_grind">Mouture</string>
+    <string name="recipe_section_grind">Mouture et filtre</string>
     <string name="recipe_section_steps">Étapes</string>
     <string name="recipe_section_extra">Café et notes</string>
 
@@ -224,6 +227,12 @@
     <string name="settings_pace_tolerance">Tolérance du débit</string>
     <string name="settings_pace_tolerance_hint">De combien le débit peut s\'écarter de la recette avant que l\'app demande de verser plus vite ou plus lentement</string>
     <string name="settings_pace_tolerance_value">±%1$d %%</string>
+    <string name="settings_flow_smoothing">Lissage du débit</string>
+    <string name="settings_flow_smoothing_hint">Dans quelle mesure lisser le débit affiché : plus fort, le chiffre est stable ; plus faible, il est plus proche de la valeur réelle</string>
+    <string name="flow_smoothing_none">Aucun</string>
+    <string name="flow_smoothing_light">Léger</string>
+    <string name="flow_smoothing_normal">Normal</string>
+    <string name="flow_smoothing_strong">Fort</string>
     <string name="settings_near_target">Signal avant la cible</string>
     <string name="settings_near_target_hint">Combien de grammes avant la cible de l\'étape prévenir</string>
     <string name="scale_question_title">Avez-vous une balance Bluetooth ?</string>
@@ -319,7 +328,7 @@
     <string name="scale_log_intro">À enregistrer quand la balance refuse de se connecter ou affiche n\'importe quoi. Le fichier contient ce que la balance envoie et la façon dont l\'app l\'a lu. Aucune donnée personnelle n\'y entre.</string>
     <string name="scale_log_connected">Balance connectée : %1$s</string>
     <string name="scale_log_disconnected">Aucune balance connectée. Sans connexion, seul ce que la balance diffuse sera enregistré.</string>
-    <string name="scale_log_steps">1. Allumez la balance et attendez la connexion.\n2. Touchez « Démarrer l\'enregistrement ».\n3. Attendez 5 secondes sans rien poser dessus.\n4. Touchez « Tare » ici, puis le bouton de tare de la balance elle-même.\n5. Posez un poids connu et attendez 5 secondes.\n6. Ajoutez-en un peu et attendez encore.\n7. Retirez tout.\n8. Touchez « Arrêter ».</string>
+    <string name="scale_log_steps">1. Allumez la balance et attendez la connexion.\n2. Touchez « Démarrer l\'enregistrement ».\n3. Attendez 5 secondes sans rien poser dessus.\n4. Posez un poids connu et attendez 5 secondes.\n5. Touchez « Tare » ici et attendez encore 5 secondes.\n6. Si la balance a son propre bouton de tare, appuyez dessus aussi.\n7. Ajoutez-en un peu et attendez encore.\n8. Retirez tout.\n9. Touchez « Arrêter ».</string>
     <string name="scale_log_start">Démarrer l\'enregistrement</string>
     <string name="scale_log_stop">Arrêter</string>
     <string name="scale_log_recording">Enregistrement en cours, paquets : %1$d</string>

@@ -190,6 +190,11 @@ class BrewEngine(
     @Volatile
     var paceTolerance: Float = DEFAULT_PACE_TOLERANCE
 
+    /** Насколько усреднять показанную скорость влива. Задаётся в настройках. */
+    var flowSmoothing: FlowSmoothing
+        get() = flow.smoothing
+        set(value) { flow.smoothing = value }
+
     /**
      * Оставлять объём воды как в рецепте, не подгоняя под фактическую дозу.
      * Настройка глобальная: её ставят осознанно, когда кофе сыплют больше

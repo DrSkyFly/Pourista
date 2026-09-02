@@ -171,6 +171,9 @@
     <string name="recipe_grind">Macinatura</string>
     <string name="recipe_grind_hint">Per esempio: 24 click, 6.5, media</string>
     <string name="recipe_grind_value">Macinatura: %1$s</string>
+    <string name="recipe_filter">Filtro</string>
+    <string name="recipe_filter_hint">Per esempio: Hario, Cafec Abaca, Kalita Wave</string>
+    <string name="recipe_filter_value">Filtro: %1$s</string>
     <string name="recipe_bean">Caffè</string>
     <string name="recipe_roaster">Torrefazione</string>
     <string name="recipe_notes">Note</string>
@@ -182,7 +185,7 @@
     <string name="recipe_preview">Piano delle versate</string>
     <string name="recipe_scaled_note">Ricalcolato sulla dose reale: %1$s g → %2$s g d\'acqua</string>
     <string name="recipe_section_main">Base</string>
-    <string name="recipe_section_grind">Macinatura</string>
+    <string name="recipe_section_grind">Macinatura e filtro</string>
     <string name="recipe_section_steps">Passi</string>
     <string name="recipe_section_extra">Caffè e note</string>
 
@@ -224,6 +227,12 @@
     <string name="settings_pace_tolerance">Tolleranza del flusso</string>
     <string name="settings_pace_tolerance_hint">Di quanto il flusso può discostarsi dalla ricetta prima che l\'app chieda di versare più veloce o più piano</string>
     <string name="settings_pace_tolerance_value">±%1$d %%</string>
+    <string name="settings_flow_smoothing">Livellamento del flusso</string>
+    <string name="settings_flow_smoothing_hint">Quanto mediare il flusso mostrato: più forte è più stabile da leggere, più leggero è più vicino al valore reale</string>
+    <string name="flow_smoothing_none">No</string>
+    <string name="flow_smoothing_light">Leggero</string>
+    <string name="flow_smoothing_normal">Normale</string>
+    <string name="flow_smoothing_strong">Forte</string>
     <string name="settings_near_target">Segnale prima dell\'obiettivo</string>
     <string name="settings_near_target_hint">Quanti grammi prima dell\'obiettivo del passo avvisare</string>
     <string name="scale_question_title">Hai una bilancia Bluetooth?</string>
@@ -319,7 +328,7 @@
     <string name="scale_log_intro">Serve quando la bilancia non si collega o mostra numeri assurdi. Nel file finisce quello che manda la bilancia e come l\'app l\'ha letto. Dati personali non ne entrano.</string>
     <string name="scale_log_connected">Bilancia collegata: %1$s</string>
     <string name="scale_log_disconnected">Nessuna bilancia collegata. Senza connessione viene registrato solo quello che la bilancia annuncia via radio.</string>
-    <string name="scale_log_steps">1. Accendi la bilancia e aspetta il collegamento.\n2. Tocca «Avvia registrazione».\n3. Aspetta 5 secondi senza appoggiare nulla.\n4. Tocca «Tara» qui, poi il tasto di tara sulla bilancia stessa.\n5. Appoggia un peso noto e aspetta 5 secondi.\n6. Aggiungi ancora un po\' e aspetta di nuovo.\n7. Togli tutto.\n8. Tocca «Ferma».</string>
+    <string name="scale_log_steps">1. Accendi la bilancia e aspetta il collegamento.\n2. Tocca «Avvia registrazione».\n3. Aspetta 5 secondi senza appoggiare nulla.\n4. Appoggia un peso noto e aspetta 5 secondi.\n5. Tocca «Tara» qui e aspetta altri 5 secondi.\n6. Se la bilancia ha un tasto di tara, premi anche quello.\n7. Aggiungi ancora un po\' e aspetta di nuovo.\n8. Togli tutto.\n9. Tocca «Ferma».</string>
     <string name="scale_log_start">Avvia registrazione</string>
     <string name="scale_log_stop">Ferma</string>
     <string name="scale_log_recording">Registrazione in corso, pacchetti: %1$d</string>

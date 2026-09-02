@@ -171,6 +171,9 @@
     <string name="recipe_grind">Mahlgrad</string>
     <string name="recipe_grind_hint">Zum Beispiel: 24 Klicks, 6.5, mittel</string>
     <string name="recipe_grind_value">Mahlgrad: %1$s</string>
+    <string name="recipe_filter">Filter</string>
+    <string name="recipe_filter_hint">Zum Beispiel: Hario, Cafec Abaca, Kalita Wave</string>
+    <string name="recipe_filter_value">Filter: %1$s</string>
     <string name="recipe_bean">Kaffee</string>
     <string name="recipe_roaster">Rösterei</string>
     <string name="recipe_notes">Notizen</string>
@@ -182,7 +185,7 @@
     <string name="recipe_preview">Gussplan</string>
     <string name="recipe_scaled_note">Auf die echte Einwaage umgerechnet: %1$s g → %2$s g Wasser</string>
     <string name="recipe_section_main">Basis</string>
-    <string name="recipe_section_grind">Mahlgrad</string>
+    <string name="recipe_section_grind">Mahlgrad und Filter</string>
     <string name="recipe_section_steps">Schritte</string>
     <string name="recipe_section_extra">Kaffee und Notizen</string>
 
@@ -224,6 +227,12 @@
     <string name="settings_pace_tolerance">Toleranz der Flussrate</string>
     <string name="settings_pace_tolerance_hint">Wie weit die Flussrate vom Rezept abweichen darf, bevor die App bittet, schneller oder langsamer zu gießen</string>
     <string name="settings_pace_tolerance_value">±%1$d %%</string>
+    <string name="settings_flow_smoothing">Glättung der Flussrate</string>
+    <string name="settings_flow_smoothing_hint">Wie stark die angezeigte Flussrate gemittelt wird: stärker ist ruhiger abzulesen, schwächer liegt näher am tatsächlichen Wert</string>
+    <string name="flow_smoothing_none">Aus</string>
+    <string name="flow_smoothing_light">Leicht</string>
+    <string name="flow_smoothing_normal">Normal</string>
+    <string name="flow_smoothing_strong">Stark</string>
     <string name="settings_near_target">Signal vor dem Ziel</string>
     <string name="settings_near_target_hint">Wie viele Gramm vor dem Ziel des Schritts gewarnt wird</string>
     <string name="scale_question_title">Hast du eine Bluetooth-Waage?</string>
@@ -319,7 +328,7 @@
     <string name="scale_log_intro">Nimm das auf, wenn die Waage sich nicht verbindet oder Unsinn anzeigt. In der Datei steht, was die Waage sendet und wie die App es gelesen hat. Persönliche Daten kommen nicht hinein.</string>
     <string name="scale_log_connected">Waage verbunden: %1$s</string>
     <string name="scale_log_disconnected">Keine Waage verbunden. Ohne Verbindung wird nur aufgezeichnet, was die Waage in die Luft funkt.</string>
-    <string name="scale_log_steps">1. Schalte die Waage ein und warte auf die Verbindung.\n2. Tippe auf „Aufnahme starten“.\n3. Warte 5 Sekunden, ohne etwas auf die Waage zu stellen.\n4. Tippe hier auf „Tara“, dann auf die Tara-Taste der Waage selbst.\n5. Stell ein bekanntes Gewicht darauf und warte 5 Sekunden.\n6. Leg noch etwas dazu und warte wieder.\n7. Nimm alles herunter.\n8. Tippe auf „Stopp“.</string>
+    <string name="scale_log_steps">1. Schalte die Waage ein und warte auf die Verbindung.\n2. Tippe auf „Aufnahme starten“.\n3. Warte 5 Sekunden, ohne etwas auf die Waage zu stellen.\n4. Stell ein bekanntes Gewicht darauf und warte 5 Sekunden.\n5. Tippe hier auf „Tara“ und warte noch 5 Sekunden.\n6. Hat die Waage eine eigene Tara-Taste, drücke auch die.\n7. Leg noch etwas dazu und warte wieder.\n8. Nimm alles herunter.\n9. Tippe auf „Stopp“.</string>
     <string name="scale_log_start">Aufnahme starten</string>
     <string name="scale_log_stop">Stopp</string>
     <string name="scale_log_recording">Aufnahme läuft, Pakete: %1$d</string>

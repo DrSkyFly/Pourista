@@ -171,6 +171,9 @@
     <string name="recipe_grind">Moagem</string>
     <string name="recipe_grind_hint">Por exemplo: 24 cliques, 6.5, média</string>
     <string name="recipe_grind_value">Moagem: %1$s</string>
+    <string name="recipe_filter">Filtro</string>
+    <string name="recipe_filter_hint">Por exemplo: Hario, Cafec Abaca, Kalita Wave</string>
+    <string name="recipe_filter_value">Filtro: %1$s</string>
     <string name="recipe_bean">Café</string>
     <string name="recipe_roaster">Torrefação</string>
     <string name="recipe_notes">Notas</string>
@@ -182,7 +185,7 @@
     <string name="recipe_preview">Plano de despejo</string>
     <string name="recipe_scaled_note">Recalculado para a dose real: %1$s g → %2$s g de água</string>
     <string name="recipe_section_main">Básico</string>
-    <string name="recipe_section_grind">Moagem</string>
+    <string name="recipe_section_grind">Moagem e filtro</string>
     <string name="recipe_section_steps">Etapas</string>
     <string name="recipe_section_extra">Café e notas</string>
 
@@ -224,6 +227,12 @@
     <string name="settings_pace_tolerance">Tolerância da vazão</string>
     <string name="settings_pace_tolerance_hint">O quanto a vazão pode fugir da receita antes de o app pedir para despejar mais rápido ou mais devagar</string>
     <string name="settings_pace_tolerance_value">±%1$d %%</string>
+    <string name="settings_flow_smoothing">Suavização do fluxo</string>
+    <string name="settings_flow_smoothing_hint">Quanto suavizar o fluxo mostrado: mais forte fica mais estável de ler, mais fraco fica mais perto do valor real</string>
+    <string name="flow_smoothing_none">Não</string>
+    <string name="flow_smoothing_light">Leve</string>
+    <string name="flow_smoothing_normal">Normal</string>
+    <string name="flow_smoothing_strong">Forte</string>
     <string name="settings_near_target">Aviso antes do alvo</string>
     <string name="settings_near_target_hint">Quantos gramas antes do alvo da etapa avisar</string>
     <string name="scale_question_title">Você tem uma balança com Bluetooth?</string>
@@ -319,7 +328,7 @@
     <string name="scale_log_intro">Grave quando a balança não conecta ou mostra bobagem. No arquivo fica o que a balança manda e como o app leu. Dados pessoais não entram.</string>
     <string name="scale_log_connected">Balança conectada: %1$s</string>
     <string name="scale_log_disconnected">Nenhuma balança conectada. Sem conexão, só é gravado o que a balança anuncia no ar.</string>
-    <string name="scale_log_steps">1. Ligue a balança e espere conectar.\n2. Toque em “Começar a gravar”.\n3. Espere 5 segundos sem colocar nada em cima.\n4. Toque em “Tara” aqui e depois no botão de tara da própria balança.\n5. Ponha um peso conhecido e espere 5 segundos.\n6. Acrescente mais um pouco e espere de novo.\n7. Tire tudo.\n8. Toque em “Parar”.</string>
+    <string name="scale_log_steps">1. Ligue a balança e espere conectar.\n2. Toque em “Começar a gravar”.\n3. Espere 5 segundos sem colocar nada em cima.\n4. Ponha um peso conhecido e espere 5 segundos.\n5. Toque em “Tara” aqui e espere mais 5 segundos.\n6. Se a balança tiver botão de tara, aperte-o também.\n7. Acrescente mais um pouco e espere de novo.\n8. Tire tudo.\n9. Toque em “Parar”.</string>
     <string name="scale_log_start">Começar a gravar</string>
     <string name="scale_log_stop">Parar</string>
     <string name="scale_log_recording">Gravando, pacotes: %1$d</string>

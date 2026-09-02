@@ -39,6 +39,7 @@ object RecipeJson {
         json.put("temp", recipe.waterTempC)
         json.putOpt("grinder", recipe.grinderName)
         json.putOpt("grind", recipe.grindSetting)
+        json.putOpt("filter", recipe.filterName)
         json.putOpt("bean", recipe.beanName)
         json.putOpt("roaster", recipe.roaster)
         json.putOpt("notes", recipe.notes)
@@ -111,6 +112,7 @@ object RecipeJson {
             waterTempC = json.optInt("temp", DEFAULT_TEMP_C),
             grinderName = json.optStringOrNull("grinder"),
             grindSetting = json.optStringOrNull("grind"),
+            filterName = json.optStringOrNull("filter"),
             beanName = json.optStringOrNull("bean"),
             roaster = json.optStringOrNull("roaster"),
             notes = json.optStringOrNull("notes"),

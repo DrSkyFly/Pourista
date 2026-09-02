@@ -171,6 +171,9 @@
     <string name="recipe_grind">研磨度</string>
     <string name="recipe_grind_hint">例如：24 格、6.5、中度</string>
     <string name="recipe_grind_value">研磨度：%1$s</string>
+    <string name="recipe_filter">滤纸</string>
+    <string name="recipe_filter_hint">例如：Hario、Cafec Abaca、Kalita Wave</string>
+    <string name="recipe_filter_value">滤纸：%1$s</string>
     <string name="recipe_bean">豆子</string>
     <string name="recipe_roaster">烘焙商</string>
     <string name="recipe_notes">笔记</string>
@@ -182,7 +185,7 @@
     <string name="recipe_preview">注水安排</string>
     <string name="recipe_scaled_note">按实际粉量重算：%1$sg → %2$sg 水</string>
     <string name="recipe_section_main">基本</string>
-    <string name="recipe_section_grind">研磨</string>
+    <string name="recipe_section_grind">研磨度与滤纸</string>
     <string name="recipe_section_steps">步骤</string>
     <string name="recipe_section_extra">豆子和笔记</string>
 
@@ -224,6 +227,12 @@
     <string name="settings_pace_tolerance">流速容差</string>
     <string name="settings_pace_tolerance_hint">流速偏离配方多少之后，App 才提醒注快点或慢点</string>
     <string name="settings_pace_tolerance_value">±%1$d %%</string>
+    <string name="settings_flow_smoothing">流速平滑</string>
+    <string name="settings_flow_smoothing_hint">对显示的流速做多少平均：越强数值越稳，越弱越接近实际值</string>
+    <string name="flow_smoothing_none">关闭</string>
+    <string name="flow_smoothing_light">弱</string>
+    <string name="flow_smoothing_normal">标准</string>
+    <string name="flow_smoothing_strong">强</string>
     <string name="settings_near_target">接近目标时提示</string>
     <string name="settings_near_target_hint">离这一步的目标还有几克时提醒</string>
     <string name="scale_question_title">你有蓝牙咖啡秤吗？</string>
@@ -319,7 +328,7 @@
     <string name="scale_log_intro">秤连不上或者读数离谱时录这个。文件里是秤发来的内容，以及 App 怎么理解的。不含个人信息。</string>
     <string name="scale_log_connected">已连接咖啡秤：%1$s</string>
     <string name="scale_log_disconnected">没有连接咖啡秤。没连上时只能记下秤在广播里报出的信息。</string>
-    <string name="scale_log_steps">1. 打开秤，等它连上。\n2. 点“开始记录”。\n3. 秤上什么都不放，等 5 秒。\n4. 先点这里的“去皮”，再按秤上的去皮键。\n5. 放一个已知重量的东西，等 5 秒。\n6. 再加一点，再等一会儿。\n7. 全部拿下来。\n8. 点“停止”。</string>
+    <string name="scale_log_steps">1. 打开秤，等它连上。\n2. 点“开始记录”。\n3. 秤上什么都不放，等 5 秒。\n4. 放一个已知重量的东西，等 5 秒。\n5. 点这里的“去皮”，再等 5 秒。\n6. 秤上如果有去皮键，也按一下。\n7. 再加一点，再等一会儿。\n8. 全部拿下来。\n9. 点“停止”。</string>
     <string name="scale_log_start">开始记录</string>
     <string name="scale_log_stop">停止</string>
     <string name="scale_log_recording">正在记录，数据包：%1$d</string>
