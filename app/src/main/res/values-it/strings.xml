@@ -118,6 +118,13 @@
     <string name="grind_use_french_press">caffettiera a stantuffo</string>
     <string name="grind_use_cold_brew">cold brew</string>
 
+    <string name="cooldown_title">Timer</string>
+    <string name="cooldown_hint">Se vuoi che il caffè si raffreddi un po\' dopo l\'estrazione</string>
+    <string name="cooldown_auto_start">Avvia automaticamente alla fine dell\'estrazione</string>
+    <string name="cooldown_of_total">su %1$s</string>
+    <string name="cooldown_start">Avvia</string>
+    <string name="cooldown_stop">Ferma il timer</string>
+
     <string name="guidance_step_position">Passo %1$d di %2$d</string>
     <string name="guidance_seconds_left">s rimasti</string>
     <string name="guidance_seconds_total">s in tutto</string>

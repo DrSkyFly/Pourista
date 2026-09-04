@@ -118,6 +118,13 @@
     <string name="grind_use_french_press">french press</string>
     <string name="grind_use_cold_brew">cold brew</string>
 
+    <string name="cooldown_title">Minutnik</string>
+    <string name="cooldown_hint">Jeśli chcesz, aby kawa trochę ostygła po zaparzeniu</string>
+    <string name="cooldown_auto_start">Uruchamiaj automatycznie po zakończeniu parzenia</string>
+    <string name="cooldown_of_total">z %1$s</string>
+    <string name="cooldown_start">Uruchom</string>
+    <string name="cooldown_stop">Wyłącz minutnik</string>
+
     <string name="guidance_step_position">Krok %1$d z %2$d</string>
     <string name="guidance_seconds_left">s zostało</string>
     <string name="guidance_seconds_total">s trwa</string>

@@ -6,6 +6,7 @@ import com.pourista.AppContainer
 import com.pourista.brew.BrewEvent
 import com.pourista.brew.BrewPhase
 import com.pourista.brew.BrewState
+import com.pourista.brew.CooldownState
 import com.pourista.data.model.Recipe
 import com.pourista.data.prefs.AppSettings
 import com.pourista.data.prefs.FortySixPreset
@@ -22,6 +23,7 @@ import kotlinx.coroutines.launch
 class BrewViewModel(private val container: AppContainer) : ViewModel() {
 
     val brew: StateFlow<BrewState> = container.brewEngine.state
+    val cooldown: StateFlow<CooldownState> = container.cooldown.state
     val scale: StateFlow<ScaleState> = container.scale.state
     val settings: StateFlow<AppSettings> = container.settingsState
     val events: SharedFlow<BrewEvent> = container.brewEngine.events
@@ -152,6 +154,24 @@ class BrewViewModel(private val container: AppContainer) : ViewModel() {
             container.settings.setKeepRecipeWater(!settings.value.keepRecipeWater)
         }
     }
+
+    /**
+     * Таймер остывания: сколько ждать и заводить ли его самому по окончании
+     * заваривания. Настройка глобальная — привычка пить не обжигаясь
+     * не меняется от чашки к чашке.
+     */
+    fun setCooldownSeconds(seconds: Int) {
+        viewModelScope.launch { container.settings.setCooldownSeconds(seconds) }
+    }
+
+    fun setCooldownAutoStart(enabled: Boolean) {
+        viewModelScope.launch { container.settings.setCooldownAutoStart(enabled) }
+    }
+
+    /** Завести таймер прямо сейчас, на выставленное в листе время. */
+    fun startCooldown() = container.startCooldown(settings.value.cooldownSeconds)
+
+    fun stopCooldown() = container.cooldown.stop()
 
     /** Пересчёт помола запоминает обе кофемолки и настройку: окно закрывается,
      *  а искать свою модель в списке заново не хочется. */

@@ -33,6 +33,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.Icons
@@ -45,6 +46,7 @@ import androidx.compose.material.icons.rounded.Info
 import androidx.compose.material.icons.rounded.Pause
 import androidx.compose.material.icons.rounded.PlayArrow
 import androidx.compose.material.icons.rounded.RestartAlt
+import androidx.compose.material.icons.rounded.Schedule
 import androidx.compose.material.icons.rounded.Stop
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.AssistChip
@@ -96,6 +98,7 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.pourista.R
 import com.pourista.brew.BrewEvent
 import com.pourista.brew.BrewPhase
+import com.pourista.brew.CooldownState
 import com.pourista.brew.Guidance
 import com.pourista.brew.Pace
 import com.pourista.brew.StepPhase
@@ -121,6 +124,7 @@ import com.pourista.ui.components.StepTimeline
 import com.pourista.ui.theme.AppTheme
 import com.pourista.ui.theme.MetricValueStyle
 import com.pourista.ui.theme.WeightReadoutStyle
+import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.collectLatest
 
 /** Ширина кнопки в шапке: у неё вокруг значка много воздуха, и три подряд
@@ -159,6 +163,7 @@ fun BrewScreen(
     var showRecipePicker by remember { mutableStateOf(false) }
     var showFortySix by remember { mutableStateOf(false) }
     var showGrind by remember { mutableStateOf(false) }
+    var showCooldown by remember { mutableStateOf(false) }
     var showDoseDialog by remember { mutableStateOf(false) }
 
     // Развёрнутый рецепт нужен до старта — свериться с планом пролива. Со
@@ -276,6 +281,10 @@ fun BrewScreen(
                             onClick = onConnectClick,
                         )
                     }
+                    CooldownAction(
+                        states = viewModel.cooldown,
+                        onClick = { showCooldown = true },
+                    )
                     IconButton(
                         onClick = { showGrind = true },
                         modifier = Modifier.narrowAction(),
@@ -535,6 +544,32 @@ fun BrewScreen(
         }
     }
 
+    if (showCooldown) {
+        val sheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true)
+        ModalBottomSheet(
+            onDismissRequest = { showCooldown = false },
+            sheetState = sheetState,
+        ) {
+            val cooldown by viewModel.cooldown.collectAsStateWithLifecycle()
+            CooldownSheetContent(
+                seconds = settings.cooldownSeconds,
+                autoStart = settings.cooldownAutoStart,
+                state = cooldown,
+                onSeconds = viewModel::setCooldownSeconds,
+                onAutoStart = viewModel::setCooldownAutoStart,
+                onStart = {
+                    viewModel.startCooldown()
+                    showCooldown = false
+                },
+                onSave = { showCooldown = false },
+                onStop = {
+                    viewModel.stopCooldown()
+                    showCooldown = false
+                },
+            )
+        }
+    }
+
     if (showDoseDialog) {
         DoseDialog(
             initial = brew.doseGrams,
@@ -546,6 +581,51 @@ fun BrewScreen(
         )
     }
 }
+
+/**
+ * Таймер остывания в шапке. Пока он не заведён — часики, и по ним открывается
+ * настройка. Пока идёт — обратный отсчёт на их месте: за оставшимся временем
+ * не надо открывать лист, а нажатие ведёт туда же, где таймер снимают.
+ */
+@Composable
+private fun CooldownAction(states: StateFlow<CooldownState>, onClick: () -> Unit) {
+    // Отсчёт читаем здесь, а не в области экрана: он тикает пять раз в
+    // секунду, и экрану заваривания перерисовываться за компанию незачем.
+    val state by states.collectAsStateWithLifecycle()
+    val title = stringResource(R.string.cooldown_title)
+    if (!state.running) {
+        IconButton(onClick = onClick, modifier = Modifier.narrowAction()) {
+            Icon(Icons.Rounded.Schedule, contentDescription = title)
+        }
+        return
+    }
+    Surface(
+        onClick = onClick,
+        shape = RoundedCornerShape(50),
+        color = MaterialTheme.colorScheme.secondaryContainer,
+        contentColor = MaterialTheme.colorScheme.onSecondaryContainer,
+        modifier = Modifier.padding(horizontal = 2.dp),
+    ) {
+        Row(
+            verticalAlignment = Alignment.CenterVertically,
+            modifier = Modifier.padding(start = 8.dp, end = 10.dp, top = 6.dp, bottom = 6.dp),
+        ) {
+            Icon(
+                imageVector = Icons.Rounded.Schedule,
+                contentDescription = title,
+                modifier = Modifier.size(COOLDOWN_ICON),
+            )
+            Spacer(Modifier.size(4.dp))
+            Text(
+                text = formatClock(state.remainingSeconds),
+                style = MaterialTheme.typography.labelLarge,
+            )
+        }
+    }
+}
+
+/** Значок рядом с отсчётом мельче обычного: он тут подпись, а не кнопка. */
+private val COOLDOWN_ICON = 16.dp
 
 @Composable
 private fun ConnectionAction(

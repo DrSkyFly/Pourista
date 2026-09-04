@@ -118,6 +118,13 @@
     <string name="grind_use_french_press">френч-прес</string>
     <string name="grind_use_cold_brew">колд брю</string>
 
+    <string name="cooldown_title">Таймер</string>
+    <string name="cooldown_hint">Якщо хочете, щоб ваша кава трохи охолола після приготування</string>
+    <string name="cooldown_auto_start">Запускати автоматично після завершення приготування</string>
+    <string name="cooldown_of_total">з %1$s</string>
+    <string name="cooldown_start">Запустити</string>
+    <string name="cooldown_stop">Зняти таймер</string>
+
     <string name="guidance_step_position">Крок %1$d з %2$d</string>
     <string name="guidance_seconds_left">с лишилося</string>
     <string name="guidance_seconds_total">с триває</string>

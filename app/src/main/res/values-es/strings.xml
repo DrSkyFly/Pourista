@@ -118,6 +118,13 @@
     <string name="grind_use_french_press">prensa francesa</string>
     <string name="grind_use_cold_brew">cold brew</string>
 
+    <string name="cooldown_title">Temporizador</string>
+    <string name="cooldown_hint">Si quieres que tu café se enfríe un poco después de prepararlo</string>
+    <string name="cooldown_auto_start">Iniciar automáticamente al terminar la preparación</string>
+    <string name="cooldown_of_total">de %1$s</string>
+    <string name="cooldown_start">Iniciar</string>
+    <string name="cooldown_stop">Detener el temporizador</string>
+
     <string name="guidance_step_position">Paso %1$d de %2$d</string>
     <string name="guidance_seconds_left">s restantes</string>
     <string name="guidance_seconds_total">s en total</string>

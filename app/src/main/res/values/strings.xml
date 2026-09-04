@@ -118,6 +118,13 @@
     <string name="grind_use_french_press">French press</string>
     <string name="grind_use_cold_brew">cold brew</string>
 
+    <string name="cooldown_title">Timer</string>
+    <string name="cooldown_hint">If you would like your coffee to cool down a little after brewing</string>
+    <string name="cooldown_auto_start">Start automatically when brewing finishes</string>
+    <string name="cooldown_of_total">of %1$s</string>
+    <string name="cooldown_start">Start</string>
+    <string name="cooldown_stop">Stop the timer</string>
+
     <string name="guidance_step_position">Step %1$d of %2$d</string>
     <string name="guidance_seconds_left">sec left</string>
     <string name="guidance_seconds_total">sec long</string>
@@ -312,6 +319,7 @@
     <string name="settings_scale_log">Scale log</string>
     <string name="settings_scale_log_hint">Record the exchange with the scale to a file and send it to the developer</string>
     <string name="settings_release_notes">Release notes</string>
+    <string name="notes_1_9_4">• Cooldown timer: from 30 seconds to 20 minutes, counting down in the brew header\n• Start it by hand or switch on the automatic start when brewing finishes</string>
     <string name="notes_1_9_3">• Tare on the Timemore Black Mirror Dot worked only every other time\n• The app stopped sending commands to the scale until it was restarted\n• The flow rate readout jumped: smoothing is now in the settings\n• Recipes now have a Filter field\n• A step shorter than its pour now trims the pour instead of refusing</string>
     <string name="notes_1_9_2">• The recorded weight came out too low: it was taken while the dripper was already being lifted\n• The tail of the weight chart came down in steps\n• Started with Bluetooth off, the app got stuck searching and never found the scale once Bluetooth was on\n• Tapping the Bluetooth icon after turning the adapter off crashed the app</string>
     <string name="notes_1_9_1">• The flow rate on screen reacts twice as fast\n• On Timemore Black Mirror Dot and Basic 3 the flow rate now comes straight from the scale\n• Fixed the flow rate: it read low at the start of a brew and high on a busy phone</string>

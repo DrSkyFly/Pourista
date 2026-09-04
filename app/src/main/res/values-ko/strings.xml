@@ -118,6 +118,13 @@
     <string name="grind_use_french_press">프렌치프레스</string>
     <string name="grind_use_cold_brew">콜드브루</string>
 
+    <string name="cooldown_title">타이머</string>
+    <string name="cooldown_hint">추출한 커피를 조금 식히고 싶을 때</string>
+    <string name="cooldown_auto_start">추출이 끝나면 자동으로 시작</string>
+    <string name="cooldown_of_total">/ %1$s</string>
+    <string name="cooldown_start">시작</string>
+    <string name="cooldown_stop">타이머 정지</string>
+
     <string name="guidance_step_position">%2$d단계 중 %1$d번째</string>
     <string name="guidance_seconds_left">초 남음</string>
     <string name="guidance_seconds_total">초 동안</string>

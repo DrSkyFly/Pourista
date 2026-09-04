@@ -118,6 +118,13 @@
     <string name="grind_use_french_press">френч-пресс</string>
     <string name="grind_use_cold_brew">колд брю</string>
 
+    <string name="cooldown_title">Таймер</string>
+    <string name="cooldown_hint">Если хотите, чтобы ваш кофе немного остыл после приготовления</string>
+    <string name="cooldown_auto_start">Запускать автоматически при завершении приготовления</string>
+    <string name="cooldown_of_total">из %1$s</string>
+    <string name="cooldown_start">Запустить</string>
+    <string name="cooldown_stop">Снять таймер</string>
+
     <string name="guidance_step_position">Шаг %1$d из %2$d</string>
     <string name="guidance_seconds_left">сек осталось</string>
     <string name="guidance_seconds_total">сек длится</string>
@@ -306,6 +313,7 @@
     <string name="settings_scale_log">Журнал весов</string>
     <string name="settings_scale_log_hint">Записать обмен с весами в файл и отправить разработчику</string>
     <string name="settings_release_notes">История изменений</string>
+    <string name="notes_1_9_4">• Таймер остывания: от 30 секунд до 20 минут, отсчёт в шапке заваривания\n• Таймер можно завести самому или включить автозапуск по окончании заваривания</string>
     <string name="notes_1_9_3">• Тара на Timemore Black Mirror Dot срабатывала через раз\n• Приложение переставало слать команды весам до перезапуска\n• Скорость пролива на экране прыгала: в настройках появилось сглаживание\n• В рецепте появилось поле «Фильтр»\n• Длительность шага короче влива: влив подрезается сам</string>
     <string name="notes_1_9_2">• В историю попадал заниженный вес: он снимался, когда воронку уже поднимали\n• Хвост графика веса спускался ступенями\n• Приложение, запущенное при выключенном Bluetooth, зависало в поиске и не находило весы после включения\n• Нажатие на значок Bluetooth после выключения адаптера роняло приложение</string>
     <string name="notes_1_9_1">• Скорость влива на экране отзывается вдвое быстрее\n• На весах Timemore Black Mirror Dot и Basic 3 скорость влива приходит прямо с весов\n• Исправлена скорость влива: в начале заваривания она была занижена, а на загруженном телефоне завышена</string>

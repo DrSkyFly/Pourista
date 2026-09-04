@@ -118,6 +118,13 @@
     <string name="grind_use_french_press">法压壶</string>
     <string name="grind_use_cold_brew">冷萃</string>
 
+    <string name="cooldown_title">计时器</string>
+    <string name="cooldown_hint">如果想让冲煮好的咖啡稍微凉一凉</string>
+    <string name="cooldown_auto_start">冲煮结束后自动开始</string>
+    <string name="cooldown_of_total">/ %1$s</string>
+    <string name="cooldown_start">开始</string>
+    <string name="cooldown_stop">停止计时</string>
+
     <string name="guidance_step_position">第 %1$d 步，共 %2$d 步</string>
     <string name="guidance_seconds_left">秒剩余</string>
     <string name="guidance_seconds_total">秒时长</string>

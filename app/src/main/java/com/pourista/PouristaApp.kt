@@ -9,6 +9,7 @@ import com.pourista.brew.BrewEngine
 import com.pourista.brew.BrewEvent
 import com.pourista.brew.BrewPhase
 import com.pourista.brew.BrewState
+import com.pourista.brew.CooldownTimer
 import com.pourista.data.db.AppDatabase
 import com.pourista.data.io.RecipeJson
 import com.pourista.data.model.BrewNotes
@@ -22,6 +23,7 @@ import com.pourista.data.repo.BrewRepository
 import com.pourista.core.AppLocale
 import com.pourista.data.repo.RecipeRepository
 import com.pourista.scale.ScaleRepository
+import com.pourista.ui.brew.BrewCuePlayer
 import com.pourista.ui.labelRes
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -102,6 +104,13 @@ class AppContainer(private val context: Context) {
     val brewEngine = BrewEngine(scale, scope)
 
     /**
+     * Таймер остывания. Живёт здесь по той же причине, что и ход заваривания:
+     * его заводят перед тем, как отойти от телефона, и переключение экранов
+     * или закрытие экрана заваривания сбивать отсчёт не должно.
+     */
+    val cooldown = CooldownTimer(scope)
+
+    /**
      * Рецепт, собранный в режиме записи и ещё не сохранённый. Лежит здесь, а не
      * в базе: пока человек не нажал «Сохранить» в редакторе, записи быть не должно.
      */
@@ -172,6 +181,27 @@ class AppContainer(private val context: Context) {
         }
     }
 
+    /**
+     * Сигнал конца остывания. Экранный проигрыватель для этого не годится:
+     * звонок случается через минуты после заваривания, когда экран мог
+     * закрыться. Заводится вместе с таймером, а не в момент звонка: SoundPool
+     * читает файлы не мгновенно, и созданный по звонку успел бы промолчать.
+     */
+    @Volatile
+    private var cooldownCues: BrewCuePlayer? = null
+
+    /**
+     * Завести таймер остывания. Проигрыватель создаётся под замком: заводят
+     * таймер из фоновой корутины, и два одновременных запуска оставили бы
+     * лишний SoundPool до конца жизни процесса.
+     */
+    fun startCooldown(seconds: Int) {
+        synchronized(this) {
+            if (cooldownCues == null) cooldownCues = BrewCuePlayer(context)
+        }
+        cooldown.start(seconds)
+    }
+
     init {
         syncPresets()
         applyUnitSetting()
@@ -180,7 +210,35 @@ class AppContainer(private val context: Context) {
         pauseTimerOnDisconnect()
         keepSelectedRecipeFresh()
         saveFinishedBrews()
+        startCooldownAfterBrew()
+        ringCooldown()
         autoConnect()
+    }
+
+    /**
+     * Заваривание закончено — заводим остывание, если так настроено. Запись
+     * рецепта и промахи по кнопке не считаются: чашки в них нет, а остывать
+     * нечему.
+     */
+    private fun startCooldownAfterBrew() {
+        scope.launch {
+            brewEngine.events.filterIsInstance<BrewEvent.Finished>().collect {
+                val state = brewEngine.state.value
+                if (!settingsState.value.cooldownAutoStart) return@collect
+                if (state.recording || state.elapsedMs < MIN_SAVED_MS) return@collect
+                startCooldown(settingsState.value.cooldownSeconds)
+            }
+        }
+    }
+
+    /** Время вышло: тот же звонок, что и на финише заваривания. */
+    private fun ringCooldown() {
+        scope.launch {
+            cooldown.rings.collect {
+                val current = settingsState.value
+                cooldownCues?.finished(current.soundCues, current.hapticCues)
+            }
+        }
     }
 
     /**

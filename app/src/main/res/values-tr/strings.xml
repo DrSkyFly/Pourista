@@ -118,6 +118,13 @@
     <string name="grind_use_french_press">French press</string>
     <string name="grind_use_cold_brew">soğuk demleme</string>
 
+    <string name="cooldown_title">Zamanlayıcı</string>
+    <string name="cooldown_hint">Kahvenizin demlemeden sonra biraz soğumasını istiyorsanız</string>
+    <string name="cooldown_auto_start">Demleme bitince kendiliğinden başlat</string>
+    <string name="cooldown_of_total">/ %1$s</string>
+    <string name="cooldown_start">Başlat</string>
+    <string name="cooldown_stop">Zamanlayıcıyı durdur</string>
+
     <string name="guidance_step_position">Adım %1$d / %2$d</string>
     <string name="guidance_seconds_left">sn kaldı</string>
     <string name="guidance_seconds_total">sn sürüyor</string>

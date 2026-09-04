@@ -118,6 +118,13 @@
     <string name="grind_use_french_press">フレンチプレス</string>
     <string name="grind_use_cold_brew">コールドブリュー</string>
 
+    <string name="cooldown_title">タイマー</string>
+    <string name="cooldown_hint">抽出したコーヒーを少し冷ましたいときに</string>
+    <string name="cooldown_auto_start">抽出が終わったら自動で開始する</string>
+    <string name="cooldown_of_total">/ %1$s</string>
+    <string name="cooldown_start">開始</string>
+    <string name="cooldown_stop">タイマーを停止</string>
+
     <string name="guidance_step_position">ステップ %1$d / %2$d</string>
     <string name="guidance_seconds_left">残り秒</string>
     <string name="guidance_seconds_total">秒間</string>

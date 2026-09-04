@@ -13,6 +13,7 @@ import androidx.datastore.preferences.core.stringPreferencesKey
 import androidx.datastore.preferences.core.stringSetPreferencesKey
 import androidx.datastore.preferences.preferencesDataStore
 import com.pourista.brew.DEFAULT_NEAR_TARGET_GRAMS
+import com.pourista.brew.DEFAULT_COOLDOWN_SECONDS
 import com.pourista.brew.DEFAULT_PACE_TOLERANCE
 import com.pourista.brew.FlowSmoothing
 import com.pourista.data.presets.FortySixParams
@@ -94,6 +95,10 @@ data class AppSettings(
     val grindToId: String = "",
     /** Последняя настройка, введённая в пересчёте помола. */
     val grindSetting: String = "",
+    /** Сколько остывать кофе после заваривания, секунды. */
+    val cooldownSeconds: Int = DEFAULT_COOLDOWN_SECONDS,
+    /** Заводить таймер остывания самому, как только заваривание закончено. */
+    val cooldownAutoStart: Boolean = false,
 ) {
     /**
      * Пора спросить про весы: ответа ещё не было, и приложение ни разу не
@@ -140,6 +145,8 @@ class SettingsRepository(private val context: Context) {
         val grindFrom = stringPreferencesKey("grind_from")
         val grindTo = stringPreferencesKey("grind_to")
         val grindSetting = stringPreferencesKey("grind_setting")
+        val cooldownSeconds = intPreferencesKey("cooldown_seconds")
+        val cooldownAutoStart = booleanPreferencesKey("cooldown_auto_start")
     }
 
     val settings: Flow<AppSettings> = context.dataStore.data.map { prefs ->
@@ -187,6 +194,8 @@ class SettingsRepository(private val context: Context) {
             grindFromId = prefs[Keys.grindFrom] ?: "",
             grindToId = prefs[Keys.grindTo] ?: "",
             grindSetting = prefs[Keys.grindSetting] ?: "",
+            cooldownSeconds = prefs[Keys.cooldownSeconds] ?: DEFAULT_COOLDOWN_SECONDS,
+            cooldownAutoStart = prefs[Keys.cooldownAutoStart] ?: false,
         )
     }
 
@@ -260,6 +269,12 @@ class SettingsRepository(private val context: Context) {
         prefs[Keys.grindTo] = toId
         prefs[Keys.grindSetting] = setting
     }
+
+    suspend fun setCooldownSeconds(seconds: Int) =
+        edit { it[Keys.cooldownSeconds] = seconds }
+
+    suspend fun setCooldownAutoStart(enabled: Boolean) =
+        edit { it[Keys.cooldownAutoStart] = enabled }
 
     suspend fun setWhatsNewSeenVersion(versionCode: Int) =
         edit { it[Keys.whatsNewSeen] = versionCode }
