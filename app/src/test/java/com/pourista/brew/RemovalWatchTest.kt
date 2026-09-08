@@ -227,6 +227,26 @@ class RemovalWatchTest {
     }
 
     @Test
+    fun `скачок вверх не поднимает порог снятия`() {
+        val watch = RemovalWatch()
+        var now = watch.pourUpTo(300f)
+        watch.arm(300f)
+
+        // Нажали на крышку: одно показание 410.8 г при налитых трёхстах.
+        now += 100L
+        assertFalse(watch.onSample(410.8f, now))
+        assertEquals("порог считается от налитого", 264f, watch.cutoffGrams, 0.1f)
+
+        // Крышку отпустили. Настоящие триста граммов — не упавший вес, и
+        // заваривание закрывать не с чего.
+        repeat(30) {
+            now += 200L
+            assertFalse(watch.onSample(300f, now))
+        }
+        assertEquals(300f, watch.weightBeforeDrop, 0.01f)
+    }
+
+    @Test
     fun `сброс снимает сторож`() {
         val watch = RemovalWatch()
         val now = watch.pourUpTo(250f)

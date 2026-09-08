@@ -8,9 +8,60 @@ class MonotonicWeightTest {
     @Test
     fun `растущий вес проходит как есть`() {
         val weight = MonotonicWeight()
-        assertEquals(0f, weight.onSample(0f, 0), 0.001f)
-        assertEquals(50f, weight.onSample(50f, 100), 0.001f)
-        assertEquals(120.5f, weight.onSample(120.5f, 200), 0.001f)
+        assertEquals(0f, weight.onSample(0f, 100), 0.001f)
+        assertEquals(50f, weight.onSample(50f, 5_100), 0.001f)
+        assertEquals(120.5f, weight.onSample(120.5f, 12_100), 0.001f)
+    }
+
+    @Test
+    fun `нажатие на воронку в зачёт воды не идёт`() {
+        val weight = MonotonicWeight()
+        var now = 0L
+        var raw = 0f
+        // Пролив: по грамму за показание — это десять граммов в секунду.
+        repeat(300) {
+            now += 100L
+            raw += 1f
+            assertEquals(raw, weight.onSample(raw, now), 0.001f)
+        }
+
+        // На крышку нажали: сто десять граммов за одно показание. Столько
+        // воды за десятую долю секунды не наливают.
+        now += 100L
+        assertEquals(300f, weight.onSample(410.8f, now), 0.001f)
+
+        // Крышку отпустили — в расчётах ничего и не менялось.
+        now += 100L
+        assertEquals(300f, weight.onSample(300f, now), 0.001f)
+        now += 100L
+        assertEquals(301f, weight.onSample(301f, now), 0.001f)
+    }
+
+    @Test
+    fun `рука на воронке до конца выдержки не доживает`() {
+        val weight = MonotonicWeight()
+        var now = 1_000L
+        weight.onSample(300f, now)
+
+        // Шесть секунд с рукой на воронке: вес высокий, но ни одного
+        // показания на месте не стоит.
+        repeat(8) {
+            listOf(360f, 402f, 411f, 405f, 398f, 407f, 412f, 399f).forEach { grams ->
+                now += 100L
+                assertEquals(300f, weight.onSample(grams, now), 0.001f)
+            }
+        }
+    }
+
+    @Test
+    fun `вес, который держится наверху, всё-таки становится максимумом`() {
+        val weight = MonotonicWeight()
+        weight.onSample(100f, 1_000)
+
+        // Связь с весами пропадала, показание вернулось сразу большим.
+        assertEquals(100f, weight.onSample(300f, 1_100), 0.001f)
+        assertEquals(100f, weight.onSample(300f, 4_000), 0.001f)
+        assertEquals(300f, weight.onSample(300f, 6_100), 0.001f)
     }
 
     @Test
@@ -37,7 +88,8 @@ class MonotonicWeightTest {
         assertEquals(200f, weight.onSample(0f, 1_000), 0.001f)
         assertEquals(200f, weight.onSample(0f, 4_500), 0.001f)
         assertEquals(0f, weight.onSample(0f, 6_100), 0.001f)
-        assertEquals(30f, weight.onSample(30f, 6_200), 0.001f)
+        assertEquals(1f, weight.onSample(1f, 6_200), 0.001f)
+        assertEquals(30f, weight.onSample(30f, 9_000), 0.001f)
     }
 
     @Test
