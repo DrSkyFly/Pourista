@@ -13,6 +13,7 @@ import com.pourista.data.model.RecipeStep
 import com.pourista.ui.theme.ThemeMode
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.Job
 import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.first
@@ -43,12 +44,12 @@ class StoreShotsReceiver : BroadcastReceiver() {
             "lang" -> AppLocale.apply(app, intent.getStringExtra("tag"))
             // A clean phone set up for the shots: no first-run questions, dark theme, a grinder
             // pair remembered for the converter.
-            "prep" -> scope.launch { prep(app) }
+            "prep" -> scene { prep(app) }
             // Recipes are seeded by the app itself; this fills the history.
-            "seed" -> scope.launch { seedHistory(app) }
+            "seed" -> scene { seedHistory(app) }
             // A brew played out to the given second: the pour follows the recipe plan multiplied
             // by `pace`, so 1.0 keeps the guidance calm and 1.6 makes it ask to slow down.
-            "brew" -> scope.launch {
+            "brew" -> scene {
                 pour(
                     context = app,
                     paceFactor = intent.getFloatExtra("pace", 1f),
@@ -58,12 +59,21 @@ class StoreShotsReceiver : BroadcastReceiver() {
                 )
             }
             // The screen before the start: a scale on the line, an empty cone, no timer running.
-            "idle" -> scope.launch { idle(app, intent.getStringExtra("recipe")) }
-            "off" -> {
+            "idle" -> scene { idle(app, intent.getStringExtra("recipe")) }
+            "off" -> scene {
                 app.appContainer.brewEngine.reset()
                 app.appContainer.scale.simulate(connected = false)
             }
         }
+    }
+
+    /**
+     * One scene at a time. A scene left running keeps feeding weights into the next one and pauses
+     * its brew when its own tail runs out — two of them at once turn the screen into nonsense.
+     */
+    private fun scene(block: suspend () -> Unit) {
+        job?.cancel()
+        job = scope.launch { block() }
     }
 
     /** Everything the first run would otherwise ask about, answered from here. */
@@ -207,5 +217,8 @@ class StoreShotsReceiver : BroadcastReceiver() {
         /** How long the brew is left running past the shot, so the button still says "Pause". */
         const val TAIL_SECONDS = 25
         val scope = CoroutineScope(SupervisorJob() + Dispatchers.Default)
+
+        /** The scene running right now; a new command cancels it. */
+        var job: Job? = null
     }
 }
