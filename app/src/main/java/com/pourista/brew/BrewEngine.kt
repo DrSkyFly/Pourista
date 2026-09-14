@@ -218,6 +218,13 @@ class BrewEngine(
     /** Секунды с начала заваривания на текущем тике — без сдвига рецепта. */
     private var currentElapsedSec = 0f
 
+    /**
+     * Подтяжки расписания за это заваривание: секунда, на которой шаг стоял в
+     * рецепте, и на сколько секунд он начался раньше. Держим отдельно от плана,
+     * потому что пересчёт под дозу собирает рецепт заново из сохранённого.
+     */
+    private val pullIns = linkedMapOf<Int, Int>()
+
     /** Фактическая скорость последнего законченного влива, г/с. */
     private var lastPourFlowRate = 0f
     private var pourTrackedStepIndex = -1
@@ -275,8 +282,11 @@ class BrewEngine(
         if (base == null) return copy(recipe = null, recipeScaled = false, guidance = null)
         val adjusted = if (dose > 0f && !keepRecipeWater) base.scaledToDose(dose) else base
         val scaled = adjusted.waterGrams != base.waterGrams || adjusted.doseGrams != base.doseGrams
-        val next = copy(recipe = adjusted, recipeScaled = scaled)
-        return next.copy(guidance = guidanceFor(adjusted, next))
+        // Подтянутые шаги переносим на пересобранный рецепт: доза меняет воду,
+        // а не расписание.
+        val planned = adjusted.withPullIns(pullIns)
+        val next = copy(recipe = planned, recipeScaled = scaled)
+        return next.copy(guidance = guidanceFor(planned, next))
     }
 
     fun tare() = scale.tare()
@@ -379,6 +389,7 @@ class BrewEngine(
         lastPourFlowRate = 0f
         pourTrackedStepIndex = -1
         pourStartedAtMs = 0L
+        pullIns.clear()
         removal.reset()
         pouredWeight.reset()
         // Возвращаем исходный рецепт: пересчёт был привязан к дозе прошлой чашки.
@@ -446,9 +457,12 @@ class BrewEngine(
         if (firstPass != null) detectPourFinished(firstPass, weight, nowMs)
 
         // После определения конца влива подсказку пересобираем: статус шага мог
-        // смениться прямо сейчас, и показывать устаревший «влив» нельзя.
-        val guidance = next.recipe?.let { guidanceFor(it, next) }
-        _state.value = next.copy(guidance = guidance)
+        // смениться прямо сейчас, и показывать устаревший «влив» нельзя. План
+        // берём из состояния, а не из `next`: конец влива мог подтянуть к себе
+        // свирл, и тогда расписание там уже другое.
+        val plan = _state.value.recipe
+        val guidance = plan?.let { guidanceFor(it, next) }
+        _state.value = next.copy(recipe = plan, guidance = guidance)
 
         if (guidance != null) {
             emitCues(guidance)
@@ -694,8 +708,8 @@ class BrewEngine(
     }
 
     /**
-     * Влив закончен. Если дальше по рецепту слив — ждать конца шага незачем:
-     * вода уже вся в воронке, и уходить она начинает прямо сейчас.
+     * Влив закончен. Если дальше по рецепту слив или свирл — ждать конца шага
+     * незачем: вода уже вся в воронке.
      */
     private fun markPourDone(guidance: Guidance) {
         pourDoneStepIndex = guidance.stepIndex
@@ -706,9 +720,33 @@ class BrewEngine(
         if (isLastPour(guidance) && baseRecipe?.aeropressMode != true) {
             removal.arm(_state.value.weightGrams)
         }
-        if (guidance.nextStep?.kind != StepKind.DRAWDOWN) return
-        val left = guidance.step.endSec - (currentElapsedSec + timelineShiftSec)
-        if (left > 0f) timelineShiftSec += left
+        val next = guidance.nextStep ?: return
+        val nowSec = currentElapsedSec + timelineShiftSec
+        if (next.kind == StepKind.DRAWDOWN) {
+            // Слив начинается прямо сейчас, и остаток шага просто не нужен:
+            // заваривание закончится раньше.
+            val left = guidance.step.endSec - nowSec
+            if (left > 0f) timelineShiftSec += left
+            return
+        }
+        if (!next.kind.isAgitation) return
+        // Свирл сдвигаем к концу влива целыми секундами и вверх: план живёт в
+        // секундах, а начаться позже влива свирл не должен.
+        val shift = ceil(next.startSec - nowSec).toInt()
+        if (shift <= 0) return
+        pullInStep(next.startSec, shift)
+    }
+
+    /**
+     * Переносит шаг на [shiftSec] секунд назад по расписанию этого заваривания.
+     * Рецепт в базе не трогаем: подтяжка живёт ровно одну чашку.
+     */
+    private fun pullInStep(stepStartSec: Int, shiftSec: Int) {
+        val plan = _state.value.recipe ?: return
+        val pulled = plan.withPullIns(mapOf(stepStartSec to shiftSec))
+        if (pulled === plan) return
+        pullIns[stepStartSec] = shiftSec
+        _state.update { it.copy(recipe = pulled) }
     }
 
     /** Последний ли это влив рецепта: дальше воды больше не требуют. */

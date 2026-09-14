@@ -33,6 +33,12 @@ enum class StepKind {
     /** Шаг, во время которого пользователь льёт воду. */
     val isPour: Boolean get() = this == POUR || this == BLOOM
 
+    /**
+     * Свирл и размешивание. Их делают сразу после влива, пока вода ещё стоит
+     * над кофе, а не в ту секунду, на которую их поставил рецепт.
+     */
+    val isAgitation: Boolean get() = this == SWIRL || this == STIR
+
     /** Шаги с закреплённым местом: блуминг только первый, слив только последний. */
     val isPinned: Boolean get() = this == BLOOM || this == DRAWDOWN
 
