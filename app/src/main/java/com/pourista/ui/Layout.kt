@@ -7,21 +7,21 @@ import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 
 /**
- * Альбомная раскладка. Смотрим на ориентацию окна: у планшета в портрете
- * ширины хватает с запасом, но раскладывать содержимое по колонкам там
- * незачем — высоты ещё больше.
+ * The landscape layout. We look at the orientation of the window: a tablet in portrait has width
+ * to spare, but there is no point laying the content out in columns there — there is even more
+ * height.
  */
 @Composable
 fun isWideLayout(): Boolean =
     LocalConfiguration.current.orientation == Configuration.ORIENTATION_LANDSCAPE
 
-/** Ширина, дальше которой строку читать неудобно: список держим в этих рамках. */
+/** The width beyond which a line is uncomfortable to read: the list is kept inside it. */
 val ReadableWidth: Dp = 720.dp
 
 /**
- * Боковые поля списка. На узком экране это обычный отступ, на широком —
- * ровно столько, чтобы строка не растягивалась во всю ширину планшета:
- * читать её глазами тогда невозможно.
+ * The side padding of a list. On a narrow screen it is ordinary padding, on a wide one exactly
+ * enough for the line not to stretch across the whole width of a tablet: reading it by eye would
+ * then be impossible.
  */
 @Composable
 fun listSidePadding(minimum: Dp = 16.dp): Dp {

@@ -8,13 +8,13 @@ import androidx.compose.ui.unit.sp
 
 private val defaults = Typography()
 
-/** Цифры фиксированной ширины: показания веса и таймера не должны дёргаться. */
+/** Fixed-width figures: the weight and timer readings must not twitch. */
 private const val TabularFigures = "tnum"
 
 /**
- * Заголовки тяжелее стандартных. Material держит для них отдельные
- * «эмфазированные» начертания, но в этой версии библиотеки они закрыты, а весом
- * получается то же самое: заголовок отличается от текста не только размером.
+ * Headings heavier than the standard ones. Material keeps separate "emphasised" faces for them, but
+ * in this version of the library they are closed off, while the weight achieves the same thing: a
+ * heading differs from the text by more than its size.
  */
 val FutulaTypography = Typography(
     displayLarge = defaults.displayLarge.copy(fontFeatureSettings = TabularFigures),
@@ -29,7 +29,7 @@ val FutulaTypography = Typography(
     labelLarge = defaults.labelLarge.copy(fontWeight = FontWeight.Medium),
 )
 
-/** Главное показание веса на экране заваривания. */
+/** The main weight reading on the brew screen. */
 val WeightReadoutStyle = TextStyle(
     fontFamily = FontFamily.Default,
     fontWeight = FontWeight.Light,
@@ -39,7 +39,7 @@ val WeightReadoutStyle = TextStyle(
     fontFeatureSettings = TabularFigures,
 )
 
-/** Таймер и вторичные крупные значения. */
+/** The timer and the secondary large values. */
 val MetricValueStyle = TextStyle(
     fontFamily = FontFamily.Default,
     fontWeight = FontWeight.Normal,

@@ -3,19 +3,19 @@ package com.pourista.brew
 import com.pourista.data.model.Recipe
 
 /**
- * Рецепт из уже заваренной чашки.
+ * A recipe out of a cup that has already been brewed.
  *
- * История хранит вес по секунде на точку — этого хватает, чтобы прогнать ряд
- * через тот же детектор проливов, что работает вживую, и получить те же шаги.
- * Разница только в источнике: там показания весов в реальном времени, здесь
- * запись, но правила разбора обязаны совпадать, иначе рецепт из истории не
- * сойдётся с рецептом, записанным на ходу.
+ * The history keeps the weight at one point per second — enough to run the series through
+ * the same pour detector that works live and get the same steps. The only difference is the
+ * source: there it is scale readings in real time, here a recording, but the rules of the
+ * breakdown have to match, otherwise a recipe from the history would not agree with a recipe
+ * recorded on the go.
  */
 internal object RecipeFromHistory {
 
     /**
-     * Собирает рецепт по ряду веса из истории. Возвращает null, когда проливов
-     * в записи не видно — например, заваривали без весов.
+     * Builds a recipe from a weight series out of the history. Returns null when no pours
+     * can be seen in the recording — brewed without a scale, for instance.
      */
     fun build(
         weightSeries: List<Float>,
@@ -42,7 +42,7 @@ internal object RecipeFromHistory {
         )
     }
 
-    /** График истории пишется раз в секунду. */
+    /** The history chart is written once a second. */
     private const val MS_PER_POINT = 1_000L
     private const val MIN_POINTS = 3
 }

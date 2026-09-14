@@ -69,14 +69,14 @@ class BrewRepository(private val dao: BrewDao) {
 
     suspend fun deleteBrew(id: Long) = dao.deleteBrew(id)
 
-    /** Вся история — для резервной копии. */
+    /** The whole history — for a backup. */
     suspend fun exportAll(): List<BrewRecord> = dao.allBrews().map { it.toDomain() }
 
     /**
-     * Восстановление из копии. Повторы отсекаем по времени заваривания: копию
-     * могут залить дважды, и удваивать историю нельзя. Связь с рецептом не
-     * восстанавливаем — на новой установке у рецептов другие id, а название в
-     * записи своё, и график с заметками от него не зависят.
+     * Restoring from a backup. Duplicates are cut off by the time of the brew: a backup can
+     * be loaded twice, and the history must not double. The link to the recipe is not
+     * restored — on a new installation recipes have different ids, while the record carries
+     * a name of its own, and the chart and the notes do not depend on it.
      */
     suspend fun restoreAll(records: List<BrewRecord>): Int {
         val known = dao.brewTimestamps().toMutableSet()

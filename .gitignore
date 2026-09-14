@@ -1,4 +1,4 @@
-# Сборка
+# Build
 /build
 build/
 .gradle/
@@ -7,13 +7,13 @@ build/
 .externalNativeBuild
 .cxx
 
-# Локальные настройки среды
+# Local environment settings
 local.properties
 *.iml
 /.idea
 
-# Ключ подписи и пароли к нему рядом с проектом не хранятся,
-# но на всякий случай закрываем и здесь.
+# The signing key and its passwords are not kept next to the project,
+# but we close them off here just in case.
 *.jks
 *.keystore
 keystore.properties

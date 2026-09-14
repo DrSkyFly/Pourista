@@ -1,15 +1,15 @@
 package com.pourista.brew
 
 /**
- * Насколько усреднять показанную скорость влива.
+ * How much to smooth the flow rate shown on screen.
  *
- * Цифру на экране читают не ради неё самой, а чтобы под неё подстроить струю.
- * Мгновенная скорость для этого слишком подвижна: пока её прочитали, она уже
- * другая. Усреднение отнимает у показания свежесть и возвращает читаемость —
- * что важнее, человек решает сам.
+ * The number on screen is not read for its own sake but to fit the stream to it. The
+ * instantaneous rate is too lively for that: by the time it is read it is already a
+ * different one. Smoothing takes freshness from the reading and gives back readability —
+ * which matters more is for the person to decide.
  */
 enum class FlowSmoothing(val windowMs: Long) {
-    /** Как есть: ни своя оценка, ни число весов не усредняются. */
+    /** As it comes: neither our estimate nor the number from the scale is averaged. */
     NONE(0L),
     LIGHT(500L),
     NORMAL(1_000L),
@@ -17,27 +17,27 @@ enum class FlowSmoothing(val windowMs: Long) {
 }
 
 /**
- * Скорость влива в граммах в секунду.
+ * Flow rate in grams per second.
  *
- * Часть весов считает её сама и шлёт вместе с весом — такое число берём как
- * есть, оно свежее любой нашей оценки. Остальным считаем сами: сколько
- * граммов набежало и за какое время.
+ * Some scales count it themselves and send it along with the weight — such a number is
+ * taken as it is, it is fresher than any estimate of ours. For the rest we count it
+ * ourselves: how many grams arrived and over what time.
  *
- * Окно меряем временем, а не числом отсчётов. Тик движка плывёт: `delay`
- * обещает «не меньше», а не «ровно», и десять тиков это от секунды до
- * полутора. Принимая их за секунду, приложение завышало скорость — на тике в
- * 130 мс на четверть.
+ * The window is measured in time, not in samples. The engine tick drifts: `delay`
+ * promises "no less", not "exactly", and ten ticks are anything from a second to one and
+ * a half. Taking them for a second, the app overstated the rate — by a quarter at a tick
+ * of 130 ms.
  *
- * Готовую оценку усредняем по [smoothing]: одиночная разность прыгает на цену
- * деления весов, делённую на длину окна, — при 0,1 г и полусекунде это по
- * 0,2 г/с в каждую сторону.
+ * The finished estimate is averaged over [smoothing]: a single difference jumps by the
+ * scale resolution divided by the window length — at 0.1 g and half a second that is
+ * 0.2 g/s either way.
  */
 internal class FlowRate(
-    /** За какой отрезок меряем прирост веса. */
+    /** The stretch the weight gain is measured over. */
     private val windowMs: Long = WINDOW_MS,
-    /** Короче этого отрезка делить нельзя: получится не скорость, а шум. */
+    /** Nothing shorter than this may be divided: that gives noise, not a rate. */
     private val minSpanMs: Long = MIN_SPAN_MS,
-    /** Быстрее этого не льют: 25 г/с — это полтора литра в минуту. */
+    /** Nobody pours faster than this: 25 g/s is a litre and a half a minute. */
     private val maxGramsPerSecond: Float = MAX_PLAUSIBLE,
     smoothing: FlowSmoothing = FlowSmoothing.NORMAL,
 ) {
@@ -48,20 +48,20 @@ internal class FlowRate(
     private val rates = ArrayDeque<Sample>()
     private var last = 0f
 
-    /** По какому отрезку усредняем готовые оценки. Задаётся в настройках. */
+    /** The stretch the finished estimates are averaged over. Set in the settings. */
     @Volatile
     var smoothing: FlowSmoothing = smoothing
 
     /**
-     * Скорость на текущий момент; [reported] — число самих весов, если они его
-     * прислали.
+     * The rate at this moment; [reported] is the number from the scale itself, if it sent
+     * one.
      *
-     * Свою оценку ведём в любом случае: на резком изменении веса весы упирают
-     * скорость в потолок, и подставить вместо неё нечего, кроме собственной.
+     * Our own estimate is kept either way: on a sharp change of weight the scale pins the
+     * rate to its ceiling, and there is nothing to put in its place but our own.
      *
-     * Усредняем оба числа одинаково. Своё считается по окну и этим уже сглажено
-     * наполовину, а весы шлют мгновенное — без усреднения оно прыгает сильнее
-     * нашей оценки, а не слабее.
+     * Both numbers are averaged the same way. Ours is counted over a window and is half
+     * smoothed by that already, while the scale sends an instantaneous one — unaveraged it
+     * jumps harder than our estimate, not softer.
      */
     fun onSample(grams: Float, reported: Float?, nowMs: Long): Float {
         val own = estimate(grams, nowMs)
@@ -78,8 +78,8 @@ internal class FlowRate(
     }
 
     /**
-     * Своя оценка по приросту веса. Null — сказать пока нечего: окна ещё нет
-     * или прирост неправдоподобен.
+     * Our own estimate from the weight gain. Null means there is nothing to say yet: the
+     * window is not there, or the gain is implausible.
      */
     private fun estimate(grams: Float, nowMs: Long): Float? {
         weights.addLast(Sample(nowMs, grams))
@@ -87,26 +87,26 @@ internal class FlowRate(
 
         val oldest = weights.first()
         val spanMs = nowMs - oldest.atMs
-        // Окно ещё не набралось: начало заваривания или возврат после паузы.
-        // Показываем последнее, что знали, — это честнее, чем делить на
-        // десятую секунды и выдавать шум за скорость.
+        // The window has not filled up yet: the start of a brew, or a return after a
+        // pause. We show the last thing we knew — that is more honest than dividing by a
+        // tenth of a second and passing noise off as a rate.
         if (spanMs < minSpanMs) return null
 
         val rate = (grams - oldest.value) / (spanMs / 1000f)
         if (rate > maxGramsPerSecond) {
-            // Столько из чайника не наливают: так выглядит возврат показаний
-            // после долгой просадки. Окно начинаем заново, иначе выброс сидел
-            // бы в нём ещё полсекунды.
+            // Nobody pours that much out of a kettle: this is what the readings coming
+            // back after a long dip look like. The window starts over, otherwise the spike
+            // would sit in it for another half second.
             weights.clear()
             weights.addLast(Sample(nowMs, grams))
             return null
         }
 
-        // Обратный ход веса — покачнули воронку, сняли чашку — не влив.
+        // The weight going backwards — the cone was nudged, the cup lifted — is not a pour.
         return rate.coerceAtLeast(0f)
     }
 
-    /** Среднее готовых оценок за последнее окно сглаживания. */
+    /** The average of the finished estimates over the last smoothing window. */
     private fun smooth(rate: Float, nowMs: Long): Float {
         val window = smoothing.windowMs
         rates.addLast(Sample(nowMs, rate))

@@ -3,14 +3,14 @@ package com.pourista.scale
 import java.util.UUID
 
 /**
- * Eureka Precisa и её близнецы: одни и те же весы продаются под именами
- * CFS-9002 и LSJ-001.
+ * Eureka Precisa and its twins: the same scale is sold under the names CFS-9002 and
+ * LSJ-001.
  *
- * Пакет из одиннадцати байтов: знак отдельным байтом, вес двумя байтами
- * младшим вперёд в десятых долях грамма. Команды — четыре байта в свою
- * характеристику, без подтверждения.
+ * A packet of eleven bytes: the sign in a byte of its own, the weight in two bytes
+ * little-endian in tenths of a gram. Commands are four bytes into a characteristic of their
+ * own, without acknowledgement.
  *
- * Протокол написан по открытым реализациям, на железе не проверялся.
+ * The protocol is written from open implementations and has not been checked on hardware.
  */
 object EurekaPrecisaDriver : ScaleDriver {
 
@@ -31,7 +31,7 @@ object EurekaPrecisaDriver : ScaleDriver {
 
     override fun tareCommand(): ByteArray = command(CMD_TARE)
 
-    /** Команда — заголовок, длина и код операции дважды. */
+    /** A command is the header, the length and the operation code twice. */
     private fun command(code: Byte): ByteArray = byteArrayOf(HEADER, BASE, code, code)
 
     private const val PACKET_SIZE = 9

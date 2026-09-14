@@ -3,65 +3,64 @@ package com.pourista.brew
 import kotlin.math.abs
 
 /**
- * Вес для расчётов: неубывающий, пока идёт заваривание.
+ * Weight for calculations: non-decreasing while the brew runs.
  *
- * Воды на весах становится только больше. Если показания просели — воронку
- * качнули, задели чайником, весы дрогнули, — а через миг вернулись, то этот
- * возврат не влив: приняв его за влив, приложение показало бы скорость в
- * десятки граммов в секунду и записало бы выброс в график.
+ * Water on the scale only ever adds up. When the reading dips — the cone was
+ * nudged, the kettle brushed it, the scale shivered — and comes back a moment
+ * later, that return is not a pour: taken for one, the app would show tens of
+ * grams per second and write a spike into the chart.
  *
- * Но просадка бывает и настоящей: нажали тару или сняли чашку. Такую от
- * покачивания отличает только время — она не проходит. Поэтому вес, который
- * держится ниже максимума дольше [rebaseAfterMs], принимается за новую точку
- * отсчёта.
+ * But a dip can be real too: the tare was pressed, or the cup lifted off. Only
+ * time tells the two apart — a real one does not pass. So a weight that stays
+ * below the maximum for longer than [rebaseAfterMs] is taken as the new baseline.
  *
- * Ждём столько же, сколько сторож конца заваривания: свирл на полной воронке
- * занимает три-четыре секунды, и за две вес успевал стать «новой правдой» —
- * график проваливался, а возврат выглядел вливом в сотни граммов.
+ * The wait matches the end-of-brew watch: a swirl on a full cone takes three or
+ * four seconds, and with two the weight managed to become "the new truth" — the
+ * chart fell through, and the return looked like a pour of hundreds of grams.
  *
- * «Держится» проверяется по двум условиям сразу, и оба обязательны. Вес не
- * возвращался к максимуму — иначе просадка кончилась. И вес всё это время
- * стоял на одном уровне — иначе он не держится, а едет вниз, и брать за
- * правду показание, снятое на полпути, нельзя.
+ * "Stays" is checked by two conditions at once, and both are required. The weight
+ * never came back to the maximum — otherwise the dip is over. And it held the same
+ * level all that time — otherwise it is not staying but still on its way down, and
+ * a reading taken halfway cannot be taken for the truth.
  *
- * Скачок вверх проверяется тем же временем. Вода идёт струёй: за одно
- * показание её не может стать больше чем на [riseJumpGrams], а за секунду —
- * чем на [riseGramsPerSec]. Всё, что выше, — нажатая крышка, поставленный на
- * весы чайник, задетая подставка, — и такому весу верим, только если он
- * продержится [riseHoldMs]. Без этой проверки мгновенный скачок уходил в
- * расчёты целиком: приложение считало воду налитой и заканчивало заваривание
- * на середине рецепта. Рука на воронке к тому же не стоит на месте, так что
- * до конца выдержки нажатие обычно и не доживает.
+ * A jump upwards is checked by the same clock. Water comes in a stream: a single
+ * reading cannot bring more than [riseJumpGrams], and a second cannot bring more
+ * than [riseGramsPerSec]. Anything above that is a pressed lid, a kettle parked on
+ * the scale, a knocked stand — and such a weight is believed only if it holds for
+ * [riseHoldMs]. Without this check an instant spike went into the calculations
+ * whole: the app counted the water as poured and ended the brew halfway through
+ * the recipe. A hand on the cone does not hold still either, so a press usually
+ * does not live to the end of the wait.
  */
 internal class MonotonicWeight(
-    /** Мелкие просадки не считаем даже кратковременными. */
+    /** Small dips do not count even as brief ones. */
     private val toleranceGrams: Float = TOLERANCE_GRAMS,
-    /** Сколько просадка должна продержаться, чтобы стать новой правдой. */
+    /** How long a dip must hold to become the new truth. */
     private val rebaseAfterMs: Long = REBASE_AFTER_MS,
-    /** Больше этого за одно показание вода прибыть не может. */
+    /** Water cannot bring more than this in a single reading. */
     private val riseJumpGrams: Float = RISE_JUMP_GRAMS,
-    /** А за секунду — больше этого: столько не льют и с полного чайника. */
+    /** And no more than this per second: nobody pours that, even from a full kettle. */
     private val riseGramsPerSec: Float = RISE_GRAMS_PER_SEC,
-    /** Сколько скачок вверх должен продержаться, чтобы сойти за воду. */
+    /** How long a jump upwards must hold to pass for water. */
     private val riseHoldMs: Long = RISE_HOLD_MS,
 ) {
 
     private var maxGrams = 0f
     private var belowSinceMs = 0L
 
-    /** Уровень, с которого идёт отсчёт: просадка держится, пока вес на нём. */
+    /** The level the countdown runs from: the dip holds while the weight sits on it. */
     private var belowGrams = 0f
 
-    /** То же для скачка вверх: с какого уровня и с какого момента он держится. */
+    /** The same for a jump upwards: from which level and since when it holds. */
     private var aboveSinceMs = 0L
     private var aboveGrams = 0f
 
-    /** Время прошлого показания: по нему считаем, могла ли вода столько дать. */
+    /** Time of the previous reading: it tells whether water could have brought that much. */
     private var lastSampleMs = 0L
 
-    /** Показание для расчётов: скорости, графиков, определения конца влива. */
+    /** The reading for calculations: flow rate, charts, detecting the end of a pour. */
     fun onSample(rawGrams: Float, nowMs: Long): Float {
-        // Первому показанию верим как есть: сравнивать его не с чем.
+        // The first reading is taken as it is: there is nothing to compare it with.
         val first = lastSampleMs == 0L
         val sinceLastMs = if (first) 0L else nowMs - lastSampleMs
         lastSampleMs = nowMs
@@ -69,8 +68,8 @@ internal class MonotonicWeight(
         if (rawGrams >= maxGrams) {
             val couldBeWater = maxOf(riseJumpGrams, riseGramsPerSec * sinceLastMs / 1000f)
             if (!first && rawGrams - maxGrams > couldBeWater) {
-                // Уровень сменился: вес не стоит наверху, а всё ещё едет.
-                // Отсчёт начинается заново — для того уровня, что сейчас.
+                // The level changed: the weight is not standing up there, it is
+                // still moving. The countdown starts over, for the level it is at now.
                 if (aboveSinceMs == 0L || abs(rawGrams - aboveGrams) > toleranceGrams) {
                     aboveSinceMs = nowMs
                     aboveGrams = rawGrams
@@ -84,18 +83,18 @@ internal class MonotonicWeight(
             return maxGrams
         }
 
-        // Вес ниже максимума — скачка вверх больше нет.
+        // Below the maximum — the jump upwards is over.
         aboveSinceMs = 0L
 
-        // Вернулись в допуск — просадки больше нет. Отсчёт снимаем: иначе он
-        // доживёт до следующей просадки и зачтёт ей чужое время.
+        // Back inside the tolerance — the dip is over. The countdown is dropped:
+        // otherwise it would outlive this dip and credit the next one with its time.
         if (maxGrams - rawGrams <= toleranceGrams) {
             belowSinceMs = 0L
             return maxGrams
         }
 
-        // Уровень сменился: вес не стоит внизу, а всё ещё падает. Отсчёт
-        // начинается заново — для того уровня, на котором вес сейчас.
+        // The level changed: the weight is not standing down there, it is still
+        // falling. The countdown starts over, for the level it is at now.
         if (belowSinceMs == 0L || abs(rawGrams - belowGrams) > toleranceGrams) {
             belowSinceMs = nowMs
             belowGrams = rawGrams
@@ -103,7 +102,7 @@ internal class MonotonicWeight(
         }
         if (nowMs - belowSinceMs < rebaseAfterMs) return maxGrams
 
-        // Просадка не прошла — значит это не рябь, а новая точка отсчёта.
+        // The dip did not pass — so it is not ripple but a new baseline.
         maxGrams = rawGrams
         belowSinceMs = 0L
         return maxGrams

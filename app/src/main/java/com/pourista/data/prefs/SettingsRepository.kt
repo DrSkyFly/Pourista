@@ -28,8 +28,8 @@ import org.json.JSONArray
 import org.json.JSONObject
 
 /**
- * Сохранённые настройки генератора 4:6: доза, пропорция и обе ручки под своим
- * именем. Таймингов в пресете нет — они у метода 4:6 неизменные.
+ * Saved settings of the 4:6 generator: dose, ratio and both dials under a name of their
+ * own. A preset has no timings — in the 4:6 method they never change.
  */
 data class FortySixPreset(
     val name: String,
@@ -44,22 +44,22 @@ data class AppSettings(
     val soundCues: Boolean = true,
     val hapticCues: Boolean = true,
     val countdownCue: Boolean = true,
-    /** За сколько граммов до цели шага подать сигнал. */
+    /** How many grams before the step target to give a cue. */
     val nearTargetGrams: Float = DEFAULT_NEAR_TARGET_GRAMS,
-    /** Допустимое расхождение скорости пролива с рецептом, доля от целевой. */
+    /** Allowed drift of the flow rate from the recipe, as a share of the target. */
     val paceTolerance: Float = DEFAULT_PACE_TOLERANCE,
-    /** Насколько усреднять показанную скорость пролива. */
+    /** How much to smooth the flow rate shown on screen. */
     val flowSmoothing: FlowSmoothing = FlowSmoothing.NORMAL,
     /**
-     * Заканчивать заваривание самому, когда с весов сняли воронку или чашку.
-     * Кому мешает — выключает и жмёт «Финиш» руками.
+     * End the brew by itself once the cone or the cup is lifted off the scale. Whoever
+     * finds it in the way turns it off and presses "Finish" by hand.
      */
     val autoFinish: Boolean = true,
-    /** На вопрос про весы уже ответили — второй раз не спрашиваем. */
+    /** The question about the scale has been answered — we do not ask twice. */
     val scaleAsked: Boolean = false,
     /**
-     * Работаем ли с весами вообще. Выключено — приложение становится
-     * таймером: не ищет весы, не просит Bluetooth и не показывает значок.
+     * Whether we work with a scale at all. Off, and the app becomes a timer: it does not
+     * look for a scale, does not ask for Bluetooth and does not show the icon.
      */
     val useScale: Boolean = true,
     val autoConnectOnLaunch: Boolean = true,
@@ -67,42 +67,42 @@ data class AppSettings(
     val keepScaleInGrams: Boolean = true,
     val lastRecipeId: Long? = null,
     /**
-     * Последним выбирали не рецепт из списка, а сборку генератора 4:6. В базе
-     * её нет, и на следующем запуске она собирается заново из [fortySix].
+     * The last thing picked was not a recipe from the list but a 4:6 generator build. The
+     * database has none, and on the next start it is built again from [fortySix].
      */
     val lastRecipeFortySix: Boolean = false,
     val presetsVersion: Int = 0,
-    /** Язык, на котором лежат тексты встроенных рецептов в базе. */
+    /** The language the texts of the built-in recipes lie in inside the database. */
     val presetsLocale: String = "",
     /**
-     * Не пересчитывать воду под фактическую дозу: иногда кофе сыплют больше
-     * специально, чтобы чашка вышла плотнее, а объём воды остаётся прежним.
+     * Do not recalculate the water for the actual dose: sometimes more coffee is ground on
+     * purpose, for a denser cup, while the water volume stays the same.
      */
     val keepRecipeWater: Boolean = false,
-    /** Встроенные рецепты, которые пользователь удалил: обратно их не сеем. */
+    /** Built-in recipes the user has deleted: we do not seed them back. */
     val deletedPresets: Set<String> = emptySet(),
-    /** Последние настройки генератора 4:6 — чтобы заварить так же. */
+    /** The last settings of the 4:6 generator — to brew the same way again. */
     val fortySix: FortySixParams = FortySixParams(),
-    /** Пропорция в генераторе 4:6 закреплена: воду крутят, доза считается. */
+    /** The ratio in the 4:6 generator is pinned: the water is dialled, the dose is counted. */
     val fortySixLockRatio: Boolean = false,
-    /** Сохранённые настройки генератора, по имени. */
+    /** Saved generator settings, by name. */
     val fortySixPresets: List<FortySixPreset> = emptyList(),
-    /** Версия, для которой уже показали «Что нового». */
+    /** The version "What is new" has already been shown for. */
     val whatsNewSeenVersion: Int = 0,
-    /** Кофемолка, с которой пересчитывали помол в прошлый раз. */
+    /** The grinder the grind was converted from last time. */
     val grindFromId: String = "",
-    /** Своя кофемолка: на неё пересчитываем. */
+    /** Your own grinder: the one we convert to. */
     val grindToId: String = "",
-    /** Последняя настройка, введённая в пересчёте помола. */
+    /** The last setting entered into the grind conversion. */
     val grindSetting: String = "",
-    /** Сколько остывать кофе после заваривания, секунды. */
+    /** How long the coffee cools after a brew, in seconds. */
     val cooldownSeconds: Int = DEFAULT_COOLDOWN_SECONDS,
-    /** Заводить таймер остывания самому, как только заваривание закончено. */
+    /** Wind the cooldown timer by itself as soon as the brew is over. */
     val cooldownAutoStart: Boolean = false,
 ) {
     /**
-     * Пора спросить про весы: ответа ещё не было, и приложение ни разу не
-     * запускалось. Обновившимся вопрос не задаём — у них всё уже настроено.
+     * Time to ask about the scale: there has been no answer yet, and the app has never been
+     * started. Those who updated are not asked — everything is already set up for them.
      */
     val needScaleQuestion: Boolean get() = !scaleAsked && whatsNewSeenVersion == 0
 }
@@ -114,7 +114,7 @@ class SettingsRepository(private val context: Context) {
     private object Keys {
         val themeMode = stringPreferencesKey("theme_mode")
         val palette = stringPreferencesKey("palette")
-        /** Прежний вид настройки: до появления палитр обои включались флажком. */
+        /** The old shape of the setting: before the palettes the wallpaper was a checkbox. */
         val dynamicColor = booleanPreferencesKey("dynamic_color")
         val keepScreenOn = booleanPreferencesKey("keep_screen_on")
         val soundCues = booleanPreferencesKey("sound_cues")
@@ -234,8 +234,8 @@ class SettingsRepository(private val context: Context) {
     suspend fun setKeepScaleInGrams(enabled: Boolean) = edit { it[Keys.keepScaleInGrams] = enabled }
 
     /**
-     * Что было выбрано в прошлый раз. Сборка генератора 4:6 в базе не лежит и
-     * своего id не имеет — её отмечаем флажком и собираем заново при запуске.
+     * What was picked last time. A 4:6 generator build does not lie in the database and has
+     * no id of its own — it is marked by a flag and built again at startup.
      */
     suspend fun setLastRecipe(id: Long?, fortySix: Boolean = false) = edit { prefs ->
         if (id == null) prefs.remove(Keys.lastRecipeId) else prefs[Keys.lastRecipeId] = id
@@ -248,12 +248,12 @@ class SettingsRepository(private val context: Context) {
 
     suspend fun setKeepRecipeWater(enabled: Boolean) = edit { it[Keys.keepRecipeWater] = enabled }
 
-    /** Помечает встроенный рецепт удалённым, чтобы он не вернулся при обновлении набора. */
+    /** Marks a built-in recipe as deleted, so it does not come back when the set is updated. */
     suspend fun addDeletedPreset(name: String) = edit { prefs ->
         prefs[Keys.deletedPresets] = (prefs[Keys.deletedPresets] ?: emptySet()) + name
     }
 
-    /** Запоминает ручки генератора 4:6: тайминги в него зашиты и не меняются. */
+    /** Remembers the dials of the 4:6 generator: the timings are wired into it and do not change. */
     suspend fun setFortySix(params: FortySixParams) = edit { prefs ->
         prefs[Keys.fortySixDose] = params.doseGrams
         prefs[Keys.fortySixRatio] = params.ratio
@@ -280,8 +280,8 @@ class SettingsRepository(private val context: Context) {
         edit { it[Keys.whatsNewSeen] = versionCode }
 
     /**
-     * Сохранить настройки генератора под именем. Имя — ключ: сохранение поверх
-     * существующего его заменяет, а не плодит второй пресет с тем же названием.
+     * Save the generator settings under a name. The name is the key: saving over an existing
+     * one replaces it rather than breeding a second preset with the same title.
      */
     suspend fun saveFortySixPreset(preset: FortySixPreset) = edit { prefs ->
         val kept = decodePresets(prefs[Keys.fortySixPresets])
@@ -300,8 +300,8 @@ class SettingsRepository(private val context: Context) {
     }
 
     /**
-     * Пресеты лежат одной строкой JSON: их немного, читают их всегда списком,
-     * а по отдельности не ищут — заводить под это таблицу не за чем.
+     * The presets lie in a single JSON string: there are few of them, they are always read
+     * as a list and never looked up one by one — no reason to start a table for that.
      */
     private fun encodePresets(presets: List<FortySixPreset>): String {
         val array = JSONArray()

@@ -16,7 +16,7 @@ import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 
-/** Температуры в записи может не быть — берём типовую для пуровера. */
+/** A record may have no temperature — we take the typical one for a pour-over. */
 private const val DEFAULT_WATER_TEMP_C = 94
 
 @OptIn(ExperimentalCoroutinesApi::class)
@@ -26,10 +26,9 @@ class HistoryViewModel(private val container: AppContainer) : ViewModel() {
     val query: StateFlow<String> = _query.asStateFlow()
 
     /**
-     * Заваривания с именем рецепта на сегодня. В записи лежит имя на момент
-     * заваривания: рецепт с тех пор могли переименовать, а искать его в истории
-     * человек будет по нынешнему названию. Имя из записи остаётся запасным —
-     * для рецептов, которых уже нет.
+     * Brews with the recipe name for today. The record holds the name as it was at the time of the
+     * brew: the recipe could have been renamed since, and a person will look for it in the history by
+     * its present name. The name from the record stays as a fallback — for recipes that are gone.
      */
     val brews: StateFlow<List<BrewRecord>> = _query
         .flatMapLatest { query ->
@@ -51,8 +50,8 @@ class HistoryViewModel(private val container: AppContainer) : ViewModel() {
     }
 
     /**
-     * Рецепт по записанному проливу — тот же разбор, что и в карточке
-     * заваривания. Готовый черновик подхватывает редактор.
+     * A recipe from the recorded pour — the same breakdown as in the brew card. The editor picks
+     * the finished draft up.
      */
     fun buildRecipe(record: BrewRecord, name: String): Boolean {
         val recipe = RecipeFromHistory.build(
@@ -72,8 +71,8 @@ class HistoryViewModel(private val container: AppContainer) : ViewModel() {
     }
 
     /**
-     * Вернуть удалённое. Запись кладётся заново, вместе с графиками и
-     * заметками; id у неё будет другой, но человеку он не виден.
+     * Bring back a deleted one. The record is put down again, together with the charts and the
+     * notes; its id will be different, but that is invisible to the person.
      */
     fun restore(record: BrewRecord) {
         viewModelScope.launch { container.brews.restoreAll(listOf(record)) }
@@ -96,9 +95,9 @@ class BrewDetailViewModel(
     }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(5_000), null)
 
     /**
-     * Собирает рецепт по записанному проливу и оставляет его черновиком:
-     * дальше его открывает редактор. Возвращает false, когда проливов в записи
-     * не видно — заваривали без весов, разбирать нечего.
+     * Assembles a recipe from the recorded pour and leaves it as a draft: the editor opens it from
+     * there. Returns false when no pours can be seen in the record — brewed without a scale, nothing
+     * to take apart.
      */
     fun buildRecipe(name: String): Boolean {
         val record = brew.value ?: return false

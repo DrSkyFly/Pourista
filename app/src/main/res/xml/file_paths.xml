@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!--
-  Наружу отдаём только то, чем делятся сами: журналы весов и картинки
-  завариваний. Обе папки временные, в кэше.
+  We hand outside only what gets shared: scale logs and brew pictures. Both folders are
+  temporary, in the cache.
 -->
 <paths>
     <cache-path name="logs" path="logs/" />

@@ -37,12 +37,11 @@ import com.pourista.brew.MIN_COOLDOWN_SECONDS
 import com.pourista.core.formatClock
 
 /**
- * Таймер остывания. Кофе из воронки идёт кипятком, и первые минуты его не
- * столько пьют, сколько дуют на чашку, — таймер снимает необходимость
- * караулить её самому.
+ * The cooldown timer. Coffee comes out of the cone boiling, and for the first minutes it is not
+ * so much drunk as blown on — the timer takes away the need to watch the cup yourself.
  *
- * К проливу отношения не имеет, поэтому и настройки у него всего две: сколько
- * ждать и заводить ли его самому по окончании заваривания.
+ * It has nothing to do with the pour, so it has only two settings: how long to wait and whether
+ * to wind it by itself when the brew is over.
  */
 @Composable
 fun CooldownSheetContent(
@@ -74,8 +73,8 @@ fun CooldownSheetContent(
             modifier = Modifier.padding(start = 4.dp, bottom = 4.dp),
         )
 
-        // Пока таймер идёт, на месте настройки — обратный отсчёт: крутить
-        // время у заведённого таймера некуда, а знать, сколько осталось, надо.
+        // While the timer runs, a countdown stands in place of the setting: there is nowhere to
+        // turn the time of a wound timer, and knowing how much is left is necessary.
         if (state.running) Countdown(state) else Duration(seconds, onSeconds)
 
         Block {
@@ -103,10 +102,9 @@ fun CooldownSheetContent(
                 Text(stringResource(R.string.cooldown_stop))
             }
         } else {
-            // «Запустить» заводит таймер, не дожидаясь конца заваривания:
-            // чашку остужают и просто так. «Сохранить» только закрывает лист —
-            // настройки запоминаются на каждое движение, — но без него
-            // непонятно, что выставленное время никуда не денется.
+            // "Start" winds the timer without waiting for the end of the brew: a cup is cooled just
+            // like that too. "Save" only closes the sheet — the settings are remembered on every
+            // movement — but without it there is no telling that the time set will not go anywhere.
             Row(
                 modifier = Modifier.fillMaxWidth().padding(top = 4.dp),
                 horizontalArrangement = Arrangement.spacedBy(12.dp),
@@ -122,7 +120,7 @@ fun CooldownSheetContent(
     }
 }
 
-/** Время остывания: полминуты на нажатие — мельче для чашки не имеет смысла. */
+/** The cooldown time: half a minute per press — finer makes no sense for a cup. */
 @Composable
 private fun Duration(seconds: Int, onSeconds: (Int) -> Unit) {
     Block {
@@ -157,7 +155,7 @@ private fun Duration(seconds: Int, onSeconds: (Int) -> Unit) {
     }
 }
 
-/** Сколько осталось. Заведённое время подписью снизу: видно, докуда идём. */
+/** How much is left. The time it was wound for is the label below: it shows where we are heading. */
 @Composable
 private fun Countdown(state: CooldownState) {
     Card(
@@ -191,7 +189,7 @@ private fun Countdown(state: CooldownState) {
     }
 }
 
-/** Подложка блока — та же, что в пересчёте помола: листы должны быть похожи. */
+/** The backing of the block is the same as in the grind conversion: the sheets should look alike. */
 @Composable
 private fun Block(content: @Composable () -> Unit) {
     Card(
@@ -208,5 +206,5 @@ private fun Block(content: @Composable () -> Unit) {
 private val BlockShape = RoundedCornerShape(24.dp)
 private val STEP_TOUCH = 48.dp
 
-/** Высота окна с отсчётом равна высоте настройки: лист не должен дёргаться. */
+/** The height of the countdown box equals the height of the setting: the sheet must not twitch. */
 private val READOUT_HEIGHT = 68.dp

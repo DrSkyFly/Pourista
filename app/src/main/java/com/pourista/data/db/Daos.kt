@@ -44,20 +44,20 @@ interface BrewDao {
     @Query("SELECT * FROM brews WHERE id = :id")
     fun observeBrew(id: Long): Flow<BrewWithNotes?>
 
-    /** Вся история разом — для резервной копии. */
+    /** The whole history at once — for a backup. */
     @Transaction
     @Query("SELECT * FROM brews ORDER BY brewed_at ASC")
     suspend fun allBrews(): List<BrewWithNotes>
 
     /**
-     * Времена уже записанных завариваний. По ним отсеиваются повторы при
-     * восстановлении: миллисекунда старта — ключ не хуже любого другого, а
-     * своего у записи нет.
+     * The times of brews already written down. Duplicates are filtered out by them when
+     * restoring: the millisecond of the start is as good a key as any other, and the
+     * record has none of its own.
      */
     @Query("SELECT brewed_at FROM brews")
     suspend fun brewTimestamps(): List<Long>
 
-    /** Заметки уходят сами: у них внешний ключ с каскадным удалением. */
+    /** The notes leave by themselves: they have a foreign key with cascading delete. */
     @Query("DELETE FROM brews WHERE id = :id")
     suspend fun deleteBrew(id: Long)
 
@@ -78,8 +78,8 @@ interface BrewDao {
 interface RecipeDao {
 
     /**
-     * Порядок задаёт человек, перетаскивая карточки, поэтому сортируем только
-     * по sort_order: любой другой ключ ломал бы то, что видно на экране.
+     * The order is set by the person dragging the cards, so we sort by sort_order alone:
+     * any other key would break what is on the screen.
      */
     @Transaction
     @Query("SELECT * FROM recipes ORDER BY sort_order ASC, name COLLATE NOCASE ASC")
@@ -93,7 +93,7 @@ interface RecipeDao {
     @Query("SELECT * FROM recipes WHERE id = :id")
     suspend fun recipeById(id: Long): RecipeWithSteps?
 
-    /** Все рецепты разом — для резервной копии. */
+    /** All the recipes at once — for a backup. */
     @Transaction
     @Query("SELECT * FROM recipes ORDER BY sort_order ASC, name COLLATE NOCASE ASC")
     suspend fun allRecipes(): List<RecipeWithSteps>
@@ -107,7 +107,7 @@ interface RecipeDao {
     @Query("UPDATE recipes SET sort_order = :order WHERE id = :id")
     suspend fun setSortOrder(id: Long, order: Int)
 
-    /** Раскладывает порядок с запасом между соседями — так проще двигать дальше. */
+    /** Lays the order out with room between neighbours — easier to move things later. */
     @Transaction
     suspend fun renumber(ids: List<Long>) {
         ids.forEachIndexed { index, id -> setSortOrder(id, (index + 1) * 10) }
@@ -123,17 +123,18 @@ interface RecipeDao {
     suspend fun deleteRecipeById(id: Long)
 
     /**
-     * Встроенные рецепты, которых пользователь не касался: правка меняет
-     * updated_at, поэтому свои версии рецептов переживают обновление набора.
+     * Built-in recipes the user has not touched: an edit changes updated_at, so their own
+     * versions of recipes survive an update of the set.
      */
     @Query("DELETE FROM recipes WHERE is_built_in = 1 AND updated_at = created_at AND is_favorite = 0")
     suspend fun deleteUntouchedBuiltIns(): Int
 
     /**
-     * Переводит тексты встроенного рецепта на текущий язык. Обновляем на месте,
-     * а не пересевом: у рецепта остаются id, место в списке и избранное. Имя
-     * рецепта от языка не зависит, поэтому годится в ключ, а updated_at
-     * намеренно не трогаем — иначе рецепт стал бы «поправленным вручную».
+     * Translates the texts of a built-in recipe into the current language. We update in
+     * place rather than reseeding: the recipe keeps its id, its position in the list and
+     * its favourite mark. The recipe name does not depend on the language, so it works as
+     * a key, and updated_at is deliberately left alone — otherwise the recipe would count
+     * as "edited by hand".
      */
     @Query(
         """

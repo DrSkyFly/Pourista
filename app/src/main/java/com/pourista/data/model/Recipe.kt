@@ -6,47 +6,47 @@ import com.pourista.data.db.RecipeWithSteps
 
 enum class StepKind {
     /**
-     * Первый влив: смачиваем кофе и даём ему раскрыться. Отдельный вид, а не
-     * просто пролив с названием, потому что место у блуминга всегда первое,
-     * и рецепт должен знать, есть он в нём или нет.
+     * The first pour: the coffee is wetted and allowed to open up. A kind of its own
+     * rather than a pour with a name, because the bloom is always first, and the recipe
+     * has to know whether it has one.
      */
     BLOOM,
 
-    /** Наливаем воду до накопительной цели шага. */
+    /** Pour water up to the cumulative target of the step. */
     POUR,
 
-    /** Ждём: настаивание, пауза между проливами. */
+    /** Wait: steeping, a pause between pours. */
     WAIT,
 
-    /** Круговое движение воронкой. */
+    /** A circular movement of the cone. */
     SWIRL,
 
-    /** Размешивание. */
+    /** Stirring. */
     STIR,
 
-    /** Пролив закончен, ждём, пока вода уйдёт. */
+    /** The pouring is over, wait for the water to go through. */
     DRAWDOWN,
 
-    /** Отжим поршня в аэропрессе. */
+    /** Pressing the aeropress plunger. */
     PRESS;
 
-    /** Шаг, во время которого пользователь льёт воду. */
+    /** A step during which the person pours water. */
     val isPour: Boolean get() = this == POUR || this == BLOOM
 
     /**
-     * Свирл и размешивание. Их делают сразу после влива, пока вода ещё стоит
-     * над кофе, а не в ту секунду, на которую их поставил рецепт.
+     * Swirl and stir. They are done right after the pour, while the water still stands
+     * above the coffee, not on the second the recipe put them on.
      */
     val isAgitation: Boolean get() = this == SWIRL || this == STIR
 
-    /** Шаги с закреплённым местом: блуминг только первый, слив только последний. */
+    /** Steps with a fixed place: the bloom only first, the drawdown only last. */
     val isPinned: Boolean get() = this == BLOOM || this == DRAWDOWN
 
     companion object {
         fun fromKey(key: String): StepKind =
             entries.firstOrNull { it.name == key } ?: WAIT
 
-        /** Виды, которые можно выбрать у обычного шага. */
+        /** The kinds an ordinary step can be set to. */
         val selectable: List<StepKind> get() = entries.filterNot { it.isPinned }
     }
 }
@@ -57,15 +57,15 @@ data class RecipeStep(
     val title: String? = null,
     val startSec: Int,
     val durationSec: Int,
-    /** Сколько всего воды должно быть на весах к концу шага. */
+    /** How much water in total should be on the scale by the end of the step. */
     val targetWaterGrams: Float,
-    /** Скорость влива, г/с. Ноль — не задана, берётся типовая. */
+    /** Flow rate, g/s. Zero means unset, and the typical one is used. */
     val pourFlowRate: Float = 0f,
     val note: String? = null,
 ) {
     val endSec: Int get() = startSec + durationSec
 
-    /** Сколько секунд занимает сам влив при заданной скорости. */
+    /** How many seconds the pour itself takes at the given rate. */
     fun pourSeconds(deltaGrams: Float): Float {
         if (deltaGrams <= 0f) return 0f
         val rate = pourFlowRate.takeIf { it > 0f } ?: DEFAULT_POUR_FLOW_RATE
@@ -73,10 +73,10 @@ data class RecipeStep(
     }
 }
 
-/** Свои рецепты идут после встроенных. */
+/** Own recipes come after the built-in ones. */
 const val USER_RECIPE_SORT_ORDER = 1000
 
-/** Типовая скорость влива, когда рецепт её не задаёт. */
+/** The typical flow rate for when a recipe does not set one. */
 const val DEFAULT_POUR_FLOW_RATE = 5f
 private const val MIN_POUR_SECONDS = 2f
 
@@ -89,23 +89,23 @@ data class Recipe(
     val waterTempC: Int,
     val grinderName: String? = null,
     val grindSetting: String? = null,
-    /** Бумага: «Hario», «Cafec Abaca». */
+    /** Paper: "Hario", "Cafec Abaca". */
     val filterName: String? = null,
     val beanName: String? = null,
     val roaster: String? = null,
     val notes: String? = null,
     val isBuiltIn: Boolean = false,
     val isFavorite: Boolean = false,
-    /** Взводить автостарт сразу после записи дозы. */
+    /** Arm auto-start right after the dose is recorded. */
     val autoStart: Boolean = true,
     /**
-     * Режим аэропресса. Отжим роняет вес: воду продавливают в чашку, а поршень
-     * давит на весы неравномерно. Обычно такое сглаживают и считают концом
-     * заваривания, здесь — наоборот: вес пишется как есть, автофиниш молчит,
-     * и на графике видно, когда начался отжим.
+     * Aeropress mode. The press drops the weight: the water is forced into the cup and
+     * the plunger leans on the scale unevenly. Normally that is smoothed away and taken
+     * for the end of a brew; here it is the other way round — the weight is written as it
+     * comes, auto-finish keeps quiet, and the chart shows when the pressing began.
      */
     val aeropressMode: Boolean = false,
-    /** Порядок в списке рецептов. */
+    /** Position in the recipe list. */
     val sortOrder: Int = USER_RECIPE_SORT_ORDER,
     val createdAt: Long = 0,
     val updatedAt: Long = 0,
@@ -116,7 +116,7 @@ data class Recipe(
 
     val totalSec: Int get() = steps.maxOfOrNull { it.endSec } ?: 0
 
-    /** Вес воды к концу последнего пролива. */
+    /** Water weight by the end of the last pour. */
     val finalTargetGrams: Float
         get() = steps.filter { it.kind.isPour }.maxOfOrNull { it.targetWaterGrams } ?: waterGrams
 
@@ -124,11 +124,12 @@ data class Recipe(
 }
 
 /**
- * Пересчёт рецепта под фактически насыпанную дозу с сохранением пропорции.
+ * Recalculating a recipe for the dose actually ground, keeping the ratio.
  *
- * Намолоть ровно 15,0 г получается редко, а пропорция важнее круглых чисел.
- * Объём воды округляется до [WATER_ROUNDING_GRAMS]: цели вроде «до 64,3 г»
- * читать во время пролива невозможно. Возвращает копию — рецепт в базе не меняется.
+ * Grinding exactly 15.0 g rarely works out, and the ratio matters more than round
+ * numbers. The water volume is rounded to [WATER_ROUNDING_GRAMS]: targets like "up to
+ * 64.3 g" cannot be read while pouring. Returns a copy — the recipe in the database
+ * stays as it is.
  */
 fun Recipe.scaledToDose(actualDoseGrams: Float): Recipe {
     if (actualDoseGrams <= 0f || doseGrams <= 0f) return this
@@ -142,8 +143,8 @@ fun Recipe.scaledToDose(actualDoseGrams: Float): Recipe {
     var previousTarget = 0f
     val scaledSteps = steps.map { step ->
         val target = if (step.kind.isPour) {
-            // Округление каждой цели по отдельности не должно ломать порядок:
-            // шаг не может требовать меньше, чем уже налито.
+            // Rounding every target on its own must not break the order: a step cannot
+            // ask for less than is already poured.
             maxOf(roundToStep(step.targetWaterGrams * factor), previousTarget)
         } else {
             previousTarget

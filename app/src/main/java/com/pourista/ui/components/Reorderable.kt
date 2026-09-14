@@ -18,21 +18,20 @@ import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.launch
 
 /**
- * Перетаскивание элементов в [androidx.compose.foundation.lazy.LazyColumn].
+ * Dragging items in an [androidx.compose.foundation.lazy.LazyColumn].
  *
- * В Compose такого из коробки нет. Стрелками длинный список не переставишь:
- * рецепт снизу пришлось бы двигать десяток раз, поэтому нужен захват за ручку.
+ * Compose has nothing of the kind out of the box. A long list cannot be rearranged with arrows:
+ * a recipe at the bottom would have to be moved a dozen times, so a grab handle is needed.
  *
- * Порядок меняется прямо во время перетаскивания — список под пальцем должен
- * выглядеть так, как он будет выглядеть после. Сохранение происходит один раз,
- * когда палец отпущен.
+ * The order changes during the drag itself — the list under the finger has to look the way it
+ * will look afterwards. Saving happens once, when the finger is lifted.
  */
 class ReorderState(
     private val listState: LazyListState,
     private val onMove: (from: Int, to: Int) -> Unit,
     private val onDrop: () -> Unit,
 ) {
-    /** Ключ перетаскиваемого элемента: индексы во время перестановки едут. */
+    /** The key of the dragged item: indices move around during a rearrangement. */
     var draggingKey: Any? by mutableStateOf(null)
         private set
 
@@ -40,7 +39,7 @@ class ReorderState(
     private var initialOffset = 0
     private var initialSize = 0
 
-    /** Куда сдвинуть карточку, чтобы она шла за пальцем. */
+    /** How far to shift the card so that it follows the finger. */
     val draggedOffset: Float
         get() {
             val key = draggingKey ?: return 0f
@@ -48,7 +47,7 @@ class ReorderState(
             return initialOffset + draggedDistance - item.offset
         }
 
-    /** Просьба подкрутить список, когда карточку тянут за край экрана. */
+    /** A request to scroll the list when a card is dragged to the edge of the screen. */
     val scrollRequests = Channel<Float>(Channel.CONFLATED)
 
     fun start(key: Any) {
@@ -67,8 +66,8 @@ class ReorderState(
         val end = start + initialSize
         val current = itemFor(key) ?: return
 
-        // Сосед, на место которого карточка уже заехала: сдвигаем его сразу,
-        // чтобы под пальцем был будущий порядок, а не подсказка о нём.
+        // The neighbour whose place the card has already taken: we shift it at once, so that
+        // what is under the finger is the future order rather than a hint about it.
         listState.layoutInfo.visibleItemsInfo
             .filter { it.key is Long && it.key != key }
             .filterNot { it.offset + it.size < start || it.offset > end }
@@ -87,8 +86,8 @@ class ReorderState(
     }
 
     /**
-     * У края экрана список едет сам: иначе перетащить рецепт дальше видимой
-     * части было бы невозможно.
+     * At the edge of the screen the list moves by itself: otherwise dragging a recipe beyond the
+     * visible part would be impossible.
      */
     private fun requestEdgeScroll(start: Float, end: Float) {
         val info = listState.layoutInfo
@@ -129,11 +128,11 @@ fun rememberReorderState(
 }
 
 /**
- * Перетаскивание по долгому нажатию.
+ * Dragging by a long press.
  *
- * Ручки у карточки нет: она занимала место в строке, а нужна была раз в год.
- * Долгое нажатие с прокруткой не спорит — список едет от обычного движения
- * пальца, а карточка берётся только после задержки.
+ * The card has no handle: it took up room in the row and was needed once a year. A long press
+ * does not argue with scrolling — the list moves from an ordinary finger movement, while the card
+ * is only picked up after a delay.
  */
 fun Modifier.reorderByLongPress(
     state: ReorderState,

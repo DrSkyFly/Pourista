@@ -5,14 +5,14 @@ import java.util.UUID
 /**
  * DiFluid Microbalance.
  *
- * Кадр: два байта заголовка DF DF, группа, команда, длина данных и
- * контрольная сумма — простая сумма предыдущих байтов. Вес приходит четырьмя
- * байтами старшим вперёд в десятых долях грамма.
+ * The frame: two header bytes DF DF, the group, the command, the data length and a checksum —
+ * a plain sum of the preceding bytes. The weight arrives in four bytes big-endian in tenths
+ * of a gram.
  *
- * Сами весы вес не шлют, пока не попросишь: после подключения включаем
- * автоматические уведомления и просим граммы.
+ * The scale sends no weight until asked: after connecting we turn on automatic notifications
+ * and ask for grams.
  *
- * Протокол написан по открытым реализациям, на железе не проверялся.
+ * The protocol is written from open implementations and has not been checked on hardware.
  */
 object DifluidMicrobalanceDriver : ScaleDriver {
 
@@ -40,7 +40,7 @@ object DifluidMicrobalanceDriver : ScaleDriver {
     override fun unitCommand(unit: WeightUnit): ByteArray? =
         if (unit == WeightUnit.GRAM) command(0x01, 0x04, 0x01, 0x00) else null
 
-    /** Без этой команды весы молчат и отвечают только на опрос. */
+    /** Without this command the scale keeps quiet and only answers polling. */
     override fun onConnectCommands(): List<ByteArray> = listOf(command(0x01, 0x00, 0x01, 0x01))
 
     private fun command(group: Int, code: Int, length: Int, argument: Int): ByteArray {

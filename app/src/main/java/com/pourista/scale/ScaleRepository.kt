@@ -36,7 +36,7 @@ import kotlin.math.abs
 enum class ConnectionStatus {
     IDLE,
 
-    /** Bluetooth выключен на телефоне: искать нечем, и это не наша неполадка. */
+    /** Bluetooth is off on the phone: nothing to search with, and it is not our fault. */
     BLUETOOTH_OFF,
     SCANNING,
     CONNECTING,
@@ -47,11 +47,11 @@ enum class ConnectionStatus {
 data class ScaleState(
     val status: ConnectionStatus = ConnectionStatus.IDLE,
     val deviceName: String? = null,
-    /** Текущий вес на весах в граммах. */
+    /** The current weight on the scale in grams. */
     val weightGrams: Float = 0f,
     /**
-     * Скорость влива в граммах в секунду, если весы считают её сами. Null —
-     * весы её не шлют, и движок считает скорость по приросту веса.
+     * Flow rate in grams per second, if the scale counts it itself. Null means the scale does
+     * not send one, and the engine counts the rate from the weight gain.
      */
     val flowRate: Float? = null,
     val batteryPercent: Int? = null,
@@ -64,9 +64,9 @@ data class ScaleState(
 }
 
 /**
- * Связь с весами: поиск, подключение, поток веса и команды. Живёт на всё время
- * работы приложения, поэтому экран заваривания можно закрывать и открывать,
- * не теряя соединение.
+ * The link to the scale: searching, connecting, the weight stream and commands. It lives for
+ * as long as the app runs, so the brew screen can be closed and opened without losing the
+ * connection.
  */
 class ScaleRepository(context: Context) {
 
@@ -76,15 +76,14 @@ class ScaleRepository(context: Context) {
         (appContext.getSystemService(Context.BLUETOOTH_SERVICE) as? BluetoothManager)?.adapter
 
     /**
-     * Последний рубеж. Библиотека связи бросает исключения из корутин —
-     * например когда просишь разорвать связь с устройством, о котором она уже
-     * забыла. Без обработчика такое исключение уходит в обработчик потока,
-     * то есть в вылет приложения.
+     * The last line of defence. The connection library throws exceptions out of coroutines —
+     * for example when asked to disconnect from a device it has already forgotten about.
+     * Without a handler such an exception goes to the stream handler, that is, to a crash.
      */
     private val scope = CoroutineScope(
         SupervisorJob() + Dispatchers.Default +
             CoroutineExceptionHandler { _, error ->
-                Log.e(TAG, "Сбой в работе с весами", error)
+                Log.e(TAG, "Failure while working with the scale", error)
             },
     )
 
@@ -97,46 +96,45 @@ class ScaleRepository(context: Context) {
     private var tareJob: Job? = null
 
     /**
-     * Протокол подключённых весов. До первой находки — наш собственный: он
-     * единственный проверен на железе, и с ним же приложение жило раньше.
+     * The protocol of the connected scale. Until the first find it is our own: it is the only
+     * one checked on hardware, and it is what the app lived with before.
      */
     private var driver: ScaleDriver = FutulaDriver
 
-    /** Пользователь отключился сам — не переподключаемся молча. */
+    /** The user disconnected on purpose — we do not reconnect quietly. */
     private var userDisconnected = false
 
-    /** Возвращать ли весы в граммы, если их переключили кнопкой на корпусе. */
+    /** Whether to put the scale back into grams if it was switched by the button on its body. */
     private var keepGrams = true
 
     private var connectionObserverStarted = false
 
-    /** Эфир осматривает сама диагностика — обычный поиск при этом не идёт. */
+    /** The diagnostics looks over the air itself — the ordinary search does not run meanwhile. */
     private var diagnosticScan = false
 
     private var lastPacketLogAt = 0L
 
-    /** Когда последний раз просили весы вернуться в граммы. */
+    /** When the scale was last asked to come back to grams. */
     private var lastUnitCommandAt = 0L
 
-    /** Пришёл ли хоть один разобранный вес после подключения. */
+    /** Whether at least one parsed weight has arrived since connecting. */
     @Volatile
     private var readingSeen = false
 
-    /** Идёт запись протокола: журнал ведём, пока он здесь. */
+    /** A protocol recording is running: the log is kept while it is here. */
     @Volatile
     private var diagnostics: ScaleDiagnostics? = null
 
     private val _diagnosticsPackets = MutableStateFlow(0)
 
-    /** Сколько пакетов уже записано: экран диагностики показывает счётчик. */
+    /** How many packets are already written: the diagnostics screen shows the counter. */
     val diagnosticsPackets: StateFlow<Int> = _diagnosticsPackets.asStateFlow()
 
     init {
         /*
-          При выключенном Bluetooth библиотека связи молча ничего не делает:
-          ни исключения, ни ошибки в обратном вызове. А включение она не
-          отслеживает — в её обработчике STATE_ON только запись в журнал.
-          Поэтому за адаптером следим сами.
+          With Bluetooth off the connection library quietly does nothing: no exception, no
+          error in the callback. And it does not watch for it being turned on — its STATE_ON
+          handler holds nothing but a log line. So we watch the adapter ourselves.
         */
         central.observeAdapterState { adapterState ->
             when (adapterState) {
@@ -147,23 +145,23 @@ class ScaleRepository(context: Context) {
     }
 
     /**
-     * Bluetooth включили. Поиск возобновляем только если сами же его и не
-     * начали из-за выключенного адаптера: в остальных случаях весы человеку
-     * сейчас не нужны, и лезть в эфир незачем.
+     * Bluetooth has been turned on. The search resumes only if we were the ones who did not
+     * start it because the adapter was off: in every other case the scale is not wanted right
+     * now, and there is no reason to go on the air.
      */
     private fun onBluetoothOn() {
         if (_state.value.status != ConnectionStatus.BLUETOOTH_OFF) return
-        Log.d(TAG, "Bluetooth включили, возобновляем поиск")
+        Log.d(TAG, "Bluetooth turned on, resuming the search")
         startScan()
     }
 
     /**
-     * Bluetooth выключили. Библиотека при этом забывает про устройство, и
-     * просить её разорвать связь уже нельзя — она бросает исключение. Поэтому
-     * ссылку на весы отпускаем здесь же.
+     * Bluetooth has been turned off. The library forgets about the device at that point, and
+     * it can no longer be asked to disconnect — it throws an exception. So the reference to the
+     * scale is let go right here.
      */
     private fun onBluetoothOff() {
-        Log.d(TAG, "Bluetooth выключили")
+        Log.d(TAG, "Bluetooth turned off")
         reconnectJob?.cancel()
         heartbeatJob?.cancel()
         tareJob?.cancel()
@@ -182,9 +180,9 @@ class ScaleRepository(context: Context) {
     }
 
     /**
-     * Разрешения спрашивает экран, а сюда запрос на поиск может прийти раньше —
-     * например от автоподключения при запуске. Без проверки библиотека бросает
-     * SecurityException и роняет приложение.
+     * Permissions are asked for by the screen, but a search request can arrive here earlier —
+     * from the auto-connect at startup, for instance. Without the check the library throws a
+     * SecurityException and brings the app down.
      */
     fun hasPermissions(): Boolean = requiredPermissions().all {
         ContextCompat.checkSelfPermission(appContext, it) == PackageManager.PERMISSION_GRANTED
@@ -193,13 +191,13 @@ class ScaleRepository(context: Context) {
     @SuppressLint("MissingPermission")
     fun startScan() {
         if (!hasPermissions()) {
-            Log.d(TAG, "Нет разрешений на Bluetooth, поиск не запускаем")
+            Log.d(TAG, "No Bluetooth permissions, not starting the search")
             return
         }
-        // Без этой проверки статус встал бы в «ищем», поиск при этом не пошёл
-        // бы вовсе, и следующий вызов упёрся бы в проверку строчкой ниже.
+        // Without this check the status would go to "searching" while no search started at
+        // all, and the next call would run into the check a line below.
         if (!bluetoothEnabled()) {
-            Log.d(TAG, "Bluetooth выключен, поиск не запускаем")
+            Log.d(TAG, "Bluetooth is off, not starting the search")
             _state.update { it.copy(status = ConnectionStatus.BLUETOOTH_OFF) }
             return
         }
@@ -208,15 +206,15 @@ class ScaleRepository(context: Context) {
         observeConnectionStateOnce()
         _state.update { it.copy(status = ConnectionStatus.SCANNING) }
         runCatching {
-            // Смотрим весь эфир и сверяем имена сами: у библиотеки сравнение
-            // с учётом регистра, и весы, объявленные как «TIMEMORE_Dot», под
-            // строчный «timemore» не попадали.
+            // We look over the whole air and match the names ourselves: the library compares
+            // case-sensitively, and a scale advertised as "TIMEMORE_Dot" did not fall under a
+            // lowercase "timemore".
             central.scanForPeripherals(
                 { found, scanResult ->
                     val name = found.advertisedName(scanResult)
                     val matched = ScaleDrivers.forName(name) ?: return@scanForPeripherals
-                    val mark = if (matched.experimental) ", поддержка тестовая" else ""
-                    Log.d(TAG, "Найдены весы $name (${matched.title}$mark), RSSI ${scanResult.rssi}")
+                    val mark = if (matched.experimental) ", support is in beta" else ""
+                    Log.d(TAG, "Found a scale $name (${matched.title}$mark), RSSI ${scanResult.rssi}")
                     central.stopScan()
                     peripheral = found
                     driver = matched
@@ -226,12 +224,12 @@ class ScaleRepository(context: Context) {
                     connect(found)
                 },
                 { failure ->
-                    Log.d(TAG, "Поиск не удался: $failure")
+                    Log.d(TAG, "The search failed: $failure")
                     _state.update { it.copy(status = ConnectionStatus.IDLE) }
                 },
             )
         }.onFailure { error ->
-            Log.d(TAG, "Не удалось запустить поиск: $error")
+            Log.d(TAG, "Could not start the search: $error")
             _state.update { it.copy(status = ConnectionStatus.IDLE) }
         }
     }
@@ -251,8 +249,8 @@ class ScaleRepository(context: Context) {
         heartbeatJob?.cancel()
         tareJob?.cancel()
         runCatching { central.stopScan() }
-        // Устройство библиотека могла уже забыть — так бывает после выключения
-        // адаптера. Тогда на просьбу разорвать связь она бросает исключение.
+        // The library may have forgotten the device already — that happens after the adapter is
+        // turned off. It then throws an exception when asked to disconnect.
         peripheral?.let { device ->
             scope.launch { runCatching { central.cancelConnection(device) } }
         }
@@ -261,22 +259,22 @@ class ScaleRepository(context: Context) {
     }
 
     /**
-     * Обнуление весов.
+     * Zeroing the scale.
      *
-     * Команда уходит без подтверждения: услышали её весы или нет, ответа не
-     * будет. Поэтому смотрим на показания. Вес встал на ноль — тара прошла.
-     * Вес остался прежним — команду не услышали, шлём ещё раз. Вес уехал —
-     * на весы что-то положили или сняли, и повторять уже нельзя: обнулим не
-     * то, что человек хотел.
+     * The command goes out without acknowledgement: whether the scale heard it or not, there
+     * will be no answer. So we watch the readings. The weight has gone to zero — the tare went
+     * through. The weight is unchanged — the command was not heard, send it again. The weight
+     * has moved — something was put on the scale or taken off, and repeating is no longer
+     * allowed: we would zero out something other than what the person wanted.
      */
     fun tare() {
-        diagnostics?.event("нажата «Тара»")
+        diagnostics?.event("\"Tare\" pressed")
         val current = peripheral ?: run {
-            diagnostics?.event("тара не ушла: весы не на связи")
+            diagnostics?.event("the tare did not go out: the scale is not connected")
             return
         }
         val command = driver.tareCommand() ?: run {
-            diagnostics?.event("тара не ушла: ${driver.title} обнуления не умеет")
+            diagnostics?.event("the tare did not go out: ${driver.title} cannot zero itself")
             return
         }
         tareJob?.cancel()
@@ -284,24 +282,24 @@ class ScaleRepository(context: Context) {
             val before = _state.value.weightGrams
             repeat(TARE_ATTEMPTS) { attempt ->
                 if (!_state.value.isConnected) return@launch
-                if (attempt > 0) diagnostics?.event("тара не сработала, шлём ещё раз")
+                if (attempt > 0) diagnostics?.event("the tare did not work, sending again")
                 sendCommand(current, command)
                 delay(TARE_CHECK_MS)
                 val now = _state.value.weightGrams
                 if (abs(now) <= TARE_TOLERANCE_GRAMS) return@launch
                 if (abs(now - before) > TARE_TOLERANCE_GRAMS) return@launch
             }
-            diagnostics?.event("тара так и не сработала")
+            diagnostics?.event("the tare never worked")
         }
     }
 
     /**
-     * Начинает запись протокола весов.
+     * Starts recording the scale protocol.
      *
-     * Если весы на связи — выкладывает их службы и подписывается на всё, что
-     * умеет уведомлять: неработающая модель чаще всего шлёт данные не туда, где
-     * их ждёт драйвер. Если связи нет — осматривает эфир: по имени в объявлении
-     * видно, узнаёт ли приложение эти весы вообще.
+     * If the scale is connected, it lays out its services and subscribes to everything that can
+     * notify: a model that will not work usually sends the data somewhere other than where the
+     * driver waits for it. If there is no connection, it looks over the air: the name in the
+     * advertisement shows whether the app recognises this scale at all.
      */
     @SuppressLint("MissingPermission")
     fun startDiagnostics(header: List<String>) {
@@ -311,17 +309,17 @@ class ScaleRepository(context: Context) {
 
         val device = peripheral
         if (_state.value.isConnected && device != null) {
-            log.note("Драйвер: ${driver.title}")
+            log.note("Driver: ${driver.title}")
             dumpServices(device, log)
             observeEverything(device, log)
         } else {
-            log.note("Весы не подключены — смотрим, что в эфире")
+            log.note("The scale is not connected — looking at what is on the air")
             log.note("")
             scanForDiagnostics(log)
         }
     }
 
-    /** Останавливает запись и отдаёт журнал. */
+    /** Stops the recording and hands over the log. */
     @SuppressLint("MissingPermission")
     fun stopDiagnostics(): String? {
         val log = diagnostics ?: return null
@@ -338,7 +336,7 @@ class ScaleRepository(context: Context) {
 
     private fun dumpServices(device: BluetoothPeripheral, log: ScaleDiagnostics) {
         log.note("")
-        log.note("Службы устройства:")
+        log.note("Services of the device:")
         device.services.forEach { service ->
             log.note("  ${service.uuid}")
             service.characteristics.forEach { characteristic ->
@@ -346,15 +344,15 @@ class ScaleRepository(context: Context) {
             }
         }
         log.note("")
-        log.note("Драйвер ждёт вес в ${driver.weightCharacteristic}")
+        log.note("The driver waits for the weight in ${driver.weightCharacteristic}")
         log.note("")
-        log.note("время   характеристика  байты → разбор")
+        log.note("time    characteristic  bytes → parse")
     }
 
     /**
-     * Подписка на все уведомляющие характеристики. Отписаться blessed не даёт,
-     * поэтому лишние подписки живут до разрыва связи — записывать они перестают
-     * вместе с концом журнала.
+     * Subscribing to every notifying characteristic. Blessed does not allow unsubscribing, so
+     * the extra subscriptions live until the connection breaks — they stop writing together with
+     * the end of the log.
      */
     private fun observeEverything(device: BluetoothPeripheral, log: ScaleDiagnostics) {
         scope.launch {
@@ -365,11 +363,11 @@ class ScaleRepository(context: Context) {
                     runCatching {
                         device.observe(characteristic) { value ->
                             val current = diagnostics ?: return@observe
-                            current.packet(characteristic.uuid.toString(), value, "не вес")
+                            current.packet(characteristic.uuid.toString(), value, "not a weight")
                             _diagnosticsPackets.value = current.packetCount
                         }
                     }.onFailure {
-                        log.event("не удалось подписаться на ${characteristic.uuid}: $it")
+                        log.event("could not subscribe to ${characteristic.uuid}: $it")
                     }
                 }
             }
@@ -379,7 +377,7 @@ class ScaleRepository(context: Context) {
     @SuppressLint("MissingPermission")
     private fun scanForDiagnostics(log: ScaleDiagnostics) {
         if (!hasPermissions()) {
-            log.note("Нет разрешения на Bluetooth — эфир посмотреть не получилось")
+            log.note("No Bluetooth permission — could not look over the air")
             return
         }
         diagnosticScan = true
@@ -387,26 +385,26 @@ class ScaleRepository(context: Context) {
         runCatching {
             central.scanForPeripherals(
                 { found, result ->
-                    // Адрес нужен только чтобы не повторять устройство в журнале.
+                    // The address is only needed so as not to repeat a device in the log.
                     if (!seen.add(found.address)) return@scanForPeripherals
                     val advertised = found.advertisedName(result)
-                    val name = advertised.ifBlank { "(без имени)" }
+                    val name = advertised.ifBlank { "(no name)" }
                     val services = result.scanRecord?.serviceUuids
                         ?.joinToString(", ") { it.uuid.toString() }
-                        ?: "не объявлены"
-                    val known = ScaleDrivers.forName(advertised)?.title ?: "приложению не знакомы"
-                    log.event("в эфире: \"$name\", RSSI ${result.rssi}, службы: $services → $known")
+                        ?: "not advertised"
+                    val known = ScaleDrivers.forName(advertised)?.title ?: "not known to the app"
+                    log.event("on the air: \"$name\", RSSI ${result.rssi}, services: $services → $known")
                 },
-                { failure -> log.event("поиск не удался: $failure") },
+                { failure -> log.event("the search failed: $failure") },
             )
-        }.onFailure { log.event("поиск не запустился: $it") }
+        }.onFailure { log.event("the search did not start: $it") }
     }
 
     private fun connect(target: BluetoothPeripheral) {
         scope.launch {
             runCatching { central.connectPeripheral(target) }
                 .onFailure {
-                    Log.d(TAG, "Не удалось подключиться: $it")
+                    Log.d(TAG, "Could not connect: $it")
                     _state.update { state -> state.copy(status = ConnectionStatus.IDLE) }
                 }
         }
@@ -416,7 +414,7 @@ class ScaleRepository(context: Context) {
         if (connectionObserverStarted) return
         connectionObserverStarted = true
         central.observeConnectionState { device, state ->
-            Log.d(TAG, "Весы ${device.name}: $state")
+            Log.d(TAG, "Scale ${device.name}: $state")
             when (state) {
                 ConnectionState.CONNECTING ->
                     _state.update { it.copy(status = ConnectionStatus.CONNECTING) }
@@ -440,8 +438,8 @@ class ScaleRepository(context: Context) {
                             } else {
                                 ConnectionStatus.RECONNECTING
                             },
-                            // Последний вес на экране оставляем, а скорость
-                            // без новых пакетов означала бы влив, которого нет.
+                            // The last weight is left on the screen, while a flow rate with no
+                            // new packets would mean a pour that is not happening.
                             flowRate = null,
                             batteryPercent = null,
                         )
@@ -457,8 +455,8 @@ class ScaleRepository(context: Context) {
         reconnectJob = scope.launch {
             delay(RECONNECT_DELAY_MS)
             if (userDisconnected) return@launch
-            // Устройство, о котором библиотека не знает, она отдавать
-            // отказывается — с исключением, а не с null.
+            // A device the library knows nothing about it refuses to hand over — with an
+            // exception rather than with a null.
             val known = runCatching { central.getPeripheral(device.address) }.getOrNull()
             if (known?.getState() == ConnectionState.DISCONNECTED) {
                 connect(device)
@@ -480,8 +478,8 @@ class ScaleRepository(context: Context) {
                 if (weight != null) {
                     device.observe(weight) { value ->
                         val reading = active.parseWeight(value) ?: run {
-                            // Заряд у части весов приходит отдельным кадром
-                            // в ту же характеристику, что и вес.
+                            // On some scales the battery arrives in a frame of its own into the
+                            // same characteristic as the weight.
                             val percent = active.parseBattery(value)
                             if (percent != null) {
                                 _state.update { it.copy(batteryPercent = percent) }
@@ -491,11 +489,10 @@ class ScaleRepository(context: Context) {
                         }
                         logPacket(value, reading)
                         readingSeen = true
-                        // Весы могут показывать унции: рецепты и подсказки в граммах,
-                        // поэтому возвращаем их обратно, если модель это умеет.
-                        // Пакеты идут по десять в секунду, а переключается
-                        // единица не мгновенно — иначе весы успели бы сделать
-                        // круг «граммы → унции → граммы».
+                        // The scale may show ounces: recipes and guidance are in grams, so we
+                        // put it back if the model can do that. Packets come ten a second, while
+                        // the unit does not switch instantly — otherwise the scale would manage
+                        // a full round of "grams to ounces to grams".
                         if (keepGrams && reading.unitOnScale != null &&
                             reading.unitOnScale != WeightUnit.GRAM &&
                             SystemClock.elapsedRealtime() - lastUnitCommandAt > UNIT_COMMAND_PAUSE_MS
@@ -515,47 +512,47 @@ class ScaleRepository(context: Context) {
                     }
                 }
 
-                // Отдельная служба заряда есть не у всех: у остальных он приходит
-                // в том же пакете, что и вес.
+                // Not everything has a separate battery service: on the rest it arrives in the
+                // same packet as the weight.
                 if (battery != null) {
                     device.observe(battery) { value ->
                         _state.update { it.copy(batteryPercent = value.asUInt8()?.toInt()) }
                     }
                 }
 
-                // Связь могли поднять уже после начала записи: тогда службы
-                // и остальные подписки достаются журналу здесь.
+                // The connection could have come up after the recording started: the services
+                // and the other subscriptions then fall to the log here.
                 diagnostics?.let { log ->
-                    log.event("подключились: ${device.name}, драйвер ${active.title}")
+                    log.event("connected: ${device.name}, driver ${active.title}")
                     dumpServices(device, log)
                     observeEverything(device, log)
                 }
 
                 val startup = buildList {
-                    // Весы, у которых единица только переключается по кругу,
-                    // вслепую трогать нельзя: граммы превратились бы в унции.
+                    // A scale whose unit only cycles round must not be touched blindly: grams
+                    // would turn into ounces.
                     if (keepGrams && !active.unitCommandIsToggle) {
                         active.unitCommand(WeightUnit.GRAM)?.let(::add)
                     }
                     addAll(active.onConnectCommands())
                 }
-                // Знакомство у части весов идёт по шагам, и торопить его нельзя:
-                // подряд отправленные команды они пропускают.
+                // On some scales the introduction goes in steps, and it cannot be hurried: they
+                // drop commands sent one after another.
                 startup.forEachIndexed { index, command ->
                     if (index > 0) delay(COMMAND_GAP_MS)
                     sendCommand(device, command)
                 }
                 startHeartbeat(device, active)
             } catch (e: Exception) {
-                Log.d(TAG, "Не удалось подписаться на характеристики: $e")
+                Log.d(TAG, "Could not subscribe to the characteristics: $e")
             }
         }
     }
 
     /**
-     * Уточняет драйвер по службам устройства. По имени видно модель, но не
-     * поколение: у Acaia имя одно, а служб две, и различить их можно только
-     * после подключения.
+     * Refines the driver by the services of the device. The name shows the model but not the
+     * generation: Acaia has one name and two services, and they can only be told apart after
+     * connecting.
      */
     @SuppressLint("MissingPermission")
     private fun refineDriver(device: BluetoothPeripheral): ScaleDriver {
@@ -569,15 +566,15 @@ class ScaleRepository(context: Context) {
                 device.getCharacteristic(candidate.service, candidate.weightCharacteristic) != null
         } ?: return current
 
-        Log.d(TAG, "Драйвер уточнён по службам: ${current.title} → ${better.title}")
-        diagnostics?.event("драйвер уточнён по службам: ${better.title}")
+        Log.d(TAG, "Driver refined by the services: ${current.title} → ${better.title}")
+        diagnostics?.event("driver refined by the services: ${better.title}")
         driver = better
         return better
     }
 
     /**
-     * Напоминания весам, что мы на связи. Acaia без них перестаёт слать вес
-     * через несколько секунд, Decent — засыпает.
+     * Reminders to the scale that we are still here. Without them Acaia stops sending the
+     * weight after a few seconds, and Decent falls asleep.
      */
     private fun startHeartbeat(device: BluetoothPeripheral, active: ScaleDriver) {
         heartbeatJob?.cancel()
@@ -587,8 +584,8 @@ class ScaleRepository(context: Context) {
             while (_state.value.isConnected) {
                 delay(interval)
                 if (!_state.value.isConnected) break
-                // Знакомство весы могли пропустить — тогда веса нет вовсе.
-                // Повторяем его, пока не увидим первый пакет.
+                // The scale may have missed the introduction — then there is no weight at all.
+                // We repeat it until the first packet shows up.
                 if (!readingSeen) {
                     active.onConnectCommands().forEach {
                         sendCommand(device, it, silent = true)
@@ -601,16 +598,16 @@ class ScaleRepository(context: Context) {
     }
 
     /**
-     * Диагностика протокола: раз в секунду печатает сырой пакет и то, как он
-     * разобран. Нужна при проверке на живых весах, в релизе не собирается.
+     * Protocol diagnostics: once a second it prints the raw packet and how it was parsed.
+     * Needed when checking against a live scale, not built into a release.
      */
     private fun logPacket(value: ByteArray, reading: WeightReading?, battery: Int? = null) {
-        // Заряд весы шлют своим кадром в ту же характеристику. Разбирается он
-        // не как вес, но разбирается: «не удалось» тут было бы неправдой.
+        // The scale sends the battery in a frame of its own into the same characteristic. It is
+        // parsed differently from a weight, but it is parsed: "failed" here would be a lie.
         val parsed = when {
-            reading != null -> "%.1f г, единица %s".format(reading.grams, reading.unitOnScale)
-            battery != null -> "заряд $battery %"
-            else -> "разобрать не удалось"
+            reading != null -> "%.1f g, unit %s".format(reading.grams, reading.unitOnScale)
+            battery != null -> "battery $battery %"
+            else -> "could not parse"
         }
         diagnostics?.let { log ->
             log.packet(driver.weightCharacteristic.toString(), value, parsed)
@@ -621,7 +618,7 @@ class ScaleRepository(context: Context) {
         if (now - lastPacketLogAt < PACKET_LOG_INTERVAL_MS) return
         lastPacketLogAt = now
         val hex = value.joinToString(" ") { "%02x".format(it) }
-        Log.d(TAG, "Пакет веса [$hex] → $parsed")
+        Log.d(TAG, "Weight packet [$hex] → $parsed")
     }
 
     private suspend fun sendCommand(
@@ -630,15 +627,15 @@ class ScaleRepository(context: Context) {
         silent: Boolean = false,
     ) {
         val target = driver.commandCharacteristic ?: run {
-            diagnostics?.event("команда не отправлена: у драйвера нет характеристики команд")
+            diagnostics?.event("the command was not sent: the driver has no command characteristic")
             return
         }
         val characteristic = device.getCharacteristic(driver.service, target) ?: run {
-            diagnostics?.event("команда не отправлена: характеристики $target нет у устройства")
+            diagnostics?.event("the command was not sent: the device has no $target characteristic")
             return
         }
-        // Часть весов принимает команды только без подтверждения — у
-        // Timemore характеристика команд иначе и не умеет.
+        // Some scales take commands only without acknowledgement — on Timemore the command
+        // characteristic cannot do it any other way.
         val write = when {
             driver.writeWithoutResponse &&
                 characteristic.supports(PROPERTY_WRITE_NO_RESPONSE) -> WriteType.WITHOUT_RESPONSE
@@ -648,8 +645,8 @@ class ScaleRepository(context: Context) {
 
             else -> WriteType.WITHOUT_RESPONSE
         }
-        // В журнал пишем до отправки, а не после: команда, которая застряла в
-        // очереди, иначе не оставила бы следа вовсе.
+        // We write to the log before sending rather than after: a command stuck in the queue
+        // would otherwise leave no trace at all.
         if (!silent) diagnostics?.command(target.toString(), command, write.toString())
         try {
             withTimeout(COMMAND_TIMEOUT_MS) {
@@ -659,23 +656,23 @@ class ScaleRepository(context: Context) {
                 }
             }
         } catch (e: TimeoutCancellationException) {
-            Log.d(TAG, "Команда встала в очереди, поднимаем связь заново")
-            diagnostics?.event("команда встала в очереди, связь поднимаем заново")
+            Log.d(TAG, "The command got stuck in the queue, bringing the connection up again")
+            diagnostics?.event("the command got stuck in the queue, bringing the connection up again")
             recoverStuckLink(device)
         } catch (e: Exception) {
-            Log.d(TAG, "Команда не доставлена: $e")
-            diagnostics?.event("команда не ушла: $e")
+            Log.d(TAG, "The command was not delivered: $e")
+            diagnostics?.event("the command did not go out: $e")
         }
     }
 
     /**
-     * Очередь команд встала.
+     * The command queue has stalled.
      *
-     * Библиотека связи ведёт команды по одной и следующую берёт только после
-     * ответа системы на предыдущую. Ответ иногда не приходит — очередь встаёт
-     * навсегда, и с этого мига не уходит ни одна команда, включая тару.
-     * Разбирает очередь библиотека только вместе со связью, поэтому связь и
-     * рвём: обратно её поднимет [scheduleReconnect].
+     * The connection library runs commands one at a time and takes the next one only after the
+     * system answers for the previous. The answer sometimes never comes — the queue stalls
+     * forever, and from that moment not a single command goes out, the tare included. The
+     * library only clears the queue together with the connection, so the connection is what we
+     * break: [scheduleReconnect] brings it back.
      */
     @SuppressLint("MissingPermission")
     private suspend fun recoverStuckLink(device: BluetoothPeripheral) {
@@ -689,8 +686,8 @@ class ScaleRepository(context: Context) {
         properties and property != 0
 
     /**
-     * Имя из объявления. У устройства оно бывает пустым, пока с ним не
-     * связывались, а в самом объявлении при этом есть.
+     * The name from the advertisement. A device can have none until it has been connected to,
+     * while the advertisement itself has one.
      */
     @SuppressLint("MissingPermission")
     private fun BluetoothPeripheral.advertisedName(result: ScanResult): String =
@@ -711,25 +708,25 @@ class ScaleRepository(context: Context) {
         private const val RECONNECT_DELAY_MS = 10_000L
         private const val PACKET_LOG_INTERVAL_MS = 1_000L
 
-        /** Пауза между командами: подряд весы их теряют. */
+        /** The pause between commands: sent back to back, the scale loses them. */
         private const val COMMAND_GAP_MS = 200L
 
         /**
-         * Сколько ждём отправки. Обычная команда уходит за миллисекунды, так
-         * что этот срок означает не медленную связь, а вставшую очередь.
+         * How long we wait for a send. An ordinary command goes out in milliseconds, so this
+         * span means a stalled queue rather than a slow connection.
          */
         private const val COMMAND_TIMEOUT_MS = 5_000L
 
-        /** Сколько раз повторить тару, если весы её не услышали. */
+        /** How many times to repeat the tare if the scale did not hear it. */
         private const val TARE_ATTEMPTS = 3
 
-        /** Сколько ждать, прежде чем смотреть, сработала ли тара. */
+        /** How long to wait before looking at whether the tare worked. */
         private const val TARE_CHECK_MS = 600L
 
-        /** Ноль на весах не идеальный, да и показания дрожат. */
+        /** The zero on a scale is not perfect, and the readings shiver too. */
         private const val TARE_TOLERANCE_GRAMS = 0.5f
 
-        /** Как часто можно просить весы вернуться в граммы. */
+        /** How often the scale may be asked to come back to grams. */
         private const val UNIT_COMMAND_PAUSE_MS = 3_000L
 
         private const val PROPERTY_WRITE_NO_RESPONSE =
@@ -739,7 +736,7 @@ class ScaleRepository(context: Context) {
             BluetoothGattCharacteristic.PROPERTY_NOTIFY or
                 BluetoothGattCharacteristic.PROPERTY_INDICATE
 
-        /** Разрешения, без которых BLE-поиск невозможен. */
+        /** The permissions without which a BLE search is impossible. */
         fun requiredPermissions(): Array<String> =
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
                 arrayOf(

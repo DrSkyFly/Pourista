@@ -1,15 +1,15 @@
 import java.util.Properties
 
 plugins {
-    // Начиная с AGP 9 поддержка Kotlin встроена, отдельный kotlin-android не нужен.
+    // From AGP 9 on, Kotlin support is built in and a separate kotlin-android is not needed.
     alias(libs.plugins.android.application)
     alias(libs.plugins.kotlin.compose)
     alias(libs.plugins.ksp)
     alias(libs.plugins.androidx.room)
 }
 
-// Ключ подписи и пароли лежат вне репозитория. Если файла нет — релиз просто
-// собирается неподписанным, сборка не падает.
+// The signing key and the passwords lie outside the repository. If the file is missing, the
+// release is simply built unsigned and the build does not fail.
 val keystoreProps = Properties().apply {
     val file = rootProject.file("../keystore/keystore.properties")
     if (file.exists()) file.inputStream().use { load(it) }
@@ -18,7 +18,7 @@ val keystoreProps = Properties().apply {
 android {
     namespace = "com.pourista"
     compileSdk = 37
-    // По умолчанию AGP 8.13 просит build-tools 35.0.0, а установлены 36.0.0.
+    // By default AGP 8.13 asks for build-tools 35.0.0, while 36.0.0 is installed.
     buildToolsVersion = "36.0.0"
 
     defaultConfig {
@@ -30,23 +30,23 @@ android {
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
     }
 
-    // Приложение одно, но раздаётся из двух мест, и правила у них разные.
-    // Код общий: различия сводятся к константам BuildConfig.
+    // There is one app, but it is given out from two places, and their rules differ. The code is
+    // shared: the differences come down to BuildConfig constants.
     flavorDimensions += "store"
     productFlavors {
         create("github") {
             dimension = "store"
-            // Ссылка на страницу релизов: обновление оттуда ставят руками.
+            // The link to the releases page: an update from there is installed by hand.
             buildConfigField("boolean", "UPDATE_LINK", "true")
-            // Тестировщиков ищем среди тех, кто ставит APK руками.
+            // We look for testers among those who install the APK by hand.
             buildConfigField("boolean", "TESTERS_CALL", "true")
         }
         create("play") {
             dimension = "store"
-            // В магазине обновлениями занимается сам магазин, а звать людей за
-            // APK мимо него правилами Play и не разрешено.
+            // In the store, updating is the store's business, and calling people for an APK past
+            // it is not allowed by the Play rules anyway.
             buildConfigField("boolean", "UPDATE_LINK", "false")
-            // Кто ставит из Play, тот уже тестировщик: звать его незачем.
+            // Whoever installs from Play is a tester already: no need to call them.
             buildConfigField("boolean", "TESTERS_CALL", "false")
         }
     }
@@ -62,10 +62,10 @@ android {
     }
     buildTypes {
         debug {
-            // Тем же ключом, что и релиз: иначе отладочную сборку не поставить
-            // поверх скачанной с GitHub, а релизную — поверх отладочной, и
-            // каждая проверка на живом телефоне требует сноса приложения.
-            // Ключа нет (например, на CI) — остаётся обычная отладочная подпись.
+            // With the same key as the release: otherwise a debug build cannot be installed over
+            // one downloaded from GitHub, nor a release build over a debug one, and every check on
+            // a live phone would require uninstalling the app.
+            // No key (on CI, for instance) — and the ordinary debug signature is left.
             signingConfigs.findByName("release")?.let { signingConfig = it }
         }
         release {
@@ -92,9 +92,9 @@ android {
     }
 
     bundle {
-        // Play раздаёт из бандла только языки телефона, а язык у нас выбирают
-        // в настройках — и до Android 13 подменой локали, которой нужны сами
-        // ресурсы. Значит все переводы едут в каждой установке.
+        // Play gives out of a bundle only the languages of the phone, while our language is chosen
+        // in the settings — and before Android 13 by substituting the locale, which needs the
+        // resources themselves. So every translation travels in every installation.
         language {
             enableSplit = false
         }
@@ -102,7 +102,7 @@ android {
 }
 
 room {
-    // История схем лежит в репозитории: по ней проверяются миграции.
+    // The schema history lies in the repository: the migrations are checked against it.
     schemaDirectory("$projectDir/schemas")
 }
 
@@ -129,21 +129,21 @@ dependencies {
     implementation(libs.androidx.lifecycle.runtime.compose)
     implementation(libs.androidx.lifecycle.viewmodel.compose)
     implementation(libs.androidx.navigation.compose)
-    // Явная версия: транзитивная 1.7.3 несовместима с room-testing в androidTest.
+    // An explicit version: the transitive 1.7.3 is incompatible with room-testing in androidTest.
     implementation(libs.kotlinx.serialization.json)
     debugImplementation(libs.androidx.compose.ui.tooling)
 
-    // Данные
+    // Data
     implementation(libs.androidx.room.runtime)
     implementation(libs.androidx.room.ktx)
     ksp(libs.androidx.room.compiler)
     implementation(libs.androidx.datastore.preferences)
 
-    // Весы
+    // Scale
     implementation(libs.blessed.android.coroutines)
 
     testImplementation(libs.junit)
-    // Настоящий org.json вместо заглушки из android.jar: разбор рецептов тестируется.
+    // The real org.json instead of the stub from android.jar: recipe parsing is tested.
     testImplementation(libs.json.unit.test)
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)

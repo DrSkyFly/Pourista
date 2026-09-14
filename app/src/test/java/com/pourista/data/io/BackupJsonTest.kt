@@ -15,12 +15,12 @@ class BackupJsonTest {
 
     private val recipe = Recipe(
         id = 7,
-        name = "V60 · утро",
+        name = "V60 · morning",
         brewer = "Hario V60-02",
         doseGrams = 15f,
         waterGrams = 250f,
         waterTempC = 93,
-        grindSetting = "крупный",
+        grindSetting = "coarse",
         filterName = "Hario",
         isFavorite = true,
         sortOrder = 20,
@@ -55,18 +55,18 @@ class BackupJsonTest {
         flowSeries = listOf(0f, 4.1f, 5.2f, 0f),
         flowRateAvg = 4.7f,
         recipeId = 7,
-        recipeName = "V60 · утро",
+        recipeName = "V60 · morning",
         notes = BrewNotes(
-            bean = "Эфиопия Гуджи",
-            roaster = "Кофейный сноб",
-            grindSetting = "24 клика",
+            bean = "Ethiopia Guji",
+            roaster = "Coffee Snob",
+            grindSetting = "24 clicks",
             filterName = "Cafec Abaca",
-            extra = "кисло",
+            extra = "sour",
         ),
     )
 
     @Test
-    fun `копия переносит рецепт вместе с избранным и порядком`() {
+    fun `a backup carries a recipe together with its favourite mark and order`() {
         val text = BackupJson.encode(listOf(recipe), emptyList(), now = 1_700_002_000_000L)
         val back = BackupJson.decode(text).recipes.single()
 
@@ -74,7 +74,7 @@ class BackupJsonTest {
         assertEquals(recipe.doseGrams, back.doseGrams, 0.01f)
         assertEquals(recipe.waterTempC, back.waterTempC)
         assertEquals(recipe.filterName, back.filterName)
-        assertTrue("избранное не должно теряться", back.isFavorite)
+        assertTrue("the favourite mark must not be lost", back.isFavorite)
         assertEquals(recipe.sortOrder, back.sortOrder)
         assertEquals(recipe.createdAt, back.createdAt)
         assertEquals(recipe.lastUsedAt, back.lastUsedAt)
@@ -84,7 +84,7 @@ class BackupJsonTest {
     }
 
     @Test
-    fun `копия переносит заваривание с графиками и заметками`() {
+    fun `a backup carries a brew with its charts and notes`() {
         val text = BackupJson.encode(emptyList(), listOf(brew), now = 1_700_002_000_000L)
         val back = BackupJson.decode(text).brews.single()
 
@@ -93,30 +93,30 @@ class BackupJsonTest {
         assertEquals(brew.elapsedMs, back.elapsedMs)
         assertEquals(brew.weightSeries, back.weightSeries)
         assertEquals(brew.flowSeries, back.flowSeries)
-        assertEquals("Эфиопия Гуджи", back.notes.bean)
-        assertEquals("24 клика", back.notes.grindSetting)
+        assertEquals("Ethiopia Guji", back.notes.bean)
+        assertEquals("24 clicks", back.notes.grindSetting)
         assertEquals("Cafec Abaca", back.notes.filterName)
-        assertEquals("кисло", back.notes.extra)
+        assertEquals("sour", back.notes.extra)
         assertEquals(brew.recipeName, back.recipeName)
-        // Рецепт на новой установке лежит под другим id: связь не переносим.
+        // On a new installation the recipe lies under a different id: the link is not carried over.
         assertNull(back.recipeId)
     }
 
     @Test
-    fun `файл рецептов за резервную копию не выдаём`() {
+    fun `a recipe file is not passed off as a backup`() {
         val recipes = RecipeJson.encode(listOf(recipe))
         assertThrows(IllegalArgumentException::class.java) { BackupJson.decode(recipes) }
     }
 
     @Test
-    fun `копия из будущей версии не разбирается`() {
+    fun `a backup from a future version is not parsed`() {
         val text = BackupJson.encode(emptyList(), emptyList(), now = 0L)
             .replace("\"version\": 1", "\"version\": 99")
         assertThrows(IllegalArgumentException::class.java) { BackupJson.decode(text) }
     }
 
     @Test
-    fun `заваривание без времени пропускаем, остальное читаем`() {
+    fun `a brew with no time is skipped and the rest is read`() {
         val text = """
             {
               "format": "pourista.backup",

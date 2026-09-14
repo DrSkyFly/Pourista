@@ -43,8 +43,8 @@ import kotlin.math.ceil
 import kotlin.math.roundToInt
 
 /**
- * Лёгкий линейный график на Canvas. Раньше здесь был AAChart внутри WebView —
- * ради двух кривых это слишком дорого и мешало тёмной теме.
+ * A light line chart on a Canvas. There used to be an AAChart inside a WebView here — for two
+ * curves that is too expensive, and it got in the way of the dark theme.
  */
 @Composable
 fun SeriesChart(
@@ -53,18 +53,18 @@ fun SeriesChart(
     height: Dp = 120.dp,
     lineColor: Color = MaterialTheme.colorScheme.primary,
     fillColor: Color = lineColor.copy(alpha = 0.18f),
-    /** Цели рецепта: рисуются заметной пунктирной линией с подписью. */
+    /** Recipe targets: drawn with a visible dashed line and a label. */
     guides: List<Float> = emptyList(),
     guideColor: Color = MaterialTheme.colorScheme.tertiary,
     /**
-     * До какого значения растянуть ось. Нужен запас над текущей кривой, иначе
-     * цель следующего шага оказывается за краем графика.
+     * The value the axis is stretched to. Room above the current curve is needed, otherwise the
+     * target of the next step ends up beyond the edge of the chart.
      */
     focusMax: Float? = null,
     showAxis: Boolean = true,
-    /** Цена деления: у веса и у скорости она разная. */
+    /** The tick size: it differs for the weight and for the flow rate. */
     axisSteps: List<Float> = WEIGHT_AXIS_STEPS,
-    /** Точка, которую держат пальцем: её отмечаем вертикалью и кружком. */
+    /** The point held by a finger: it is marked with a vertical line and a circle. */
     scrubIndex: Int? = null,
     durationSec: Int = values.size,
 ) {
@@ -107,8 +107,8 @@ fun SeriesChart(
 }
 
 /**
- * Рисование ряда. Живёт отдельно от composable, потому что тот же график
- * нужен и вне экрана — в картинке, которой делятся из истории.
+ * Drawing a series. It lives apart from the composable, because the same chart is needed off
+ * screen too — in the picture shared from the history.
  */
 internal fun DrawScope.drawSeries(
     values: List<Float>,
@@ -125,12 +125,12 @@ internal fun DrawScope.drawSeries(
     labelStyle: TextStyle,
     guideStyle: TextStyle,
     scrubIndex: Int? = null,
-    /** Длительность заваривания: по ней размечается время внизу. */
+    /** The length of the brew: the time below is laid out by it. */
     durationSec: Int = values.size,
 ) {
     val tickStep = axisMax / ticks
-    // Слева оставляем место под подписи оси, снизу — под время, иначе они
-    // лягут на кривую.
+    // Room is left on the left for the axis labels and at the bottom for the time, otherwise
+    // they would lie on the curve.
     val gutter = if (showAxis) AXIS_GUTTER_DP.dp.toPx() else 0f
     val timeGutter = if (showAxis) TIME_GUTTER_DP.dp.toPx() else 0f
     val plotLeft = gutter
@@ -148,8 +148,8 @@ internal fun DrawScope.drawSeries(
                 end = Offset(size.width, y),
                 strokeWidth = 1.dp.toPx(),
             )
-            // Ноль не подписываем: дно графика и без цифры понятно, а строка
-            // там сталкивается с подписями времени.
+            // Zero is not labelled: the bottom of the chart is clear enough without a figure,
+            // and a line there collides with the time labels.
             if (tick == 0) continue
             val layout = measurer.measure(AnnotatedString(formatTick(value)), labelStyle)
             drawText(
@@ -187,8 +187,8 @@ internal fun DrawScope.drawSeries(
     val stepX = plotWidth / (values.size - 1).toFloat()
     val line = Path()
     val area = Path()
-    // От дна графика, а не от низа холста: под ним лежит поле подписей
-    // времени, и заливка уезжала бы в него скошенным краем.
+    // From the bottom of the chart rather than from the bottom of the canvas: the field of time
+    // labels lies below it, and the fill would run into it with a slanted edge.
     area.moveTo(plotLeft, plotBottom)
     values.forEachIndexed { index, value ->
         val x = plotLeft + index * stepX
@@ -200,8 +200,8 @@ internal fun DrawScope.drawSeries(
     area.close()
 
     drawPath(path = area, brush = Brush.verticalGradient(listOf(fillColor, Color.Transparent)))
-    // Скругления на изломах: у скорости пролива пики острые, и без них
-    // вершины выглядят обрубленными.
+    // Rounding on the breaks: the flow rate has sharp peaks, and without it the tops look
+    // chopped off.
     drawPath(
         path = line,
         color = lineColor,
@@ -212,7 +212,7 @@ internal fun DrawScope.drawSeries(
         ),
     )
 
-    // Время внизу: без него не понять, когда начался тот или иной этап.
+    // The time below: without it there is no telling when this or that stage began.
     if (showAxis && durationSec > 0) {
         val step = timeStep(durationSec)
         var second = 0
@@ -247,7 +247,7 @@ internal fun DrawScope.drawSeries(
             end = Offset(x, size.height),
             strokeWidth = 1.dp.toPx(),
         )
-        // Кружок с подложкой: на самой кривой одноцветная точка теряется.
+        // A circle with a backing: on the curve itself a single-colour dot gets lost.
         drawCircle(color = gridColor, radius = 6.dp.toPx(), center = Offset(x, y))
         drawCircle(color = lineColor, radius = 4.dp.toPx(), center = Offset(x, y))
     }
@@ -255,39 +255,39 @@ internal fun DrawScope.drawSeries(
 
 internal const val AXIS_GUTTER_DP = 34
 
-/** Полоса под подписи времени. */
+/** The strip for the time labels. */
 internal const val TIME_GUTTER_DP = 16
 
-/** Минимальный просвет между линиями сетки: ниже подписи налезают друг на друга. */
+/** The smallest gap between grid lines: below it the labels climb over each other. */
 internal val MIN_AXIS_LINE_SPACING = 22.dp
 
-/** Сколько делений помещается по высоте графика, чтобы цифры не слиплись. */
+/** How many ticks fit the height of the chart without the figures sticking together. */
 internal fun axisLinesFor(plotHeight: Dp): Int =
     (plotHeight / MIN_AXIS_LINE_SPACING).toInt().coerceIn(2, 7)
 
 /**
- * Цена деления времени. Полминуты — привычный шаг рецепта, дальше растём, пока
- * подписи не перестанут налезать друг на друга.
+ * The time tick size. Half a minute is the familiar recipe step; from there we grow until the
+ * labels stop climbing over each other.
  */
 private fun timeStep(durationSec: Int, maxLabels: Int = 8): Int {
     val steps = listOf(15, 30, 60, 120, 300, 600)
     return steps.firstOrNull { durationSec / it <= maxLabels } ?: durationSec.coerceAtLeast(1)
 }
 
-/** Деления оси веса: лить по 25 г никто не будет, шаг начинается с полусотни. */
+/** Weight axis ticks: nobody pours in 25 g, so the step starts at fifty. */
 internal val WEIGHT_AXIS_STEPS = listOf(50f, 100f, 150f, 200f, 250f, 500f, 1000f)
 
-/** Скорость читают по 2,5 г/с: это половина обычного пролива. */
+/** The flow rate is read in 2.5 g/s: that is half of an ordinary pour. */
 internal val FLOW_AXIS_STEPS = listOf(2.5f, 5f, 10f, 25f, 50f)
 
-/** Больше этого линии сливаются в сетку и мешают смотреть на кривую. */
+/** Beyond this the lines merge into a mesh and get in the way of the curve. */
 private const val MAX_AXIS_LINES = 7
 
 /**
- * Верх оси и число делений. Шаг берём из заданного набора — он задаёт цену
- * деления, привычную для этой величины, — и увеличиваем, пока линий не станет
- * разумное количество. Округляем шаг, а не сам максимум: иначе 253 превращались
- * бы в 400 и кривая липла бы ко дну.
+ * The top of the axis and the number of ticks. The step is taken from a given set — it sets the
+ * tick size familiar for this quantity — and grown until the number of lines is sensible. We
+ * round the step rather than the maximum itself: otherwise 253 would turn into 400 and the curve
+ * would cling to the bottom.
  */
 internal fun chartAxis(
     rawMax: Float,
@@ -309,7 +309,7 @@ internal fun chartAxis(
 private fun formatTick(value: Float): String = when {
     value % 1f == 0f -> value.toInt().toString()
     value >= 1f -> String.format(Locale.US, "%.1f", value)
-    // Мелкие деления скорости бывают дробными: 0,25 нельзя показывать как 0,3.
+    // Small flow rate ticks come out fractional: 0.25 must not be shown as 0.3.
     else -> String.format(Locale.US, "%.2f", value).trimEnd('0').trimEnd('.')
 }
 
@@ -327,7 +327,7 @@ fun LabeledChart(
     axisSteps: List<Float> = WEIGHT_AXIS_STEPS,
     durationSec: Int = values.size,
 ) {
-    // Точка под пальцем: держат — показываем, сколько тут было и когда.
+    // The point under the finger: hold it and we show what was here and when.
     var scrub by remember(values.size) { mutableStateOf<Int?>(null) }
     val marked = scrub?.coerceIn(0, values.lastIndex.coerceAtLeast(0))
     val readout = marked?.takeIf { values.size > 1 }?.let { index ->
@@ -355,8 +355,8 @@ fun LabeledChart(
         Box(modifier = Modifier.padding(top = 8.dp)) {
             SeriesChart(
                 modifier = Modifier.pointerInput(values.size) {
-                    // Долгое нажатие, а не обычное: иначе жест отбирал бы
-                    // прокрутку у списка, в котором график живёт.
+                    // A long press rather than an ordinary one: otherwise the gesture would take
+                    // the scrolling away from the list the chart lives in.
                     val lastIndex = values.lastIndex
                     detectDragGesturesAfterLongPress(
                         onDragStart = { scrub = indexAt(it.x, size.width, lastIndex) },
@@ -381,7 +381,7 @@ fun LabeledChart(
     }
 }
 
-/** Какая точка ряда под пальцем: отсчёт от левого края поля, без оси. */
+/** Which point of the series is under the finger: counted from the left edge of the field, without the axis. */
 private fun PointerInputScope.indexAt(x: Float, width: Int, lastIndex: Int): Int {
     if (lastIndex <= 0) return 0
     val gutter = AXIS_GUTTER_DP.dp.toPx()

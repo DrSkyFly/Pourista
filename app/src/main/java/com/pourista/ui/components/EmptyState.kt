@@ -20,11 +20,11 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 
 /**
- * Пустой список.
+ * An empty list.
  *
- * Одной серой строки посреди экрана мало: она читается как сбой загрузки.
- * Значок в круге даёт понять, что здесь и должно быть пусто, а кнопка —
- * что с этим делать.
+ * One grey line in the middle of the screen is not enough: it reads as a loading failure. An
+ * icon in a circle makes it clear that it is supposed to be empty here, and a button says what
+ * to do about it.
  */
 @Composable
 fun EmptyState(

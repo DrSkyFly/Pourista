@@ -72,8 +72,8 @@ import kotlin.math.floor
 import kotlin.math.roundToInt
 
 /**
- * Генератор 4:6: две ручки задают вкус и крепость, план проливов
- * пересчитывается на каждое движение — видно, что получится, ещё до заваривания.
+ * The 4:6 generator: two dials set the taste and the strength, the plan of pours is recalculated
+ * at every movement — you see what will come out before the brewing starts.
  */
 @Composable
 fun FortySixSheetContent(
@@ -81,19 +81,19 @@ fun FortySixSheetContent(
     initialLockRatio: Boolean,
     onGenerate: (FortySixParams, Boolean) -> Unit,
     modifier: Modifier = Modifier,
-    /** Сохранённые настройки: их выбирают из списка под заголовком. */
+    /** Saved settings: they are picked from the list under the title. */
     presets: List<FortySixPreset> = emptyList(),
     onSavePreset: (String, FortySixParams, Boolean) -> Unit = { _, _, _ -> },
     onDeletePreset: (String) -> Unit = {},
 ) {
     var params by remember { mutableStateOf(initial) }
-    // Закреплённая пропорция считается от значения на момент замка, а не от
-    // текущего: иначе округление дозы уводило бы её на каждом шаге воды.
+    // The pinned ratio is counted from the value at the moment of the lock rather than from the
+    // current one: otherwise rounding the dose would drag it off at every step of the water.
     var lockRatio by remember { mutableStateOf(initialLockRatio) }
     var lockedAt by remember { mutableFloatStateOf(initial.ratio) }
     /**
-     * Пресет, который взяли за основу, — целиком, а не одним именем: по нему
-     * видно, крутили ли ручки после загрузки, и надо ли предлагать сохранить.
+     * The preset taken as the base — whole, rather than by name alone: by it one can see whether
+     * the dials were turned after loading, and whether to offer to save.
      */
     var currentPreset by remember { mutableStateOf<FortySixPreset?>(null) }
     var presetMenu by remember { mutableStateOf(false) }
@@ -103,8 +103,8 @@ fun FortySixSheetContent(
     val water = remember(params) { FortySixGenerator.waterGrams(params) }
     val gram = stringResource(R.string.unit_gram)
 
-    // Кнопка «Готово» живёт вне прокрутки, а ручки — внутри: за ней приходят
-    // после каждой правки, и искать её, листая лист, никто не должен.
+    // The "Done" button lives outside the scroll while the dials are inside: it is wanted after
+    // every edit, and nobody should have to look for it by scrolling the sheet.
     Column(
         modifier = modifier
             .fillMaxWidth()
@@ -116,8 +116,8 @@ fun FortySixSheetContent(
                 .verticalScroll(rememberScrollState()),
             verticalArrangement = Arrangement.spacedBy(20.dp),
         ) {
-            // Название слева, пресеты справа: лист всё-таки про генератор, а список
-            // своих настроек — то, куда тянутся отдельно.
+            // The title on the left, the presets on the right: the sheet is about the generator after
+            // all, and the list of one's own settings is what one reaches for separately.
             Row(
                 modifier = Modifier.fillMaxWidth(),
                 verticalAlignment = Alignment.CenterVertically,
@@ -146,7 +146,7 @@ fun FortySixSheetContent(
                         Text(
                             text = currentPreset?.name ?: stringResource(R.string.four_six_presets),
                             style = MaterialTheme.typography.titleMedium,
-                            // Цвет темы: в палитре «4:6» он и есть тот самый янтарь.
+                            // The theme colour: in the "4:6" palette it is that very amber.
                             color = MaterialTheme.colorScheme.primary,
                             maxLines = 1,
                             overflow = TextOverflow.Ellipsis,
@@ -160,9 +160,9 @@ fun FortySixSheetContent(
                     }
 
                     DropdownMenu(expanded = presetMenu, onDismissRequest = { presetMenu = false }) {
-                        // «Без пресета» стоит всегда: с него начинают и к нему
-                        // возвращаются. Ручки при этом остаются как есть — человек
-                        // отвязывает настройки от пресета, а не сбрасывает их.
+                        // "No preset" always stands there: one starts from it and comes back to it.
+                        // The dials stay as they are — a person is unlinking the settings from the
+                        // preset, not resetting them.
                         DropdownMenuItem(
                             text = { Text(stringResource(R.string.four_six_preset_off)) },
                             onClick = {
@@ -181,9 +181,8 @@ fun FortySixSheetContent(
                                     lockedAt = preset.params.ratio
                                     currentPreset = preset
                                 },
-                                // Крестик прямо в строке: удалять пресет ходят туда
-                                // же, где его выбирают, и отдельного экрана это не
-                                // стоит.
+                                // The cross right in the row: deleting a preset is done where it is
+                                // picked, and that is not worth a screen of its own.
                                 trailingIcon = {
                                     IconButton(
                                         onClick = {
@@ -214,9 +213,9 @@ fun FortySixSheetContent(
                     }
                 }
 
-                // Место под дискету занято всегда, а видна она, только когда есть
-                // что сохранять. Появляясь из ничего, она сдвигала бы и название
-                // пресета, и всё, что ниже, — лист дёргался на каждом повороте ручки.
+                // The room for the floppy disk is always taken, while it only shows when there is
+                // something to save. Appearing out of nothing, it would shift both the preset name
+                // and everything below — the sheet twitched at every turn of a dial.
                 val edited = currentPreset?.let {
                     it.params != params || it.lockRatio != lockRatio
                 } == true
@@ -240,8 +239,8 @@ fun FortySixSheetContent(
             }
 
             Row(horizontalArrangement = Arrangement.spacedBy(12.dp)) {
-                // Крутят дозу и воду, пропорция считается по ним: так думают,
-                // когда наливают в свою чашку — «сколько кофе» и «сколько воды».
+                // The dose and the water are dialled, the ratio is counted from them: that is how
+                // one thinks when pouring into one's own cup — "how much coffee" and "how much water".
                 Stepper(
                     label = stringResource(R.string.four_six_dose),
                     value = "${formatGrams(params.doseGrams)} $gram",
@@ -249,7 +248,7 @@ fun FortySixSheetContent(
                         val dose = (params.doseGrams + direction * DOSE_STEP_GRAMS)
                             .coerceIn(MIN_DOSE_GRAMS, MAX_DOSE_GRAMS)
                         params = if (lockRatio) {
-                            // Пропорция закреплена: за дозой идёт вода.
+                            // The ratio is pinned: the water follows the dose.
                             params.copy(doseGrams = dose, ratio = lockedAt)
                         } else {
                             params.copy(doseGrams = dose, ratio = water / dose)
@@ -261,8 +260,8 @@ fun FortySixSheetContent(
                     label = stringResource(R.string.recipe_water),
                     value = "${formatGrams(water, 0)} $gram",
                     onStep = { direction ->
-                        // Шаг всегда приводит воду к круглому числу: пропорция
-                        // задаётся дробью, и без этого от 251 г уйти было некуда.
+                        // The step always brings the water to a round number: the ratio is set as a
+                        // fraction, and without this there was no way away from 251 g.
                         val steps = if (direction > 0) {
                             floor(water / WATER_STEP_GRAMS) + 1
                         } else {
@@ -271,9 +270,9 @@ fun FortySixSheetContent(
                         val next = (steps * WATER_STEP_GRAMS)
                             .coerceIn(MIN_WATER_GRAMS, MAX_WATER_GRAMS)
                         params = if (lockRatio) {
-                            // Доза под воду: округляем до десятой грамма — мельче
-                            // весов для кофе не бывает, — а пропорцию правим под
-                            // округлённую дозу, чтобы вода осталась ровно набранной.
+                            // The dose follows the water: rounded to a tenth of a gram — coffee scales
+                            // do not go finer — and the ratio is corrected for the rounded dose, so
+                            // that the water stays exactly as dialled.
                             val dose = (next / lockedAt)
                                 .coerceIn(MIN_DOSE_GRAMS, MAX_DOSE_GRAMS)
                                 .let { (it * 10f).roundToInt() / 10f }
@@ -333,9 +332,9 @@ fun FortySixSheetContent(
                 color = MaterialTheme.colorScheme.onSurfaceVariant,
             )
 
-            // Окно постоянной высоты: от крепости число проливов меняется, и без
-            // этого лист рос и сжимался на каждом повороте ручки, утаскивая за
-            // собой всё остальное. Не поместились — листаются внутри окна.
+            // A box of constant height: the number of pours changes with the strength, and without
+            // this the sheet grew and shrank at every turn of a dial, dragging everything else along
+            // with it. What does not fit scrolls inside the box.
             Column(
                 modifier = Modifier
                     .height(STEPS_WINDOW_HEIGHT)
@@ -388,16 +387,16 @@ fun FortySixSheetContent(
     }
 }
 
-/** Рамка нажатия на список пресетов: столько подложки вокруг надписи. */
+/** The press padding of the preset list: this much backing around the label. */
 private val TITLE_TOUCH_PADDING = 8.dp
 
-/** Кнопка сохранения: место под неё держится всегда, поэтому она компактна. */
+/** The save button: the room for it is always held, so it is compact. */
 private val SAVE_BUTTON_SIZE = 36.dp
 
-/** Окно списка этапов: около четырёх строк, остальные листаются внутри него. */
+/** The box with the list of steps: about four rows, the rest scroll inside it. */
 private val STEPS_WINDOW_HEIGHT = 220.dp
 
-/** Число с кнопками «меньше» и «больше»: точнее клавиатуры и без неё. */
+/** A number with "less" and "more" buttons: more precise than a keyboard, and without one. */
 @Composable
 private fun Stepper(
     label: String,
@@ -438,9 +437,9 @@ private fun Stepper(
 }
 
 /**
- * Число, которое считается само: подпись и значение на месте шагового поля.
- * С замком превращается в переключатель — закреплённую пропорцию видно по
- * цвету и по значку, и тогда доза считается от воды, а не наоборот.
+ * A number that counts itself: the label and the value in place of a stepper field. With the lock
+ * it turns into a toggle — a pinned ratio shows by its colour and its icon, and the dose is then
+ * counted from the water rather than the other way round.
  */
 @Composable
 private fun Readout(
@@ -497,9 +496,9 @@ private fun Readout(
 }
 
 /**
- * Ползунок на несколько положений: тонкая линия с засечками и небольшая ручка.
- * Штатный Slider под такое не годится — он занимает полстроки и выглядит как
- * регулятор громкости, а здесь всего пять делений.
+ * A slider of a few positions: a thin line with notches and a small knob. The standard Slider will
+ * not do for this — it takes up half a row and looks like a volume control, while there are only
+ * five ticks here.
  */
 @Composable
 private fun DotSlider(
@@ -513,8 +512,8 @@ private fun DotSlider(
     val accent = MaterialTheme.colorScheme.primary
     val track = MaterialTheme.colorScheme.surfaceVariant
     var width by remember { mutableIntStateOf(0) }
-    // Ручка не может уехать за край, поэтому дорожка начинается на её радиус
-    // правее левой границы — попадание по нажатию считаем от той же точки.
+    // The knob cannot run off the edge, so the track starts its radius to the right of the left
+    // boundary — a press is counted from the same point.
     val inset = with(LocalDensity.current) { THUMB_RADIUS.toPx() }
 
     val pick: (Float) -> Unit = { x ->

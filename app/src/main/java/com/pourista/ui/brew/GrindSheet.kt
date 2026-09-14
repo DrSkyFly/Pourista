@@ -56,15 +56,15 @@ import com.pourista.grind.convert
 import kotlin.math.roundToInt
 
 /**
- * Пересчёт помола с одной кофемолки на другую.
+ * Converting a grind setting from one grinder to another.
  *
- * Общего языка у кофемолок нет: у Comandante настройка — клики от сведённых
- * жерновов, у Timemore C5 ESP — «оборот.деление.клик». Общее только одно —
- * размер частиц, поэтому настройка сначала переводится в микроны, а из них
- * подбирается ближайшее деление на второй кофемолке.
+ * Grinders have no common language: on a Comandante the setting is clicks from closed burrs, on a
+ * Timemore C5 ESP it is "turn.tick.click". Only one thing is shared — the particle size, so the
+ * setting is first converted into microns, and from them the nearest tick on the second grinder is
+ * picked.
  *
- * Кофемолка выбирается в два приёма: сначала фирма, потом её модель. В общем
- * списке их две сотни, и листать его ради одной строки незачем.
+ * A grinder is picked in two goes: first the make, then its model. There are two hundred of them
+ * in a common list, and there is no point scrolling it for a single row.
  */
 @Composable
 fun GrindSheetContent(
@@ -72,8 +72,8 @@ fun GrindSheetContent(
     toId: String,
     setting: String,
     onRemember: (fromId: String, toId: String, setting: String) -> Unit,
-    // Вызванный из редактора рецепта пересчёт умеет подставить результат в
-    // поля помола. Открытый с экрана заваривания — просто показывает ответ.
+    // A conversion called from the recipe editor can put the result into the grind fields. Opened
+    // from the brew screen, it simply shows the answer.
     onApply: ((grinder: Grinder, setting: String) -> Unit)? = null,
     onCancel: (() -> Unit)? = null,
 ) {
@@ -87,7 +87,7 @@ fun GrindSheetContent(
     var toBrand by remember { mutableStateOf(to?.brand) }
     var text by remember { mutableStateOf(setting) }
 
-    // Выбор переживает закрытие окна: второй раз искать свою кофемолку незачем.
+    // The choice outlives the closing of the sheet: no point looking one's own grinder up twice.
     val save = { onRemember(from?.id.orEmpty(), to?.id.orEmpty(), text) }
 
     Column(
@@ -120,8 +120,8 @@ fun GrindSheetContent(
             )
         }
 
-        // Кнопка обмена живёт между блоками: так видно, что она меняет их
-        // местами, а не что-то делает с одним из них.
+        // The swap button lives between the blocks: that way it is clear it swaps them rather than
+        // does something to one of them.
         Box(Modifier.fillMaxWidth(), contentAlignment = Alignment.Center) {
             FilledTonalIconButton(
                 onClick = {
@@ -174,9 +174,9 @@ fun GrindSheetContent(
 }
 
 /**
- * Настройка исходной кофемолки. Поле подогнано под плашки выбора: та же
- * высота, то же скругление, та же заливка — в блоке они стоят в один ряд.
- * Справа — край шкалы, чтобы не гадать, до скольки крутить.
+ * The setting of the source grinder. The field is fitted to the picker plates: the same height, the
+ * same rounding, the same fill — in the block they stand in one row. On the right is the end of the
+ * scale, so there is no guessing how far to turn.
  */
 @Composable
 private fun SettingField(value: String, grinder: Grinder?, onValueChange: (String) -> Unit) {
@@ -232,7 +232,7 @@ private fun SettingField(value: String, grinder: Grinder?, onValueChange: (Strin
     }
 }
 
-/** Подложка блока: что откуда и куда, видно по порядку и кнопке обмена. */
+/** The backing of the block: what goes from where to where shows by the order and the swap button. */
 @Composable
 private fun Block(content: @Composable ColumnScope.() -> Unit) {
     Card(
@@ -250,7 +250,7 @@ private fun Block(content: @Composable ColumnScope.() -> Unit) {
     }
 }
 
-/** Фирма и модель в строку. Фирме места больше: её выбирают первой. */
+/** The make and the model in a row. The make gets more room: it is picked first. */
 @Composable
 private fun GrinderRow(
     brands: List<String>,
@@ -281,11 +281,11 @@ private fun GrinderRow(
 }
 
 /**
- * Выбор из списка. Не поле ввода, а плашка: печатать тут нечего, а плашка
- * ниже поля и держит скругление заодно с блоком.
+ * A choice from a list. Not an input field but a plate: there is nothing to type here, and a plate
+ * is lower than a field and keeps the rounding together with the block.
  *
- * Пока фирма не выбрана, моделей нет и список не открывается: показывать
- * пустоту — только дразнить.
+ * While no make is picked there are no models and the list does not open: showing emptiness is only
+ * teasing.
  */
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -351,8 +351,8 @@ private fun <T> Dropdown(
 }
 
 /**
- * Итог пересчёта. Микроны показываем рядом с настройкой, а под ними — для чего
- * такой помол: по этой строке сразу видно, если выбрана не та модель.
+ * The result of the conversion. The microns are shown next to the setting, and below them what such
+ * a grind is for: that line shows at once if the wrong model was picked.
  */
 @Composable
 private fun Result(from: Grinder?, to: Grinder?, text: String, match: GrindMatch?) {
@@ -433,7 +433,7 @@ private fun Result(from: Grinder?, to: Grinder?, text: String, match: GrindMatch
     }
 }
 
-/** Назначение помола — короткой плашкой, а не строчкой через точку. */
+/** What the grind is for — as a short plate rather than a line through a dot. */
 @Composable
 private fun Pill(text: String) {
     Surface(
@@ -449,6 +449,6 @@ private fun Pill(text: String) {
     }
 }
 
-/** Скругления: плашки выбора круглее полей, блоки — крупнее плашек. */
+/** Roundings: the picker plates are rounder than the fields, the blocks larger than the plates. */
 private val PickShape = RoundedCornerShape(18.dp)
 private val BlockShape = RoundedCornerShape(24.dp)

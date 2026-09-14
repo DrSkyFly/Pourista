@@ -16,12 +16,12 @@ import androidx.compose.ui.platform.LocalContext
 import com.pourista.R
 
 /**
- * Звук и вибрация на границах шагов: во время пролива смотреть в экран некогда,
- * подсказка должна доходить на слух и через руку.
+ * Sound and vibration at the step boundaries: there is no time to look at the screen while
+ * pouring, the cue has to arrive by ear and through the hand.
  *
- * Сигналы лежат готовыми файлами в res/raw. Синтезировать их на месте не вышло:
- * чистый тон звучит стерильно, а живой звонок или щелчок таймера узнаётся ухом
- * мгновенно, даже вполоборота к телефону.
+ * The cues lie in res/raw as ready files. Synthesising them on the spot did not work out: a pure
+ * tone sounds sterile, while a live bell or the click of a timer is recognised by the ear
+ * instantly, even with the phone half turned away.
  */
 class BrewCuePlayer(context: Context) {
 
@@ -34,9 +34,9 @@ class BrewCuePlayer(context: Context) {
     }
 
     /**
-     * Поток будильника, а не уведомлений: на кухне шумно, а громкость уведомлений
-     * часто прикручена. SoundPool держит сигналы распакованными в памяти, поэтому
-     * между событием и звуком нет задержки на подготовку файла.
+     * The alarm stream rather than the notification one: a kitchen is noisy, and the notification
+     * volume is often turned down. SoundPool keeps the cues unpacked in memory, so there is no
+     * delay for preparing the file between the event and the sound.
      */
     private val pool: SoundPool = SoundPool.Builder()
         .setMaxStreams(MAX_STREAMS)
@@ -55,7 +55,7 @@ class BrewCuePlayer(context: Context) {
             if (status == 0) {
                 loaded += sampleId
             } else {
-                Log.w(TAG, "Не удалось загрузить сигнал $sampleId, код $status")
+                Log.w(TAG, "Could not load cue $sampleId, code $status")
             }
         }
     }
@@ -75,13 +75,13 @@ class BrewCuePlayer(context: Context) {
         if (sound) play(countdownSound)
     }
 
-    /** Узнаваемо не похоже на остальные: «цель близко, закрывай чайник». */
+    /** Recognisably unlike the rest: "the target is close, close the kettle". */
     fun nearTarget(sound: Boolean, haptic: Boolean) {
         if (haptic) vibrate(longArrayOf(0, 50, 60, 50, 60, 50))
         if (sound) play(stopSound)
     }
 
-    /** План отыгран, вода уходит: тот же звоночек, но своя вибрация. */
+    /** The plan is played out, the water is draining: the same bell, but a vibration of its own. */
     fun planFinished(sound: Boolean, haptic: Boolean) {
         if (haptic) vibrate(longArrayOf(0, 150, 100, 150))
         if (sound) play(stepSound)
@@ -102,10 +102,10 @@ class BrewCuePlayer(context: Context) {
 
     private fun play(sampleId: Int) {
         if (sampleId == 0) return
-        // Сигнал, который не успел загрузиться, лучше пропустить, чем ждать:
-        // подсказка, опоздавшая на секунду, во время пролива только сбивает.
+        // A cue that has not finished loading is better skipped than waited for: a hint a second
+        // late only throws you off mid-pour.
         if (sampleId !in loaded) {
-            Log.d(TAG, "Сигнал $sampleId ещё не загружен, пропускаем")
+            Log.d(TAG, "Cue $sampleId is not loaded yet, skipping")
             return
         }
         pool.play(sampleId, VOLUME, VOLUME, 1, 0, 1f)
@@ -114,7 +114,7 @@ class BrewCuePlayer(context: Context) {
     private fun vibrate(pattern: LongArray) {
         val device = vibrator ?: return
         if (!device.hasVibrator()) return
-        // Полная амплитуда: вибрация должна пробиваться через руку с чайником.
+        // Full amplitude: the vibration has to get through a hand holding a kettle.
         val amplitudes = IntArray(pattern.size) { index ->
             if (index % 2 == 0) 0 else VibrationEffect.DEFAULT_AMPLITUDE
         }
@@ -128,7 +128,7 @@ class BrewCuePlayer(context: Context) {
     private companion object {
         const val TAG = "BrewCues"
 
-        /** Сигналы короткие, но отсчёт и «цель близко» могут наложиться. */
+        /** The cues are short, but the countdown and "the target is close" can overlap. */
         const val MAX_STREAMS = 4
         const val VOLUME = 1f
     }

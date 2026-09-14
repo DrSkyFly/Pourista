@@ -42,8 +42,8 @@ import com.pourista.ui.theme.AppTheme
 import kotlin.math.sin
 
 /**
- * Шкала пролива: залитое — фактический вес, риска — где вес должен быть сейчас,
- * засечки — цели проливов рецепта. Одним взглядом видно, опережаешь или отстаёшь.
+ * The pour scale: the fill is the actual weight, the mark is where the weight should be now,
+ * the notches are the pour targets of the recipe. One glance tells whether you are ahead or behind.
  */
 @Composable
 fun PourGauge(
@@ -102,7 +102,7 @@ fun PourGauge(
     }
 }
 
-/** Кольцо со временем шага: снаружи прогресс, внутри — сколько осталось. */
+/** The step time ring: progress on the outside, how much is left on the inside. */
 @Composable
 fun StepRing(
     progress: Float,
@@ -111,9 +111,9 @@ fun StepRing(
     diameter: Dp = 116.dp,
     centerText: String,
     caption: String? = null,
-    /** Отметка, к которой влив должен закончиться, доля от шага 0..1. */
+    /** The mark the pour should end by, as a share of the step, 0..1. */
     markerFraction: Float? = null,
-    /** Сколько влива уже сделано, 0..1: наливается водой внутрь кольца. */
+    /** How much of the pour is already done, 0..1: it fills the ring with water. */
     fillFraction: Float = 0f,
     waterColor: Color = AppTheme.accents.water,
 ) {
@@ -123,14 +123,14 @@ fun StepRing(
         targetValue = progress.coerceIn(0f, 1f),
         label = "stepProgress",
     )
-    // Уровень догоняет цель плавно: вес приходит с весов рывками, и без
-    // сглаживания вода дёргалась бы вместе с ним.
+    // The level catches up with the target smoothly: the weight arrives from the scale in
+    // jerks, and without smoothing the water would twitch along with it.
     val level by animateFloatAsState(
         targetValue = fillFraction.coerceIn(0f, 1f),
         animationSpec = tween(durationMillis = 400, easing = LinearEasing),
         label = "waterLevel",
     )
-    // Волна идёт сама по себе — вода не должна выглядеть застывшей.
+    // The wave runs on its own — the water must not look frozen.
     val waves = rememberInfiniteTransition(label = "water")
     val phase by waves.animateFloat(
         initialValue = 0f,
@@ -200,15 +200,15 @@ fun StepRing(
     }
 }
 
-/** Период бега волны: заметно, но не мельтешит. */
+/** The period of the running wave: noticeable, but not flickering. */
 private const val WAVE_PERIOD_MS = 2600
 private const val WAVE_AMPLITUDE_DP = 2.5f
 private const val WAVE_COUNT = 2f
 private const val WAVE_STEP_PX = 4f
 
 /**
- * Вода внутри кольца. Поверхность — синусоида в две волны: ровная линия
- * читалась бы как заливка индикатора, а не как жидкость.
+ * The water inside the ring. The surface is a sine of two waves: a straight line would read as
+ * a progress bar fill rather than as a liquid.
  */
 private fun DrawScope.drawWater(level: Float, phase: Float, stroke: Float, color: Color) {
     val inner = Path().apply {
@@ -216,7 +216,7 @@ private fun DrawScope.drawWater(level: Float, phase: Float, stroke: Float, color
     }
     clipPath(inner) {
         val surface = size.height * (1f - level)
-        // У полного кольца волна ни к чему: воде некуда плескаться.
+        // A full ring has no use for a wave: the water has nowhere to splash.
         val amplitude = if (level >= 1f) 0f else WAVE_AMPLITUDE_DP.dp.toPx()
         val water = Path().apply {
             moveTo(0f, surface)
@@ -242,9 +242,9 @@ fun StatTile(
     unit: String? = null,
     valueColor: Color = MaterialTheme.colorScheme.onSurface,
     /**
-     * По плитке нажимают: так вводят дозу. Нажатие живёт здесь, а не на кнопке
-     * снаружи, — кнопка обрезает содержимое по своей круглой форме, и от
-     * подписи откусывалась первая буква.
+     * The tile is pressed: that is how the dose is entered. The press lives here rather than on
+     * a button outside — a button clips its content to its own round shape, and the first letter
+     * of the label was bitten off.
      */
     onClick: (() -> Unit)? = null,
 ) {
@@ -253,9 +253,9 @@ fun StatTile(
             if (onClick == null) {
                 Modifier
             } else {
-                // Нажимаемая область шире текста, но сам текст остаётся на
-                // месте: смещение назад ровно на добавленную рамку. Без рамки
-                // скруглённый край подложки откусывал бы первую букву.
+                // The pressable area is wider than the text, but the text itself stays put: the
+                // offset back is exactly the frame that was added. Without the frame the rounded
+                // edge of the backing would bite off the first letter.
                 Modifier
                     .offset(x = -TileClickPadding, y = -TileClickInset)
                     .clip(MaterialTheme.shapes.small)
@@ -287,11 +287,11 @@ fun StatTile(
     }
 }
 
-/** Рамка нажимаемой плитки: столько подложки остаётся слева и справа от текста. */
+/** The frame of a pressable tile: this much backing stays left and right of the text. */
 private val TileClickPadding = 8.dp
 private val TileClickInset = 2.dp
 
-/** Полоска шагов рецепта: где мы сейчас и сколько осталось. */
+/** The strip of recipe steps: where we are now and how much is left. */
 @Composable
 fun StepTimeline(
     stepCount: Int,

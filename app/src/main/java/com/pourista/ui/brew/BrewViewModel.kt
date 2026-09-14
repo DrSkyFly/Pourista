@@ -33,15 +33,15 @@ class BrewViewModel(private val container: AppContainer) : ViewModel() {
 
     private val _saved = MutableStateFlow(false)
 
-    /** Заваривание только что легло в историю — экрану есть о чём сказать. */
+    /** A brew has just gone into the history — the screen has something to say. */
     val saved: StateFlow<Boolean> = _saved.asStateFlow()
 
     init {
         viewModelScope.launch {
             if (container.brewEngine.state.value.recipe != null) return@launch
             val saved = container.settings.current()
-            // Сборку генератора в базе не ищем — её там нет. Собираем заново
-            // по тем же ручкам: числа выйдут те же.
+            // We do not look for a generator build in the database — it is not there. It is
+            // assembled again from the same dials: the numbers come out the same.
             if (saved.lastRecipeFortySix) {
                 container.brewEngine.selectRecipe(container.fortySixRecipe(saved.fortySix))
             } else {
@@ -50,8 +50,8 @@ class BrewViewModel(private val container: AppContainer) : ViewModel() {
                 }
             }
         }
-        // Сохраняет заваривание контейнер: финиш бывает и автоматическим, когда
-        // экрана уже нет. Экрану остаётся показать, что запись случилась.
+        // The brew is saved by the container: the finish also happens automatically, when the
+        // screen is already gone. What is left to the screen is to show that the record happened.
         viewModelScope.launch {
             container.brewSaved.collect { _saved.value = true }
         }
@@ -82,36 +82,36 @@ class BrewViewModel(private val container: AppContainer) : ViewModel() {
 
     fun cancelRecording() = container.brewEngine.cancelRecording()
 
-    /** Запись закончена, черновик рецепта готов — экран должен открыть редактор. */
+    /** The recording is over and the recipe draft is ready — the screen should open the editor. */
     val draftReady: StateFlow<Boolean> = container.draftReady
 
     fun clearDraftReady() = container.clearDraftReady()
 
     /**
-     * Останавливает заваривание. В историю оно ляжет само — так же, как когда
-     * финиш определяется по снятой с весов чашке.
+     * Stops the brew. It goes into the history by itself — the same way as when the finish is
+     * detected by the cup being lifted off the scale.
      */
     fun finish() = container.brewEngine.finish()
 
     fun selectRecipe(recipe: Recipe?) = selectRecipe(recipe, fromGenerator = false)
 
     private fun selectRecipe(recipe: Recipe?, fromGenerator: Boolean) {
-        // Законченное заваривание с выбором нового рецепта закрывается само:
-        // держать на экране следы прошлой чашки незачем.
+        // A finished brew closes by itself when a new recipe is picked: there is no point keeping
+        // traces of the previous cup on the screen.
         if (brew.value.phase == BrewPhase.FINISHED) {
             container.brewEngine.reset()
         }
         container.brewEngine.selectRecipe(recipe)
         viewModelScope.launch {
-            // У сборки генератора id нулевой: ни запоминать её по номеру, ни
-            // отмечать использованной нечего.
+            // A generator build has a zero id: there is nothing to remember it by and nothing to
+            // mark as used.
             val id = recipe?.id?.takeIf { it > 0 }
             container.settings.setLastRecipe(id = id, fortySix = fromGenerator)
             id?.let { container.recipes.markUsed(it) }
         }
     }
 
-    /** Сохранить ручки генератора под именем. Имя занято — пресет заменяется. */
+    /** Save the generator dials under a name. If the name is taken, the preset is replaced. */
     fun saveFortySixPreset(name: String, params: FortySixParams, lockRatio: Boolean) {
         viewModelScope.launch {
             container.settings.saveFortySixPreset(FortySixPreset(name, params, lockRatio))
@@ -123,11 +123,11 @@ class BrewViewModel(private val container: AppContainer) : ViewModel() {
     }
 
     /**
-     * Пересобирает рецепт 4:6 по новым настройкам и сразу берёт его в работу:
-     * генератор открывают, когда собираются заваривать, а не про запас.
+     * Rebuilds the 4:6 recipe from the new settings and takes it into work at once: the generator
+     * is opened when one is about to brew, not for later.
      *
-     * В список рецептов сборка не попадает. Ручки запоминаются — этого хватает,
-     * чтобы повторить, — а свои наборы у генератора хранятся пресетами.
+     * The build does not go into the recipe list. The dials are remembered — that is enough to
+     * repeat it — and one's own sets are kept in the generator as presets.
      */
     fun generateFortySix(params: FortySixParams, lockRatio: Boolean) {
         selectRecipe(container.fortySixRecipe(params), fromGenerator = true)
@@ -138,16 +138,16 @@ class BrewViewModel(private val container: AppContainer) : ViewModel() {
     }
 
     /**
-     * Взвести или снять автостарт для текущего заваривания. Настройку рецепта не
-     * трогает: она лишь решает, взводиться ли самому после записи дозы.
+     * Arm or disarm auto-start for the current brew. It does not touch the recipe setting: that
+     * only decides whether to arm by itself after the dose is recorded.
      */
     fun toggleAutoStart() {
         container.brewEngine.setAutoStartArmed(!brew.value.autoStartArmed)
     }
 
     /**
-     * Оставлять объём воды как в рецепте. Настройка глобальная и запоминается:
-     * это привычка, а не решение на одну чашку.
+     * Keep the water as the recipe wrote it. The setting is global and remembered: this is a
+     * habit rather than a decision for one cup.
      */
     fun toggleKeepRecipeWater() {
         viewModelScope.launch {
@@ -156,9 +156,9 @@ class BrewViewModel(private val container: AppContainer) : ViewModel() {
     }
 
     /**
-     * Таймер остывания: сколько ждать и заводить ли его самому по окончании
-     * заваривания. Настройка глобальная — привычка пить не обжигаясь
-     * не меняется от чашки к чашке.
+     * The cooldown timer: how long to wait and whether to wind it by itself when the brew is over.
+     * The setting is global — the habit of drinking without scalding does not change from cup to
+     * cup.
      */
     fun setCooldownSeconds(seconds: Int) {
         viewModelScope.launch { container.settings.setCooldownSeconds(seconds) }
@@ -168,13 +168,13 @@ class BrewViewModel(private val container: AppContainer) : ViewModel() {
         viewModelScope.launch { container.settings.setCooldownAutoStart(enabled) }
     }
 
-    /** Завести таймер прямо сейчас, на выставленное в листе время. */
+    /** Wind the timer right now, for the time set in the sheet. */
     fun startCooldown() = container.startCooldown(settings.value.cooldownSeconds)
 
     fun stopCooldown() = container.cooldown.stop()
 
-    /** Пересчёт помола запоминает обе кофемолки и настройку: окно закрывается,
-     *  а искать свою модель в списке заново не хочется. */
+    /** The grind conversion remembers both grinders and the setting: the sheet closes, and nobody
+     *  wants to look their own model up in the list again. */
     fun rememberGrindPair(fromId: String, toId: String, setting: String) {
         viewModelScope.launch {
             container.settings.setGrindPair(fromId, toId, setting)

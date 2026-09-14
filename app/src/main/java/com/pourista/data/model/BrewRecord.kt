@@ -8,7 +8,7 @@ data class BrewNotes(
     val roaster: String? = null,
     val grinder: String? = null,
     val grindSetting: String? = null,
-    /** Бумага: «Hario», «Cafec Abaca». */
+    /** Paper: "Hario", "Cafec Abaca". */
     val filterName: String? = null,
     val brewer: String? = null,
     val waterTemp: String? = null,
@@ -20,8 +20,8 @@ data class BrewNotes(
 }
 
 /**
- * Заваривание из истории. Хранится только измеренное; время и пропорция —
- * это его вид на экране, а не отдельные данные, поэтому считаются при показе.
+ * A brew from the history. Only what was measured is stored; the time and the ratio are
+ * how it looks on screen rather than data of their own, so they are counted when shown.
  */
 data class BrewRecord(
     val id: Long,

@@ -17,14 +17,14 @@ import com.pourista.data.model.StepKind
 import com.pourista.ui.icon
 
 /**
- * Значок этапа в кружке.
+ * A step icon in a circle.
  *
- * Кружок обведён, а не залит: подложки под этапами всюду разные — плитка
- * рецепта, карточка редактора, подкрашенная темпом подсказка, — и любая заливка
- * на одной из них слилась бы с фоном. Обводка держится на всех.
+ * The circle is outlined rather than filled: the backings under steps differ everywhere — the
+ * recipe tile, the editor card, the guidance tinted by the pace — and any fill would merge with
+ * one of them. An outline holds on all of them.
  *
- * Заливку получает только текущий этап: он должен находиться взглядом сразу, и
- * ради этого разница с остальными обязана быть больше, чем оттенок текста.
+ * Only the current step gets a fill: it has to be found by the eye at once, and for that the
+ * difference from the rest must be more than a shade of text.
  */
 @Composable
 fun StepBadge(
@@ -33,7 +33,7 @@ fun StepBadge(
     size: Dp = StepBadgeSize,
     tint: Color = MaterialTheme.colorScheme.onSurfaceVariant,
     ring: Color = MaterialTheme.colorScheme.outlineVariant,
-    /** Залитый кружок: тогда [tint] — цвет значка поверх заливки. */
+    /** A filled circle: [tint] is then the colour of the icon over the fill. */
     fill: Color? = null,
 ) {
     Box(
@@ -57,10 +57,10 @@ fun StepBadge(
     }
 }
 
-/** Размер кружка по умолчанию: значок внутри выходит вровень со строкой текста. */
+/** The default circle size: the icon inside comes out level with a line of text. */
 val StepBadgeSize = 30.dp
 
-/** Толщина линии между кружками — она же толщина обводки. */
+/** The thickness of the line between the circles — the outline is the same. */
 val StepLineWidth = 1.5.dp
 
 private val RING_WIDTH = StepLineWidth

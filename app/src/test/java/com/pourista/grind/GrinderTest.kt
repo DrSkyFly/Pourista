@@ -6,7 +6,7 @@ import org.junit.Assert.assertNull
 import org.junit.Assert.assertTrue
 import org.junit.Test
 
-/** Числа взяты со шкал самих кофемолок, как их печатает Honest Coffee Guide. */
+/** The numbers are taken from the scales of the grinders themselves, as Honest Coffee Guide prints them. */
 private val c40 = Grinder(
     id = "comandante-c40-mk4", brand = "Comandante", model = "C40 MK4",
     base = 0.0, step = 27.25, radix = listOf(1), separator = '.',
@@ -25,7 +25,7 @@ private val encore = Grinder(
     minClicks = 0, maxClicks = 40,
 )
 
-/** Fellow Opus: между числами четвертинки, настройка пишется дробью. */
+/** Fellow Opus: quarters between the numbers, the setting is written as a fraction. */
 private val opus = Grinder(
     id = "fellow-opus", brand = "Fellow", model = "Opus",
     base = 137.0, step = 23.25, radix = listOf(4, 1), separator = '.',
@@ -35,48 +35,48 @@ private val opus = Grinder(
 class GrinderTest {
 
     @Test
-    fun `клики переводятся в микроны`() {
+    fun `clicks convert into microns`() {
         assertEquals(736.0, c40.microns(27), 0.5)
         assertEquals(0.0, c40.microns(0), 0.001)
     }
 
     @Test
-    fun `запись из трёх частей читается как обороты, деления и клики`() {
+    fun `a three-part notation reads as turns, ticks and clicks`() {
         assertEquals(88, c5esp.parse("1.7.3"))
         assertEquals(50, c5esp.parse("1.0.0"))
         assertEquals(0, c5esp.parse("0.0.0"))
     }
 
     @Test
-    fun `разделитель берём любой привычный`() {
+    fun `we take any of the usual separators`() {
         assertEquals(88, c5esp.parse("1:7:3"))
         assertEquals(88, c5esp.parse("1 7 3"))
         assertEquals(88, c5esp.parse("1-7-3"))
     }
 
     @Test
-    fun `недописанные части считаются нулями`() {
+    fun `parts left out count as zeros`() {
         assertEquals(85, c5esp.parse("1.7"))
         assertEquals(50, c5esp.parse("1"))
     }
 
     @Test
-    fun `настройка за пределами шкалы не принимается`() {
+    fun `a setting beyond the scale is not accepted`() {
         assertNull(c40.parse("41"))
         assertNull(c5esp.parse("4.0.0"))
         assertNull(c5esp.parse("1.7.3.2"))
-        assertNull(c40.parse("много"))
+        assertNull(c40.parse("a lot"))
     }
 
     @Test
-    fun `настройка печатается так же, как подписана на кофемолке`() {
+    fun `a setting prints the way it is labelled on the grinder`() {
         assertEquals("1.7.3", c5esp.format(88))
         assertEquals("27", c40.format(27))
         assertEquals("0.0.0", c5esp.format(0))
     }
 
     @Test
-    fun `пересчёт повторяет ответ телеграм-бота`() {
+    fun `the conversion repeats the answer of the telegram bot`() {
         val match = convert(from = c40, clicks = 27, to = c5esp)
         assertEquals("1.7.3", c5esp.format(match.clicks))
         assertEquals(736.0, match.wantedMicrons, 0.5)
@@ -84,15 +84,15 @@ class GrinderTest {
     }
 
     @Test
-    fun `пересчёт туда и обратно возвращает исходную настройку`() {
+    fun `converting there and back returns the original setting`() {
         val there = convert(from = c40, clicks = 20, to = c5esp)
         val back = convert(from = c5esp, clicks = there.clicks, to = c40)
         assertEquals(20, back.clicks)
     }
 
     @Test
-    fun `помол мельче шкалы упирается в её край`() {
-        // Encore сводится только до 250 мкм, эспрессо-помол ему недоступен.
+    fun `a grind finer than the scale stops at its edge`() {
+        // An Encore only closes to 250 microns, an espresso grind is out of its reach.
         val match = convert(from = c40, clicks = 5, to = encore)
         assertEquals(0, match.clicks)
         assertEquals(250.0, match.microns, 0.001)
@@ -100,7 +100,7 @@ class GrinderTest {
     }
 
     @Test
-    fun `дробная шкала читается как дробь, а не как разряды`() {
+    fun `a fractional scale reads as a fraction rather than as parts`() {
         assertEquals(9, opus.parse("2.25"))
         assertEquals(10, opus.parse("2.5"))
         assertEquals(8, opus.parse("2"))
@@ -108,26 +108,26 @@ class GrinderTest {
     }
 
     @Test
-    fun `дробная настройка печатается без лишних нулей`() {
+    fun `a fractional setting prints without extra zeros`() {
         assertEquals("2.25", opus.format(9))
         assertEquals("2.5", opus.format(10))
         assertEquals("2", opus.format(8))
     }
 
     @Test
-    fun `дробная шкала не путает разряды с дробью`() {
-        // 2.25 — это два с четвертью, а не два и двадцать пять делений.
+    fun `a fractional scale does not confuse parts with a fraction`() {
+        // 2.25 is two and a quarter, not two and twenty-five ticks.
         assertEquals(137.0 + 9 * 23.25, opus.microns(opus.parse("2.25")!!), 0.001)
     }
 
     @Test
-    fun `на грубой шкале точное попадание отмечается`() {
+    fun `on a coarse scale an exact hit is marked`() {
         val exact = convert(from = c5esp, clicks = 88, to = c5esp)
         assertTrue(exact.isExact(c5esp))
     }
 }
 
-/** Поиск модели по свободной записи из рецепта. */
+/** Looking a model up by the free-form notation from a recipe. */
 class GrinderLookupTest {
 
     private val catalog = listOf(c40, c5esp, encore, opus)
@@ -146,30 +146,30 @@ class GrinderLookupTest {
     private fun simplify(text: String) = text.lowercase().filter { it.isLetterOrDigit() }
 
     @Test
-    fun `полное имя находится`() {
+    fun `a full name is found`() {
         assertEquals(c40, find("Comandante C40 MK4"))
     }
 
     @Test
-    fun `регистр, пробелы и дефисы не мешают`() {
+    fun `case, spaces and hyphens do not get in the way`() {
         assertEquals(c40, find("comandante-c40  mk4"))
         assertEquals(c5esp, find("TIMEMORE C5ESP"))
     }
 
     @Test
-    fun `часть имени тоже находит`() {
+    fun `a part of the name finds it too`() {
         assertEquals(c40, find("C40 MK4"))
         assertEquals(opus, find("Opus"))
     }
 
     @Test
-    fun `лишние слова вокруг имени не мешают`() {
-        assertEquals(encore, find("моя Baratza Encore на кухне"))
+    fun `extra words around the name do not get in the way`() {
+        assertEquals(encore, find("my Baratza Encore in the kitchen"))
     }
 
     @Test
-    fun `непонятное название не находит ничего`() {
-        assertNull(find("ручная мельница"))
+    fun `an unrecognisable name finds nothing`() {
+        assertNull(find("a hand mill"))
         assertNull(find(""))
         assertNull(find(null))
     }

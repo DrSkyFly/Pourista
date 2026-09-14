@@ -85,7 +85,7 @@ fun SettingsScreen(
     var showFormat by remember { mutableStateOf(false) }
     var showNotes by remember { mutableStateOf(false) }
 
-    // Файл выбирает система: доступ ко всему хранилищу приложению не нужен.
+    // The file is picked by the system: the app needs no access to the whole storage.
     val saveBackup = rememberLauncherForActivityResult(
         ActivityResultContracts.CreateDocument(BACKUP_MIME)
     ) { uri -> uri?.let(viewModel::exportBackup) }
@@ -109,7 +109,7 @@ fun SettingsScreen(
         ReleaseNotesDialog(onDismiss = { showNotes = false })
     }
 
-    // Шапка уезжает при прокрутке: экран длинный, а в шапке одно слово.
+    // The header moves away on scroll: the screen is long, and the header holds a single word.
     val scrollBehavior = TopAppBarDefaults.enterAlwaysScrollBehavior()
 
     Scaffold(
@@ -137,8 +137,8 @@ fun SettingsScreen(
         ) {
             item {
                 SettingsSection(stringResource(R.string.settings_appearance)) {
-                    // Язык первым: кто открыл приложение на чужом языке, ищет
-                    // именно эту строку, и искать её должно быть недолго.
+                    // The language first: whoever opened the app in a foreign language looks for this
+                    // very row, and looking for it should not take long.
                     LanguageRow()
                     Text(
                         text = stringResource(R.string.settings_theme),
@@ -159,13 +159,13 @@ fun SettingsScreen(
                             }
                         }
                     }
-                    // Обои системы умеет только Android 12: на старых
-                    // выбирать не из чего, и пункт просто не показываем.
+                    // The system wallpaper is only available from Android 12: on older ones there is
+                    // nothing to choose from, and we simply do not show the item.
                     val palettes = AppPalette.entries.filter {
                         it != AppPalette.DYNAMIC || Build.VERSION.SDK_INT >= Build.VERSION_CODES.S
                     }
-                    // Список, а не полоса кнопок: палитр уже четыре, и в
-                    // строку их названия не помещаются.
+                    // A list rather than a row of buttons: there are four palettes already, and their
+                    // names do not fit in a row.
                     ChoiceRow(
                         title = stringResource(R.string.settings_palette),
                         subtitle = null,
@@ -252,15 +252,15 @@ fun SettingsScreen(
 
             item {
                 SettingsSection(stringResource(R.string.settings_scale)) {
-                    // Галка перевёрнутая: у кого весов нет, тот ищет в списке
-                    // «не использовать», а не «использовать» с выключателем.
+                    // The checkbox is inverted: whoever has no scale looks in the list for "do not
+                    // use" rather than for "use" with a switch.
                     SwitchRow(
                         title = stringResource(R.string.settings_no_scale),
                         subtitle = stringResource(R.string.settings_no_scale_hint),
                         checked = !settings.useScale,
                         onCheckedChange = { viewModel.setUseScale(!it) },
                     )
-                    // Остальное про весы без весов не нужно — прячем.
+                    // The rest about the scale is of no use without one — we hide it.
                     if (settings.useScale) {
                         SwitchRow(
                             title = stringResource(R.string.settings_auto_connect),
@@ -290,8 +290,8 @@ fun SettingsScreen(
                         color = MaterialTheme.colorScheme.onSurfaceVariant,
                         modifier = Modifier.padding(bottom = 8.dp),
                     )
-                    // Кнопки одна под другой: в длинных языках две в строку
-                    // не помещаются, а перенос в кнопке читается плохо.
+                    // The buttons one under another: in long languages two do not fit in a row, and a
+                    // wrap inside a button reads badly.
                     OutlinedButton(
                         onClick = { saveBackup.launch(BACKUP_FILE) },
                         modifier = Modifier.fillMaxWidth(),
@@ -323,8 +323,8 @@ fun SettingsScreen(
                             color = MaterialTheme.colorScheme.onSurfaceVariant,
                         )
                     }
-                    // Журнал нужен не только когда весы сломались, но и когда
-                    // их вообще нет в списке: по нему разбирают протокол.
+                    // The log is needed not only when the scale is broken but also when it is not in
+                    // the list at all: the protocol is taken apart by it.
                     Text(
                         text = stringResource(R.string.settings_scale_log_unsupported),
                         style = MaterialTheme.typography.bodySmall,
@@ -336,12 +336,12 @@ fun SettingsScreen(
 
             item {
                 SettingsSection(stringResource(R.string.settings_about)) {
-                    // История изменений стоит перед проверкой обновлений:
-                    // сначала «что нового», потом «где взять».
-                    // Проверку обновлений отдаём браузеру: у приложения нет и не
-                    // должно быть выхода в сеть. Страница latest на GitHub сама
-                    // ведёт на свежий релиз, а версия рядом — с чем сравнивать.
-                    // В сборке для магазина кнопки нет: обновляет магазин.
+                    // The change history stands before the update check: first "what is new", then
+                    // "where to get it".
+                    // The update check is left to the browser: the app has no way out to the network
+                    // and should not have one. The latest page on GitHub leads to the freshest release
+                    // by itself, and the version next to it says what to compare with.
+                    // In the store build there is no button: the store does the updating.
                     val uriHandler = LocalUriHandler.current
                     val releases = stringResource(R.string.settings_updates_url)
                     Row(verticalAlignment = Alignment.CenterVertically) {
@@ -361,10 +361,9 @@ fun SettingsScreen(
                             ) { Text(stringResource(R.string.settings_check_updates)) }
                         }
                     }
-                    // История изменений под версией и той же кнопкой, что и
-                    // проверка обновлений: обе про то, что нового в приложении.
-                    // Без боковой рамки кнопки: строка должна начинаться там
-                    // же, где версия над ней, а не с отступом.
+                    // The change history sits under the version and on the same button as the update
+                    // check: both are about what is new in the app. Without the side padding of a
+                    // button: the row has to start where the version above it does, not indented.
                     TextButton(
                         onClick = { showNotes = true },
                         contentPadding = PaddingValues(vertical = 8.dp),
@@ -399,9 +398,9 @@ fun SettingsScreen(
                         color = MaterialTheme.colorScheme.primary,
                         modifier = Modifier.padding(top = 2.dp),
                     )
-                    // Двух авторов указать обязаны: их звуки под лицензиями
-                    // с атрибуцией. Остальные два — CC0, но раз уж список
-                    // есть, пусть будет полным.
+                    // Two authors we are obliged to name: their sounds are under licences with
+                    // attribution. The other two are CC0, but since there is a list, let it be
+                    // complete.
                     Text(
                         text = stringResource(R.string.settings_sound_credits),
                         style = MaterialTheme.typography.bodySmall,
@@ -415,11 +414,11 @@ fun SettingsScreen(
 }
 
 /**
- * Выбор языка интерфейса.
+ * Choosing the interface language.
  *
- * Значение читается из системы (или из своего хранилища на старых Android),
- * а не из общих настроек: с Android 13 язык принадлежит системе, и её выбор
- * должен быть виден здесь, даже если его сменили в настройках телефона.
+ * The value is read from the system (or from our own storage on older Android) rather than from the
+ * common settings: from Android 13 on the language belongs to the system, and its choice has to be
+ * visible here even if it was changed in the phone settings.
  */
 @Composable
 private fun LanguageRow() {
@@ -438,9 +437,9 @@ private fun LanguageRow() {
         options = options,
         onSelect = { tag ->
             AppLocale.apply(context, tag)
-            // Тексты встроенных рецептов лежат в базе и сами не переведутся.
+            // The texts of the built-in recipes lie in the database and will not translate themselves.
             context.appContainer.syncPresets()
-            // С Android 13 экран пересоздаёт система, раньше — некому.
+            // From Android 13 on the screen is recreated by the system, before that there is nobody to.
             if (Build.VERSION.SDK_INT < Build.VERSION_CODES.TIRAMISU) {
                 context.activity()?.recreate()
             }
@@ -448,7 +447,7 @@ private fun LanguageRow() {
     )
 }
 
-/** Экран, на котором мы находимся: до него из контекста Compose один шаг. */
+/** The screen we are on: from the Compose context it is one step away. */
 private tailrec fun Context.activity(): Activity? = when (this) {
     is Activity -> this
     is ContextWrapper -> baseContext.activity()
@@ -456,8 +455,8 @@ private tailrec fun Context.activity(): Activity? = when (this) {
 }
 
 /**
- * Подпись и ссылка под ней. Адрес показан целиком, а не спрятан за словом:
- * его можно переписать глазами, если открывать нечем.
+ * A label and a link under it. The address is shown whole rather than hidden behind a word: it can
+ * be copied by eye if there is nothing to open it with.
  */
 @Composable
 private fun LinkRow(label: String, link: String) {
@@ -479,8 +478,8 @@ private fun LinkRow(label: String, link: String) {
 }
 
 /**
- * Описание формата рецептов. Его удобно скопировать целиком и отдать нейросети
- * вместе с просьбой составить рецепт — поэтому текст лежит одним куском.
+ * The description of the recipe format. It is convenient to copy it whole and hand it to a neural
+ * network together with a request to compose a recipe — that is why the text lies in one piece.
  */
 @Composable
 private fun RecipeFormatDialog(onDismiss: () -> Unit) {
@@ -565,7 +564,7 @@ private fun SwitchRow(
     }
 }
 
-/** Строка с выбором из нескольких значений. */
+/** A row with a choice of several values. */
 @Composable
 private fun <T> ChoiceRow(
     title: String,
@@ -592,8 +591,8 @@ private fun <T> ChoiceRow(
             }
         }
         Box {
-            // Значение в рамке и со стрелкой: без них строка читается как
-            // подпись, и что по ней можно нажать, никто не догадывается.
+            // The value in a frame and with an arrow: without them the row reads as a label, and
+            // nobody guesses it can be pressed.
             OutlinedButton(
                 onClick = { expanded = true },
                 contentPadding = PaddingValues(start = 16.dp, end = 8.dp),
@@ -624,7 +623,7 @@ private val NEAR_TARGET_OPTIONS = listOf(3f, 5f, 10f, 15f)
 
 private val PACE_TOLERANCE_OPTIONS = listOf(0.05f, 0.1f, 0.15f, 0.2f, 0.3f)
 
-/** «±10 %» — доля показывается процентами, так её проще примерить на себя. */
+/** "±10%" — the share is shown as a percentage, that way it is easier to try on. */
 @Composable
 private fun percentLabel(share: Float): String =
     stringResource(R.string.settings_pace_tolerance_value, kotlin.math.round(share * 100).toInt())
@@ -649,9 +648,9 @@ private fun ThemeMode.labelRes(): Int = when (this) {
     ThemeMode.DARK -> R.string.theme_dark
 }
 
-/** Копия — обычный JSON, и открывать её должно предложенным именем файла. */
+/** A backup is ordinary JSON, and it should open with the file name we suggest. */
 private const val BACKUP_MIME = "application/json"
 private const val BACKUP_FILE = "pourista-backup.json"
 
-/** Некоторые файловые менеджеры отдают копию как text/plain, а то и никак. */
+/** Some file managers hand a backup over as text/plain, or not at all. */
 private val BACKUP_OPEN_MIME = arrayOf("application/json", "text/plain", "*/*")

@@ -80,8 +80,8 @@ private enum class TopLevel(
 fun AppNavigation() {
     val navController = rememberNavController()
 
-    // Рецепт, открытый файлом снаружи, уже лежит в базе и выбран для
-    // заваривания — экрану остаётся показаться и сказать, что вышло.
+    // A recipe opened from an outside file already lies in the database and is picked for brewing —
+    // what is left to the screen is to show up and say how it went.
     val context = LocalContext.current
     val container = context.appContainer
     val opened by container.openedRecipes.collectAsStateWithLifecycle()
@@ -98,8 +98,8 @@ fun AppNavigation() {
         }
     }
 
-    // Набок разделы уезжают в боковую панель: по высоте в альбомном режиме
-    // дорога каждая строка, а по ширине место есть.
+    // Sideways the sections move into a side rail: in landscape every row of height counts, while
+    // there is room across the width.
     val wide = isWideLayout()
     val bottomBar: @Composable () -> Unit = { if (!wide) BottomBar(navController) }
 
@@ -108,8 +108,8 @@ fun AppNavigation() {
     val onTopLevel = TopLevel.entries.any { it.route == route }
 
     Row(Modifier.fillMaxSize()) {
-        // Редактор и карточка заваривания закрываются кнопкой «назад»,
-        // разделы им не нужны — панель там не показываем.
+        // The editor and the brew card are closed by the "back" button and have no use for the
+        // sections — we do not show the rail there.
         if (wide && onTopLevel) SideRail(navController)
         AppNavHost(navController, bottomBar)
     }
@@ -123,8 +123,8 @@ private fun AppNavHost(
     NavHost(
         navController = navController,
         startDestination = Routes.BREW,
-        // Экран приходит справа, а уходит туда же по «назад»: так видно, что
-        // редактор и карточка лежат поверх раздела, а не заменяют его.
+        // The screen comes in from the right and leaves the same way on "back": that way it shows
+        // the editor and the card lie on top of a section rather than replace it.
         enterTransition = { fadeIn(tween(SCREEN_IN_MS)) + slideInHorizontally { it / SCREEN_SLIDE } },
         exitTransition = { fadeOut(tween(SCREEN_OUT_MS)) },
         popEnterTransition = { fadeIn(tween(SCREEN_IN_MS)) },
@@ -241,8 +241,8 @@ private fun BottomBar(navController: NavHostController) {
     val backStackEntry by navController.currentBackStackEntryAsState()
     val currentDestination = backStackEntry?.destination
 
-    // Короткая панель вместо обычной: она ниже на добрый сантиметр, а внизу
-    // экрана заваривания этот сантиметр занят кнопками.
+    // A short bar instead of the ordinary one: it is a good centimetre lower, and at the bottom of
+    // the brew screen that centimetre is taken by the buttons.
     ShortNavigationBar {
         TopLevel.entries.forEach { item ->
             val selected = currentDestination?.hierarchy?.any { it.route == item.route } == true
@@ -256,11 +256,11 @@ private fun BottomBar(navController: NavHostController) {
     }
 }
 
-/** Длительности переходов между экранами. */
+/** The lengths of the transitions between screens. */
 private const val SCREEN_IN_MS = 220
 private const val SCREEN_OUT_MS = 180
 
-/** Насколько экран сдвигается: доля ширины, а не вся ширина. */
+/** How far a screen shifts: a share of the width rather than the whole width. */
 private const val SCREEN_SLIDE = 10
 
 private fun NavHostController.navigateToTab(route: String) {

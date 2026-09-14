@@ -16,6 +16,6 @@
 # debugging stack traces.
 #-keepattributes SourceFile,LineNumberTable
 
-# Понятные стектрейсы в релизе: строки нужны, имя исходника — нет.
+# Readable stack traces in a release: the line numbers are needed, the source file name is not.
 -keepattributes SourceFile,LineNumberTable
 -renamesourcefileattribute SourceFile

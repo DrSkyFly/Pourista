@@ -14,8 +14,8 @@ import java.util.Date
 import java.util.Locale
 
 /**
- * Запись протокола весов. Файл кладём в кэш: он нужен ровно до отправки,
- * и система вольна убрать его сама.
+ * Recording the scale protocol. The file goes into the cache: it is needed exactly until it is sent,
+ * and the system is free to remove it itself.
  */
 class ScaleLogViewModel(private val container: AppContainer) : ViewModel() {
 
@@ -27,7 +27,7 @@ class ScaleLogViewModel(private val container: AppContainer) : ViewModel() {
 
     private val _file = MutableStateFlow<File?>(null)
 
-    /** Записанный журнал — его предлагаем отправить. */
+    /** The recorded log — this is what we offer to send. */
     val file: StateFlow<File?> = _file.asStateFlow()
 
     fun start() {
@@ -50,12 +50,12 @@ class ScaleLogViewModel(private val container: AppContainer) : ViewModel() {
 
     private fun header(): List<String> {
         val state = scale.value
-        val scales = state.deviceName?.let { "\"$it\"" } ?: "не подключены"
+        val scales = state.deviceName?.let { "\"$it\"" } ?: "not connected"
         return listOf(
             "Pourista ${BuildConfig.VERSION_NAME} (${BuildConfig.VERSION_CODE})",
             "Android ${Build.VERSION.RELEASE} (SDK ${Build.VERSION.SDK_INT}), " +
                 "${Build.MANUFACTURER} ${Build.MODEL}",
-            "Весы: $scales, состояние ${state.status}",
+            "Scale: $scales, state ${state.status}",
         )
     }
 

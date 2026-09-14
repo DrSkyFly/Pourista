@@ -2,112 +2,111 @@ package com.pourista.scale
 
 import java.util.UUID
 
-/** Короткий 16-битный идентификатор в полную форму Bluetooth SIG. */
+/** A short 16-bit identifier into the full Bluetooth SIG form. */
 fun bluetoothUuid(short: String): UUID =
     UUID.fromString("0000${short.lowercase().padStart(4, '0')}-0000-1000-8000-00805f9b34fb")
 
-/** Что удалось вычитать из одного пакета весов. */
+/** What could be read out of a single packet from the scale. */
 data class WeightReading(
     val grams: Float,
     /**
-     * Скорость влива в граммах в секунду, если весы считают её сами. Null —
-     * такие весы её не шлют, и считать придётся по приросту веса.
+     * Flow rate in grams per second, if the scale counts it itself. Null means this scale
+     * does not send one, and it has to be counted from the weight gain.
      */
     val flowRate: Float? = null,
-    /** Единица на экране весов, если пакет её сообщает. */
+    /** The unit on the scale display, if the packet reports it. */
     val unitOnScale: WeightUnit? = null,
-    /** Заряд в процентах, если он приходит тем же пакетом. */
+    /** Battery in percent, if it arrives in the same packet. */
     val batteryPercent: Int? = null,
 )
 
 /**
- * Протокол одной модели весов.
+ * The protocol of one scale model.
  *
- * Приложение говорит с весами через драйвер: по нему ищет устройство в эфире,
- * подписывается на нужную характеристику, разбирает пакет и шлёт команды. Всё,
- * что специфично для модели, живёт внутри драйвера и больше нигде.
+ * The app talks to a scale through a driver: by it the device is found on the air, the right
+ * characteristic subscribed to, the packet parsed and the commands sent. Everything specific
+ * to a model lives inside the driver and nowhere else.
  */
 interface ScaleDriver {
 
-    /** Название модели для человека. */
+    /** The model name for a person. */
     val title: String
 
     /**
-     * Протокол написан по открытым реализациям и на живом железе не проверялся.
-     * Такие весы приложение поддерживает в тестовом режиме.
+     * The protocol is written from open implementations and has not been checked on live
+     * hardware. The app supports such scales in beta.
      */
     val experimental: Boolean get() = true
 
     /**
-     * Куски имени устройства в эфире: по ним драйвер узнаёт свои весы. Регистр
-     * не важен — имена весы пишут кто как.
+     * Pieces of the device name on the air: by them the driver recognises its own scale.
+     * Case does not matter — scales write their names any way they like.
      */
     val nameFragments: List<String>
 
     val service: UUID
 
-    /** Характеристика, с которой приходит вес. */
+    /** The characteristic the weight arrives from. */
     val weightCharacteristic: UUID
 
-    /** Куда писать команды. Null — весы команд не принимают. */
+    /** Where to write commands. Null means the scale takes no commands. */
     val commandCharacteristic: UUID?
 
     /**
-     * Писать команды без подтверждения. Часть весов иначе их не принимает, а
-     * если характеристика умеет только один способ, выбор всё равно за ней.
+     * Write commands without acknowledgement. Some scales will not take them otherwise, and
+     * if a characteristic can do only one of the two, the choice is its anyway.
      */
     val writeWithoutResponse: Boolean get() = false
 
-    /** Сколько раз слать каждую команду: Decent теряет первую. */
+    /** How many times to send every command: Decent loses the first one. */
     val commandRepeats: Int get() = 1
 
     /**
-     * Что слать раз в [heartbeatIntervalMs], пока весы на связи. Acaia без
-     * этого замолкает через несколько секунд, Decent — засыпает.
+     * What to send every [heartbeatIntervalMs] while the scale is connected. Acaia goes
+     * silent without it after a few seconds, Decent falls asleep.
      */
     fun heartbeatCommands(): List<ByteArray> = emptyList()
 
     val heartbeatIntervalMs: Long get() = 0L
 
-    /** Отдельная служба заряда, если он не приходит вместе с весом. */
+    /** A separate battery service, for when it does not arrive together with the weight. */
     val batteryService: UUID? get() = null
     val batteryCharacteristic: UUID? get() = null
 
     fun matches(deviceName: String): Boolean =
         nameFragments.any { deviceName.contains(it, ignoreCase = true) }
 
-    /** Разбор пакета веса. Null — пакет не про вес или испорчен. */
+    /** Parsing a weight packet. Null means the packet is not about weight, or is broken. */
     fun parseWeight(value: ByteArray): WeightReading?
 
-    /** Заряд, если он приходит отдельным пакетом в ту же характеристику. */
+    /** The battery, if it arrives in a separate packet into the same characteristic. */
     fun parseBattery(value: ByteArray): Int? = null
 
-    /** Обнуление показаний. Null — весы этого не умеют. */
+    /** Zeroing the readings. Null means the scale cannot do it. */
     fun tareCommand(): ByteArray? = null
 
-    /** Что отправить сразу после подключения: часы, подсветка, режим. */
+    /** What to send right after connecting: the clock, the backlight, the mode. */
     fun onConnectCommands(): List<ByteArray> = emptyList()
 
-    /** Перевести весы в нужную единицу. Null — единица не переключается. */
+    /** Switch the scale to the unit we need. Null means the unit does not switch. */
     fun unitCommand(unit: WeightUnit): ByteArray? = null
 
     /**
-     * Команда единицы не задаёт её, а переключает по кругу. Такую нельзя слать
-     * вслепую при подключении — только когда в пакете видно, что на весах не
-     * граммы.
+     * The unit command does not set a unit but cycles through them. Such a command must not
+     * be sent blindly on connecting — only when the packet shows the scale is not in grams.
      */
     val unitCommandIsToggle: Boolean get() = false
 
-    /** Забыть состояние разбора: вызывается перед каждым подключением. */
+    /** Forget the parsing state: called before every connection. */
     fun reset() {}
 }
 
 /**
- * Известные приложению весы.
+ * The scales the app knows about.
  *
- * Протоколы разобраны по открытым реализациям и написаны заново; на живом
- * железе проверен только Futula, у Timemore сверен разбор с записью протокола
- * от владельца. Остальные — бета и ждут подтверждения, см. README.
+ * The protocols are read from open implementations and written anew; on live hardware only
+ * Futula has been checked, and for Timemore the parsing was verified against a protocol
+ * recording from an owner. The rest are beta and await confirmation, see README.
  */
 object ScaleDrivers {
 
@@ -131,7 +130,7 @@ object ScaleDrivers {
 
     fun hexToBytes(hex: String): ByteArray {
         val clean = hex.filterNot { it.isWhitespace() }
-        require(clean.length % 2 == 0) { "Нечётная длина hex-строки: $hex" }
+        require(clean.length % 2 == 0) { "Odd length of the hex string: $hex" }
         return ByteArray(clean.length / 2) { index ->
             clean.substring(index * 2, index * 2 + 2).toInt(16).toByte()
         }

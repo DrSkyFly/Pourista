@@ -10,9 +10,8 @@ import org.junit.Test
 import org.junit.runner.RunWith
 
 /**
- * Переход на схему без наследия: таблицы и колонки переименованы, готовые
- * строки времени и пропорции заменены длительностью в миллисекундах.
- * Проверяем, что история завариваний это переживает.
+ * The move to a schema without the legacy: tables and columns renamed, the ready-made time and ratio
+ * strings replaced by a duration in milliseconds. We check that the brewing history survives it.
  */
 @RunWith(AndroidJUnit4::class)
 class MigrationTest {
@@ -41,7 +40,7 @@ class MigrationTest {
                 INSERT INTO weight_history_extra
                 (weight_id, coffee_bean, coffee_grinder, coffee_grinder_level,
                  gadget_name, water_temp, extra_info, coffee_roaster)
-                VALUES (1, 'Ethiopia', 'Comandante', '24', 'V60', '95', 'проверка', 'Roaster')
+                VALUES (1, 'Ethiopia', 'Comandante', '24', 'V60', '95', 'check', 'Roaster')
                 """.trimIndent()
             )
             db.execSQL(
@@ -62,11 +61,11 @@ class MigrationTest {
             "SELECT brewed_at, dose_grams, weight_grams, elapsed_ms, flow_rate_avg," +
                 " weight_series, flow_series, recipe_id, recipe_name FROM brews"
         ).use { cursor ->
-            assertTrue("Заваривание должно пережить миграцию", cursor.moveToFirst())
+            assertTrue("A brew should survive the migration", cursor.moveToFirst())
             assertEquals(1_700_000_000_000L, cursor.getLong(0))
             assertEquals(15.0f, cursor.getFloat(1), 0.01f)
             assertEquals(250.0f, cursor.getFloat(2), 0.01f)
-            assertEquals("«3:05.4» в миллисекундах", 185_400L, cursor.getLong(3))
+            assertEquals("\"3:05.4\" in milliseconds", 185_400L, cursor.getLong(3))
             assertEquals(2.1f, cursor.getFloat(4), 0.01f)
             assertEquals("0;50;150;250", cursor.getString(5))
             assertEquals("0;2.5;3.0;2.0", cursor.getString(6))
@@ -78,7 +77,7 @@ class MigrationTest {
             "SELECT brew_id, bean, roaster, grinder, grind_setting, brewer, water_temp, note" +
                 " FROM brew_notes"
         ).use { cursor ->
-            assertTrue("Заметка должна пережить миграцию", cursor.moveToFirst())
+            assertTrue("A note should survive the migration", cursor.moveToFirst())
             assertEquals(1L, cursor.getLong(0))
             assertEquals("Ethiopia", cursor.getString(1))
             assertEquals("Roaster", cursor.getString(2))
@@ -86,18 +85,18 @@ class MigrationTest {
             assertEquals("24", cursor.getString(4))
             assertEquals("V60", cursor.getString(5))
             assertEquals("95", cursor.getString(6))
-            assertEquals("проверка", cursor.getString(7))
+            assertEquals("check", cursor.getString(7))
         }
 
         db.query("SELECT name, auto_start, sort_order FROM recipes").use { cursor ->
-            assertTrue("Рецепты миграция не трогает", cursor.moveToFirst())
+            assertTrue("The migration leaves recipes alone", cursor.moveToFirst())
             assertEquals("V60", cursor.getString(0))
             assertEquals(1, cursor.getInt(1))
             assertEquals(10, cursor.getInt(2))
         }
     }
 
-    /** Режим аэропресса добавляется колонкой: старые рецепты получают ноль. */
+    /** Aeropress mode is added as a column: old recipes get a zero. */
     @Test
     fun migrate8To9_addsAeropressMode() {
         helper.createDatabase(TEST_DB_AEROPRESS, 8).use { db ->
@@ -121,13 +120,13 @@ class MigrationTest {
         )
 
         db.query("SELECT name, aeropress_mode FROM recipes").use { cursor ->
-            assertTrue("Рецепт должен пережить миграцию", cursor.moveToFirst())
+            assertTrue("A recipe should survive the migration", cursor.moveToFirst())
             assertEquals("AeroPress", cursor.getString(0))
-            assertEquals("Старым рецептам режим не включаем", 0, cursor.getInt(1))
+            assertEquals("Old recipes do not get the mode turned on", 0, cursor.getInt(1))
         }
     }
 
-    /** Фильтр добавляется колонкой: у старых рецептов он пустой. */
+    /** The filter is added as a column: old recipes have it empty. */
     @Test
     fun migrate9To10_addsFilter() {
         helper.createDatabase(TEST_DB_FILTER, 9).use { db ->
@@ -151,14 +150,14 @@ class MigrationTest {
         )
 
         db.query("SELECT name, grind_setting, filter_name FROM recipes").use { cursor ->
-            assertTrue("Рецепт должен пережить миграцию", cursor.moveToFirst())
+            assertTrue("A recipe should survive the migration", cursor.moveToFirst())
             assertEquals("V60", cursor.getString(0))
             assertEquals("24", cursor.getString(1))
-            assertTrue("Фильтра у старого рецепта нет", cursor.isNull(2))
+            assertTrue("An old recipe has no filter", cursor.isNull(2))
         }
     }
 
-    /** Фильтр дописывается и в заметки: у старых записей он пустой. */
+    /** The filter is written into the notes too: old records have it empty. */
     @Test
     fun migrate10To11_addsFilterToNotes() {
         helper.createDatabase(TEST_DB_NOTES_FILTER, 10).use { db ->
@@ -187,13 +186,13 @@ class MigrationTest {
         )
 
         db.query("SELECT grind_setting, filter_name FROM brew_notes").use { cursor ->
-            assertTrue("Заметка должна пережить миграцию", cursor.moveToFirst())
+            assertTrue("A note should survive the migration", cursor.moveToFirst())
             assertEquals("24", cursor.getString(0))
-            assertTrue("Фильтра у старой записи нет", cursor.isNull(1))
+            assertTrue("An old record has no filter", cursor.isNull(1))
         }
     }
 
-    /** Заметка без заваривания не должна ломать внешний ключ новой таблицы. */
+    /** A note with no brew must not break the foreign key of the new table. */
     @Test
     fun migrate7To8_dropsOrphanNotes() {
         helper.createDatabase(TEST_DB_ORPHAN, 7).use { db ->
@@ -202,7 +201,7 @@ class MigrationTest {
                 INSERT INTO weight_history_extra
                 (weight_id, coffee_bean, coffee_grinder, coffee_grinder_level,
                  gadget_name, water_temp, extra_info, coffee_roaster)
-                VALUES (999, 'Ничей', NULL, NULL, NULL, NULL, NULL, NULL)
+                VALUES (999, 'Nobody', NULL, NULL, NULL, NULL, NULL, NULL)
                 """.trimIndent()
             )
         }

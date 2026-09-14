@@ -3,13 +3,13 @@ package com.pourista.scale
 import java.util.UUID
 
 /**
- * Bookoo Themis и совместимые.
+ * Bookoo Themis and compatibles.
  *
- * Пакет из двадцати байтов: вес тремя байтами старшим вперёд в сотых долях
- * грамма, знак отдельным байтом, заряд в процентах как есть. Команды уходят
- * в отдельную характеристику.
+ * A packet of twenty bytes: the weight in three bytes big-endian in hundredths of a gram,
+ * the sign in a byte of its own, the battery in percent as it comes. Commands go into a
+ * separate characteristic.
  *
- * Протокол написан по открытым реализациям, на железе не проверялся.
+ * The protocol is written from open implementations and has not been checked on hardware.
  */
 object BookooDriver : ScaleDriver {
 
@@ -22,7 +22,7 @@ object BookooDriver : ScaleDriver {
 
     override fun parseWeight(value: ByteArray): WeightReading? {
         if (value.size < PACKET_SIZE) return null
-        // В ту же характеристику приходят и другие пакеты: у веса свой номер.
+        // Other packets arrive in the same characteristic: the weight has a number of its own.
         if (value[0] != PRODUCT || value[1] != TYPE_WEIGHT) return null
 
         val hundredths = (value[7].toInt() and 0xff shl 16) or

@@ -7,8 +7,8 @@ import org.junit.Assert.assertTrue
 import org.junit.Test
 
 /**
- * Блуминг и слив закреплены по краям рецепта: перед первым лить нечего, после
- * последнего — некуда. Проверяем, что порядок держится при любых правках.
+ * The bloom and the drawdown are fixed at the ends of a recipe: there is nothing to pour before the
+ * first and nowhere to pour after the last. We check that the order holds through any edit.
  */
 class EditorStepsTest {
 
@@ -22,36 +22,36 @@ class EditorStepsTest {
     )
 
     @Test
-    fun `новый шаг встаёт перед сливом`() {
+    fun `a new step goes in before the drawdown`() {
         val result = full.withRegularStep(step(9, StepKind.POUR))
 
         assertEquals(
             listOf(StepKind.BLOOM, StepKind.POUR, StepKind.POUR, StepKind.POUR, StepKind.DRAWDOWN),
             result.map { it.kind },
         )
-        assertEquals("новый шаг — предпоследний", 9L, result[result.lastIndex - 1].key)
+        assertEquals("the new step is second to last", 9L, result[result.lastIndex - 1].key)
     }
 
     @Test
-    fun `без слива новый шаг просто в конце`() {
+    fun `without a drawdown a new step simply goes at the end`() {
         val result = full.dropLast(1).withRegularStep(step(9, StepKind.POUR))
 
         assertEquals(9L, result.last().key)
     }
 
     @Test
-    fun `блуминг встаёт первым и только один раз`() {
+    fun `the bloom goes in first and only once`() {
         val withoutBloom = full.drop(1)
 
         val added = withoutBloom.withBloom(step(9, StepKind.BLOOM))
         assertEquals(StepKind.BLOOM, added.first().kind)
         assertEquals(9L, added.first().key)
 
-        assertEquals("второй блуминг не добавляется", added, added.withBloom(step(10, StepKind.BLOOM)))
+        assertEquals("a second bloom is not added", added, added.withBloom(step(10, StepKind.BLOOM)))
     }
 
     @Test
-    fun `слив встаёт последним и только один раз`() {
+    fun `the drawdown goes in last and only once`() {
         val withoutDrawdown = full.dropLast(1)
 
         val added = withoutDrawdown.withDrawdown(step(9, StepKind.DRAWDOWN))
@@ -61,16 +61,16 @@ class EditorStepsTest {
     }
 
     @Test
-    fun `закреплённые шаги не двигаются`() {
+    fun `fixed steps do not move`() {
         assertFalse(full.canMove(1, 1))
         assertFalse(full.canMove(4, -1))
         assertEquals(full, full.moved(1, 1))
     }
 
     @Test
-    fun `обычный шаг не выходит за блуминг и слив`() {
-        assertFalse("выше блуминга нельзя", full.canMove(2, -1))
-        assertFalse("ниже слива нельзя", full.canMove(3, 1))
+    fun `an ordinary step does not go past the bloom or the drawdown`() {
+        assertFalse("above the bloom is not allowed", full.canMove(2, -1))
+        assertFalse("below the drawdown is not allowed", full.canMove(3, 1))
         assertTrue(full.canMove(2, 1))
 
         val moved = full.moved(2, 1)
@@ -78,7 +78,7 @@ class EditorStepsTest {
     }
 
     @Test
-    fun `время влива считается из скорости, а пустое поле не ломает шаг`() {
+    fun `the pour time is counted from the rate, and an empty field does not break the step`() {
         val step = EditableStep(key = 1, kind = StepKind.POUR, water = "50", flow = "5")
         assertEquals(10, step.pourSeconds)
 
@@ -91,7 +91,7 @@ class EditorStepsTest {
         .syncPourSeconds()
 
     @Test
-    fun `скорость и время влива пересчитывают друг друга`() {
+    fun `the rate and the pour time recalculate each other`() {
         assertEquals("10", pour.pourSec)
 
         val byTime = pour.withPourSeconds("20")
@@ -103,59 +103,59 @@ class EditorStepsTest {
     }
 
     @Test
-    fun `объём меняет то, что не задавали руками`() {
-        // Скорость задана руками — она и остаётся, время пересчитывается.
+    fun `the volume changes whatever was not set by hand`() {
+        // The rate was set by hand — it stays, and the time is recalculated.
         val keepsFlow = pour.withFlow("5").withWater("100")
         assertEquals("5", keepsFlow.flow)
         assertEquals("20", keepsFlow.pourSec)
 
-        // Время задано руками — остаётся оно, а скорость подстраивается.
+        // The time was set by hand — it stays, and the rate adjusts.
         val keepsTime = pour.withPourSeconds("10").withWater("100")
         assertEquals("10", keepsTime.pourSec)
         assertEquals("10", keepsTime.flow)
     }
 
     @Test
-    fun `влив подрезается под длительность шага`() {
-        // 50 г при 5 г/с — это 10 секунд, а шаг стал шестисекундным.
+    fun `the pour is trimmed to the length of the step`() {
+        // 50 g at 5 g/s is 10 seconds, and the step has become six seconds long.
         val short = pour.copy(duration = "6").pourFittedToDuration()
 
         assertEquals("6", short.pourSec)
-        assertEquals("50 г за 6 секунд", "8.3", short.flow)
+        assertEquals("50 g in 6 seconds", "8.3", short.flow)
         assertFalse(short.pourTooLong)
     }
 
     @Test
-    fun `влив короче шага не трогаем`() {
+    fun `a pour shorter than the step is left alone`() {
         val roomy = pour.copy(duration = "30")
 
         assertEquals(roomy, roomy.pourFittedToDuration())
     }
 
     @Test
-    fun `недонабранная длительность не пересчитывает скорость`() {
-        // Поле очистили, чтобы набрать заново: это ещё не «ноль секунд».
+    fun `a half-typed length does not recalculate the rate`() {
+        // The field was cleared to be typed anew: that is not yet "zero seconds".
         val typing = pour.copy(duration = "")
 
         assertEquals(typing, typing.pourFittedToDuration())
     }
 
     @Test
-    fun `после подрезки объём меняет скорость, а не время`() {
+    fun `after the trim the volume changes the rate rather than the time`() {
         val short = pour.copy(duration = "6").pourFittedToDuration()
 
-        // Влив уже занимает весь шаг, и добавленный объём должен уложиться
-        // в те же шесть секунд.
+        // The pour already takes the whole step, and the volume added has to fit into the same six
+        // seconds.
         val more = short.withWater("60")
         assertEquals("6", more.pourSec)
         assertEquals("10", more.flow)
     }
 
     @Test
-    fun `недописанное число не затирает соседнее поле`() {
+    fun `a half-typed number does not wipe the neighbouring field`() {
         val cleared = pour.withFlow("")
 
         assertEquals("", cleared.flow)
-        assertEquals("время влива осталось прежним", "10", cleared.pourSec)
+        assertEquals("the pour time stayed the same", "10", cleared.pourSec)
     }
 }

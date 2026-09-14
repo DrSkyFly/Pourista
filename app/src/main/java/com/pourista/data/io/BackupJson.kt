@@ -8,16 +8,16 @@ import org.json.JSONArray
 import org.json.JSONObject
 
 /**
- * Резервная копия: рецепты и вся история завариваний одним файлом.
+ * A backup: the recipes and the whole brewing history in one file.
  *
- * Отдельно от [RecipeJson] и с другим форматом внутри: тот файл пишут и правят
- * руками, поэтому в нём нет ни избранного, ни порядка, ни времён. Здесь всё
- * наоборот — файл делает и читает только приложение, и потерять при переезде
- * не должно ничего.
+ * Apart from [RecipeJson] and with a different format inside: that file is written and
+ * edited by hand, so it has no favourites, no order and no times. Here it is the other way
+ * round — the file is made and read by the app alone, and nothing must be lost on the way
+ * to another phone.
  *
- * Настройки в копию не входят: там половина полей — счётчики самой установки
- * (какой набор пресетов посеян, что уже показали, какой рецепт открывали
- * последним), и переносить их на другой телефон вредно.
+ * The settings are not part of a backup: half the fields there are counters of the
+ * installation itself (which preset set has been seeded, what has already been shown, which
+ * recipe was opened last), and carrying them to another phone does harm.
  */
 object BackupJson {
 
@@ -38,14 +38,14 @@ object BackupJson {
         return root.toString(2)
     }
 
-    /** Разбор строгий: чужой файл лучше отвергнуть, чем частично применить. */
+    /** Parsing is strict: a foreign file is better rejected than partly applied. */
     fun decode(text: String): Backup {
         val root = runCatching { JSONObject(text) }.getOrNull()
-            ?: throw IllegalArgumentException("Ожидался объект JSON")
+            ?: throw IllegalArgumentException("Expected a JSON object")
         val format = root.optString("format")
-        if (format != FORMAT) throw IllegalArgumentException("Это не резервная копия")
+        if (format != FORMAT) throw IllegalArgumentException("This is not a backup")
         if (root.optInt("version", 0) > VERSION) {
-            throw IllegalArgumentException("Копия от более новой версии приложения")
+            throw IllegalArgumentException("A backup from a newer version of the app")
         }
         return Backup(
             recipes = root.optJSONArray("recipes").objects().map { decodeRecipe(it) },
@@ -53,7 +53,7 @@ object BackupJson {
         )
     }
 
-    /** Рецепт как в обменном формате плюс то, что там намеренно опущено. */
+    /** A recipe as in the exchange format plus what is deliberately left out there. */
     private fun encodeRecipe(recipe: Recipe): JSONObject =
         RecipeJson.encodeRecipe(recipe).apply {
             if (recipe.isFavorite) put("favorite", true)
@@ -74,8 +74,8 @@ object BackupJson {
     )
 
     /**
-     * Заваривание. Ряды весов и потока — те же строки с «;», что и в базе:
-     * разбирать их ради файла и собирать обратно смысла нет.
+     * A brew. The weight and flow series are the same ";" strings as in the database:
+     * taking them apart for the file and putting them back together makes no sense.
      */
     private fun encodeBrew(brew: BrewRecord): JSONObject {
         val json = JSONObject()
@@ -103,7 +103,7 @@ object BackupJson {
         return json
     }
 
-    /** Заваривание без времени опознать нечем — такую запись пропускаем. */
+    /** A brew with no time cannot be identified — such a record is skipped. */
     private fun decodeBrew(json: JSONObject): BrewRecord? {
         val at = json.optLong("at", 0L).takeIf { it > 0L } ?: return null
         val notes = json.optJSONObject("notes")

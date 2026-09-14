@@ -1,11 +1,11 @@
 package com.pourista.scale
 
 /**
- * Единица, в которой весы отдают вес и показывают его на своём экране.
+ * The unit the scale reports the weight in and shows on its own display.
  *
- * Приложение считает всё в граммах: рецепты, цели шагов и скорость влива иначе
- * не имеют смысла. Единица нужна только для разговора с весами — понять, что
- * они переключились, и вернуть их обратно.
+ * The app counts everything in grams: recipes, step targets and the flow rate make no sense
+ * otherwise. The unit is only needed for talking to the scale — to see that it has switched
+ * and to switch it back.
  */
 enum class WeightUnit(val commandHex: String, val scaleByte: Int) {
     GRAM("fd000400000000000000f9", 4),

@@ -3,13 +3,12 @@ package com.pourista.scale
 import java.util.UUID
 
 /**
- * Varia AKU и AKU mini.
+ * Varia AKU and AKU mini.
  *
- * Вес приходит тремя с половиной байтами: старшая половина байта занята
- * знаком, дальше двадцать бит в сотых долях грамма. Тара подписывается
- * исключающим ИЛИ.
+ * The weight arrives in three and a half bytes: the high half of a byte is taken by the
+ * sign, then twenty bits in hundredths of a gram. The tare is signed with an exclusive OR.
  *
- * Протокол написан по открытым реализациям, на железе не проверялся.
+ * The protocol is written from open implementations and has not been checked on hardware.
  */
 object VariaAkuDriver : ScaleDriver {
 

@@ -12,8 +12,8 @@ import org.junit.runner.RunWith
 import java.io.File
 
 /**
- * Картинка рисуется вне экрана, поэтому глазами её в обычном тесте не увидеть:
- * смотрим на сами пиксели. Пустое полотно — самая вероятная поломка.
+ * The picture is drawn off screen, so it cannot be seen by eye in an ordinary test: we look at the
+ * pixels themselves. An empty canvas is the most likely breakage.
  */
 @RunWith(AndroidJUnit4::class)
 class BrewImageTest {
@@ -30,14 +30,14 @@ class BrewImageTest {
     )
 
     private fun content() = BrewImageContent(
-        title = "V60 Уганда Фермент Washed Long",
-        subtitle = "23 авг. 2026 г., 09:40",
-        facts = "18,8г → 299г · 1:15.9 · 2:58.7",
-        details = "Колумбия Уила · Tasty coffee · Comandante · помол: 5.8",
+        title = "V60 Uganda Ferment Washed Long",
+        subtitle = "23 Aug 2026, 09:40",
+        facts = "18.8 g to 299 g · 1:15.9 · 2:58.7",
+        details = "Colombia Huila · Tasty coffee · Comandante · grind: 5.8",
         weightSeries = List(180) { index -> index * 1.7f },
         flowSeries = List(180) { index -> if (index % 30 < 10) 4.5f else 0.2f },
-        weightTitle = "Вес",
-        flowTitle = "Скорость пролива",
+        weightTitle = "Weight",
+        flowTitle = "Flow rate",
         footer = "Brewed with Pourista",
     )
 
@@ -55,15 +55,15 @@ class BrewImageTest {
                 if (bitmap.getPixel(x, y) != background) painted++
             }
         }
-        assertTrue("на картинке должно быть нарисовано хоть что-то, было $painted", painted > 1_000)
+        assertTrue("something should be drawn on the picture, it was $painted", painted > 1_000)
 
-        // Сохраняем рядом с кэшем: файл забирают adb-ом и смотрят глазами.
+        // We save it next to the cache: the file is fetched with adb and looked at by eye.
         BrewImage.save(context, bitmap, "preview.png")
     }
 
     /**
-     * Раскладка не должна выезжать за полотно: длинное название переносится,
-     * нижний график остаётся видимым, подпись внизу ничем не перекрыта.
+     * The layout must not run off the canvas: a long name wraps, the bottom chart stays visible, and
+     * the caption at the bottom is covered by nothing.
      */
     @Test
     fun layoutFitsTheCanvas() {
@@ -71,16 +71,16 @@ class BrewImageTest {
         val background = colors.background.toArgb()
         val flowLine = colors.flowLine.toArgb()
 
-        // Нижний график рисуется и виден: его цвет встречается в нижней трети.
+        // The bottom chart is drawn and visible: its colour turns up in the bottom third.
         var flowPixels = 0
         for (y in bitmap.height * 2 / 3 until bitmap.height) {
             for (x in 0 until bitmap.width) {
                 if (bitmap.getPixel(x, y) == flowLine) flowPixels++
             }
         }
-        assertTrue("график скорости должен быть виден целиком, точек $flowPixels", flowPixels > 100)
+        assertTrue("the flow chart should be visible whole, points $flowPixels", flowPixels > 100)
 
-        // Полоса подписи занята только текстом: кривых там быть не должно.
+        // The caption strip holds text alone: there must be no curves there.
         val footerTop = bitmap.height - FOOTER_STRIP
         var linesOverFooter = 0
         for (y in footerTop until bitmap.height) {
@@ -89,15 +89,15 @@ class BrewImageTest {
                 if (pixel == flowLine || pixel == colors.weightLine.toArgb()) linesOverFooter++
             }
         }
-        assertEquals("подпись не должна перекрываться графиком", 0, linesOverFooter)
+        assertEquals("the caption must not be covered by the chart", 0, linesOverFooter)
 
-        // Нижний край полотна — фон: содержимое кончается выше.
+        // The bottom edge of the canvas is background: the content ends higher.
         for (x in 0 until bitmap.width step 7) {
             assertEquals(background, bitmap.getPixel(x, bitmap.height - 1))
         }
     }
 
-    /** Файл кладётся туда, откуда его отдаёт FileProvider. */
+    /** The file goes where FileProvider hands it out from. */
     @Test
     fun savedFileLandsInShareDirectory() {
         val bitmap = Bitmap.createBitmap(4, 4, Bitmap.Config.ARGB_8888)
@@ -105,12 +105,12 @@ class BrewImageTest {
         val file = BrewImage.save(context, bitmap, "test.png")!!
 
         assertEquals(File(context.cacheDir, BrewImage.SHARE_DIRECTORY), file.parentFile)
-        assertTrue("файл должен существовать", file.exists())
+        assertTrue("the file should exist", file.exists())
         file.delete()
     }
 
     private companion object {
-        /** Высота полосы подписи в пикселях: 12sp при плотности 3 плюс поля. */
+        /** The height of the caption strip in pixels: 12sp at density 3 plus the padding. */
         const val FOOTER_STRIP = 60
     }
 }

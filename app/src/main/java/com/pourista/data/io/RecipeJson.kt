@@ -8,11 +8,11 @@ import org.json.JSONArray
 import org.json.JSONObject
 
 /**
- * Обмен рецептами через файл.
+ * Exchanging recipes through a file.
  *
- * Шаг в файле описан так же, как его читает человек: «долить столько-то за
- * столько-то секунд». Накопительные цели и абсолютное время считаются при
- * импорте — в файле их нет, иначе рецепт нельзя было бы написать руками.
+ * A step is described in the file the way a person reads it: "add this much over that
+ * many seconds". The cumulative targets and the absolute time are counted on import — the
+ * file has none of them, otherwise a recipe could not be written by hand.
  */
 object RecipeJson {
 
@@ -29,7 +29,7 @@ object RecipeJson {
         return root.toString(2)
     }
 
-    /** Открыт резервной копии: там тот же рецепт плюс служебные поля. */
+    /** Open to a backup: the same recipe there, plus the housekeeping fields. */
     internal fun encodeRecipe(recipe: Recipe): JSONObject {
         val json = JSONObject()
         json.put("name", recipe.name)
@@ -67,38 +67,38 @@ object RecipeJson {
     }
 
     /**
-     * Разбирает файл. Формат намеренно снисходительный: рецепт может написать
-     * человек или нейросеть, и пропущенные необязательные поля — это норма.
+     * Parses the file. The format is deliberately forgiving: a recipe can be written by a
+     * person or by a neural network, and missing optional fields are normal.
      */
     fun decode(text: String): List<Recipe> {
         val root = runCatching { JSONObject(extractObject(text)) }.getOrNull()
-            ?: throw IllegalArgumentException("Ожидался объект JSON")
+            ?: throw IllegalArgumentException("Expected a JSON object")
         val array = root.optJSONArray("recipes")
-            ?: throw IllegalArgumentException("Нет списка recipes")
+            ?: throw IllegalArgumentException("No recipes list")
         val result = mutableListOf<Recipe>()
         for (index in 0 until array.length()) {
             val item = array.optJSONObject(index) ?: continue
             result += decodeRecipe(item)
         }
-        if (result.isEmpty()) throw IllegalArgumentException("В файле нет рецептов")
+        if (result.isEmpty()) throw IllegalArgumentException("No recipes in the file")
         return result
     }
 
     /**
-     * Вырезает сам объект из вставленного текста. Рецепт часто копируют из
-     * переписки с нейросетью, а та любит обернуть ответ в ```json и добавить
-     * пару слов до и после — из-за них разбор падал бы на пустом месте.
+     * Cuts the object itself out of pasted text. A recipe is often copied from a chat with
+     * a neural network, and that likes to wrap the answer in ```json and add a couple of
+     * words before and after — parsing would trip over them for no reason.
      */
     private fun extractObject(text: String): String {
         val start = text.indexOf('{')
         val end = text.lastIndexOf('}')
-        if (start < 0 || end < start) throw IllegalArgumentException("В тексте нет объекта JSON")
+        if (start < 0 || end < start) throw IllegalArgumentException("No JSON object in the text")
         return text.substring(start, end + 1)
     }
 
     internal fun decodeRecipe(json: JSONObject): Recipe {
         val name = json.optString("name").takeIf { it.isNotBlank() }
-            ?: throw IllegalArgumentException("У рецепта нет названия")
+            ?: throw IllegalArgumentException("The recipe has no name")
         val steps = decodeSteps(json.optJSONArray("steps"))
         val water = json.optDouble("water", Double.NaN).toFloat()
             .takeIf { !it.isNaN() && it > 0f }
@@ -156,7 +156,7 @@ object RecipeJson {
     private fun JSONObject.optStringOrNull(key: String): String? =
         optString(key).takeIf { it.isNotBlank() }
 
-    /** В файле числа должны выглядеть как в рецепте: 50, а не 50.0. */
+    /** Numbers in the file should look the way they do in a recipe: 50, not 50.0. */
     private fun Float.trim(): Number =
         if (this % 1f == 0f) toInt() else (kotlin.math.round(this * 10f) / 10f)
 

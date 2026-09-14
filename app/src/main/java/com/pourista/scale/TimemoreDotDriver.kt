@@ -3,23 +3,23 @@ package com.pourista.scale
 import java.util.UUID
 
 /**
- * Timemore Black Mirror Dot и Basic 3 — у них один протокол.
+ * Timemore Black Mirror Dot and Basic 3 — they share one protocol.
  *
- * Говорит кадрами: два байта заголовка, код операции, номер команды, длина
- * данных и два байта в конце под CRC-16. Вес приходит четырьмя байтами
- * старшим вперёд в десятых долях грамма, следом двумя байтами скорость влива
- * в десятых грамма в секунду, заряд — отдельным кадром, который весы
- * дописывают в хвост к кадру веса.
+ * It speaks in frames: two header bytes, the operation code, the command number, the data
+ * length and two bytes of CRC-16 at the end. The weight arrives in four bytes big-endian in
+ * tenths of a gram, followed by two bytes of flow rate in tenths of a gram per second; the
+ * battery comes in a frame of its own, which the scale appends to the tail of the weight
+ * frame.
  *
- * Контрольную сумму весы шлют нулями (проверено по записи с живого
- * устройства), поэтому на приёме её не сверяем — иначе не прошёл бы ни один
- * пакет. В своих командах CRC считаем как положено.
+ * The scale sends the checksum as zeros (verified against a recording from a live device),
+ * so we do not check it on receipt — otherwise not a single packet would pass. In our own
+ * commands the CRC is counted properly.
  *
- * Служба и характеристика веса совпадают с Futula, поэтому драйвер выбирается
- * по имени устройства.
+ * The service and the weight characteristic are the same as Futula's, so the driver is
+ * chosen by the device name.
  *
- * Разбор сверен с записью протокола Black Mirror Dot от владельца весов
- * (issue #2) и с открытой реализацией Beanconqueror.
+ * The parsing was verified against a Black Mirror Dot protocol recording from an owner of
+ * the scale (issue #2) and against the open Beanconqueror implementation.
  */
 object TimemoreDotDriver : ScaleDriver {
 
@@ -29,17 +29,16 @@ object TimemoreDotDriver : ScaleDriver {
     override val service: UUID = bluetoothUuid("fff0")
     override val weightCharacteristic: UUID = bluetoothUuid("fff1")
 
-    /** Команды идут в отдельную характеристику: fff1 только уведомляет. */
+    /** Commands go into a separate characteristic: fff1 only notifies. */
     override val commandCharacteristic: UUID = bluetoothUuid("fff2")
 
     /**
-     * «dot» — слишком короткое слово, чтобы верить любому вхождению: под него
-     * попадёт половина колонок и часов. Само по себе принимаем его только как
-     * начало имени, иначе рядом должно стоять имя производителя.
+     * "dot" is too short a word to trust any occurrence of: half the speakers and watches
+     * would fall under it. On its own it is accepted only as the beginning of a name,
+     * otherwise the manufacturer name has to stand next to it.
      *
-     * Простой «timemore» без модели не берём: Black Mirror второго поколения
-     * зовётся «TIMEMORE Scale» и говорит стандартным протоколом весов, а не
-     * этим.
+     * A plain "timemore" without a model is not taken: the second-generation Black Mirror is
+     * called "TIMEMORE Scale" and speaks the standard scale protocol, not this one.
      */
     override fun matches(deviceName: String): Boolean {
         val name = deviceName.trim().lowercase()
@@ -52,8 +51,8 @@ object TimemoreDotDriver : ScaleDriver {
     }
 
     /**
-     * Вес и, если весы дописали его в тот же пакет, заряд. Кадры приходят
-     * склеенными, поэтому пакет разбираем целиком, а не только с начала.
+     * The weight and, if the scale appended it to the same packet, the battery. Frames arrive
+     * glued together, so the packet is parsed whole rather than from the start alone.
      */
     override fun parseWeight(value: ByteArray): WeightReading? {
         var reading: WeightReading? = null
@@ -74,7 +73,7 @@ object TimemoreDotDriver : ScaleDriver {
         return reading?.copy(batteryPercent = battery)
     }
 
-    /** Заряд приходит своим кадром — иногда отдельным пакетом, иногда в хвосте. */
+    /** The battery comes in a frame of its own — sometimes a separate packet, sometimes a tail. */
     override fun parseBattery(value: ByteArray): Int? {
         var battery: Int? = null
         forEachFrame(value) { command, data ->
@@ -85,7 +84,7 @@ object TimemoreDotDriver : ScaleDriver {
 
     override fun tareCommand(): ByteArray = frame(opcode = OPCODE_WRITE, command = CMD_TARE)
 
-    /** Весы умеют унции; рецепты в граммах, поэтому просим граммы. */
+    /** The scale can do ounces; recipes are in grams, so we ask for grams. */
     override fun unitCommand(unit: WeightUnit): ByteArray? =
         if (unit == WeightUnit.GRAM) {
             frame(opcode = OPCODE_WRITE, command = CMD_UNIT, data = byteArrayOf(UNIT_GRAM))
@@ -93,22 +92,21 @@ object TimemoreDotDriver : ScaleDriver {
             null
         }
 
-    /** Обычный режим взвешивания: в остальных весы шлют вес по-своему. */
+    /** The ordinary weighing mode: in the others the scale sends the weight its own way. */
     override fun onConnectCommands(): List<ByteArray> = listOf(
         frame(opcode = OPCODE_WRITE, command = CMD_MODE, data = byteArrayOf(MODE_STANDARD, 0x00)),
     )
 
     /**
-     * Скорость влива, которую весы посчитали сами. Считают они её быстрее, чем
-     * она видна по приросту веса: пока приложение усредняет секунду, весы уже
-     * показывают число.
+     * The flow rate the scale counted itself. It counts faster than the rate shows up in the
+     * weight gain: while the app is averaging a second, the scale already has a number.
      *
-     * Знак учитываем: когда с весов снимают воду, скорость уходит в минус. В
-     * записи с живого устройства поле один раз показало 999 — груз положили
-     * разом, и весы уперлись в свой потолок. Отдаём как есть: предел
-     * правдоподобия проверяет движок.
+     * The sign is kept: when water is taken off the scale, the rate goes negative. In the
+     * recording from a live device the field once showed 999 — a load was put on all at once,
+     * and the scale hit its own ceiling. We hand it over as it is: the plausibility limit is
+     * the engine's to check.
      *
-     * В коротком кадре скорости нет — тогда null.
+     * A short frame has no rate — then null.
      */
     private fun flowRate(data: ByteArray): Float? {
         if (data.size < WEIGHT_DATA_SIZE + FLOW_DATA_SIZE) return null
@@ -121,8 +119,8 @@ object TimemoreDotDriver : ScaleDriver {
         data.getOrNull(1)?.let { it.toInt() and 0xff }?.takeIf { it in 0..100 }
 
     /**
-     * Проходит по всем кадрам пакета. В одном уведомлении их бывает несколько:
-     * весы дописывают заряд в хвост к весу.
+     * Walks through every frame of the packet. One notification can hold several: the scale
+     * appends the battery to the tail of the weight.
      */
     private inline fun forEachFrame(value: ByteArray, block: (command: Int, data: ByteArray) -> Unit) {
         var offset = 0
@@ -155,7 +153,7 @@ object TimemoreDotDriver : ScaleDriver {
         return body + byteArrayOf((crc shr 8 and 0xff).toByte(), (crc and 0xff).toByte())
     }
 
-    /** CRC-16/IBM: полином 0xA001 в обратном порядке, начальное значение 0xFFFF. */
+    /** CRC-16/IBM: polynomial 0xA001 reversed, initial value 0xFFFF. */
     internal fun crc16(data: ByteArray): Int {
         var crc = 0xffff
         data.forEach { byte ->

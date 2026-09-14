@@ -34,7 +34,7 @@ class RecipeScalingTest {
     )
 
     @Test
-    fun `вода округляется до пяти граммов и сохраняет пропорцию`() {
+    fun `the water is rounded to five grams and keeps the ratio`() {
         val scaled = hoffmann().scaledToDose(15.4f)
 
         assertEquals(15.4f, scaled.doseGrams, 0.001f)
@@ -42,31 +42,31 @@ class RecipeScalingTest {
         assertEquals(255f, scaled.waterGrams, 0.001f)
         assertEquals(255f, scaled.finalTargetGrams, 0.001f)
         assertTrue(
-            "пропорция не должна уехать дальше округления",
+            "the ratio must not drift further than the rounding",
             kotlin.math.abs(scaled.ratio - hoffmann().ratio) < 0.2f,
         )
     }
 
     @Test
-    fun `все цели кратны пяти и не убывают`() {
+    fun `every target is a multiple of five and none decreases`() {
         val scaled = hoffmann().scaledToDose(21.3f)
 
         var previous = 0f
         scaled.steps.forEach { step ->
             val target = step.targetWaterGrams
             assertEquals(
-                "цель $target не кратна пяти",
+                "the target $target is not a multiple of five",
                 0f,
                 target % 5f,
                 0.001f,
             )
-            assertTrue("цели должны только расти: $previous → $target", target >= previous)
+            assertTrue("the targets must only grow: $previous to $target", target >= previous)
             previous = target
         }
     }
 
     @Test
-    fun `паузы держат вес предыдущего пролива`() {
+    fun `pauses hold the weight of the previous pour`() {
         val scaled = hoffmann().scaledToDose(20f)
 
         val bloom = scaled.steps[0].targetWaterGrams
@@ -79,18 +79,18 @@ class RecipeScalingTest {
     }
 
     @Test
-    fun `длительность шага и скорость влива при пересчёте не меняются`() {
+    fun `the step length and the flow rate do not change on a recalculation`() {
         val original = hoffmann()
         val scaled = original.scaledToDose(20f)
 
         original.steps.zip(scaled.steps).forEach { (before, after) ->
             assertEquals(
-                "длительность шага задаётся рецептом и не зависит от дозы",
+                "the step length is set by the recipe and does not depend on the dose",
                 before.durationSec,
                 after.durationSec,
             )
             assertEquals(
-                "скорость влива — свойство техники, а не дозы",
+                "the flow rate is a property of the technique, not of the dose",
                 before.pourFlowRate,
                 after.pourFlowRate,
                 0.001f,
@@ -99,7 +99,7 @@ class RecipeScalingTest {
     }
 
     @Test
-    fun `время влива внутри шага растёт вместе с дозой`() {
+    fun `the pour time inside a step grows together with the dose`() {
         val bloomFor = { dose: Float ->
             val recipe = hoffmann().scaledToDose(dose)
             recipe.steps[0].pourSeconds(recipe.steps[0].targetWaterGrams)
@@ -108,22 +108,22 @@ class RecipeScalingTest {
         val small = bloomFor(15f)
         val large = bloomFor(20f)
 
-        // 50 г при 5 г/с — десять секунд; для большей дозы воды больше, влив дольше,
-        // а сам шаг остаётся сорокапятисекундным.
+        // 50 g at 5 g/s is ten seconds; for a larger dose there is more water, the pour is longer,
+        // and the step itself stays forty-five seconds.
         assertEquals(10f, small, 0.5f)
-        assertTrue("для 20 г влив должен быть длиннее: $small → $large", large > small)
-        assertTrue("влив обязан помещаться в шаг", large <= 45f)
+        assertTrue("for 20 g the pour should be longer: $small to $large", large > small)
+        assertTrue("the pour is obliged to fit into the step", large <= 45f)
     }
 
     @Test
-    fun `без дозы рецепт не трогаем`() {
+    fun `without a dose the recipe is left alone`() {
         val recipe = hoffmann()
         assertSame(recipe, recipe.scaledToDose(0f))
         assertSame(recipe, recipe.scaledToDose(-1f))
     }
 
     @Test
-    fun `повторный пересчёт от исходника даёт тот же результат`() {
+    fun `recalculating from the original again gives the same result`() {
         val once = hoffmann().scaledToDose(18f)
         val twice = hoffmann().scaledToDose(18f)
 

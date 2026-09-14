@@ -9,11 +9,11 @@ import androidx.room.PrimaryKey
 import androidx.room.Relation
 
 /**
- * Заваривание из истории.
+ * A brew from the history.
  *
- * Ряды весов и скорости лежат строками с разделителем «;»: это график, который
- * читают целиком и никогда не выбирают по одной точке, так что отдельная
- * таблица на сотни строк ради каждой чашки не нужна.
+ * The weight and flow series lie in strings separated by ";": this is a chart, read whole
+ * and never queried a point at a time, so a separate table of hundreds of rows for every
+ * cup is not needed.
  */
 @Entity(tableName = "brews")
 data class BrewEntity(
@@ -29,7 +29,7 @@ data class BrewEntity(
     @ColumnInfo(name = "recipe_name") val recipeName: String? = null,
 )
 
-/** Заметки к завариванию: зерно, обжарщик, кофемолка, помол, фильтр, температура. */
+/** Notes on a brew: bean, roaster, grinder, grind setting, filter, temperature. */
 @Entity(
     tableName = "brew_notes",
     foreignKeys = [
@@ -61,7 +61,7 @@ data class BrewWithNotes(
     val notes: BrewNotesEntity?,
 )
 
-/** Рецепт: параметры заваривания и помола, шаги хранятся отдельно. */
+/** A recipe: brewing and grinding parameters; the steps are stored separately. */
 @Entity(tableName = "recipes")
 data class RecipeEntity(
     @PrimaryKey(autoGenerate = true) @ColumnInfo(name = "id") val id: Long = 0,
@@ -72,7 +72,7 @@ data class RecipeEntity(
     @ColumnInfo(name = "water_temp_c") val waterTempC: Int,
     @ColumnInfo(name = "grinder_name") val grinderName: String?,
     @ColumnInfo(name = "grind_setting") val grindSetting: String?,
-    /** Бумага: «Hario», «Cafec Abaca». От неё чашка меняется не меньше, чем от помола. */
+    /** Paper: "Hario", "Cafec Abaca". It changes the cup no less than the grind does. */
     @ColumnInfo(name = "filter_name") val filterName: String? = null,
     @ColumnInfo(name = "bean_name") val beanName: String?,
     @ColumnInfo(name = "roaster") val roaster: String?,
@@ -80,17 +80,17 @@ data class RecipeEntity(
     @ColumnInfo(name = "is_built_in") val isBuiltIn: Boolean,
     @ColumnInfo(name = "is_favorite") val isFavorite: Boolean,
     /**
-     * Взводить ли автостарт сразу после записи дозы. У пуроверов это удобно,
-     * у эспрессо — нет: там таймер пускают вместе с помпой.
+     * Whether to arm auto-start right after the dose is recorded. On pour-overs that is
+     * convenient, on espresso it is not: there the timer starts with the pump.
      */
     @ColumnInfo(name = "auto_start", defaultValue = "1") val autoStart: Boolean = true,
     /**
-     * Режим аэропресса: без автофиниша и без сглаживания веса. Отжим роняет
-     * показания, и это единственный способ увидеть на графике, когда он начался.
+     * Aeropress mode: no auto-finish and no weight smoothing. The press drops the
+     * readings, and this is the only way to see on the chart when it began.
      */
     @ColumnInfo(name = "aeropress_mode", defaultValue = "0")
     val aeropressMode: Boolean = false,
-    /** Порядок в списке: его задаёт человек, перетаскивая карточки. */
+    /** Position in the list: set by the person dragging the cards. */
     @ColumnInfo(name = "sort_order", defaultValue = "1000") val sortOrder: Int = 1000,
     @ColumnInfo(name = "created_at") val createdAt: Long,
     @ColumnInfo(name = "updated_at") val updatedAt: Long,
@@ -98,9 +98,9 @@ data class RecipeEntity(
 )
 
 /**
- * Шаг рецепта. [targetWaterGrams] — накопительная цель к концу шага, то есть
- * ровно то число, которое должно быть на весах: так подсказку не нужно
- * пересчитывать в уме во время пролива.
+ * A recipe step. [targetWaterGrams] is the cumulative target for the end of the step,
+ * that is exactly the number that should be on the scale: this way the guidance does not
+ * have to be recalculated in one head while pouring.
  */
 @Entity(
     tableName = "recipe_steps",
@@ -124,9 +124,10 @@ data class RecipeStepEntity(
     @ColumnInfo(name = "duration_sec") val durationSec: Int,
     @ColumnInfo(name = "target_water_grams") val targetWaterGrams: Float,
     /**
-     * Скорость влива, г/с. Хранится именно она, а не время: при смене дозы
-     * объём воды меняется, а комфортная скорость остаётся той же — время влива
-     * из них считается. Ноль означает «не задана», тогда берётся типовая.
+     * Flow rate, g/s. It is this that is stored rather than the time: when the dose
+     * changes the water volume changes with it, while the comfortable rate stays the
+     * same — the pour time is counted from the two. Zero means "unset", and then the
+     * typical one is used.
      */
     @ColumnInfo(name = "pour_flow_rate", defaultValue = "0") val pourFlowRate: Float = 0f,
     @ColumnInfo(name = "note") val note: String?,

@@ -127,6 +127,8 @@ The release build is signed with a key whose path and passwords live in
 `../keystore/keystore.properties`, outside the repository. Without that file the
 release is simply built unsigned and the build does not fail.
 
+The list of changes is in [CHANGELOG.en.md](CHANGELOG.en.md).
+
 ## Credits
 
 Special thanks to Coffeesaurus — [youtube.com/c/Coffeesaurus](https://www.youtube.com/c/Coffeesaurus).

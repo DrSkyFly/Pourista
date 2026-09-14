@@ -20,30 +20,30 @@ import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.isActive
 import kotlinx.coroutines.launch
 
-/** За сколько граммов до цели предупреждать по умолчанию. */
+/** How many grams before the target to warn by default. */
 const val DEFAULT_NEAR_TARGET_GRAMS = 5f
 
 /**
- * Насколько скорость может разойтись с рецептом, прежде чем приложение скажет
- * лить быстрее или медленнее. Доля от целевой скорости.
+ * How far the flow rate may drift from the recipe before the app says to pour
+ * faster or slower. A share of the target rate.
  */
 const val DEFAULT_PACE_TOLERANCE = 0.1f
 
 enum class BrewPhase { IDLE, RUNNING, PAUSED, FINISHED }
 
-/** Насколько пролив попадает в график рецепта. */
+/** How well the pour keeps to the recipe. */
 enum class Pace { ON_TRACK, TOO_FAST, TOO_SLOW }
 
-/** Что делают прямо сейчас внутри шага. */
+/** What is being done inside the step right now. */
 enum class StepPhase { POURING, WAITING }
 
-/** Как лить следующий пролив по сравнению с только что законченным. */
+/** How to pour the next one compared with the pour just finished. */
 enum class NextPourHint { SAME, FASTER, SLOWER }
 
 /**
- * Сравнивает фактическую скорость только что законченного влива с той, что
- * просит следующий. Разницу меньше [tolerance] не упоминаем: подсказка «чуть
- * быстрее» на пять процентов только отвлекает.
+ * Compares the measured rate of the pour just finished with the one the next pour
+ * asks for. A difference below [tolerance] goes unmentioned: a "slightly faster"
+ * over five percent is nothing but a distraction.
  */
 internal fun compareNextPour(
     lastFlowRate: Float,
@@ -64,31 +64,31 @@ data class Guidance(
     val stepCount: Int,
     val step: RecipeStep,
     val nextStep: RecipeStep?,
-    /** Сколько воды потребует следующий шаг сверх уже налитого. */
+    /** How much water the next step will ask for on top of what is already poured. */
     val nextStepDeltaGrams: Float?,
-    /** Сколько воды доливают на текущем шаге. */
+    /** How much water this step adds. */
     val stepDeltaGrams: Float,
-    /** Как лить следующий пролив относительно только что законченного. */
+    /** How to pour the next one relative to the pour just finished. */
     val nextPourHint: NextPourHint?,
-    /** Целевая скорость следующего пролива, г/с. */
+    /** Target rate of the next pour, g/s. */
     val nextPourFlowRate: Float?,
-    /** С какой скоростью человек фактически лил прошлый влив, г/с. */
+    /** The rate the previous pour was actually poured at, g/s. */
     val lastPourFlowRate: Float?,
-    /** Доля пройденного времени шага, 0..1. */
+    /** Share of the step time already gone, 0..1. */
     val stepProgress: Float,
     val secondsLeftInStep: Int,
-    /** Сколько воды должно быть на весах прямо сейчас. */
+    /** How much water should be on the scale right now. */
     val targetNowGrams: Float,
-    /** Цель к концу текущего шага. */
+    /** The target for the end of the current step. */
     val targetEndGrams: Float,
-    /** Сколько ещё долить до конца шага. */
+    /** How much is left to pour before the step ends. */
     val remainingGrams: Float,
     val pace: Pace,
-    /** Влив идёт или шаг уже выстаивается. */
+    /** The pour is running, or the step is already settling. */
     val stepPhase: StepPhase,
-    /** Скорость влива, заданная рецептом, г/с. */
+    /** Flow rate the recipe asks for, g/s. */
     val targetFlowRate: Float,
-    /** Где на кольце шага стоит отметка окончания влива, 0..1. */
+    /** Where the end-of-pour mark sits on the step ring, 0..1. */
     val pourEndFraction: Float,
     val totalProgress: Float,
     val secondsToNextPour: Int?,
@@ -98,12 +98,12 @@ sealed interface BrewEvent {
     data class StepChanged(val index: Int, val step: RecipeStep) : BrewEvent
     data class Countdown(val secondsLeft: Int) : BrewEvent
 
-    /** До цели шага осталось совсем немного — пора готовиться закрывать чайник. */
+    /** Very little left to the step target — time to get ready to close the kettle. */
     data class NearTarget(val remainingGrams: Float) : BrewEvent
 
     /**
-     * План рецепта отыгран: время последнего шага, обычно слива, вышло.
-     * Заваривание при этом ещё идёт — воронку снимают руками.
+     * The recipe plan is played out: the time of the last step, usually the
+     * drawdown, is up. The brew is still running — the cone comes off by hand.
      */
     data object PlanFinished : BrewEvent
     data object Finished : BrewEvent
@@ -119,18 +119,18 @@ data class BrewState(
     val weightSeries: List<Float> = emptyList(),
     val flowSeries: List<Float> = emptyList(),
     val recipe: Recipe? = null,
-    /** Цели рецепта пересчитаны под фактическую дозу. */
+    /** Recipe targets recalculated for the actual dose. */
     val recipeScaled: Boolean = false,
     val guidance: Guidance? = null,
     /**
-     * Автостарт взведён прямо сейчас: следующая же вода на весах запустит таймер.
-     * Состояние на одно заваривание — по умолчанию выключено, взводится галкой
-     * у кнопки «Старт» или само после записи дозы, если так велит рецепт.
+     * Auto-start is armed right now: the next water on the scale starts the timer.
+     * The state lasts one brew — off by default, armed by the checkbox next to
+     * "Start" or by itself after the dose is recorded, if the recipe says so.
      */
     val autoStartArmed: Boolean = false,
-    /** Идёт запись рецепта с реального пролива. */
+    /** A recipe is being recorded from a real pour. */
     val recording: Boolean = false,
-    /** Сколько проливов уже распознано во время записи. */
+    /** How many pours have been recognised during the recording. */
     val recordedPours: Int = 0,
 ) {
     val elapsedSec: Int get() = (elapsedMs / 1000).toInt()
@@ -140,10 +140,10 @@ data class BrewState(
 }
 
 /**
- * Ход заваривания: таймер, скорость пролива и подсказки по рецепту.
+ * The course of a brew: timer, flow rate and guidance by the recipe.
  *
- * Живёт на уровне приложения, поэтому переход на другой экран и поворот
- * не сбрасывают начатое заваривание.
+ * Lives at application level, so moving to another screen or rotating the phone
+ * does not drop a brew already under way.
  */
 class BrewEngine(
     private val scale: ScaleRepository,
@@ -158,11 +158,11 @@ class BrewEngine(
 
     private var tickerJob: Job? = null
 
-    /** Отсчёт ведём от монотонных часов, чтобы таймер не плыл. */
+    /** The count runs off the monotonic clock, so the timer does not drift. */
     private var startedAtElapsedRealtime = 0L
     private var accumulatedMs = 0L
 
-    /** Скорость влива: число весов, если они его считают, иначе своя оценка. */
+    /** Flow rate: the number from the scale if it counts one, otherwise our own estimate. */
     private val flow = FlowRate()
     private val flowForAverage = mutableListOf<Float>()
 
@@ -170,35 +170,35 @@ class BrewEngine(
     private var lastStepIndex = -1
     private var lastCountdownSecond = -1
 
-    /** Шаг, влив которого уже завершён — по достижении цели или по остановке веса. */
+    /** The step whose pour is already done — by reaching the target or by the weight stopping. */
     private var pourDoneStepIndex = -1
     private var nearTargetStepIndex = -1
 
-    /** Сигнал о конце плана даём один раз за заваривание. */
+    /** The end-of-plan signal is given once per brew. */
     private var planFinishedEmitted = false
     private var steadyWeight = 0f
     private var steadySinceMs = 0L
 
-    /** Рецепт как он сохранён; в состоянии может лежать пересчитанная под дозу копия. */
+    /** The recipe as saved; the state may hold a copy recalculated for the dose. */
     private var baseRecipe: Recipe? = null
 
-    /** За сколько граммов до цели предупреждать. Задаётся в настройках. */
+    /** How many grams before the target to warn. Set in the settings. */
     @Volatile
     var nearTargetGrams: Float = DEFAULT_NEAR_TARGET_GRAMS
 
-    /** Допустимое расхождение скорости с рецептом. Задаётся в настройках. */
+    /** Allowed drift of the flow rate from the recipe. Set in the settings. */
     @Volatile
     var paceTolerance: Float = DEFAULT_PACE_TOLERANCE
 
-    /** Насколько усреднять показанную скорость влива. Задаётся в настройках. */
+    /** How much to smooth the flow rate on screen. Set in the settings. */
     var flowSmoothing: FlowSmoothing
         get() = flow.smoothing
         set(value) { flow.smoothing = value }
 
     /**
-     * Оставлять объём воды как в рецепте, не подгоняя под фактическую дозу.
-     * Настройка глобальная: её ставят осознанно, когда кофе сыплют больше
-     * специально, ради более плотной чашки.
+     * Keep the water as the recipe wrote it, without fitting it to the actual dose.
+     * The setting is global: it is turned on deliberately, for when more coffee is
+     * ground on purpose, for a denser cup.
      */
     private var keepRecipeWater: Boolean = false
 
@@ -209,23 +209,23 @@ class BrewEngine(
     }
 
     /**
-     * На сколько секунд рецепт «съехал» вперёд относительно секундомера. Растёт,
-     * когда влив закончен раньше времени и ждать до конца шага незачем: слив
-     * начинается сразу. Само заваривание при этом идёт по реальным часам.
+     * How many seconds the recipe has "slid" forward relative to the stopwatch.
+     * It grows when a pour is finished early and there is nothing to wait for:
+     * the drawdown starts at once. The brew itself keeps to the real clock.
      */
     private var timelineShiftSec = 0f
 
-    /** Секунды с начала заваривания на текущем тике — без сдвига рецепта. */
+    /** Seconds since the start of the brew on this tick — without the recipe shift. */
     private var currentElapsedSec = 0f
 
     /**
-     * Подтяжки расписания за это заваривание: секунда, на которой шаг стоял в
-     * рецепте, и на сколько секунд он начался раньше. Держим отдельно от плана,
-     * потому что пересчёт под дозу собирает рецепт заново из сохранённого.
+     * Schedule pull-ins collected during this brew: the second a step stood at in
+     * the recipe, and how many seconds earlier it started. Kept apart from the plan,
+     * because recalculating for the dose builds the recipe again from the saved one.
      */
     private val pullIns = linkedMapOf<Int, Int>()
 
-    /** Фактическая скорость последнего законченного влива, г/с. */
+    /** Measured rate of the last finished pour, g/s. */
     private var lastPourFlowRate = 0f
     private var pourTrackedStepIndex = -1
     private var pourStartedAtMs = 0L
@@ -233,18 +233,18 @@ class BrewEngine(
 
     private val recorder = PourRecorder()
 
-    /** Сторож конца заваривания: взводится, когда закончен последний влив. */
+    /** The end-of-brew watch: armed once the last pour is done. */
     private val removal = RemovalWatch()
 
     /**
-     * Заканчивать ли заваривание самому по снятой воронке. Выключенный
-     * автофиниш падения всё равно считает: по ним «Финиш» руками пишет в
-     * историю вес до того, как чашку сняли.
+     * Whether to end the brew by the cone being lifted. With auto-finish off the
+     * drops are still counted: "Finish" pressed by hand uses them to write the
+     * weight from before the cup was taken off into the history.
      */
     @Volatile
     var autoFinish: Boolean = true
 
-    /** Вес для расчётов: без просадок от покачивания воронки. */
+    /** Weight for calculations: without the dips from a wobbling cone. */
     private val pouredWeight = MonotonicWeight()
 
     fun selectRecipe(recipe: Recipe?) {
@@ -253,9 +253,9 @@ class BrewEngine(
     }
 
     /**
-     * Текущий вес становится дозой кофе, весы обнуляются. Если рецепт просит
-     * автостарт — здесь же взводим его: доза записана, следующая вода на весах
-     * это уже пролив.
+     * The current weight becomes the coffee dose and the scale is zeroed. If the
+     * recipe asks for auto-start, it is armed here too: the dose is recorded, and
+     * the next water on the scale is already the pour.
      */
     fun captureDose() {
         val dose = _state.value.weightGrams
@@ -274,16 +274,16 @@ class BrewEngine(
     }
 
     /**
-     * Подставляет рецепт, пересчитанный под фактическую дозу. Считаем всегда от
-     * сохранённого рецепта, иначе повторная дозировка масштабировала бы уже
-     * масштабированное.
+     * Puts in the recipe recalculated for the actual dose. It is always counted
+     * from the saved recipe, otherwise dosing twice would scale what was already
+     * scaled.
      */
     private fun BrewState.withRecipeForDose(base: Recipe?, dose: Float): BrewState {
         if (base == null) return copy(recipe = null, recipeScaled = false, guidance = null)
         val adjusted = if (dose > 0f && !keepRecipeWater) base.scaledToDose(dose) else base
         val scaled = adjusted.waterGrams != base.waterGrams || adjusted.doseGrams != base.doseGrams
-        // Подтянутые шаги переносим на пересобранный рецепт: доза меняет воду,
-        // а не расписание.
+        // Pulled-in steps carry over to the rebuilt recipe: the dose changes the
+        // water, not the schedule.
         val planned = adjusted.withPullIns(pullIns)
         val next = copy(recipe = planned, recipeScaled = scaled)
         return next.copy(guidance = guidanceFor(planned, next))
@@ -291,7 +291,7 @@ class BrewEngine(
 
     fun tare() = scale.tare()
 
-    /** Включить запись: заваривание начинается с чистого листа. */
+    /** Start recording: the brew begins with a clean sheet. */
     fun startRecording() {
         reset()
         recorder.reset()
@@ -303,7 +303,7 @@ class BrewEngine(
         _state.update { it.copy(recording = false, recordedPours = 0) }
     }
 
-    /** Собирает рецепт из записанного пролива. */
+    /** Builds a recipe out of the recorded pour. */
     fun buildRecordedRecipe(name: String, brewer: String): Recipe? {
         val state = _state.value
         return recorder.buildRecipe(
@@ -344,18 +344,18 @@ class BrewEngine(
     }
 
     /**
-     * Финиш по кнопке. Если вес к этому моменту уже просел, закрываем
-     * заваривание так же, как автофиниш: воронку сняли раньше, чем нажали,
-     * и в историю должен попасть вес до падения.
+     * Finish by the button. If the weight has already dropped by then, the brew is
+     * closed the same way auto-finish closes it: the cone came off before the press,
+     * and the weight from before the drop is what belongs in the history.
      */
     fun finish() {
         if (removal.dropPending) finishAfterRemoval() else finishAt(SystemClock.elapsedRealtime())
     }
 
     /**
-     * Заканчивает заваривание временем [atMs] по монотонным часам. Отдельный
-     * момент нужен автофинишу: чашку сняли раньше, чем сторож в этом убедился,
-     * и лишние секунды в историю попадать не должны.
+     * Ends the brew at [atMs] by the monotonic clock. Auto-finish needs a moment of
+     * its own: the cup was taken off before the watch made sure of it, and the extra
+     * seconds have no business in the history.
      */
     private fun finishAt(atMs: Long, transform: (BrewState) -> BrewState = { it }) {
         if (_state.value.phase == BrewPhase.FINISHED) return
@@ -365,8 +365,8 @@ class BrewEngine(
         tickerJob?.cancel()
         tickerJob = null
         removal.reset()
-        // Правку веса вносим тем же обновлением, что и финиш: иначе показание
-        // с весов успело бы лечь между ними.
+        // The weight is corrected by the same update as the finish: otherwise a
+        // reading from the scale could land between the two.
         _state.update { transform(it).copy(phase = BrewPhase.FINISHED, elapsedMs = accumulatedMs) }
         _events.tryEmit(BrewEvent.Finished)
     }
@@ -392,15 +392,15 @@ class BrewEngine(
         pullIns.clear()
         removal.reset()
         pouredWeight.reset()
-        // Возвращаем исходный рецепт: пересчёт был привязан к дозе прошлой чашки.
+        // Bring back the original recipe: the scaling was tied to the previous dose.
         _state.value = BrewState(recipe = baseRecipe)
         scale.tare()
     }
 
-    /** Вес приходит с весов и вне запущенного таймера — для автостарта и дозы. */
+    /** The weight arrives from the scale outside a running timer too — for auto-start and the dose. */
     fun onWeightChanged(grams: Float) {
-        // После финиша показания замораживаем: на экране и в истории должно
-        // остаться то, что налили, а не ноль с весов, с которых сняли чашку.
+        // After the finish the readings are frozen: the screen and the history must
+        // keep what was poured, not the zero of a scale the cup has been taken off.
         if (_state.value.phase == BrewPhase.FINISHED) return
         _state.update { it.copy(weightGrams = grams) }
     }
@@ -423,10 +423,11 @@ class BrewEngine(
         val elapsed = accumulatedMs + (nowMs - startedAtElapsedRealtime)
         currentElapsedSec = elapsed / 1000f
 
-        // Для скорости, графиков и конца влива берём неубывающий вес: покачивание
-        // воронки роняет показания, а их возврат выглядел бы бешеным вливом.
-        // В режиме аэропресса — наоборот: отжим роняет вес по делу, и сглаживать
-        // его нельзя, иначе на графике не видно, когда начали давить.
+        // For the flow rate, the charts and the end of a pour we take the
+        // non-decreasing weight: a wobbling cone drops the reading, and its return
+        // would look like a furious pour. In aeropress mode it is the other way
+        // round: the plunger drops the weight for a reason, and smoothing it away
+        // would hide the moment the pressing started.
         val raw = current.weightGrams.coerceAtLeast(0f)
         val aeropress = current.recipe?.aeropressMode == true
         val weight = if (aeropress) raw else pouredWeight.onSample(raw, nowMs)
@@ -456,10 +457,10 @@ class BrewEngine(
         val firstPass = next.recipe?.let { guidanceFor(it, next) }
         if (firstPass != null) detectPourFinished(firstPass, weight, nowMs)
 
-        // После определения конца влива подсказку пересобираем: статус шага мог
-        // смениться прямо сейчас, и показывать устаревший «влив» нельзя. План
-        // берём из состояния, а не из `next`: конец влива мог подтянуть к себе
-        // свирл, и тогда расписание там уже другое.
+        // Once the end of the pour is known the guidance is rebuilt: the step status
+        // could have changed just now, and showing a stale "pouring" is wrong. The
+        // plan is taken from the state rather than from `next`: the end of the pour
+        // may have pulled the swirl in, and the schedule there is a different one.
         val plan = _state.value.recipe
         val guidance = plan?.let { guidanceFor(it, next) }
         _state.value = next.copy(recipe = plan, guidance = guidance)
@@ -469,22 +470,24 @@ class BrewEngine(
             armRemovalWhenWaterDone(guidance, weight)
         }
 
-        // Вес берём как есть, без обрезки по нулю: снятая целиком чашка уводит
-        // весы в минус, и это самый явный признак, что заваривание закончено.
-        // В режиме аэропресса сторожу делать нечего: там вес падает от отжима,
-        // а не от снятой чашки, и принимать отжим за конец нельзя — ни здесь,
-        // ни в «Финише» по кнопке, который смотрит на тот же сторож.
+        // The weight is taken as it is, without clamping at zero: a cup lifted off
+        // entirely sends the scale negative, and that is the clearest sign the brew
+        // is over. In aeropress mode the watch has nothing to do: the weight there
+        // falls from the plunger, not from a lifted cup, and taking the press for
+        // the end is wrong — here as well as in the "Finish" button, which looks at
+        // the same watch.
         if (aeropress) return
         if (removal.onSample(current.weightGrams, nowMs) && autoFinish) finishAfterRemoval()
     }
 
     /**
-     * Взводит сторож конца, как только рецепт больше не требует воды.
+     * Arms the end watch as soon as the recipe stops asking for water.
      *
-     * Обычно это делает детектор конца влива, но он привязан к шагу: если
-     * человек долил уже после того, как шаг сменился, влив «не закончился», и
-     * снятую воронку никто не ждал. Поэтому сторож взводится ещё и по факту —
-     * когда налито столько, сколько просит рецепт, или когда план отыгран.
+     * Normally the end-of-pour detector does that, but it is bound to a step: if the
+     * water was added after the step had already changed, the pour "never finished",
+     * and nobody was waiting for the cone to come off. So the watch is armed by the
+     * fact as well — when as much is poured as the recipe asks, or when the plan is
+     * played out.
      */
     private fun armRemovalWhenWaterDone(guidance: Guidance, weight: Float) {
         if (removal.armed || baseRecipe?.aeropressMode == true) return
@@ -497,16 +500,17 @@ class BrewEngine(
     }
 
     /**
-     * Автофиниш: с весов сняли воронку или чашку. Заваривание закрываем тем
-     * временем, когда вес упал, а вес возвращаем последний устоявшийся — вместе
-     * с графиками, куда уже успели попасть секунды падения.
+     * Auto-finish: the cone or the cup has been lifted off the scale. The brew is
+     * closed at the time the weight fell, and the weight goes back to the last settled
+     * one — together with the charts, where the seconds of the fall already landed.
      */
     private fun finishAfterRemoval() {
         val restored = removal.weightBeforeDrop
         finishAt(removal.droppedAtMs) { state ->
-            // Хвост графика обрезаем по восстановленному весу, а не по порогу
-            // сторожа: между полной воронкой и падением ниже порога на график
-            // ложится просадка, и график расходился бы с итогом в карточке.
+            // The tail of the chart is trimmed by the restored weight rather than by
+            // the watch threshold: between a full cone and the fall below the
+            // threshold the dip lands on the chart, and the chart would then disagree
+            // with the total on the card.
             val weights = state.weightSeries
                 .dropLastWhile { it < restored - CHART_TAIL_GRAMS }
                 .ifEmpty { state.weightSeries }
@@ -525,8 +529,8 @@ class BrewEngine(
             _events.tryEmit(BrewEvent.StepChanged(guidance.stepIndex, guidance.step))
         }
 
-        // Отдельный сигнал незадолго до цели: закрывать чайник надо заранее,
-        // вода из носика доливается ещё пару секунд.
+        // A separate cue shortly before the target: the kettle has to be closed in
+        // advance, water keeps coming out of the spout for another couple of seconds.
         if (guidance.stepPhase == StepPhase.POURING &&
             guidance.stepIndex != nearTargetStepIndex &&
             guidance.remainingGrams in 0.1f..nearTargetGrams
@@ -534,8 +538,8 @@ class BrewEngine(
             nearTargetStepIndex = guidance.stepIndex
             _events.tryEmit(BrewEvent.NearTarget(guidance.remainingGrams))
         }
-        // Последний шаг отыгран: рецепт кончился, пора снимать воронку.
-        // Финиш при этом не наступает — его даёт снятая чашка или кнопка.
+        // The last step is played out: the recipe is over, time to take the cone off.
+        // The finish does not come with it — that is for the lifted cup or the button.
         if (!planFinishedEmitted &&
             guidance.stepIndex == guidance.stepCount - 1 &&
             guidance.secondsLeftInStep <= 0
@@ -553,7 +557,7 @@ class BrewEngine(
         }
     }
 
-    /** Весы на связи: только тогда вес что-то значит. */
+    /** The scale is connected: only then does the weight mean anything. */
     private val measuring: Boolean get() = scale.state.value.isConnected
 
     private fun guidanceFor(recipe: Recipe, state: BrewState): Guidance? {
@@ -571,15 +575,15 @@ class BrewEngine(
         } else {
             1f
         }
-        // Округляем вверх: пока идёт последняя секунда шага, на кольце должна
-        // гореть единица. Ноль означал бы лишнюю секунду ожидания, которой нет.
+        // Rounded up: while the last second of the step runs, the ring must show a
+        // one. A zero would mean an extra second of waiting that is not there.
         val secondsLeft = ceil(step.endSec - elapsedSec).toInt().coerceAtLeast(0)
 
         val previousTarget = steps.take(index).maxOfOrNull { it.targetWaterGrams } ?: 0f
         val delta = step.targetWaterGrams - previousTarget
 
-        // Рецепт пишут как «50 г, 45 секунд»: это не значит лить сорок пять секунд.
-        // Время влива берётся из заданной скорости, остальное шаг выстаивается.
+        // A recipe is written as "50 g, 45 seconds": that does not mean pouring for
+        // forty-five. The pour time comes from the given rate, the rest the step settles.
         val pourSeconds = step.pourSeconds(delta)
         val targetFlowRate = if (pourSeconds > 0f) delta / pourSeconds else 0f
         val pourProgress = if (pourSeconds > 0f) {
@@ -588,32 +592,33 @@ class BrewEngine(
             1f
         }
 
-        // Влив заканчивается только по факту — по достижении цели или остановке
-        // веса. Рекомендованное время лишь рисует отметку на кольце: человек
-        // может закрыть чайник и раньше, и позже, и подсказка должна это терпеть.
+        // A pour ends by fact only — by reaching the target or by the weight stopping.
+        // The recommended time merely draws a mark on the ring: the kettle may be
+        // closed earlier or later, and the guidance has to bear that.
         //
-        // Без весов факта нет, и остаётся время: шаг льётся ровно столько, сколько
-        // просит заданная скорость, дальше выстаивается. Иначе заваривание без
-        // весов навсегда застревало бы в состоянии «идёт влив».
+        // Without a scale there is no fact, and time is all that is left: the step
+        // pours for exactly as long as the given rate asks, then settles. Otherwise a
+        // brew without a scale would be stuck in "pouring" forever.
         val pourDone = delta <= 0f || pourDoneStepIndex == index ||
             (!measuring && stepElapsed >= pourSeconds)
         val stepPhase = if (pourDone) StepPhase.WAITING else StepPhase.POURING
         val targetNow = previousTarget + delta * pourProgress
 
         val pace = when {
-            // Судить о темпе можно только по весам. Без них любая оценка — выдумка:
-            // вес стоит на нуле, и человек всё заваривание слышал бы «лейте быстрее».
+            // The pace can only be judged by the scale. Without it any verdict is a
+            // fabrication: the weight sits at zero, and the whole brew would be spent
+            // hearing "pour faster".
             !measuring -> Pace.ON_TRACK
             stepPhase == StepPhase.WAITING || targetFlowRate <= 0f -> Pace.ON_TRACK
-            // Первые секунды струя только устанавливается, ругаться рано.
+            // In the first seconds the stream is only settling in, too early to complain.
             stepElapsed < PACE_GRACE_SECONDS -> Pace.ON_TRACK
             state.flowRate > targetFlowRate * (1f + paceTolerance) -> Pace.TOO_FAST
             state.flowRate < targetFlowRate * (1f - paceTolerance) -> Pace.TOO_SLOW
             else -> Pace.ON_TRACK
         }
 
-        // Следующий долив ищем по воде, а не по типу шага: доливом считается любой
-        // шаг, который требует больше, чем уже налито.
+        // The next pour is looked for by water rather than by step kind: a pour is any
+        // step that asks for more than is already on the scale.
         var running = previousTarget
         val nextPour = steps.drop(index).firstOrNull { candidate ->
             val adds = candidate.targetWaterGrams > running
@@ -622,8 +627,8 @@ class BrewEngine(
         }
         val secondsToNextPour = nextPour?.let { ceil(it.startSec - elapsedSec).toInt() }
 
-        // Пока шаг выстаивается, полезнее знать не «руки прочь», а как лить дальше:
-        // сравниваем только что показанную скорость с той, что просит следующий пролив.
+        // While a step settles, what helps is not "hands off" but how to pour next:
+        // compare the rate just shown with the one the next pour asks for.
         val nextPourFlow = nextPour?.let { candidate ->
             val previous = steps.takeWhile { it !== candidate }.maxOfOrNull { it.targetWaterGrams } ?: 0f
             val nextDelta = candidate.targetWaterGrams - previous
@@ -668,9 +673,10 @@ class BrewEngine(
     }
 
     /**
-     * Влив считается законченным, когда вес перешагнул цель или почти дошёл до неё
-     * и перестал расти. Ждать конца отведённого времени нельзя: человек закрывает
-     * чайник раньше, и всё это время подсказка кричала бы «лей быстрее».
+     * A pour counts as finished when the weight has stepped over the target, or has
+     * almost reached it and stopped growing. Waiting out the allotted time is not an
+     * option: the kettle is closed earlier, and all that time the guidance would be
+     * shouting "pour faster".
      */
     private fun detectPourFinished(guidance: Guidance, weight: Float, nowMs: Long) {
         if (guidance.stepIndex != pourTrackedStepIndex) {
@@ -681,8 +687,8 @@ class BrewEngine(
         if (guidance.stepPhase == StepPhase.WAITING) return
         val target = guidance.targetEndGrams
 
-        // Момент, когда человек действительно открыл чайник, а не когда
-        // формально начался шаг: с него и считаем фактическую скорость.
+        // The moment the kettle was really opened, not the one the step formally
+        // started at: the measured rate is counted from there.
         val poured = weight - (target - guidance.stepDeltaGrams)
         if (pourStartedAtMs == 0L && poured >= POUR_TRACK_START_GRAMS) {
             pourStartedAtMs = nowMs
@@ -708,38 +714,38 @@ class BrewEngine(
     }
 
     /**
-     * Влив закончен. Если дальше по рецепту слив или свирл — ждать конца шага
-     * незачем: вода уже вся в воронке.
+     * The pour is done. If a drawdown or a swirl comes next in the recipe, there is
+     * nothing to wait the step out for: the water is already in the cone.
      */
     private fun markPourDone(guidance: Guidance) {
         pourDoneStepIndex = guidance.stepIndex
-        // Дальше рецепт воды не требует: с этого момента любое падение веса —
-        // это снятая с весов чашка, а не пролив.
-        // В режиме аэропресса сторож не взводим: там вес падает от отжима, а не
-        // от снятой чашки, и заваривание заканчивают руками.
+        // The recipe asks for no more water: from this moment any fall of the weight
+        // is a cup taken off the scale, not a pour.
+        // In aeropress mode the watch is not armed: the weight there falls from the
+        // plunger, not from a lifted cup, and the brew is ended by hand.
         if (isLastPour(guidance) && baseRecipe?.aeropressMode != true) {
             removal.arm(_state.value.weightGrams)
         }
         val next = guidance.nextStep ?: return
         val nowSec = currentElapsedSec + timelineShiftSec
         if (next.kind == StepKind.DRAWDOWN) {
-            // Слив начинается прямо сейчас, и остаток шага просто не нужен:
-            // заваривание закончится раньше.
+            // The drawdown starts right now, and the rest of the step is simply not
+            // needed: the brew will end earlier.
             val left = guidance.step.endSec - nowSec
             if (left > 0f) timelineShiftSec += left
             return
         }
         if (!next.kind.isAgitation) return
-        // Свирл сдвигаем к концу влива целыми секундами и вверх: план живёт в
-        // секундах, а начаться позже влива свирл не должен.
+        // The swirl is moved to the end of the pour by whole seconds, and upwards:
+        // the plan lives in seconds, and a swirl must not start later than the pour.
         val shift = ceil(next.startSec - nowSec).toInt()
         if (shift <= 0) return
         pullInStep(next.startSec, shift)
     }
 
     /**
-     * Переносит шаг на [shiftSec] секунд назад по расписанию этого заваривания.
-     * Рецепт в базе не трогаем: подтяжка живёт ровно одну чашку.
+     * Moves a step [shiftSec] seconds back in the schedule of this brew. The recipe
+     * in the database is left alone: a pull-in lives exactly one cup.
      */
     private fun pullInStep(stepStartSec: Int, shiftSec: Int) {
         val plan = _state.value.recipe ?: return
@@ -749,7 +755,7 @@ class BrewEngine(
         _state.update { it.copy(recipe = pulled) }
     }
 
-    /** Последний ли это влив рецепта: дальше воды больше не требуют. */
+    /** Whether this is the last pour of the recipe: no more water is asked for. */
     private fun isLastPour(guidance: Guidance): Boolean {
         val steps = _state.value.recipe?.steps ?: return false
         return steps.drop(guidance.stepIndex + 1)
@@ -770,18 +776,18 @@ class BrewEngine(
         const val MIN_FLOW_FOR_AVERAGE = 0.1f
         const val COUNTDOWN_FROM = 3
 
-        /** Насколько близко к цели считается «долил» при остановившемся весе. */
+        /** How close to the target counts as "poured" once the weight has stopped. */
         const val NEAR_STOP_GRAMS = 5f
 
-        /** Допуск, с которым хвост графика подрезается под итоговый вес. */
+        /** The tolerance the chart tail is trimmed to the final weight with. */
         const val CHART_TAIL_GRAMS = 1f
         const val STEADY_TOLERANCE_GRAMS = 0.4f
         const val STEADY_HOLD_MS = 3_000L
 
-        /** Пока струя устанавливается, о скорости не судим. */
+        /** While the stream settles in, the rate is not judged. */
         const val PACE_GRACE_SECONDS = 2f
 
-        /** С какого долива начинаем мерить фактическую скорость влива. */
+        /** The amount poured from which the measured rate starts being counted. */
         const val POUR_TRACK_START_GRAMS = 2f
         const val MIN_MEASURED_POUR_SECONDS = 2f
 

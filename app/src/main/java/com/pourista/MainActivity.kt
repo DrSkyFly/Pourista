@@ -41,8 +41,8 @@ class MainActivity : ComponentActivity() {
     private val container: AppContainer get() = appContainer
 
     /**
-     * До Android 13 система про выбранный в приложении язык не знает,
-     * поэтому локаль подменяем сами — раньше, чем экран возьмётся за ресурсы.
+     * Before Android 13 the system knows nothing about the language chosen in the app, so we
+     * substitute the locale ourselves — before the screen gets to the resources.
      */
     override fun attachBaseContext(newBase: Context) {
         super.attachBaseContext(AppLocale.wrap(newBase))
@@ -52,10 +52,9 @@ class MainActivity : ComponentActivity() {
         enableEdgeToEdge()
         super.onCreate(savedInstanceState)
 
-        // Разрешения просим, только когда про весы уже спросили и ответили
-        // «есть». Настройки читаем из хранилища: в общем состоянии на свежей
-        // установке ещё значения по умолчанию, и окно выскочило бы раньше
-        // вопроса.
+        // We ask for permissions only once the scale question has been asked and answered with
+        // "yes". The settings are read from the storage: on a fresh installation the common state
+        // still holds the defaults, and the dialog would pop up before the question.
         lifecycleScope.launch {
             val settings = container.settings.current()
             val ready = settings.useScale && !settings.needScaleQuestion
@@ -80,7 +79,7 @@ class MainActivity : ComponentActivity() {
         }
     }
 
-    /** Приложение уже было открыто, а файл нажали снаружи. */
+    /** The app was already open, and a file was tapped outside it. */
     override fun onNewIntent(intent: Intent) {
         super.onNewIntent(intent)
         setIntent(intent)
@@ -88,9 +87,8 @@ class MainActivity : ComponentActivity() {
     }
 
     /**
-     * Файл рецепта, на который нажали в мессенджере или файловом менеджере.
-     * «Открыть» приходит ссылкой на файл, «поделиться» — вложением; на деле
-     * это один и тот же файл, поэтому разбираем оба.
+     * A recipe file tapped in a messenger or a file manager. "Open" arrives as a link to the file,
+     * "share" as an attachment; in fact it is one and the same file, so we take both apart.
      */
     private fun openRecipeFrom(intent: Intent?) {
         val uri = when (intent?.action) {
@@ -107,9 +105,9 @@ class MainActivity : ComponentActivity() {
     }
 
     /**
-     * Первый запуск: сперва спрашиваем про весы и только по ответу «есть»
-     * просим Bluetooth. Пока хранилище не прочитано, не показываем ничего —
-     * иначе вопрос мигнёт и у тех, кто давно ответил.
+     * The first run: first we ask about the scale and only on a "yes" ask for Bluetooth. While the
+     * storage has not been read we show nothing — otherwise the question would flash for those who
+     * answered it long ago.
      */
     @Composable
     private fun FirstRun() {
@@ -135,9 +133,9 @@ class MainActivity : ComponentActivity() {
     }
 
     /**
-     * Что нового — один раз на версию. Отметку читаем из хранилища, а не из
-     * общего состояния настроек: до первого чтения там значения по умолчанию,
-     * и окно мигнуло бы у всех подряд.
+     * What is new — once per version. The mark is read from the storage rather than from the common
+     * settings state: before the first read it holds the defaults, and the dialog would flash for
+     * everyone.
      */
     @Composable
     private fun WhatsNewDialog() {

@@ -121,8 +121,8 @@ fun RecipeEditorScreen(
                     }
                 },
                 actions = {
-                    // Встроенные рецепты тоже удаляются: если способ не нужен,
-                    // он не должен занимать место в списке.
+                    // Built-in recipes are deleted too: if a method is not wanted, it should not
+                    // take up room in the list.
                     if (state.id > 0) {
                         IconButton(onClick = { viewModel.delete(onClose) }) {
                             Icon(Icons.Rounded.Delete, stringResource(R.string.action_delete))
@@ -140,8 +140,8 @@ fun RecipeEditorScreen(
     ) { padding ->
         val side = listSidePadding()
         LazyColumn(
-            // Клавиатура перекрывала нижние поля: список ужимается на её
-            // высоту, и поле, в которое пишут, само выезжает на видное место.
+            // The keyboard used to cover the lower fields: the list shrinks by its height, and the
+            // field being typed into comes out into view by itself.
             modifier = Modifier
                 .fillMaxSize()
                 .imePadding(),
@@ -192,14 +192,14 @@ fun RecipeEditorScreen(
                         NumberField(
                             value = state.temp,
                             onValueChange = viewModel::setTemp,
-                            // Короткая подпись: полная в трети ширины экрана
-                            // переносится на две строки и режется.
+                            // A short label: the full one wraps onto two lines and gets cut at a
+                            // third of the screen width.
                             label = stringResource(R.string.recipe_temp_field),
                             modifier = Modifier.weight(1f),
                         )
                     }
-                    // Пропорция не задаётся, а считается: воду и дозу вводят
-                    // руками, и подгонять одно под другое кнопками незачем.
+                    // The ratio is not set but counted: the water and the dose are entered by hand,
+                    // and there is no point fitting one to the other with buttons.
                     Text(
                         text = stringResource(
                             R.string.recipe_ratio_value,
@@ -285,8 +285,8 @@ fun RecipeEditorScreen(
                             .fillMaxWidth()
                             .padding(top = 8.dp),
                     )
-                    // Помол чаще всего списывают с чужого рецепта под свою
-                    // кофемолку — пересчёт заполняет оба поля сам.
+                    // The grind is most often copied from someone else's recipe for one's own
+                    // grinder — the conversion fills both fields itself.
                     Row(
                         modifier = Modifier.fillMaxWidth(),
                         horizontalArrangement = Arrangement.End,
@@ -333,8 +333,8 @@ fun RecipeEditorScreen(
                 }
             }
 
-            // Блуминг живёт на первом месте; удалили — на его месте кнопка,
-            // чтобы вернуть шаг было куда проще, чем собирать заново.
+            // The bloom lives in the first place; delete it and a button takes its place, so that
+            // bringing the step back is easier than assembling it again.
             if (!state.steps.hasBloom) {
                 item {
                     AddStepButton(
@@ -344,8 +344,8 @@ fun RecipeEditorScreen(
                 }
             }
 
-            // Слив всегда последний, а новые шаги встают перед ним — значит и
-            // кнопка «Добавить шаг» должна стоять там же, где появится шаг.
+            // The drawdown is always last and new steps go before it — so the "Add step" button has
+            // to stand where the step will appear.
             val drawdownRow = stepRows.lastOrNull()?.takeIf { it.step.kind == StepKind.DRAWDOWN }
             val regularRows = if (drawdownRow == null) stepRows else stepRows.dropLast(1)
 
@@ -444,8 +444,8 @@ fun RecipeEditorScreen(
 }
 
 /**
- * Шаг вместе с посчитанными временем начала и накопительным весом: редактор
- * должен читаться так же, как подсказка во время пролива.
+ * A step together with the counted start time and cumulative weight: the editor has to read the
+ * same way as the guidance does during a pour.
  */
 private data class StepRow(
     val step: EditableStep,
@@ -499,8 +499,8 @@ private fun StepEditorCard(
             Row(verticalAlignment = Alignment.CenterVertically) {
                 StepBadge(kind = step.kind, tint = MaterialTheme.colorScheme.primary)
                 Spacer(Modifier.size(8.dp))
-                // У блуминга и слива вид менять нечем: место у них закреплено,
-                // и превратить их в обычный шаг значит просто удалить.
+                // The bloom and the drawdown have no kind to change: their place is fixed, and
+                // turning them into an ordinary step simply means deleting them.
                 if (step.kind.isPinned) {
                     Text(
                         text = stringResource(step.kind.labelRes()),
@@ -509,8 +509,8 @@ private fun StepEditorCard(
                     )
                 } else {
                     Box {
-                        // Стрелка слева от названия: без неё строка выглядит
-                        // как подпись, и что вид шага можно сменить, не видно.
+                        // The arrow to the left of the name: without it the row looks like a label,
+                        // and there is no sign the kind of step can be changed.
                         TextButton(
                             onClick = { kindMenu = true },
                             contentPadding = PaddingValues(start = 4.dp, end = 12.dp),
@@ -556,9 +556,8 @@ private fun StepEditorCard(
                 modifier = Modifier.fillMaxWidth(),
                 horizontalArrangement = Arrangement.spacedBy(8.dp),
             ) {
-                // Влив под длительность подгоняется по концу ввода, а не по
-                // каждой набранной цифре: длительность правят и по нескольку
-                // раз подряд.
+                // The pour is fitted to the length at the end of the input rather than at every digit
+                // typed: the length gets corrected several times in a row as well.
                 NumberField(
                     value = step.duration,
                     onValueChange = { value -> onChange { it.copy(duration = value) } },
@@ -582,9 +581,9 @@ private fun StepEditorCard(
                     verticalAlignment = Alignment.CenterVertically,
                     horizontalArrangement = Arrangement.spacedBy(8.dp),
                 ) {
-                    // Рецепты пишут и через скорость, и через время влива.
-                    // Принимаем оба: второе поле пересчитывается на лету, а в
-                    // рецепт всё равно уходит скорость.
+                    // Recipes are written both through the rate and through the pour time. We take
+                    // both: the other field is recalculated on the fly, and what goes into the recipe
+                    // is the rate either way.
                     NumberField(
                         value = step.flow,
                         onValueChange = { value -> onChange { it.withFlow(value) } },
@@ -641,12 +640,12 @@ private fun NumberField(
     onValueChange: (String) -> Unit,
     label: String,
     modifier: Modifier = Modifier,
-    /** Ввод закончен: ушли из поля или нажали «Готово». */
+    /** The input is over: the field was left, or "Done" was pressed. */
     onEntered: (() -> Unit)? = null,
 ) {
     val focus = LocalFocusManager.current
-    // Уход из поля, в котором и не были, вводом не считается: иначе первая же
-    // отрисовка списка шагов пересчитала бы всё сама.
+    // Leaving a field one was never in does not count as input: otherwise the very first drawing of
+    // the step list would recalculate everything by itself.
     var wasFocused by remember { mutableStateOf(false) }
     OutlinedTextField(
         value = value,
@@ -681,8 +680,8 @@ private fun GrindConverterSheet(
 ) {
     val sheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true)
     ModalBottomSheet(onDismissRequest = onDismiss, sheetState = sheetState) {
-        // Кофемолку из рецепта узнали — она и есть исходная, вместе с её
-        // помолом. Не узнали — открываем на том, чем пользовались в прошлый раз.
+        // The grinder from the recipe was recognised — it is the source one, together with its grind
+        // setting. Not recognised, and we open on whatever was used last time.
         GrindSheetContent(
             fromId = known?.id ?: settings.grindFromId,
             toId = settings.grindToId,

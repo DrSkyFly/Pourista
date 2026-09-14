@@ -3,6 +3,8 @@
 Формат — [Keep a Changelog](https://keepachangelog.com/ru/1.1.0/),
 нумерация — [семантическая](https://semver.org/lang/ru/).
 
+*[In English](CHANGELOG.en.md)*
+
 ## [1.9.5] — 2026-09-08
 
 ### Исправлено

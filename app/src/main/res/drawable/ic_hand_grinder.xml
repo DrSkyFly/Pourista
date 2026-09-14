@@ -1,7 +1,7 @@
 <!--
-  Ручная кофемолка Timemore. Силуэт обведён по фотографии; коридор между
-  корпусом и сложенной тягой расширен, иначе в 24dp они сливаются в пятно.
-  Поперечный просвет — шов между бункером и стаканом.
+  A Timemore hand grinder. The silhouette is traced from a photograph; the corridor between the
+  body and the folded handle is widened, otherwise at 24dp they merge into a blob. The crosswise
+  gap is the seam between the hopper and the cup.
 -->
 <vector xmlns:android="http://schemas.android.com/apk/res/android"
     android:width="24dp"

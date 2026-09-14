@@ -3,12 +3,12 @@ package com.pourista.scale
 import android.os.SystemClock
 
 /**
- * Журнал протокола весов: что приходит с устройства и как приложение это
- * поняло. Нужен, когда модель не заводится: по сырым пакетам видно, где
- * разъехались протокол и драйвер.
+ * A log of the scale protocol: what comes from the device and how the app understood it.
+ * Needed when a model will not start: the raw packets show where the protocol and the driver
+ * parted ways.
  *
- * Адреса устройств не записываем: для разбора протокола они не нужны, а файл
- * человек отправляет постороннему.
+ * Device addresses are not written down: they are of no use for reading a protocol, and the
+ * file goes to a stranger.
  */
 class ScaleDiagnostics(header: List<String>) {
 
@@ -25,18 +25,18 @@ class ScaleDiagnostics(header: List<String>) {
 
     fun note(text: String) = add(text)
 
-    /** Строка с отметкой времени от начала записи. */
+    /** A line with a timestamp from the start of the recording. */
     fun event(text: String) = add("%s  %s".format(stamp(), text))
 
-    /** Пакет с устройства: время, характеристика, сырые байты и разбор. */
+    /** A packet from the device: time, characteristic, raw bytes and the parse. */
     fun packet(characteristic: String, value: ByteArray, parsed: String) {
         packetCount++
         if (packetCount > MAX_PACKETS) return
         add("%s  %s  %s  → %s".format(stamp(), shortUuid(characteristic), value.toHex(), parsed))
-        if (packetCount == MAX_PACKETS) add("… дальше пакеты не пишем, их уже достаточно")
+        if (packetCount == MAX_PACKETS) add("… no more packets from here, there are enough already")
     }
 
-    /** Команда, ушедшая на весы. */
+    /** A command sent to the scale. */
     fun command(characteristic: String, value: ByteArray, title: String) =
         add("%s  → %s  %s  (%s)".format(stamp(), shortUuid(characteristic), value.toHex(), title))
 
@@ -52,12 +52,12 @@ class ScaleDiagnostics(header: List<String>) {
     }
 
     private companion object {
-        /** Больше этого файл читать невозможно, а протокол виден и на сотне пакетов. */
+        /** Beyond this the file is unreadable, and a protocol shows itself in a hundred packets. */
         const val MAX_PACKETS = 2_000
 
         fun ByteArray.toHex(): String = joinToString(" ") { "%02X".format(it) }
 
-        /** Полный UUID занимает полстроки, а различаются они четырьмя знаками. */
+        /** A full UUID takes half a line, while they differ in four characters. */
         fun shortUuid(uuid: String): String {
             val text = uuid.lowercase()
             return if (text.endsWith("-0000-1000-8000-00805f9b34fb") && text.startsWith("0000")) {

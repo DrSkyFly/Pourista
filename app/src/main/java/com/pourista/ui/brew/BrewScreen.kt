@@ -127,13 +127,13 @@ import com.pourista.ui.theme.WeightReadoutStyle
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.collectLatest
 
-/** Ширина кнопки в шапке: у неё вокруг значка много воздуха, и три подряд
- *  расходятся через весь экран. Область нажатия по высоте остаётся полной. */
+/** The width of a header button: it has a lot of air around the icon, and three in a row spread
+ *  across the whole screen. The press area stays full in height. */
 private val ACTION_WIDTH = 40.dp
 
 /**
- * Ужать кнопку по ширине, оставив содержимое по центру. Кнопка меряется как
- * обычно, но соседям сообщает ширину поменьше — значки сходятся плотнее.
+ * Squeeze a button in width, keeping the content centred. The button measures as usual but
+ * reports a smaller width to its neighbours — the icons come closer together.
  */
 private fun Modifier.narrowAction(): Modifier = layout { measurable, constraints ->
     val placeable = measurable.measure(constraints)
@@ -166,16 +166,16 @@ fun BrewScreen(
     var showCooldown by remember { mutableStateOf(false) }
     var showDoseDialog by remember { mutableStateOf(false) }
 
-    // Развёрнутый рецепт нужен до старта — свериться с планом пролива. Со
-    // стартом он сворачивается: дальше на экране важны вес и подсказка шага.
+    // An expanded recipe is wanted before the start — to check against the pour plan. With the
+    // start it collapses: from there the weight and the step guidance are what matter.
     var recipeExpanded by remember { mutableStateOf(false) }
     LaunchedEffect(brew.phase) {
         if (brew.phase == BrewPhase.RUNNING) recipeExpanded = false
     }
 
-    // Показывать ли вес главной цифрой. Идём за живой связью: выключили весы —
-    // экран становится про время. Единственная поблажка: посреди пролива режим
-    // назад не переключаем, чтобы вёрстка не прыгала от случайного разрыва.
+    // Whether to show the weight as the main figure. We follow the live connection: the scale is
+    // turned off and the screen becomes about time. The single concession: mid-pour we do not
+    // switch the mode back, so the layout does not jump from an accidental disconnect.
     val brewing = brew.phase == BrewPhase.RUNNING || brew.phase == BrewPhase.PAUSED
     val wide = isWideLayout()
     var weightMode by remember { mutableStateOf(scale.isConnected) }
@@ -186,7 +186,7 @@ fun BrewScreen(
     val savedMessage = stringResource(R.string.brew_saved)
     val draftReady by viewModel.draftReady.collectAsStateWithLifecycle()
 
-    // Запись закончена — сразу открываем редактор с готовыми числами.
+    // The recording is over — open the editor with the ready numbers at once.
     LaunchedEffect(draftReady) {
         if (draftReady) {
             viewModel.clearDraftReady()
@@ -245,13 +245,13 @@ fun BrewScreen(
             TopAppBar(
                 colors = AppTheme.topBarColors(),
                 modifier = AppTheme.topBarModifier(),
-                // Под названием — с какими весами работаем. Раньше об этом
-                // говорил только цвет значка, а имя весов не видел никто.
+                // Under the name — which scale we work with. It used to be told by the colour of
+                // the icon alone, and nobody ever saw the name of the scale.
                 title = {
                     Column {
                         Text(stringResource(R.string.tab_brew))
-                        // Без весов вторая строка и значок только мешают:
-                        // сообщать о поиске того, чего у человека нет, незачем.
+                        // Without a scale the second line and the icon only get in the way: there
+                        // is no point reporting a search for something the person does not have.
                         if (settings.useScale) {
                             Text(
                                 text = when {
@@ -304,8 +304,8 @@ fun BrewScreen(
             )
         },
         bottomBar = {
-            // Своя подложка обязательна: без неё прокручиваемый контент
-            // просвечивает сквозь панель управления.
+            // A backing of its own is required: without it the scrollable content shows through
+            // the control panel.
             Surface(color = MaterialTheme.colorScheme.surfaceContainer) {
                 Column {
                     BrewControls(
@@ -324,9 +324,9 @@ fun BrewScreen(
             }
         },
     ) { padding ->
-        // Во время пролива плитка рецепта уходит: выбирать рецепт уже поздно, а его
-        // цифры дублирует подсказка шага. Показания при этом закрепляются сверху,
-        // чтобы вес, цель и таймер были на виду, а шаги и графики листались под ними.
+        // During a pour the recipe tile goes away: it is too late to pick a recipe, and its figures
+        // are repeated by the step guidance. The readings are pinned at the top instead, so that the
+        // weight, the target and the timer stay in sight while the steps and charts scroll below.
         val readout: @Composable (Modifier) -> Unit = { cardModifier ->
             ReadoutCard(
                 modifier = cardModifier,
@@ -344,8 +344,8 @@ fun BrewScreen(
             )
         }
 
-        // Карточки одни и те же, разложены по-разному: в портрете столбиком,
-        // набок — в две колонки, потому что высоты там нет, а ширина лишняя.
+        // The cards are the same, laid out differently: in portrait in a column, sideways in two
+        // columns, because there is no height there and the width is going spare.
         val recipeTile: @Composable () -> Unit = {
             if (brew.recording) {
                 RecordingCard(
@@ -385,8 +385,8 @@ fun BrewScreen(
             ?.filter { it.kind.isPour }
             ?.map { it.targetWaterGrams }
             .orEmpty()
-        // Ось растягиваем до цели следующего шага, иначе его линия оказалась
-        // бы за верхним краем графика.
+        // The axis is stretched to the target of the next step, otherwise its line would end up
+        // beyond the top edge of the chart.
         val chartFocusMax = brew.guidance?.let { g ->
             g.nextStep?.targetWaterGrams ?: g.targetEndGrams
         }
@@ -402,8 +402,8 @@ fun BrewScreen(
         }
 
         if (wide) {
-            // Прокрутка общая: колонки едут вместе, иначе строки в них
-            // разъезжаются и сверять их глазами невозможно.
+            // The scrolling is shared: the columns move together, otherwise the rows in them drift
+            // apart and checking one against the other by eye becomes impossible.
             val guidance = brew.guidance
             val split = guidance != null
             val side = if (split) 16.dp else listSidePadding()
@@ -419,7 +419,7 @@ fun BrewScreen(
                     ),
                 verticalArrangement = Arrangement.spacedBy(12.dp),
             ) {
-                // Рецепт идёт сверху во всю ширину: он один на оба столбца.
+                // The recipe goes on top across the full width: it is one for both columns.
                 if (!brewing) recipeTile()
 
                 if (!split) {
@@ -428,8 +428,8 @@ fun BrewScreen(
                     return@Column
                 }
 
-                // Высоту паре задаёт та карточка, что выше: вторая тянется
-                // за ней, и ряд получается ровным.
+                // The height of a pair is set by the taller card: the second stretches to it, and
+                // the row comes out even.
                 Row(
                     modifier = Modifier.height(IntrinsicSize.Min),
                     horizontalArrangement = Arrangement.spacedBy(12.dp),
@@ -583,14 +583,14 @@ fun BrewScreen(
 }
 
 /**
- * Таймер остывания в шапке. Пока он не заведён — часики, и по ним открывается
- * настройка. Пока идёт — обратный отсчёт на их месте: за оставшимся временем
- * не надо открывать лист, а нажатие ведёт туда же, где таймер снимают.
+ * The cooldown timer in the header. While it is not wound it is a clock face, and the setting
+ * opens from it. While it runs a countdown takes its place: the time left needs no sheet opened
+ * for it, and a press leads to the same place the timer is taken off.
  */
 @Composable
 private fun CooldownAction(states: StateFlow<CooldownState>, onClick: () -> Unit) {
-    // Отсчёт читаем здесь, а не в области экрана: он тикает пять раз в
-    // секунду, и экрану заваривания перерисовываться за компанию незачем.
+    // The countdown is read here rather than in the screen area: it ticks five times a second, and
+    // the brew screen has no business redrawing for the company.
     val state by states.collectAsStateWithLifecycle()
     val title = stringResource(R.string.cooldown_title)
     if (!state.running) {
@@ -624,7 +624,7 @@ private fun CooldownAction(states: StateFlow<CooldownState>, onClick: () -> Unit
     }
 }
 
-/** Значок рядом с отсчётом мельче обычного: он тут подпись, а не кнопка. */
+/** The icon next to the countdown is smaller than usual: it is a label here, not a button. */
 private val COOLDOWN_ICON = 16.dp
 
 @Composable
@@ -643,10 +643,10 @@ private fun ConnectionAction(
     }
     val connected = status == ConnectionStatus.CONNECTED
 
-    // Нет связи — значок не просто гаснет, а мигает красным, и так всегда:
-    // забытые весы должны бросаться в глаза раньше, чем начнётся пролив.
-    // Заваривать без весов приложение позволяет, но молча делать вид, что всё
-    // в порядке, когда их просто забыли включить, — не его дело.
+    // No connection — the icon does not merely go out but blinks red, and always does: a forgotten
+    // scale has to catch the eye before the pouring starts. The app allows brewing without a scale,
+    // but quietly pretending everything is fine when it was simply left switched off is none of its
+    // business.
     val alarming = !connected
     val blink = rememberInfiniteTransition(label = "bluetooth")
     val alpha by blink.animateFloat(
@@ -682,10 +682,10 @@ private fun ConnectionAction(
     }
 }
 
-/** Полпериода мигания: заметно, но не мельтешит. */
+/** Half a blink period: noticeable, but not flickering. */
 private const val BLINK_MS = 700
 
-/** Рамка кнопок в плитке рецепта: их там три в ряд, штатная не оставляет места. */
+/** The padding of the buttons in the recipe tile: there are three in a row, and the standard one leaves no room. */
 private val TileButtonPadding = PaddingValues(horizontal = 12.dp, vertical = 8.dp)
 
 @Composable
@@ -718,8 +718,8 @@ private fun RecipeSummaryCard(
                     color = MaterialTheme.colorScheme.onSurfaceVariant,
                     modifier = Modifier.padding(top = 4.dp),
                 )
-                // Три кнопки в один ряд: тесно, поэтому у них своя, урезанная
-                // внутренняя рамка — иначе «Записать» переносится под остальные.
+                // Three buttons in one row: it is tight, so they have padding of their own, cut
+                // down — otherwise "Record" wraps below the rest.
                 Row(
                     modifier = Modifier
                         .fillMaxWidth()
@@ -736,8 +736,8 @@ private fun RecipeSummaryCard(
                             maxLines = 1,
                         )
                     }
-                    // Рамкой, а не заливкой: подложка плитки сама бывает
-                    // цвета tonal-кнопки, и на ней такие кнопки пропадают.
+                    // Outlined rather than filled: the backing of the tile itself is sometimes the
+                    // colour of a tonal button, and such buttons disappear on it.
                     OutlinedButton(
                         onClick = onFortySix,
                         contentPadding = TileButtonPadding,
@@ -770,10 +770,10 @@ private fun RecipeSummaryCard(
                 }
                 TextButton(onClick = onPick) { Text(stringResource(R.string.brew_change_recipe)) }
             }
-            // Доза, вода и пропорция — то, ради чего в плитку и смотрят перед
-            // стартом: те же плитки, что в показаниях, и цифры такие же
-            // крупные. Температура, помол и фильтр остаются подписями: их
-            // читают один раз, пока мелют и складывают воронку.
+            // The dose, the water and the ratio are what the tile is looked at for before the
+            // start: the same tiles as in the readings, and the figures just as large. The
+            // temperature, the grind and the filter stay as labels: they are read once, while the
+            // coffee is ground and the cone is folded.
             Row(
                 modifier = Modifier
                     .fillMaxWidth()
@@ -812,8 +812,8 @@ private fun RecipeSummaryCard(
                     label = stringResource(R.string.recipe_grind),
                     value = recipe.grindSetting?.takeIf { it.isNotBlank() }
                         ?: stringResource(R.string.value_not_set),
-                    // Помол занимает всю ширину, пока фильтр не задан: писать
-                    // «не задано» у поля, которого в рецепте обычно нет, незачем.
+                    // The grind takes the full width until a filter is set: there is no point
+                    // writing "not set" next to a field a recipe usually does not have.
                     modifier = Modifier.weight(if (filter == null) 2f else 1f),
                 )
                 if (filter != null) {
@@ -825,10 +825,9 @@ private fun RecipeSummaryCard(
                 }
             }
 
-            // Заметки к рецепту — это то, что нужно знать до начала: сколько
-            // раз качнуть воронку, чем этот способ отличается. Короткие видно
-            // целиком, длинные сворачиваются: описание на полэкрана оттесняет
-            // всё остальное вниз.
+            // The notes on a recipe are what has to be known before the start: how many times to
+            // swirl the cone, what makes this method different. Short ones are visible whole, long
+            // ones collapse: a half-screen description pushes everything else down.
             val notes = recipe.notes?.takeIf { it.isNotBlank() }
             if (notes != null) {
                 var notesExpanded by remember(notes) { mutableStateOf(false) }
@@ -854,8 +853,8 @@ private fun RecipeSummaryCard(
                             color = MaterialTheme.colorScheme.onSurfaceVariant,
                             maxLines = if (notesExpanded) Int.MAX_VALUE else NOTES_LINES,
                             overflow = TextOverflow.Ellipsis,
-                            // В развёрнутом виде обрезки нет, и признак сбросился
-                            // бы вместе с кнопкой «Свернуть».
+                            // Expanded there is no clipping, and the flag would have been reset
+                            // together with the "Collapse" button.
                             onTextLayout = { layout ->
                                 if (!notesExpanded) notesClipped = layout.hasVisualOverflow
                             },
@@ -893,8 +892,8 @@ private fun RecipeSummaryCard(
                     modifier = Modifier.padding(top = 8.dp),
                 )
             }
-            // Своих отступов у кнопки и галки нет: у кнопки и без того площадь
-            // под палец в 48 dp, и любая добавка расталкивает их слишком далеко.
+            // The button and the checkbox have no padding of their own: the button already has a
+            // 48 dp finger area, and any addition pushes them too far apart.
             if (recipe.steps.isNotEmpty()) {
                 StepsToggleInline(expanded = expanded, onToggle = onToggleExpanded)
                 AnimatedVisibility(visible = expanded) {
@@ -904,8 +903,8 @@ private fun RecipeSummaryCard(
                     )
                 }
             }
-            // Иногда кофе сыплют больше специально, ради плотной чашки: тогда
-            // объём воды должен остаться рецептурным, а не поехать за дозой.
+            // Sometimes more coffee is ground on purpose, for a denser cup: the water volume should
+            // then stay as the recipe wrote it rather than follow the dose.
             FilterChip(
                 selected = keepWater,
                 onClick = onKeepWater,
@@ -929,8 +928,8 @@ private fun RecipeSummaryCard(
                     .padding(top = 8.dp),
                 horizontalArrangement = Arrangement.spacedBy(8.dp),
             ) {
-                // Сборку генератора открывать нечем: в списке рецептов её нет,
-                // а меняют её там же, где собрали, — соседней кнопкой.
+                // There is nothing to open a generator build with: it is not in the recipe list, and
+                // it is changed where it was assembled — by the button next door.
                 val editable = recipe.id > 0
                 if (editable) {
                     FilledTonalButton(
@@ -960,7 +959,7 @@ private fun RecipeSummaryCard(
     }
 }
 
-/** Карточка режима записи: пока идёт запись, выбирать рецепт незачем. */
+/** The recording mode card: while a recording runs there is no point picking a recipe. */
 @Composable
 private fun RecordingCard(pours: Int, onCancel: () -> Unit) {
     Card(
@@ -1005,9 +1004,9 @@ private fun RecipeFact(label: String, value: String, modifier: Modifier = Modifi
 }
 
 /**
- * Показания. С весами главная цифра — вес: по ней ведут пролив. Без весов
- * вес всегда ноль, и его место занимает время: заваривание по рецепту это
- * прежде всего таймер, а граммы человек отмеряет чем есть.
+ * The readings. With a scale the main figure is the weight: the pour is led by it. Without a scale
+ * the weight is always zero, and the time takes its place: brewing to a recipe is above all a
+ * timer, and the grams a person measures with whatever they have.
  */
 @Composable
 private fun ReadoutCard(
@@ -1019,7 +1018,7 @@ private fun ReadoutCard(
     targetGrams: Float?,
     remainingGrams: Float?,
     unitLabel: String,
-    /** Показывать вес: весы на связи. Иначе главной цифрой идёт время. */
+    /** Show the weight: the scale is connected. Otherwise the main figure is the time. */
     weightMode: Boolean,
     onDoseClick: () -> Unit,
 ) {
@@ -1045,8 +1044,8 @@ private fun ReadoutCard(
                         color = MaterialTheme.colorScheme.onSurfaceVariant,
                     )
                     Row(verticalAlignment = Alignment.Bottom) {
-                        // Цифра ужимается, а не переносится: при системном
-                        // шрифте в полтора раза «1000,0» иначе ломает карточку.
+                        // The figure is squeezed rather than wrapped: with a system font at one and
+                        // a half times, "1000.0" would otherwise break the card.
                         BasicText(
                             text = formatGrams(weightGrams),
                             style = WeightReadoutStyle.copy(
@@ -1068,8 +1067,8 @@ private fun ReadoutCard(
                     }
                 }
                 Column(horizontalAlignment = Alignment.End) {
-                    // Цель шага стоит рядом с текущим весом: взгляд не должен
-                    // прыгать по экрану, чтобы понять, сколько ещё лить.
+                    // The step target stands next to the current weight: the eye must not jump
+                    // across the screen to see how much is left to pour.
                     if (targetGrams != null) {
                         Text(
                             text = stringResource(R.string.readout_target),
@@ -1129,7 +1128,7 @@ private fun ReadoutCard(
     }
 }
 
-/** Показания без весов: время крупно, рядом — цель шага, ниже введённая доза. */
+/** The readings without a scale: the time large, the step target beside it, the entered dose below. */
 @Composable
 private fun TimerReadoutCard(
     modifier: Modifier = Modifier,
@@ -1177,8 +1176,8 @@ private fun TimerReadoutCard(
                 }
             }
             HorizontalDivider(Modifier.padding(vertical = 12.dp))
-            // Дозу вводят руками: её отмеряют кухонными весами или меркой,
-            // а приложению она нужна, чтобы пересчитать рецепт под неё.
+            // The dose is entered by hand: it is measured with kitchen scales or a scoop, and the
+            // app needs it to recalculate the recipe for it.
             StatTile(
                 label = stringResource(R.string.readout_dose),
                 value = formatGrams(doseGrams),
@@ -1196,17 +1195,17 @@ private fun GuidanceCard(
     currentGrams: Float,
     recipe: Recipe?,
     phase: BrewPhase,
-    /** Весы на связи: только тогда есть смысл говорить об остатке и темпе. */
+    /** The scale is connected: only then does it make sense to talk about what is left and the pace. */
     measuring: Boolean,
 ) {
     val accents = AppTheme.accents
-    // До старта карточка — это предпросмотр первого шага. Судить о темпе там не о
-    // чем: время не идёт, и любой вес на весах выглядел бы опережением.
+    // Before the start the card is a preview of the first step. There is nothing to judge the pace
+    // by there: the time is not running, and any weight on the scale would look like being ahead.
     val started = phase == BrewPhase.RUNNING || phase == BrewPhase.PAUSED
     val running = phase == BrewPhase.RUNNING
-    // Цвет темпа меняется переходом: пролив то опережает план, то отстаёт, и
-    // карточка, мигающая на каждом качке весов, дёргает глаз сильнее, чем сам
-    // темп того стоит.
+    // The pace colour changes by a transition: a pour is now ahead of the plan, now behind, and a
+    // card blinking at every wobble of the scale tugs at the eye harder than the pace itself is
+    // worth.
     val paceColor by animateColorAsState(
         targetValue = when {
             !started -> MaterialTheme.colorScheme.primary
@@ -1225,7 +1224,7 @@ private fun GuidanceCard(
         },
         label = "paceContainer",
     )
-    // Когда влив уже закончен, называть шаг «Проливом» нельзя — мы ждём.
+    // Once the pour is over, the step must not be called "Pouring" — we are waiting.
     val stepName = if (guidance.stepPhase == StepPhase.WAITING && guidance.step.kind.isPour) {
         stringResource(R.string.step_wait)
     } else {
@@ -1240,8 +1239,8 @@ private fun GuidanceCard(
     ) {
         Column(Modifier.padding(16.dp)) {
             Row(verticalAlignment = Alignment.CenterVertically) {
-                // Кружок тот же, что в списке этапов: это один и тот же этап,
-                // только крупнее — и узнаваться он должен без чтения.
+                // The circle is the same as in the list of steps: it is one and the same step, only
+                // larger — and it has to be recognised without reading.
                 StepBadge(
                     kind = guidance.step.kind,
                     size = 36.dp,
@@ -1254,8 +1253,8 @@ private fun GuidanceCard(
                         text = guidance.step.title?.takeIf { it.isNotBlank() } ?: stepName,
                         style = MaterialTheme.typography.titleMedium,
                     )
-                    // Плитка рецепта во время пролива скрыта, поэтому название
-                    // рецепта живёт здесь — строка и так есть, высоты не добавляет.
+                    // The recipe tile is hidden during a pour, so the recipe name lives here — the
+                    // line is there anyway and adds no height.
                     val position = stringResource(
                         R.string.guidance_step_position,
                         guidance.stepIndex + 1,
@@ -1300,8 +1299,8 @@ private fun GuidanceCard(
                             ),
                             style = MaterialTheme.typography.headlineSmall,
                         )
-                        // Остаток считается от показаний весов. Без них говорим
-                        // не «осталось», а сколько долить на этом шаге.
+                        // What is left is counted from the scale readings. Without them we say not
+                        // "left" but how much to add on this step.
                         Text(
                             text = if (measuring) {
                                 stringResource(
@@ -1330,15 +1329,15 @@ private fun GuidanceCard(
                             color = MaterialTheme.colorScheme.onSurfaceVariant,
                         )
                     }
-                    // Оценка темпа держится на весах: без них строка молчит,
-                    // а не подбадривает наугад.
+                    // Judging the pace rests on the scale: without it the line keeps quiet rather
+                    // than cheering at random.
                     if (started && measuring) {
-                        // Во время влива важна скорость прямо сейчас, а на паузе —
-                        // как лить следующий по сравнению с только что показанным.
+                        // During a pour what matters is the rate right now, and in a pause — how to
+                        // pour the next one compared with the one just shown.
                         val hint = guidance.nextPourHint
                         val last = guidance.lastPourFlowRate
                         val text = if (hint != null && guidance.nextPourFlowRate != null && last != null) {
-                            // Своя скорость первым числом: сравнивать просят с ней.
+                            // Our own rate as the first figure: that is what the comparison is asked against.
                             stringResource(
                                 hint.labelRes(),
                                 formatGrams(last),
@@ -1359,8 +1358,8 @@ private fun GuidanceCard(
                 }
             }
 
-            // Шкала показывает налитое против плана — без весов налитое неизвестно,
-            // и полоска вечно стояла бы на нуле, изображая безнадёжное отставание.
+            // The scale shows what is poured against the plan — without a scale what is poured is
+            // unknown, and the bar would stand at zero forever, portraying a hopeless lag.
             if (measuring) {
                 PourGauge(
                     current = currentGrams,
@@ -1382,8 +1381,8 @@ private fun GuidanceCard(
 
             val next = guidance.nextStep
             if (next != null) {
-                // К следующему шагу нужно успеть подготовиться, поэтому здесь
-                // и объём долива, и сколько секунд осталось до него.
+                // There has to be time to get ready for the next step, so both the volume to add and
+                // the seconds left until it are here.
                 val nextDelta = guidance.nextStepDeltaGrams
                 Text(
                     text = if (nextDelta != null) {
@@ -1407,8 +1406,8 @@ private fun GuidanceCard(
                 )
             }
 
-            // До старта план пролива показывает плитка рецепта; во время пролива
-            // её на экране нет, а свериться с рецептом иногда нужно и здесь.
+            // Before the start the pour plan is shown by the recipe tile; during a pour it is not on
+            // the screen, and checking against the recipe is sometimes needed here too.
             val steps = recipe?.steps.orEmpty()
             if (started && steps.isNotEmpty()) {
                 var stepsShown by remember { mutableStateOf(false) }
@@ -1430,8 +1429,8 @@ private fun GuidanceCard(
 }
 
 /**
- * Сколько влива на текущем шаге уже сделано, 0..1 — это и наливается в кольцо.
- * С весами считаем по факту, без них — по плану: иначе вода стояла бы на дне.
+ * How much of the pour on the current step is already done, 0..1 — that is what fills the ring.
+ * With a scale we count by fact, without one by the plan: otherwise the water would sit at the bottom.
  */
 private fun Guidance.pourFill(currentGrams: Float, measuring: Boolean): Float {
     if (stepDeltaGrams <= 0f) return 0f
@@ -1449,8 +1448,8 @@ private fun ChartsCard(
     targetFlowRate: Float?,
     flowAvg: Float,
 ) {
-    // На коротком экране оба графика в рост не помещаются, и скорость уезжает
-    // за нижний край. Меряем, сколько высоты вообще есть, и ужимаемся по ней.
+    // On a short screen the two charts do not fit at full height, and the flow rate runs off the
+    // bottom edge. We measure how much height there is at all and squeeze to it.
     BoxWithConstraints {
         val (weightHeight, flowHeight) = chartHeights(maxHeight)
         Card(modifier = Modifier.fillMaxWidth()) {
@@ -1474,12 +1473,12 @@ private fun ChartsCard(
 }
 
 /**
- * Высоты графиков веса и скорости под доступную высоту экрана.
+ * The heights of the weight and flow charts fitted to the available screen height.
  *
- * Сначала ужимается вес — он крупнее и терпит. Ниже равенства не опускаемся:
- * скорость вспомогательная, и делать её выше веса незачем. Когда и поровну не
- * влезает, уменьшаются оба, но не мельче [MIN_CHART_HEIGHT] — дальше это уже
- * не график, а полоска.
+ * The weight is squeezed first — it is the larger one and bears it. We do not go below equality:
+ * the flow rate is secondary, and there is no point making it taller than the weight. When even
+ * equal does not fit, both shrink, but no smaller than [MIN_CHART_HEIGHT] — beyond that it is a
+ * strip rather than a chart.
  */
 internal fun chartHeights(available: Dp): Pair<Dp, Dp> {
     val budget = available * CHART_SHARE - CHART_CHROME
@@ -1500,13 +1499,13 @@ private val WEIGHT_CHART_HEIGHT = 140.dp
 private val FLOW_CHART_HEIGHT = 72.dp
 private val MIN_CHART_HEIGHT = 64.dp
 
-/** Больше половины экрана графики не занимают: сверху вес и подсказка шага. */
+/** The charts take no more than half the screen: above them are the weight and the step guidance. */
 private const val CHART_SHARE = 0.5f
 
-/** Подписи, средняя скорость и поля карточки — место помимо самих графиков. */
+/** Labels, the average rate and the card padding — the room taken beside the charts themselves. */
 private val CHART_CHROME = 100.dp
 
-/** Тот же график веса, но своей карточкой: набок графики стоят по колонкам. */
+/** The same weight chart, but as a card of its own: sideways the charts stand in columns. */
 @Composable
 private fun WeightChartCard(
     weights: List<Float>,
@@ -1560,7 +1559,7 @@ private fun FlowChart(
     flowAvg: Float,
     height: Dp = FLOW_CHART_HEIGHT,
 ) {
-    // Скорость — вспомогательная величина, ей хватает половины высоты.
+    // The flow rate is a secondary quantity, half the height is enough for it.
     LabeledChart(
         title = stringResource(R.string.chart_flow),
         unit = stringResource(R.string.unit_gram_per_second),
@@ -1583,7 +1582,7 @@ private fun FlowChart(
 private fun BrewControls(
     phase: BrewPhase,
     connected: Boolean,
-    /** Весы на связи: без них половина кнопок здесь ни к чему. */
+    /** The scale is connected: without it half the buttons here are of no use. */
     weightMode: Boolean,
     autoStart: Boolean,
     onToggleAutoStart: () -> Unit,
@@ -1598,10 +1597,10 @@ private fun BrewControls(
             .padding(horizontal = 16.dp, vertical = 12.dp),
         verticalArrangement = Arrangement.spacedBy(8.dp),
     ) {
-        // Тара и дозирование нужны до старта: взвесить кофе и обнулить весы.
-        // Дальше они только занимают место — с началом пролива ряд уходит.
-        // Без весов его нет вовсе: это не «пока недоступно», а не про этого
-        // человека.
+        // The tare and the dosing are needed before the start: to weigh the coffee and zero the
+        // scale. After that they only take up room — with the beginning of the pour the row goes
+        // away. Without a scale it is not there at all: this is not "unavailable for now" but not
+        // about this person.
         if (weightMode && phase == BrewPhase.IDLE) {
             Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
                 OutlinedButton(
@@ -1646,8 +1645,8 @@ private fun BrewControls(
                     )
                 )
             }
-            // Переключатель нужен только до старта, дальше на его месте «Финиш».
-            // Автостарт ловит появление воды на весах — без них ловить нечего.
+            // The switch is only needed before the start, after that "Finish" takes its place.
+            // Auto-start catches water appearing on the scale — without one there is nothing to catch.
             if (phase == BrewPhase.IDLE && weightMode) {
                 FilterChip(
                     selected = autoStart,
@@ -1747,8 +1746,8 @@ private fun DoseDialog(
     )
 }
 
-/** Сколько строк описания видно в свёрнутом виде. */
+/** How many lines of the description show when collapsed. */
 private const val NOTES_LINES = 4
 
-/** Ниже этого главная цифра не ужимается: дальше её не разглядеть от чайника. */
+/** The main figure is not squeezed below this: any smaller and it cannot be made out from the kettle. */
 private val WeightReadoutMinSize = 40.sp

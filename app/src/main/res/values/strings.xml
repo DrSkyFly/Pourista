@@ -311,7 +311,7 @@
     <string name="settings_check_updates">Check for updates</string>
     <string name="history_share_footer" translatable="false">Brewed with Pourista</string>
     <string name="settings_updates_url" translatable="false">github.com/DrSkyFly/Pourista/releases/latest</string>
-    <!-- Адреса одни на все локали, поэтому только здесь. -->
+    <!-- The addresses are the same for every locale, so they live here alone. -->
     <string name="settings_contact_telegram" translatable="false">t.me/DrSkyFly</string>
     <string name="settings_sources_link" translatable="false">github.com/DrSkyFly/Pourista</string>
     <string name="settings_thanks_coffeesaurus_link" translatable="false">youtube.com/c/Coffeesaurus</string>

@@ -66,8 +66,8 @@ fun HistoryScreen(
     val brews by viewModel.brews.collectAsStateWithLifecycle()
     val query by viewModel.query.collectAsStateWithLifecycle()
 
-    // Шапка уезжает при прокрутке: в истории каждая карточка высокая, и
-    // отдавать ей строку с одним словом на весь экран жалко.
+    // The header moves away on scroll: in the history every card is tall, and giving up a whole
+    // screen row to a single word is a waste.
     val scrollBehavior = TopAppBarDefaults.enterAlwaysScrollBehavior()
     val snackbarHostState = remember { SnackbarHostState() }
     val scope = rememberCoroutineScope()
@@ -124,8 +124,8 @@ fun HistoryScreen(
                             if (result == SnackbarResult.ActionPerformed) viewModel.restore(record)
                         }
                     },
-                    // Появление и уход карточки в списке анимируются: без этого
-                    // удалённая запись исчезает рывком, а соседние прыгают.
+                    // A card appearing in and leaving the list is animated: without it a deleted
+                    // record vanishes with a lurch and the neighbours jump.
                     modifier = Modifier.animateItem(),
                 ) {
                     BrewHistoryCard(
@@ -144,9 +144,9 @@ fun HistoryScreen(
 }
 
 /**
- * Смахивание записи влево вместо корзины в каждой карточке. Подтверждения нет:
- * вместо вопроса даётся отмена в снек-баре — так быстрее и тому, кто смахнул
- * нарочно, и тому, кто задел случайно.
+ * Swiping a record to the left instead of a bin in every card. There is no confirmation: instead of
+ * a question there is an undo in the snackbar — that is faster both for those who swiped on purpose
+ * and for those who caught it by accident.
  */
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -205,8 +205,8 @@ private fun BrewHistoryCard(
                         color = MaterialTheme.colorScheme.onSurfaceVariant,
                     )
                 }
-                // Рецепт по проливу — только когда есть что разбирать:
-                // без весов график пустой, и собирать шаги не из чего.
+                // A recipe from a pour only when there is something to take apart: without a scale
+                // the chart is empty, and there is nothing to assemble the steps from.
                 if (record.weightSeries.size > 1) {
                     IconButton(onClick = onMakeRecipe) {
                         Icon(
@@ -222,8 +222,8 @@ private fun BrewHistoryCard(
                 )
             }
 
-            // Заваривали без весов — граммов в записи нет, и строка «0 г → 0 г»
-            // только сбивала бы с толку. Тогда показываем одну дозу, если её ввели.
+            // Brewed without a scale — there are no grams in the record, and a "0 g → 0 g" line would
+            // only confuse. We then show the dose alone, if it was entered.
             val summary = when {
                 record.weightGrams > 0f -> stringResource(
                     R.string.history_summary,
@@ -247,8 +247,8 @@ private fun BrewHistoryCard(
                 )
             }
 
-            // Помол без кофемолки — половина сведений: «22» на разных мельницах
-            // означает разное. Пишем одной строкой, чтобы карточка не росла.
+            // A grind setting without a grinder is half the information: "22" means different things
+            // on different mills. We write it in one line, so the card does not grow.
             val grind = listOfNotNull(
                 record.notes.grinder?.takeIf { it.isNotBlank() },
                 record.notes.grindSetting?.takeIf { it.isNotBlank() }
@@ -263,8 +263,8 @@ private fun BrewHistoryCard(
             }
 
             if (record.weightSeries.size > 1) {
-                // В списке график — не чертёж, а росчерк: по нему узнают форму
-                // пролива, а цифры смотрят уже в карточке заваривания.
+                // In the list the chart is not a drawing but a stroke: by it one recognises the shape
+                // of the pour, while the figures are looked at in the brew card.
                 SeriesChart(
                     values = record.weightSeries,
                     modifier = Modifier.padding(top = 12.dp),

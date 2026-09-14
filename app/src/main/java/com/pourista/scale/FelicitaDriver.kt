@@ -4,12 +4,12 @@ import java.util.UUID
 import kotlin.math.roundToInt
 
 /**
- * Felicita Arc и родственные модели.
+ * Felicita Arc and related models.
  *
- * Пакет из восемнадцати байтов: знак, шесть цифр веса в ASCII, единица и
- * заряд. Команды — по одному байту в ту же характеристику, что и уведомления.
+ * A packet of eighteen bytes: the sign, six digits of the weight in ASCII, the unit and the
+ * battery. Commands are single bytes into the same characteristic as the notifications.
  *
- * Протокол написан по открытым реализациям, на железе не проверялся.
+ * The protocol is written from open implementations and has not been checked on hardware.
  */
 object FelicitaDriver : ScaleDriver {
 
@@ -23,7 +23,7 @@ object FelicitaDriver : ScaleDriver {
     override fun parseWeight(value: ByteArray): WeightReading? {
         if (value.size < PACKET_SIZE) return null
 
-        // Вес — шесть цифр ASCII в позициях 3..8, сотые доли грамма.
+        // The weight is six ASCII digits at positions 3..8, in hundredths of a gram.
         var hundredths = 0
         for (index in 3..8) {
             val digit = value[index].toInt() - ASCII_ZERO
@@ -34,8 +34,8 @@ object FelicitaDriver : ScaleDriver {
 
         val unit = String(value, 9, 2, Charsets.US_ASCII).trim().lowercase()
         val ounces = unit == "oz"
-        // На весах может стоять унция; приложение считает в граммах, поэтому
-        // переводим сразу, не дожидаясь, пока единицу переключат обратно.
+        // The scale may be set to ounces; the app counts in grams, so we convert at once
+        // rather than waiting for the unit to be switched back.
         val displayed = sign * hundredths / 100f
         return WeightReading(
             grams = if (ounces) displayed * GRAMS_PER_OUNCE else displayed,
@@ -46,13 +46,13 @@ object FelicitaDriver : ScaleDriver {
 
     override fun tareCommand(): ByteArray = byteArrayOf(CMD_TARE)
 
-    /** Единицу весы только перебирают по кругу: граммы, унции и обратно. */
+    /** The scale only cycles the unit round: grams, ounces and back. */
     override fun unitCommand(unit: WeightUnit): ByteArray? =
         if (unit == WeightUnit.GRAM) byteArrayOf(CMD_TOGGLE_UNIT) else null
 
     override val unitCommandIsToggle = true
 
-    /** Заряд приходит сырым уровнем, границы у модели фиксированные. */
+    /** The battery arrives as a raw level, the bounds are fixed for the model. */
     private fun batteryPercent(raw: Int): Int? {
         if (raw !in BATTERY_MIN..BATTERY_MAX) return null
         val share = (raw - BATTERY_MIN).toFloat() / (BATTERY_MAX - BATTERY_MIN)

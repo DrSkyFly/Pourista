@@ -4,10 +4,10 @@ import androidx.annotation.StringRes
 import com.pourista.R
 
 /**
- * История изменений для окна «Что нового». Свежая версия сверху.
+ * The change history for the "What is new" dialog. The freshest version on top.
  *
- * Список ведётся руками вместе с `CHANGELOG.md`: в файле подробности для тех,
- * кто читает репозиторий, здесь — то же коротко и на языке приложения.
+ * The list is kept by hand together with `CHANGELOG.md`: the file holds the details for those who
+ * read the repository, here is the same thing briefly and in the language of the app.
  */
 object ReleaseNotes {
 

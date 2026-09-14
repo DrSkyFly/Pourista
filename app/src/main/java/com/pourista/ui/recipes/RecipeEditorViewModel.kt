@@ -48,11 +48,11 @@ data class EditorState(
     val canSave: Boolean get() = name.isNotBlank() && doseValue > 0f
 
     /**
-     * Расписание рецепта посекундно — для предпросмотра кривой пролива.
+     * The recipe schedule second by second — for the preview of the pour curve.
      *
-     * Внутри шага вода прибывает только пока льют: воду наливают за «время
-     * влива», остальное шаг стоит. Растягивать подъём на весь шаг нельзя —
-     * получается ровная горка, не похожая ни на один настоящий пролив.
+     * Inside a step the water only arrives while it is being poured: the water goes in over the
+     * "pour time", the rest of the step stands. The rise must not be stretched over the whole step —
+     * that gives an even hill, unlike any real pour.
      */
     fun previewSeries(): List<Float> {
         if (steps.isEmpty()) return emptyList()
@@ -88,8 +88,8 @@ class RecipeEditorViewModel(
 
     init {
         viewModelScope.launch {
-            // Черновик из режима записи открывается как новый рецепт: он ещё не
-            // в базе, и пока человек не сохранит — его там не будет.
+            // A draft from the recording mode opens as a new recipe: it is not in the database yet,
+            // and until the person saves it, it will not be there.
             val draft = if (recipeId <= 0) container.recipeDraft else null
             container.recipeDraft = null
             val recipe = if (recipeId > 0) container.recipes.recipeById(recipeId) else draft
@@ -97,7 +97,7 @@ class RecipeEditorViewModel(
         }
     }
 
-    /** Заготовка нового рецепта: блуминг, два пролива и слив. */
+    /** The blank for a new recipe: a bloom, two pours and a drawdown. */
     private fun blankState() = EditorState(
         loading = false,
         dose = "15",
@@ -167,7 +167,7 @@ class RecipeEditorViewModel(
     fun setGrind(value: String) = _state.update { it.copy(grind = value) }
     fun setFilter(value: String) = _state.update { it.copy(filter = value) }
 
-    /** Настройки нужны пересчёту помола: он помнит выбранные кофемолки. */
+    /** The settings are needed by the grind conversion: it remembers the chosen grinders. */
     val settings = container.settingsState
 
     fun rememberGrindPair(fromId: String, toId: String, setting: String) {
@@ -180,7 +180,7 @@ class RecipeEditorViewModel(
 
     fun setAeropressMode(value: Boolean) = _state.update { it.copy(aeropressMode = value) }
 
-    /** Обычный шаг всегда появляется перед сливом. */
+    /** An ordinary step always appears before the drawdown. */
     fun addStep() = _state.update { state ->
         state.copy(steps = state.steps.withRegularStep(newStep(StepKind.POUR, 30, 50f)))
     }
@@ -208,10 +208,10 @@ class RecipeEditorViewModel(
     }
 
     /**
-     * Ввод длительности закончен: подгоняем под неё влив.
+     * The length input is over: we fit the pour to it.
      *
-     * Во время набора молчим. Длительность правят по нескольку раз подряд, и
-     * «3» на пути к «30» успело бы пересчитать скорость втрое.
+     * While typing we keep quiet. The length gets corrected several times in a row, and a "3" on the
+     * way to "30" would have managed to triple the rate.
      */
     fun onDurationEntered(key: Long) = _state.update { state ->
         state.copy(
@@ -221,7 +221,7 @@ class RecipeEditorViewModel(
         )
     }
 
-    /** Растянуть объёмы проливов так, чтобы их сумма совпала с заданной водой. */
+    /** Stretch the pour volumes so that their sum matches the water that was set. */
     fun distributeWater() = _state.update { state ->
         val pours = state.steps.filter { it.kind.isPour }
         if (pours.isEmpty() || state.waterValue <= 0f) return@update state
@@ -239,8 +239,8 @@ class RecipeEditorViewModel(
     }
 
     fun save(onSaved: (Long) -> Unit) {
-        // Сохранение — тоже конец ввода: длительность могли поправить и уйти
-        // отсюда сразу кнопкой, не тронув других полей.
+        // Saving is the end of input too: the length could have been corrected and left behind by
+        // the button at once, without touching the other fields.
         val state = _state.updateAndGet { current ->
             current.copy(steps = current.steps.map { it.pourFittedToDuration() })
         }

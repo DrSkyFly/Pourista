@@ -100,15 +100,15 @@ fun RecipeListScreen(
     val snackbarHostState = remember { SnackbarHostState() }
     val context = LocalContext.current
     val clipboard = LocalClipboardManager.current
-    // Карточка взята для перестановки — это должно ощущаться, а не только
-    // выглядеть: палец в этот момент закрывает саму карточку.
+    // A card taken for rearranging — that has to be felt rather than merely seen: at that moment
+    // the finger is covering the card itself.
     val haptics = LocalHapticFeedback.current
     var fileMenuOpen by remember { mutableStateOf(false) }
 
     val listState = rememberLazyListState()
     val scope = rememberCoroutineScope()
-    // Во время перетаскивания порядок живёт здесь: база узнаёт о нём один раз,
-    // когда карточку отпустили.
+    // During a drag the order lives here: the database learns about it once, when the card is let
+    // go.
     var dragOrder by remember { mutableStateOf<List<Recipe>?>(null) }
     val shown = dragOrder ?: recipes
     val reorder = rememberReorderState(
@@ -128,7 +128,7 @@ fun RecipeListScreen(
         },
     )
 
-    // Файл выбирает система: приложению не нужен доступ ко всему хранилищу.
+    // The file is picked by the system: the app needs no access to the whole storage.
     val exportLauncher = rememberLauncherForActivityResult(
         ActivityResultContracts.CreateDocument(EXPORT_MIME)
     ) { uri -> uri?.let(viewModel::writePendingExport) }
@@ -142,7 +142,7 @@ fun RecipeListScreen(
         viewModel.clearMessage()
     }
 
-    // Шапка уезжает при прокрутке: экран длинный, а в шапке одно слово.
+    // The header moves away on scroll: the screen is long, and the header holds a single word.
     val scrollBehavior = TopAppBarDefaults.enterAlwaysScrollBehavior()
 
     Scaffold(
@@ -155,8 +155,8 @@ fun RecipeListScreen(
                 scrollBehavior = scrollBehavior,
                 title = { Text(stringResource(R.string.tab_recipes)) },
                 actions = {
-                    // Меню с подписями: одни стрелки читались как перестановка
-                    // рецептов, хотя это обмен файлами.
+                    // A menu with labels: arrows alone read as rearranging recipes, though this is
+                    // exchanging files.
                     Box {
                         IconButton(onClick = { fileMenuOpen = true }) {
                             Icon(Icons.Rounded.MoreVert, stringResource(R.string.action_more))
@@ -236,8 +236,8 @@ fun RecipeListScreen(
                 RecipeCard(
                     recipe = recipe,
                     dragging = dragging,
-                    // При поиске список показан не целиком, и перестановка
-                    // внутри выборки перемешала бы порядок остальных рецептов.
+                    // During a search the list is not shown whole, and rearranging inside the
+                    // selection would shuffle the order of the other recipes.
                     reorderModifier = if (query.isBlank()) {
                         Modifier.reorderByLongPress(reorder, recipe.id) {
                             haptics.performHapticFeedback(HapticFeedbackType.LongPress)
@@ -245,9 +245,9 @@ fun RecipeListScreen(
                     } else {
                         null
                     },
-                    // Перетаскиваемую карточку двигает палец, остальные —
-                    // список: их перестановка должна быть плавной, иначе
-                    // соседи прыгают на новое место рывком.
+                    // The dragged card is moved by the finger, the rest by the list: their
+                    // rearrangement has to be smooth, otherwise the neighbours jump to their new place
+                    // in one lurch.
                     modifier = Modifier
                         .then(if (dragging) Modifier else Modifier.animateItem())
                         .graphicsLayer {
@@ -280,7 +280,7 @@ fun RecipeListScreen(
 private fun RecipeCard(
     recipe: Recipe,
     dragging: Boolean,
-    /** Перетаскивание карточки, если порядок сейчас можно менять. */
+    /** Dragging a card, if the order can be changed right now. */
     reorderModifier: Modifier?,
     modifier: Modifier,
     onOpen: () -> Unit,
@@ -291,13 +291,13 @@ private fun RecipeCard(
     onExport: () -> Unit,
 ) {
     var menuOpen by remember { mutableStateOf(false) }
-    // Развёрнутый рецепт переживает прокрутку списка: список ключует карточки,
-    // и состояние возвращается вместе с ними.
+    // An expanded recipe outlives the scrolling of the list: the list keys the cards, and the state
+    // comes back together with them.
     var expanded by rememberSaveable { mutableStateOf(false) }
 
     Card(
-        // Долгое нажатие раньше обычного: карточку берут для перестановки,
-        // а короткое нажатие по-прежнему открывает рецепт.
+        // A long press shorter than usual: the card is taken for rearranging, while a short press
+        // still opens the recipe.
         modifier = modifier
             .fillMaxWidth()
             .then(reorderModifier ?: Modifier)
@@ -360,8 +360,8 @@ private fun RecipeCard(
                                 onExport()
                             },
                         )
-                        // Встроенные рецепты удаляются наравне со своими: чужой
-                        // способ заваривания не должен занимать место навсегда.
+                        // Built-in recipes are deleted on a par with one's own: someone else's way of
+                        // brewing should not take up room forever.
                         DropdownMenuItem(
                             text = { Text(stringResource(R.string.action_delete)) },
                             leadingIcon = { Icon(Icons.Rounded.Delete, null) },
@@ -424,13 +424,13 @@ private fun RecipeCard(
                         )
                     }
                 }
-                // Разворот прямо в списке: чтобы понять, подходит ли рецепт,
-                // открывать редактор незачем.
+                // Expanding right in the list: there is no need to open the editor to see whether a
+                // recipe fits.
                 if (recipe.steps.isNotEmpty()) {
                     StepsToggle(expanded = expanded, onToggle = { expanded = !expanded })
                 }
-                // Заварить — главное действие карточки, и выглядеть оно должно
-                // кнопкой, а не значком в ряду со звёздочкой и меню.
+                // Brewing is the main action of the card, and it should look like a button rather
+                // than an icon in a row with the star and the menu.
                 FilledTonalIconButton(onClick = onBrew) {
                     Icon(
                         Icons.Rounded.PlayArrow,
@@ -450,17 +450,17 @@ private fun RecipeCard(
 }
 
 /**
- * Свой тип файла: по нему система узнаёт рецепт и предлагает открыть его
- * в приложении. Внутри всё тот же JSON — его читают и пишут руками.
+ * A file type of our own: by it the system recognises a recipe and offers to open it in the app.
+ * Inside it is the same JSON — it is read and written by hand.
  */
 private const val EXPORT_MIME = "application/vnd.pourista.recipe"
 
-/** Выбор файла: свой тип, а следом всё, чем его могли назвать по дороге. */
+/** Picking a file: our own type, and then everything it could have been called on the way. */
 private val IMPORT_MIME =
     arrayOf(EXPORT_MIME, "application/json", "text/plain", "*/*")
 
 private const val EXPORT_ALL_FILE = "pourista-recipes.pour"
 
-/** Над списком рецептов стоит поле поиска: на него сдвинуты индексы LazyColumn. */
+/** A search field stands above the recipe list: the LazyColumn indices are shifted for it. */
 private const val HEADER_ITEMS = 1
 private const val DRAG_ELEVATION = 12f

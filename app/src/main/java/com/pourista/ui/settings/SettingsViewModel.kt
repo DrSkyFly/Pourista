@@ -18,7 +18,7 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 
-/** Чем закончились экспорт или восстановление: экран показывает это тостом. */
+/** How an export or a restore ended: the screen shows this as a toast. */
 data class BackupMessage(
     @StringRes val textRes: Int,
     val recipes: Int = 0,
@@ -49,7 +49,7 @@ class SettingsViewModel(private val container: AppContainer) : ViewModel() {
     fun setFlowSmoothing(value: FlowSmoothing) = update { container.settings.setFlowSmoothing(value) }
     fun setAutoFinish(value: Boolean) = update { container.settings.setAutoFinish(value) }
 
-    /** Отказ от весов рвёт и текущую связь: иначе значок останется висеть. */
+    /** Refusing a scale breaks the current connection too: otherwise the icon would stay hanging. */
     fun setUseScale(value: Boolean) = update {
         container.settings.setUseScale(value)
         if (!value) container.scale.disconnect()
@@ -69,7 +69,7 @@ class SettingsViewModel(private val container: AppContainer) : ViewModel() {
         _backupMessage.value = null
     }
 
-    /** Файл выбирает система, приложению хватает одного uri на запись. */
+    /** The file is picked by the system, one uri to write to is enough for the app. */
     fun exportBackup(uri: Uri) {
         viewModelScope.launch {
             val recipes = container.recipes.exportAll()
@@ -79,7 +79,7 @@ class SettingsViewModel(private val container: AppContainer) : ViewModel() {
                     val text = BackupJson.encode(recipes, brews, System.currentTimeMillis())
                     container.appContext.contentResolver.openOutputStream(uri)?.use { stream ->
                         stream.write(text.toByteArray())
-                    } ?: error("Не удалось открыть файл")
+                    } ?: error("Could not open the file")
                 }.isSuccess
             }
             _backupMessage.value = if (ok) {
@@ -91,9 +91,9 @@ class SettingsViewModel(private val container: AppContainer) : ViewModel() {
     }
 
     /**
-     * Восстановление добавляет, а не заменяет: рецепт с таким же названием и
-     * заваривание с тем же временем пропускаются. Так копию можно залить
-     * поверх живой базы и не получить каждой чашки по два раза.
+     * A restore adds rather than replaces: a recipe with the same name and a brew with the same time
+     * are skipped. That way a backup can be poured over a live database without getting every cup
+     * twice.
      */
     fun importBackup(uri: Uri) {
         viewModelScope.launch {
@@ -101,7 +101,7 @@ class SettingsViewModel(private val container: AppContainer) : ViewModel() {
                 runCatching {
                     val text = container.appContext.contentResolver.openInputStream(uri)
                         ?.use { it.readBytes().decodeToString() }
-                        ?: error("Не удалось открыть файл")
+                        ?: error("Could not open the file")
                     BackupJson.decode(text)
                 }.getOrNull()
             }

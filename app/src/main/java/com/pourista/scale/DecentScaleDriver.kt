@@ -5,15 +5,15 @@ import java.util.UUID
 /**
  * Decent Scale.
  *
- * Вес приходит коротким пакетом: во втором байте признак устойчивости, дальше
- * два байта старшим вперёд в десятых долях грамма. Команды подписываются
- * контрольной суммой — исключающим ИЛИ по предыдущим байтам, а у тары есть
- * ещё и счётчик, иначе весы считают её повтором предыдущей.
+ * The weight arrives in a short packet: the second byte holds the stability flag, then two
+ * bytes big-endian in tenths of a gram. Commands are signed with a checksum — an exclusive
+ * OR over the preceding bytes — and the tare carries a counter as well, otherwise the scale
+ * takes it for a repeat of the previous one.
  *
- * Служба и характеристика веса совпадают с Futula, поэтому драйвер выбирается
- * по имени устройства, а не по идентификаторам.
+ * The service and the weight characteristic are the same as Futula's, so the driver is
+ * chosen by the device name rather than by identifiers.
  *
- * Протокол написан по открытым реализациям, на железе не проверялся.
+ * The protocol is written from open implementations and has not been checked on hardware.
  */
 object DecentScaleDriver : ScaleDriver {
 
@@ -40,20 +40,20 @@ object DecentScaleDriver : ScaleDriver {
         return command(byteArrayOf(HEADER, 0x0f, 0xfd.toByte(), tareCounter.toByte(), 0x00, 0x01))
     }
 
-    /** Включаем подсветку веса и таймера: без неё весы гасят экран. */
+    /** Turn on the weight and timer backlight: without it the scale blanks the display. */
     override fun onConnectCommands(): List<ByteArray> =
         listOf(command(byteArrayOf(HEADER, 0x0a, 0x01, 0x01, 0x00, 0x00)))
 
-    /** Без напоминаний весы засыпают посреди пролива. */
+    /** Without reminders the scale falls asleep in the middle of a pour. */
     override fun heartbeatCommands(): List<ByteArray> =
         listOf(command(byteArrayOf(HEADER, 0x0a, 0x03, 0xff.toByte(), 0xff.toByte(), 0x00)))
 
     override val heartbeatIntervalMs = 2_000L
 
-    /** Первую команду весы часто теряют, поэтому каждую шлём дважды. */
+    /** The scale often loses the first command, so every one is sent twice. */
     override val commandRepeats = 2
 
-    /** Дописывает к шести байтам контрольную сумму. */
+    /** Appends the checksum to the six bytes. */
     private fun command(body: ByteArray): ByteArray {
         var checksum = 0
         body.forEach { checksum = checksum xor (it.toInt() and 0xff) }

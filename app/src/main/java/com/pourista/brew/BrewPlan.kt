@@ -5,29 +5,29 @@ import com.pourista.data.model.RecipeStep
 import com.pourista.data.model.StepKind
 
 /**
- * Подтягивает свирл или размешивание к фактическому концу влива: шаг, который
- * начинался на [stepStartSec], начинается на [shiftSec] секунд раньше.
+ * Pulls a swirl or a stir up to where the pour actually ended: the step that
+ * started at [stepStartSec] now starts [shiftSec] seconds earlier.
  *
- * Крутить воронку надо, пока вода стоит над кофе, а не в ту секунду, на которую
- * шаг поставил рецепт: влив часто заканчивают раньше отведённого времени — лили
- * быстрее, чем задумано, или время в рецепте взято на глаз.
+ * The cone has to be swirled while the water still stands above the coffee, not
+ * on the second the recipe assigned to it: pours often end ahead of their slot —
+ * poured faster than planned, or the timing was written by eye.
  *
- * Сэкономленное время не пропадает: оно уходит в паузу за подтянутым шагом, и
- * всё, что дальше по рецепту, начинается тогда же, когда собиралось. Паузы в
- * рецепте может и не быть — тогда она появляется. Исключение одно: слив. Воды
- * больше не будет, ждать нечего, и он тоже начинается раньше.
+ * The saved time is not lost: it goes into the pause behind the pulled step, and
+ * everything further down the recipe starts exactly when it meant to. The recipe
+ * may have no pause at all — then one appears. There is a single exception, the
+ * drawdown: no more water is coming, nothing to wait for, so it starts earlier too.
  */
 internal fun List<RecipeStep>.pulledIn(stepStartSec: Int, shiftSec: Int): List<RecipeStep> {
     if (shiftSec <= 0) return this
     val index = indexOfFirst { it.startSec == stepStartSec && it.kind.isAgitation }
-    // Подтягивать некуда: шага нет или перед ним нет влива, который кончился бы
-    // раньше времени.
+    // Nothing to pull: no such step, or no pour in front of it that could have
+    // ended early.
     if (index <= 0 || !this[index - 1].kind.isPour) return this
 
     val pour = this[index - 1]
     val step = this[index]
     val startSec = step.startSec - shiftSec
-    // Влив не может закончиться раньше, чем начался.
+    // A pour cannot end before it started.
     if (startSec <= pour.startSec) return this
     val endSec = startSec + step.durationSec
 
@@ -37,15 +37,15 @@ internal fun List<RecipeStep>.pulledIn(stepStartSec: Int, shiftSec: Int): List<R
 
     val next = getOrNull(index + 1)
     when {
-        // Дальше рецепта нет: заваривание просто закончится раньше.
+        // Nothing left in the recipe: the brew simply ends earlier.
         next == null -> Unit
-        // Слив: вода уже вся в воронке, уходить она начинает прямо сейчас.
+        // Drawdown: the water is already in the cone, it starts leaving now.
         next.kind == StepKind.DRAWDOWN -> moved[index + 1] = next.copy(startSec = endSec)
-        // Пауза становится длиннее ровно на то, что сэкономил влив.
+        // The pause grows by exactly what the pour saved.
         next.kind == StepKind.WAIT -> moved[index + 1] =
             next.copy(startSec = endSec, durationSec = next.endSec - endSec)
-        // Паузы в рецепте нет — добавляем свою, иначе следующий влив начался бы
-        // раньше времени.
+        // The recipe has no pause — add one, otherwise the next pour would
+        // start ahead of time.
         else -> {
             val pauseSec = next.startSec - endSec
             if (pauseSec > 0) {
@@ -65,8 +65,8 @@ internal fun List<RecipeStep>.pulledIn(stepStartSec: Int, shiftSec: Int): List<R
 }
 
 /**
- * Применяет к рецепту все подтяжки, случившиеся за это заваривание: секунда, на
- * которой шаг стоял в рецепте, и на сколько секунд он начался раньше.
+ * Applies every pull-in collected during this brew: the second a step stood at in
+ * the recipe, and how many seconds earlier it started.
  */
 internal fun Recipe.withPullIns(pullIns: Map<Int, Int>): Recipe {
     if (pullIns.isEmpty()) return this

@@ -5,7 +5,7 @@
     android:height="108dp"
     android:viewportWidth="108"
     android:viewportHeight="108">
-    <!-- Медный градиент из палитры приложения: тёплый, как обжаренное зерно. -->
+    <!-- The copper gradient from the app palette: warm, like a roasted bean. -->
     <path android:pathData="M0,0h108v108h-108z">
         <aapt:attr name="android:fillColor">
             <gradient

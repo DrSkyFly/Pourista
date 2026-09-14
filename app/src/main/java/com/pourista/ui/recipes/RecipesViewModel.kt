@@ -17,7 +17,7 @@ import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 
-/** Итог импорта или экспорта: текст для снекбара со счётчиком рецептов. */
+/** The result of an import or an export: the text for a snackbar with the recipe count. */
 data class RecipesMessage(val textRes: Int, val count: Int = 0)
 
 class RecipesViewModel(private val container: AppContainer) : ViewModel() {
@@ -28,7 +28,7 @@ class RecipesViewModel(private val container: AppContainer) : ViewModel() {
     private val _message = MutableStateFlow<RecipesMessage?>(null)
     val message: StateFlow<RecipesMessage?> = _message.asStateFlow()
 
-    /** Что уходит в файл, когда система вернёт выбранный путь. */
+    /** What goes into the file once the system returns the chosen path. */
     private var pendingExport: List<Recipe> = emptyList()
 
     val recipes: StateFlow<List<Recipe>> =
@@ -62,8 +62,8 @@ class RecipesViewModel(private val container: AppContainer) : ViewModel() {
     }
 
     /**
-     * Удаляет рецепт. Встроенный ещё и запоминается удалённым, иначе он вернулся
-     * бы при следующем обновлении набора пресетов.
+     * Deletes a recipe. A built-in one is also remembered as deleted, otherwise it would come back
+     * with the next update of the preset set.
      */
     fun delete(recipe: Recipe) {
         viewModelScope.launch {
@@ -72,7 +72,7 @@ class RecipesViewModel(private val container: AppContainer) : ViewModel() {
         }
     }
 
-    /** Порядок после перетаскивания: пишем разом весь список. */
+    /** The order after a drag: we write the whole list at once. */
     fun reorder(ids: List<Long>) {
         viewModelScope.launch { container.recipes.reorder(ids) }
     }
@@ -84,7 +84,7 @@ class RecipesViewModel(private val container: AppContainer) : ViewModel() {
         }
     }
 
-    /** Заваривание по рецепту начинается с чистого листа: старые следы ни к чему. */
+    /** Brewing to a recipe starts with a clean sheet: old traces are of no use. */
     fun brewWith(recipe: Recipe) {
         container.brewEngine.reset()
         container.brewEngine.selectRecipe(recipe)
@@ -111,7 +111,7 @@ class RecipesViewModel(private val container: AppContainer) : ViewModel() {
                 runCatching {
                     container.appContext.contentResolver.openOutputStream(uri)?.use { stream ->
                         stream.write(RecipeJson.encode(payload).toByteArray())
-                    } ?: error("Не удалось открыть файл")
+                    } ?: error("Could not open the file")
                 }.isSuccess
             }
             _message.value = if (ok) {
@@ -135,8 +135,8 @@ class RecipesViewModel(private val container: AppContainer) : ViewModel() {
     }
 
     /**
-     * Импорт из вставленного текста: рецепт, составленный нейросетью, проще
-     * скопировать в буфер, чем сохранять в файл и потом искать его.
+     * Import from pasted text: a recipe composed by a neural network is easier to copy to the
+     * clipboard than to save to a file and then look for it.
      */
     fun importText(text: String?) {
         if (text.isNullOrBlank()) {

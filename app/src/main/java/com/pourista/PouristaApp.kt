@@ -53,7 +53,7 @@ class PouristaApp : Application() {
     lateinit var container: AppContainer
         private set
 
-    /** Язык приложения нужен уже здесь: из контекста приложения читаются пресеты. */
+    /** The app language is needed here already: the presets are read from the app context. */
     override fun attachBaseContext(base: Context) {
         super.attachBaseContext(AppLocale.wrap(base))
     }
@@ -64,9 +64,9 @@ class PouristaApp : Application() {
     }
 
     /**
-     * Язык приложения меняют в системных настройках, не перезапуская процесс.
-     * Тексты встроенных рецептов лежат в базе, поэтому их надо переложить
-     * заново — сами они не переведутся.
+     * The app language is changed in the system settings, without restarting the process. The texts
+     * of the built-in recipes lie in the database, so they have to be laid down again — they will not
+     * translate themselves.
      */
     override fun onConfigurationChanged(newConfig: Configuration) {
         super.onConfigurationChanged(newConfig)
@@ -78,20 +78,20 @@ val Context.appContainer: AppContainer
     get() = (applicationContext as PouristaApp).container
 
 /**
- * Ручная сборка зависимостей: их немного, а весы и ход заваривания должны
- * пережить смену экранов, поэтому живут на уровне приложения.
+ * Assembling the dependencies by hand: there are few of them, while the scale and the course of a
+ * brew have to outlive a change of screens, so they live at application level.
  */
 class AppContainer(private val context: Context) {
 
     private val scope = CoroutineScope(SupervisorJob() + Dispatchers.Default)
 
-    /** Нужен экранам для доступа к файлам: импорт и экспорт рецептов. */
+    /** Needed by the screens for access to files: importing and exporting recipes. */
     val appContext: Context get() = context
 
     /**
-     * Контекст для чтения строк. Язык могли сменить уже после запуска, а
-     * контекст приложения на старых Android остаётся с прежней локалью —
-     * поэтому берём его заново на каждое обращение, а не один раз.
+     * The context strings are read from. The language could have been changed after the start, while
+     * the application context on older Android keeps the previous locale — so we take it anew on
+     * every request rather than once.
      */
     private val localized: Context get() = AppLocale.wrap(context)
 
@@ -104,15 +104,15 @@ class AppContainer(private val context: Context) {
     val brewEngine = BrewEngine(scale, scope)
 
     /**
-     * Таймер остывания. Живёт здесь по той же причине, что и ход заваривания:
-     * его заводят перед тем, как отойти от телефона, и переключение экранов
-     * или закрытие экрана заваривания сбивать отсчёт не должно.
+     * The cooldown timer. It lives here for the same reason as the course of a brew: it is wound
+     * before stepping away from the phone, and switching screens or closing the brew screen must not
+     * knock the count off.
      */
     val cooldown = CooldownTimer(scope)
 
     /**
-     * Рецепт, собранный в режиме записи и ещё не сохранённый. Лежит здесь, а не
-     * в базе: пока человек не нажал «Сохранить» в редакторе, записи быть не должно.
+     * A recipe assembled in the recording mode and not yet saved. It lies here rather than in the
+     * database: until the person presses "Save" in the editor, there must be no record.
      */
     var recipeDraft: Recipe? = null
 
@@ -121,12 +121,12 @@ class AppContainer(private val context: Context) {
 
     private val _brewSaved = MutableSharedFlow<Unit>(extraBufferCapacity = 1)
 
-    /** Заваривание легло в историю — экрану есть о чём сказать. */
+    /** A brew has gone into the history — the screen has something to say. */
     val brewSaved: SharedFlow<Unit> = _brewSaved.asSharedFlow()
 
     private val _draftReady = MutableStateFlow(false)
 
-    /** Записанный пролив готов стать рецептом — экран должен открыть редактор. */
+    /** A recorded pour is ready to become a recipe — the screen should open the editor. */
     val draftReady: StateFlow<Boolean> = _draftReady.asStateFlow()
 
     fun clearDraftReady() {
@@ -136,9 +136,8 @@ class AppContainer(private val context: Context) {
     private val _openedRecipes = MutableStateFlow<Int?>(null)
 
     /**
-     * Сколько рецептов пришло файлом снаружи; ноль — файл не подошёл. Событие
-     * живёт до того, как его заберёт навигация: файл открывают и на холодном
-     * запуске, когда экрана ещё нет.
+     * How many recipes arrived from an outside file; zero means the file did not fit. The event lives
+     * until navigation picks it up: a file is opened on a cold start too, when there is no screen yet.
      */
     val openedRecipes: StateFlow<Int?> = _openedRecipes.asStateFlow()
 
@@ -147,11 +146,10 @@ class AppContainer(private val context: Context) {
     }
 
     /**
-     * Файл рецепта, открытый снаружи приложения: из мессенджера, почты или
-     * файлового менеджера.
+     * A recipe file opened outside the app: from a messenger, from mail or from a file manager.
      *
-     * Первый рецепт из файла сразу становится текущим: файл открывают, чтобы
-     * заварить по нему, а не чтобы положить в список и искать заново.
+     * The first recipe from the file becomes the current one at once: a file is opened to brew by it,
+     * not to put it in the list and look for it again.
      */
     fun openRecipeFile(uri: Uri) {
         scope.launch {
@@ -182,18 +180,18 @@ class AppContainer(private val context: Context) {
     }
 
     /**
-     * Сигнал конца остывания. Экранный проигрыватель для этого не годится:
-     * звонок случается через минуты после заваривания, когда экран мог
-     * закрыться. Заводится вместе с таймером, а не в момент звонка: SoundPool
-     * читает файлы не мгновенно, и созданный по звонку успел бы промолчать.
+     * The cue for the end of the cooldown. The on-screen player will not do for this: the ring happens
+     * minutes after the brew, when the screen could have closed. It is created together with the timer
+     * rather than at the moment of the ring: SoundPool does not read files instantly, and one created
+     * on the ring would have managed to keep quiet.
      */
     @Volatile
     private var cooldownCues: BrewCuePlayer? = null
 
     /**
-     * Завести таймер остывания. Проигрыватель создаётся под замком: заводят
-     * таймер из фоновой корутины, и два одновременных запуска оставили бы
-     * лишний SoundPool до конца жизни процесса.
+     * Wind the cooldown timer. The player is created under a lock: the timer is wound from a
+     * background coroutine, and two simultaneous starts would leave an extra SoundPool behind for the
+     * rest of the life of the process.
      */
     fun startCooldown(seconds: Int) {
         synchronized(this) {
@@ -216,9 +214,8 @@ class AppContainer(private val context: Context) {
     }
 
     /**
-     * Заваривание закончено — заводим остывание, если так настроено. Запись
-     * рецепта и промахи по кнопке не считаются: чашки в них нет, а остывать
-     * нечему.
+     * The brew is over — we wind the cooldown, if that is how it is set. Recording a recipe and
+     * misses of the button do not count: there is no cup in them, and nothing to cool.
      */
     private fun startCooldownAfterBrew() {
         scope.launch {
@@ -231,7 +228,7 @@ class AppContainer(private val context: Context) {
         }
     }
 
-    /** Время вышло: тот же звонок, что и на финише заваривания. */
+    /** Time is up: the same ring as at the finish of a brew. */
     private fun ringCooldown() {
         scope.launch {
             cooldown.rings.collect {
@@ -242,9 +239,8 @@ class AppContainer(private val context: Context) {
     }
 
     /**
-     * Законченное заваривание кладём в историю здесь, а не на экране: финиш
-     * бывает и автоматическим, когда с весов сняли чашку, а экран заваривания
-     * к этому моменту может быть уже закрыт.
+     * A finished brew goes into the history here rather than on the screen: the finish is sometimes
+     * automatic, when the cup has been taken off the scale, and the brew screen may be closed by then.
      */
     private fun saveFinishedBrews() {
         scope.launch {
@@ -260,8 +256,8 @@ class AppContainer(private val context: Context) {
     }
 
     /**
-     * Случайное касание «Старт» и тут же «Финиш» историю засорять не должно,
-     * поэтому всё короче [MIN_SAVED_MS] молча пропускаем.
+     * An accidental touch of "Start" and "Finish" right after must not clutter the history, so
+     * everything shorter than [MIN_SAVED_MS] is quietly skipped.
      */
     private fun worthKeeping(state: BrewState): Boolean {
         if (state.elapsedMs < MIN_SAVED_MS) return false
@@ -293,12 +289,12 @@ class AppContainer(private val context: Context) {
     }
 
     /**
-     * Собирает рецепт по методу 4:6 и кладёт его в базу.
+     * Assembles a recipe by the 4:6 method and puts it into the database.
      *
-     * В список рецептов сборка не попадает и своего id не имеет: генератор —
-     * это верстак, а не способ завести рецепт. Заваривание по ней идёт как по
-     * любому другому рецепту, повторить — открыть генератор снова, ручки в нём
-     * остались прежними, а кому нужны свои наборы, у генератора есть пресеты.
+     * The build does not go into the recipe list and has no id of its own: the generator is a
+     * workbench rather than a way to start a recipe. Brewing by it goes like brewing by any other
+     * recipe; to repeat it, open the generator again — the dials in it stayed as they were — and
+     * whoever needs sets of their own has presets there.
      */
     fun fortySixRecipe(params: FortySixParams): Recipe = FortySixGenerator.recipe(
         params = params,
@@ -311,7 +307,7 @@ class AppContainer(private val context: Context) {
         ),
     )
 
-    /** Записанный пролив превращаем в черновик рецепта — его подхватит редактор. */
+    /** We turn a recorded pour into a recipe draft — the editor picks it up. */
     private fun prepareRecordedDraft() {
         val stamp = SimpleDateFormat("d MMMM, HH:mm", Locale.getDefault()).format(Date())
         val draft = brewEngine.buildRecordedRecipe(
@@ -326,9 +322,9 @@ class AppContainer(private val context: Context) {
     }
 
     /**
-     * Выбранный рецепт держим в актуальном состоянии: правку в редакторе или
-     * переключение автостарта у кнопки «Старт» экран заваривания должен видеть
-     * сразу, а не после повторного выбора рецепта.
+     * We keep the chosen recipe up to date: an edit in the editor or a switch of auto-start next to
+     * the "Start" button has to be seen by the brew screen at once, not after the recipe is picked
+     * again.
      */
     @OptIn(ExperimentalCoroutinesApi::class)
     private fun keepSelectedRecipeFresh() {
@@ -337,8 +333,8 @@ class AppContainer(private val context: Context) {
                 .map { it.recipe?.id }
                 .distinctUntilChanged()
                 .flatMapLatest { id ->
-                    // У сборки генератора id нет: в базе за ней следить не за
-                    // чем, а подменить её на null тем более нельзя.
+                    // A generator build has no id: there is nothing to watch for in the database, and
+                    // replacing it with null is even less of an option.
                     if (id == null || id == 0L) emptyFlow() else recipes.observeRecipe(id)
                 }
                 .collect { fresh -> brewEngine.selectRecipe(fresh) }
@@ -346,12 +342,12 @@ class AppContainer(private val context: Context) {
     }
 
     /**
-     * Приводит встроенные рецепты в соответствие с приложением: пересеивает,
-     * когда обновился набор, и переводит тексты, когда сменился язык. Свои
-     * рецепты, поправленные копии встроенных и избранное не трогаются.
+     * Brings the built-in recipes in line with the app: reseeds them when the set has been updated,
+     * and translates the texts when the language has changed. One's own recipes, edited copies of
+     * built-in ones and favourites are left alone.
      *
-     * Вызывается при запуске и при смене конфигурации, поэтому обязана быть
-     * дешёвой и повторяемой: если ничего не изменилось, работы никакой.
+     * It is called at startup and on a configuration change, so it is obliged to be cheap and
+     * repeatable: if nothing has changed, there is no work at all.
      */
     fun syncPresets() {
         scope.launch {
@@ -360,35 +356,34 @@ class AppContainer(private val context: Context) {
 
             if (current.presetsVersion < BuiltInRecipes.VERSION) {
                 val removed = recipes.deleteUntouchedBuiltIns()
-                // Первый запуск — только актуальный набор. Дальше пересев
-                // возвращает и рецепты, которые новичкам уже не предлагаем:
-                // у кого они стояли, у того и останутся.
+                // The first run gets the current set alone. After that a reseed also brings back the
+                // recipes we no longer offer to newcomers: whoever had them keeps them.
                 val firstRun = current.presetsVersion == 0
-                // Удалённые пользователем встроенные рецепты обратно не возвращаем:
-                // если аэропресса в доме нет, он не должен воскресать с обновлением.
+                // Built-in recipes deleted by the user are not brought back: if there is no aeropress
+                // in the house, it must not rise again with an update.
                 BuiltInRecipes.all(localized, includeRetired = !firstRun)
                     .filterNot { it.name in current.deletedPresets }
                     .forEach { recipes.save(it) }
                 settings.setPresetsVersion(BuiltInRecipes.VERSION)
                 settings.setPresetsLocale(locale)
-                Log.d(TAG, "Пресеты обновлены: удалено $removed, добавлено заново")
+                Log.d(TAG, "Presets updated: $removed removed, added anew")
                 return@launch
             }
 
             if (current.presetsLocale == locale) return@launch
-            // Пересевом язык не поправить: он снёс бы порядок и избранное. Меняем
-            // только тексты и только у рецептов, которых не касались руками.
+            // A reseed cannot fix the language: it would wipe the order and the favourites. We change
+            // the texts alone, and only in recipes nobody has touched by hand.
             BuiltInRecipes.all(localized).forEach { recipes.relocalizeBuiltIn(it) }
             settings.setPresetsLocale(locale)
-            Log.d(TAG, "Тексты встроенных рецептов переведены на $locale")
+            Log.d(TAG, "The texts of the built-in recipes are translated into $locale")
         }
     }
 
-    /** Язык, на котором приложение сейчас отдаёт строки из ресурсов. */
+    /** The language the app currently gives out the resource strings in. */
     private fun currentLocaleTag(): String =
         localized.resources.configuration.locales[0].toLanguageTag()
 
-    /** Пороги и режимы подсказок живут в настройках, движок получает их отсюда. */
+    /** The thresholds and the cue modes live in the settings, the engine gets them from here. */
     private fun applyCueSettings() {
         scope.launch {
             settings.settings
@@ -422,7 +417,7 @@ class AppContainer(private val context: Context) {
         }
     }
 
-    /** Весы умеют показывать унции, приложение — нет: держим их в граммах. */
+    /** The scale can show ounces, the app cannot: we keep it in grams. */
     private fun applyUnitSetting() {
         scope.launch {
             settings.settings
@@ -432,7 +427,7 @@ class AppContainer(private val context: Context) {
         }
     }
 
-    /** Связь с весами пропала — вес больше не меняется, и таймер врал бы о проливе. */
+    /** The link to the scale is gone — the weight no longer changes, and the timer would lie about the pour. */
     private fun pauseTimerOnDisconnect() {
         scope.launch {
             scale.state
@@ -452,24 +447,24 @@ class AppContainer(private val context: Context) {
     private fun autoConnect() {
         scope.launch {
             val current = settings.current()
-            // Пока про весы не спросили, в эфир не лезем: разрешений всё
-            // равно нет, а поиск засорил бы журнал.
+            // Until the scale question has been asked we do not go on the air: there are no
+            // permissions anyway, and the search would clutter the log.
             if (current.needScaleQuestion) return@launch
             if (current.useScale && current.autoConnectOnLaunch) scale.startScan()
         }
     }
 
     /**
-     * Вес, от которого считается прирост для автостарта. Держим минимум с момента
-     * взведения: тогда автостарт одинаково срабатывает и с обнулённых весов, и
-     * когда на них уже что-то стоит, а человек просто щёлкнул галку перед проливом.
+     * The weight the gain for auto-start is counted from. We keep the minimum since the arming: that
+     * way auto-start fires the same both from a zeroed scale and when something is already standing on
+     * it and the person simply ticked the box before pouring.
      */
     @Volatile
     private var autoStartBaselineGrams = Float.MAX_VALUE
 
     /**
-     * Вес с весов уходит в движок; здесь же живёт автостарт таймера — он должен
-     * работать, даже если экран заваривания сейчас не открыт.
+     * The weight from the scale goes to the engine; auto-start of the timer lives here too — it has to
+     * work even if the brew screen is not open right now.
      */
     private fun pipeWeightToEngine() {
         scope.launch {
@@ -489,7 +484,7 @@ class AppContainer(private val context: Context) {
                     if (grams - autoStartBaselineGrams >= AUTO_START_DELTA_GRAMS) {
                         Log.d(
                             TAG,
-                            "Автостарт: вес вырос с %.1f до %.1f г".format(
+                            "Auto-start: the weight grew from %.1f to %.1f g".format(
                                 autoStartBaselineGrams, grams
                             ),
                         )
@@ -505,10 +500,10 @@ class AppContainer(private val context: Context) {
     private companion object {
         const val TAG = "BrewAutomation"
 
-        /** Насколько вес должен вырасти после взведения, чтобы это была вода, а не дрожь весов. */
+        /** How much the weight must grow after arming for this to be water rather than a shiver of the scale. */
         const val AUTO_START_DELTA_GRAMS = 2f
 
-        /** Короче этого — не заваривание, а промах по кнопке. */
+        /** Shorter than this is not a brew but a miss of the button. */
         const val MIN_SAVED_MS = 5_000L
     }
 }

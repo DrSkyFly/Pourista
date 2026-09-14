@@ -5,8 +5,8 @@ import org.junit.Assert.assertEquals
 import org.junit.Test
 
 /**
- * Числа взяты из оригинального приложения 4:6: 15 г кофе, 250 г воды.
- * Расхождение с ним означало бы, что генератор варит другой рецепт.
+ * The numbers are taken from the original 4:6 app: 15 g of coffee, 250 g of water. A divergence from
+ * it would mean the generator brews a different recipe.
  */
 class FortySixGeneratorTest {
 
@@ -72,7 +72,7 @@ class FortySixGeneratorTest {
 
         assertEquals(StepKind.BLOOM, steps.first().kind)
         assertEquals(StepKind.DRAWDOWN, steps.last().kind)
-        // Проливы кончаются на 3:30, как в оригинале, дальше только слив.
+        // The pours end at 3:30, as in the original, and after that there is only the drawdown.
         assertEquals(210, steps.last().startSec)
         assertEquals(1, steps.count { it.kind == StepKind.DRAWDOWN })
     }

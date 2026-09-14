@@ -5,7 +5,7 @@ import com.pourista.data.model.RecipeStep
 import com.pourista.data.model.StepKind
 import kotlin.math.round
 
-/** Распознанный пролив: с какой секунды по какую и с какого веса на какой. */
+/** A recognised pour: from which second to which, and from which weight to which. */
 internal data class PourSegment(
     val startMs: Long,
     val endMs: Long,
@@ -14,11 +14,11 @@ internal data class PourSegment(
 )
 
 /**
- * Разбирает поток веса на проливы и паузы, чтобы из живого заваривания получился
- * рецепт. Начало пролива — вес пошёл вверх, конец — перестал расти.
+ * Splits a stream of weight into pours and pauses, so that a live brew turns into a
+ * recipe. A pour starts where the weight goes up and ends where it stops growing.
  *
- * Числа округляются: вес до 5 г, время до 5 с, скорость до 1 г/с. Записывать
- * «до 148,3 г за 27 секунд» бессмысленно — такое всё равно не воспроизвести.
+ * The numbers are rounded: weight to 5 g, time to 5 s, rate to 1 g/s. Writing down
+ * "to 148.3 g in 27 seconds" is pointless — that cannot be reproduced anyway.
  */
 internal class PourRecorder {
 
@@ -77,7 +77,7 @@ internal class PourRecorder {
         }
     }
 
-    /** Незакрытый пролив тоже идёт в рецепт: «Финиш» могли нажать сразу после долива. */
+    /** An unclosed pour goes into the recipe too: "Finish" may have been pressed right after topping up. */
     private fun allSegments(): List<PourSegment> {
         if (!pouring || peakWeight <= segmentStartWeight) return segments
         return segments + PourSegment(segmentStartMs, peakAtMs, segmentStartWeight, peakWeight)
@@ -98,8 +98,8 @@ internal class PourRecorder {
             if (index == 0) 0 else roundSeconds(segment.startMs / 1000f)
         }
 
-        // Последний влив кончается там, где перестал расти вес, а остаток
-        // времени — это слив: вода уходит, лить больше нечего.
+        // The last pour ends where the weight stopped growing, and the time left over is
+        // the drawdown: the water is leaving, there is nothing more to pour.
         val lastStart = starts.last()
         val lastPour = pours.last()
         val lastPourEnd = maxOf(
@@ -115,8 +115,8 @@ internal class PourRecorder {
             val poured = (segment.endWeight - segment.startWeight).coerceAtLeast(0f)
             val seconds = ((segment.endMs - segment.startMs) / 1000f).coerceAtLeast(1f)
             RecipeStep(
-                // Первый влив на воронке — это блуминг: у него своё место в
-                // рецепте, и записанный пролив должен ложиться так же.
+                // The first pour onto the cone is the bloom: it has its own place in a
+                // recipe, and a recorded pour must fall the same way.
                 kind = if (index == 0) StepKind.BLOOM else StepKind.POUR,
                 startSec = start,
                 durationSec = (end - start).coerceAtLeast(TIME_STEP_SEC),
@@ -154,7 +154,7 @@ internal class PourRecorder {
         (round(value / FLOW_STEP) * FLOW_STEP).coerceAtLeast(FLOW_STEP)
 
     private companion object {
-        /** Насколько вес должен подрасти, чтобы это считалось начатым проливом. */
+        /** How much the weight must grow for this to count as a started pour. */
         const val POUR_START_GRAMS = 3f
         const val RISE_EPSILON = 0.4f
         const val POUR_STOP_MS = 1_500L

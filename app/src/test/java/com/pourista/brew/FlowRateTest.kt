@@ -6,7 +6,7 @@ import org.junit.Test
 
 class FlowRateTest {
 
-    /** Ровный влив: [gramsPerSecond] г/с тиками по [tickMs] мс. */
+    /** An even pour: [gramsPerSecond] g/s in ticks of [tickMs] ms. */
     private fun pour(
         flow: FlowRate,
         gramsPerSecond: Float,
@@ -25,56 +25,56 @@ class FlowRateTest {
     }
 
     @Test
-    fun `ровный влив даёт свою скорость`() {
+    fun `an even pour gives its own rate`() {
         assertEquals(10f, pour(FlowRate(), gramsPerSecond = 10f, tickMs = 100, forMs = 3_000), 0.01f)
         assertEquals(4.5f, pour(FlowRate(), gramsPerSecond = 4.5f, tickMs = 100, forMs = 3_000), 0.01f)
     }
 
     @Test
-    fun `плывущий тик не завышает скорость`() {
-        // Тик обещает 100 мс, но delay даёт «не меньше». Прежний расчёт считал
-        // десять тиков секундой и на тике в 130 мс завышал скорость на четверть.
+    fun `a drifting tick does not overstate the rate`() {
+        // A tick promises 100 ms, but delay gives "no less". The old counting took ten ticks
+        // for a second and at a tick of 130 ms overstated the rate by a quarter.
         assertEquals(10f, pour(FlowRate(), gramsPerSecond = 10f, tickMs = 130, forMs = 3_000), 0.01f)
         assertEquals(10f, pour(FlowRate(), gramsPerSecond = 10f, tickMs = 250, forMs = 3_000), 0.01f)
     }
 
     @Test
-    fun `в начале влива скорость не занижена`() {
+    fun `at the start of a pour the rate is not understated`() {
         val flow = FlowRate()
-        // Пока окно короче трёх десятых секунды, скорости просто нет.
+        // While the window is shorter than three tenths of a second there is simply no rate.
         assertEquals(0f, flow.onSample(0f, null, 0), 0.001f)
         assertEquals(0f, flow.onSample(1f, null, 100), 0.001f)
         assertEquals(0f, flow.onSample(2f, null, 200), 0.001f)
-        // А как только окно набралось — сразу правда, а не треть от неё.
+        // And as soon as the window has filled — the truth at once, not a third of it.
         assertEquals(10f, flow.onSample(3f, null, 300), 0.01f)
     }
 
     @Test
-    fun `число весов важнее своей оценки`() {
+    fun `the number from the scale beats our own estimate`() {
         val flow = FlowRate(smoothing = FlowSmoothing.NONE)
         pour(flow, gramsPerSecond = 10f, tickMs = 100, forMs = 1_000)
 
-        // Весы посчитали сами — берём их число.
+        // The scale counted it itself — we take its number.
         assertEquals(6.5f, flow.onSample(11f, 6.5f, 1_100), 0.01f)
-        // Обратный ход у них уходит в минус, влив он не значит.
+        // Backwards it goes negative on them, and that does not mean a pour.
         assertEquals(0f, flow.onSample(12f, -3f, 1_200), 0.01f)
-        // Потолок весов на резком изменении веса — не скорость влива.
+        // The scale ceiling on a sharp change of weight is not a flow rate.
         assertEquals(10f, flow.onSample(13f, 99.9f, 1_300), 0.01f)
     }
 
     @Test
-    fun `число весов сглаживается наравне со своей оценкой`() {
+    fun `the number from the scale is smoothed on a par with our own estimate`() {
         val flow = FlowRate(smoothing = FlowSmoothing.NORMAL)
         pour(flow, gramsPerSecond = 10f, tickMs = 100, forMs = 2_000)
 
-        // Весы показали вдвое меньше: до 1.9.2 это уходило на экран как есть,
-        // и цифра прыгала с каждым пакетом. Теперь показание идёт к новому
-        // числу постепенно.
+        // The scale showed half as much: until 1.9.2 that went to the screen as it came, and
+        // the figure jumped with every packet. Now the reading walks towards the new number
+        // gradually.
         val first = flow.onSample(20f, 5f, 2_100)
         assertTrue(first > 9f)
         assertTrue(first < 10f)
 
-        // Секунду спустя от прежних десяти в окне ничего не остаётся.
+        // A second later nothing is left in the window of the previous ten.
         var at = 2_200L
         var shown = first
         while (at <= 3_200) {
@@ -85,21 +85,21 @@ class FlowRateTest {
     }
 
     @Test
-    fun `без сглаживания число весов идёт на экран как есть`() {
+    fun `without smoothing the number from the scale goes to the screen as it comes`() {
         val flow = FlowRate(smoothing = FlowSmoothing.NONE)
         pour(flow, gramsPerSecond = 10f, tickMs = 100, forMs = 2_000)
         assertEquals(5f, flow.onSample(20f, 5f, 2_100), 0.01f)
     }
 
     @Test
-    fun `выброс не роняет показание в ноль`() {
+    fun `a spike does not drop the reading to zero`() {
         val flow = FlowRate()
         pour(flow, gramsPerSecond = 10f, tickMs = 100, forMs = 2_000)
 
-        // Вернулись показания после долгой просадки: сотня граммов за тик.
+        // The readings came back after a long dip: a hundred grams in one tick.
         assertTrue(flow.onSample(120f, null, 2_100) > 9f)
 
-        // Дальше льют как лили, и через окно скорость снова верна.
+        // From there they pour as they poured, and a window later the rate is right again.
         assertEquals(
             10f,
             pour(flow, gramsPerSecond = 10f, tickMs = 100, forMs = 1_000, fromMs = 2_200, fromGrams = 121f),
@@ -108,30 +108,30 @@ class FlowRateTest {
     }
 
     @Test
-    fun `перерыв не даёт всплеска`() {
+    fun `a break does not give a surge`() {
         val flow = FlowRate()
         val before = pour(flow, gramsPerSecond = 10f, tickMs = 100, forMs = 2_000)
 
-        // Паузу сняли через минуту: старым отсчётам в окне не место.
+        // The pause was lifted a minute later: old samples have no place in the window.
         assertEquals(before, flow.onSample(20f, null, 62_000), 0.001f)
         assertEquals(before, flow.onSample(20.5f, null, 62_100), 0.001f)
 
-        // Считаем от новых отсчётов, а не от веса минутной давности.
+        // We count from the new samples rather than from a weight a minute old.
         assertEquals(5f, flow.onSample(21.5f, null, 62_300), 0.01f)
     }
 
     @Test
-    fun `после влива скорость спадает к нулю`() {
+    fun `after a pour the rate falls away to zero`() {
         val flow = FlowRate()
         pour(flow, gramsPerSecond = 10f, tickMs = 100, forMs = 2_000)
 
-        // Чайник закрыли: вес стоит. Хвост влива держится в окне сглаживания,
-        // поэтому нулю показание равно не сразу.
+        // The kettle is closed: the weight stands. The tail of the pour stays in the smoothing
+        // window, so the reading does not equal zero straight away.
         assertEquals(0f, pour(flow, gramsPerSecond = 0f, tickMs = 100, forMs = 2_500, fromMs = 2_100, fromGrams = 20f), 0.01f)
     }
 
     @Test
-    fun `сброс забывает прошлое заваривание`() {
+    fun `a reset forgets the previous brew`() {
         val flow = FlowRate()
         pour(flow, gramsPerSecond = 10f, tickMs = 100, forMs = 2_000)
         flow.reset()

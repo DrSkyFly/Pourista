@@ -2,7 +2,7 @@ package com.pourista.core
 
 import java.util.Locale
 
-/** «1:23.4» — десятые доли помогают попадать в тайминги пролива. */
+/** "1:23.4" — the tenths help to hit the pour timings. */
 fun formatTimerWithTenths(millis: Long): String {
     val totalTenths = millis / 100
     val tenths = totalTenths % 10
@@ -12,7 +12,7 @@ fun formatTimerWithTenths(millis: Long): String {
     return String.format(Locale.US, "%d:%02d.%d", minutes, seconds, tenths)
 }
 
-/** «1:23» — для таймлайна рецепта и истории. */
+/** "1:23" — for the recipe timeline and the history. */
 fun formatClock(seconds: Int): String {
     val safe = seconds.coerceAtLeast(0)
     return String.format(Locale.US, "%d:%02d", safe / 60, safe % 60)

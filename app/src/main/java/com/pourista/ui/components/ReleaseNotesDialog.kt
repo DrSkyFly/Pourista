@@ -29,9 +29,8 @@ import com.pourista.BuildConfig
 import com.pourista.ui.ReleaseNotes
 
 /**
- * Что нового: вся история изменений, свежее сверху. Показывается после
- * обновления и открывается из настроек — кто пропустил несколько версий,
- * прочитает всё разом.
+ * What is new: the whole history of changes, the freshest on top. Shown after an update and
+ * opened from the settings — whoever skipped a few versions reads it all at once.
  */
 @Composable
 fun ReleaseNotesDialog(onDismiss: () -> Unit) {
@@ -68,11 +67,11 @@ fun ReleaseNotesDialog(onDismiss: () -> Unit) {
 }
 
 /**
- * Набор тестировщиков. Стоит над списком изменений и выделен цветом: это
- * просьба, а не новость о версии, и пролистать её мимо не должно быть проще,
- * чем прочитать.
+ * Recruiting testers. It stands above the list of changes and is set off in colour: this is a
+ * request rather than news about a version, and scrolling past it must not be easier than
+ * reading it.
  *
- * Написать автору — по той же ссылке, что и в настройках: заведомо живой канал.
+ * Writing to the author goes by the same link as in the settings: a channel known to be alive.
  */
 @Composable
 private fun TestersCall() {
@@ -117,5 +116,5 @@ private fun TestersCall() {
     }
 }
 
-/** Выше окно упирается в края экрана — дальше список листается. */
+/** Higher and the dialog runs into the edges of the screen — beyond that the list scrolls. */
 private val MAX_HEIGHT = 420.dp

@@ -67,12 +67,12 @@ fun BrewDetailScreen(
 ) {
     val record by viewModel.brew.collectAsStateWithLifecycle()
 
-    // Имя нового рецепта: как называлось заваривание, иначе «Запись» с датой.
+    // The name of the new recipe: what the brew was called, otherwise "Recording" with the date.
     val recordedName = stringResource(R.string.recipe_recorded_name)
     val recipeName = record?.recipeName?.takeIf { it.isNotBlank() }
         ?: "$recordedName ${formatDateTime(record?.brewedAt ?: 0L)}"
 
-    // Всё для картинки собираем здесь: в отрисовке нет ни ресурсов, ни темы.
+    // Everything for the picture is collected here: the drawing has neither resources nor a theme.
     val context = LocalContext.current
     val current = record
     val imageColors = BrewImageColors(
@@ -144,8 +144,8 @@ fun BrewDetailScreen(
                     }
                 },
                 actions = {
-                    // Кнопка гаснет, когда менять нечего: так видно, что
-                    // сохранять нечего, а не что она сломана.
+                    // The button goes out when there is nothing to change: that way it shows there is
+                    // nothing to save rather than that it is broken.
                     val edited = current?.notes?.let { saved ->
                         bean != saved.bean.orEmpty() ||
                             roaster != saved.roaster.orEmpty() ||
@@ -171,15 +171,15 @@ fun BrewDetailScreen(
                                     extra = extra.takeIf { it.isNotBlank() },
                                 )
                             )
-                            // Сохранили — и сразу назад к списку: держать
-                            // человека в карточке после этого незачем.
+                            // Saved — and straight back to the list: there is no point keeping the
+                            // person in the card after that.
                             onClose()
                         }
                     ) {
                         Icon(Icons.Rounded.Check, stringResource(R.string.action_save))
                     }
-                    // Картинку собираем заново, а не снимаем экран: снимок
-                    // обрезан по высоте телефона и тащит поля с кнопками.
+                    // The picture is assembled anew rather than grabbed from the screen: a screenshot
+                    // is cropped to the height of the phone and drags the fields with the buttons along.
                     IconButton(
                         onClick = { current?.let { shareBrew(context, it, imageColors, texts) } },
                         enabled = current?.weightSeries.orEmpty().size > 1,
@@ -196,8 +196,8 @@ fun BrewDetailScreen(
         val current = record
         val side = listSidePadding()
         LazyColumn(
-            // Клавиатура перекрывала нижние поля: список ужимается на её
-            // высоту, и поле, в которое пишут, само выезжает на видное место.
+            // The keyboard used to cover the lower fields: the list shrinks by its height, and the
+            // field being typed into comes out into view by itself.
             modifier = Modifier
                 .fillMaxSize()
                 .imePadding(),
@@ -264,8 +264,8 @@ fun BrewDetailScreen(
                                 title = stringResource(R.string.chart_weight),
                                 unit = stringResource(R.string.unit_gram),
                                 values = current.weightSeries,
-                                // В истории экран листается: графику можно
-                                // отдать высоту, на которой цифры не жмутся.
+                                // In the history the screen scrolls: the chart can be given a height
+                                // at which the figures are not cramped.
                                 height = 200.dp,
                             )
                         }
@@ -299,8 +299,8 @@ fun BrewDetailScreen(
                 }
             }
 
-            // Рецепт из записи: пролив уже случился, повторить его проще по
-            // готовым шагам. Значка в шапке для этого мало — нужна подпись.
+            // A recipe from a recording: the pour has already happened, and repeating it is easier
+            // from ready steps. An icon in the header is not enough for that — it needs a label.
             if (current.weightSeries.size > 1) {
                 item {
                     Button(
@@ -351,7 +351,7 @@ private fun NotesField(value: String, onValueChange: (String) -> Unit, labelRes:
     )
 }
 
-/** Тексты картинки: собираются из ресурсов на экране, отрисовке они приходят готовыми. */
+/** The texts of the picture: collected from resources on the screen, the drawing gets them ready. */
 private data class BrewShareTexts(
     val title: String,
     val subtitle: String,
@@ -363,7 +363,7 @@ private data class BrewShareTexts(
     val chooser: String,
 )
 
-/** Рисует картинку заваривания, кладёт в кэш и отдаёт системе «поделиться». */
+/** Draws the picture of a brew, puts it in the cache and hands it to the system "share". */
 private fun shareBrew(
     context: Context,
     record: BrewRecord,

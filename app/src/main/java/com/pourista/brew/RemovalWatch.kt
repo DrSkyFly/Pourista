@@ -1,54 +1,54 @@
 package com.pourista.brew
 
 /**
- * Определение конца заваривания по весам.
+ * Detecting the end of a brew by the scale.
  *
- * Последний влив закончен, вода уходит — дальше человек снимает воронку с
- * фильтром или всю чашку целиком, и вес резко падает. Снятая воронка уносит
- * свой вес вместе с намокшим кофе: весы обнуляли под неё, но масса-то никуда
- * не делась, поэтому падение измеряется десятками граммов.
+ * The last pour is done, the water is draining — next the cone with the filter, or
+ * the whole cup, is lifted off, and the weight drops hard. A lifted cone carries its
+ * own weight away together with the soaked coffee: the scale was zeroed under it, but
+ * the mass never went anywhere, so the drop is measured in tens of grams.
  *
- * Порог — доля от максимума, но не меньше [minDropGrams]. Долей одной мало:
- * на шестистах граммах воронка забирает четверть веса, а на двухстах — больше
- * половины, и общий множитель либо пропускал бы первое, либо ловил бы шум во
- * втором. Снятой целиком чашке соответствует большой минус — она проходит по
- * тому же правилу с запасом.
+ * The threshold is a share of the maximum, but never less than [minDropGrams]. A share
+ * alone is not enough: on six hundred grams the cone takes away a quarter of the weight,
+ * on two hundred more than half, and one common multiplier would either miss the first
+ * or catch noise in the second. A cup lifted off whole means a large negative — it
+ * passes the same rule with room to spare.
  *
- * Максимум, от которого отсчитывается падение, берётся по устоявшемуся весу:
- * скачок вверх на одно показание — это не вода, а рука на воронке, и порог
- * снятия он поднимать не должен.
+ * The maximum the drop is counted from is taken from the settled weight: a jump upwards
+ * on a single reading is not water but a hand on the cone, and it must not raise the
+ * lift-off threshold.
  *
- * Падения сторож считает всегда, а закрывает заваривание только после
- * последнего влива: до него вес проседает разве что по ошибке, и обрывать
- * пролив на середине нельзя. Зато вес до падения известен в любом случае —
- * его и записывают в историю, даже когда «Финиш» нажали руками.
+ * Drops are counted at all times, but the brew is only closed after the last pour:
+ * before it the weight dips by mistake at most, and cutting a pour off halfway is not
+ * allowed. The weight from before the drop is known either way — that is what goes into
+ * the history, even when "Finish" was pressed by hand.
  */
 internal class RemovalWatch(
-    /** На какую долю максимума должен упасть вес, чтобы поверить в снятое. */
+    /** What share of the maximum the weight must fall by for a lift-off to be believed. */
     private val dropShare: Float = DROP_SHARE,
     /**
-     * И не меньше этого в граммах: на лёгком заваривании доля даёт единицы
-     * граммов, а столько весы шумят и от покачивания.
+     * And no less than this in grams: on a light brew the share comes out at single
+     * grams, and the scale rattles that much from a wobble alone.
      */
     private val minDropGrams: Float = MIN_DROP_GRAMS,
     /**
-     * Сколько падение должно продержаться, чтобы это была не встряска.
-     * Пяти секунд хватает, чтобы последнее покачивание воронки не сошло за
-     * конец заваривания: качают две-три секунды и ставят обратно.
+     * How long the drop must hold to be something other than a shake. Five seconds is
+     * enough for the last wobble of the cone not to pass for the end of the brew: it is
+     * swirled for two or three seconds and put back.
      */
     private val holdMs: Long = HOLD_MS,
     /**
-     * То же для ушедшего в минус веса. Минус бывает только когда с обнулённых
-     * весов сняли всё разом — тут сомневаться не в чем, и ждать столько же
-     * незачем.
+     * The same for a weight gone negative. A minus only happens when everything is
+     * taken off a zeroed scale at once — there is nothing to doubt there, and no reason
+     * to wait as long.
      */
     private val negativeHoldMs: Long = NEGATIVE_HOLD_MS,
-    /** Совсем лёгкие заваривания не сторожим: там любой шум — падение вдвое. */
+    /** Very light brews are not watched: any noise there is a fall by half. */
     private val minPeakGrams: Float = MIN_PEAK_GRAMS,
     /**
-     * Сколько просевший вес должен продержаться, чтобы стать весом до падения.
-     * Дольше выдержки самого сторожа: пока он решает, сняли чашку или нет,
-     * показание на пути вниз объявлять правдой нельзя.
+     * How long a sunken weight must hold to become the weight from before the drop.
+     * Longer than the watch itself waits: while it decides whether the cup was taken
+     * off, a reading on its way down must not be declared the truth.
      */
     private val settleMs: Long = SETTLE_MS,
 ) {
@@ -60,56 +60,56 @@ internal class RemovalWatch(
     private var droppedAt = 0L
 
     /**
-     * Вес до падения: именно он налит в чашку и должен попасть в историю.
+     * The weight from before the drop: that is what is in the cup and belongs in the history.
      *
-     * Считается по устоявшимся показаниям, а не по последнему нормальному.
-     * Порог падения отстоит от максимума на десятки граммов, а весы отдают
-     * снятие не одним скачком — пока воронку поднимают, приходит два-три
-     * промежуточных значения, и первые из них ещё выше порога. Брать последнее
-     * из них значит записать в историю вес на пути вниз.
+     * It is counted from settled readings rather than from the last normal one. The drop
+     * threshold sits tens of grams below the maximum, and the scale does not report a
+     * lift-off in one jump — while the cone is being raised two or three intermediate
+     * values arrive, and the first of them are still above the threshold. Taking the last
+     * of those means writing a weight from the way down into the history.
      */
     var weightBeforeDrop: Float = 0f
         private set
 
     /**
-     * Тот же приём, что и для графика: ни короткая просадка, ни скачок вверх
-     * правдой не считаются.
+     * The same trick as for the chart: neither a short dip nor a jump upwards counts as
+     * the truth.
      */
     private val settled = MonotonicWeight(rebaseAfterMs = settleMs)
 
-    /** Момент падения — настоящий конец заваривания, а не тремя секундами позже. */
+    /** The moment of the drop — the real end of the brew, not three seconds later. */
     val droppedAtMs: Long get() = droppedAt
 
     /**
-     * Вес просел и держится внизу. Кнопку «Финиш» в этот момент жмут те, кто
-     * снял воронку и не стал ждать: заваривание надо закрывать так же, как по
-     * автофинишу, — временем падения и весом до него. Взведён сторож или нет,
-     * неважно: вес в чашке от этого не меняется.
+     * The weight has sunk and is holding low. "Finish" gets pressed at this moment by
+     * those who took the cone off and did not wait: the brew has to be closed the way
+     * auto-finish closes it — at the time of the drop and with the weight from before it.
+     * Whether the watch is armed makes no difference: the weight in the cup is the same.
      */
     val dropPending: Boolean get() = droppedAt != 0L
 
-    /** Вес, ниже которого считаем, что чашку сняли. */
+    /** The weight below which we take the cup to have been lifted off. */
     val cutoffGrams: Float get() = peakGrams - maxOf(minDropGrams, peakGrams * dropShare)
 
-    /** Разрешить закрывать заваривание: воды рецепт больше не требует. */
+    /** Allow the brew to be closed: the recipe asks for no more water. */
     fun arm(currentWeightGrams: Float) {
         if (armed) return
         armed = true
-        // Если вес просел ещё до взведения — воронку уже сняли, и отсчёт идёт
-        // с того момента, а не с этого. Вес до падения тоже уже запомнен.
+        // If the weight sank before arming, the cone is already off, and the count runs
+        // from that moment, not from this one. The weight before the drop is remembered too.
         if (droppedAt == 0L) weightBeforeDrop = maxOf(weightBeforeDrop, currentWeightGrams)
     }
 
     /**
-     * Очередное показание весов. Возвращает true, когда падение продержалось
-     * дольше [holdMs] — заваривание пора закрывать.
+     * Another reading from the scale. Returns true once the drop has held longer than
+     * [holdMs] — time to close the brew.
      */
     fun onSample(weightGrams: Float, nowMs: Long): Boolean {
         if (weightGrams > cutoffGrams) {
-            // Максимум копим по устоявшемуся весу, а не по любому показанию.
-            // Мгновенный скачок — нажали на крышку, задели весы — поднимал бы
-            // порог выше того, что налито, и настоящий вес оказывался бы
-            // упавшим сам по себе, без всякой снятой воронки.
+            // The maximum is collected from the settled weight rather than from any
+            // reading. An instant jump — a pressed lid, a knocked scale — would raise the
+            // threshold above what is actually poured, and the real weight would turn out
+            // to have fallen all by itself, with no cone lifted at all.
             weightBeforeDrop = settled.onSample(weightGrams, nowMs)
             if (weightBeforeDrop > peakGrams) peakGrams = weightBeforeDrop
             droppedAt = 0L
@@ -118,8 +118,8 @@ internal class RemovalWatch(
         if (peakGrams < minPeakGrams) return false
 
         if (droppedAt == 0L) droppedAt = nowMs
-        // Пока рецепт требует воды, падение только запоминаем: закрывать
-        // заваривание на середине нельзя.
+        // While the recipe still asks for water a drop is only remembered: a brew must
+        // not be closed halfway.
         if (!armed) return false
 
         val hold = if (weightGrams < 0f) negativeHoldMs else holdMs

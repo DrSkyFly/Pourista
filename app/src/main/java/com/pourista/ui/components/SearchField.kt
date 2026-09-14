@@ -18,11 +18,11 @@ import androidx.compose.ui.res.stringResource
 import com.pourista.R
 
 /**
- * Строка поиска над списком.
+ * The search field above a list.
  *
- * Не рамка с углами, а заливка овалом — так поиск выглядит в самой системе, и
- * так его узнают, не читая. Крестик появляется, когда есть что стирать:
- * возвращать полный список, вычищая буквы по одной, никому не хочется.
+ * Not a frame with corners but an oval fill — that is how search looks in the system itself, and
+ * that is how it is recognised without reading. The cross appears when there is something to
+ * erase: nobody wants to bring the full list back by clearing letters one at a time.
  */
 @Composable
 fun SearchField(
@@ -62,8 +62,8 @@ fun SearchField(
                 color = MaterialTheme.colorScheme.onSurfaceVariant,
             )
         },
-        // Полосок под заливкой быть не должно: они остались от полей ввода,
-        // а это не поле анкеты.
+        // There must be no underlines beneath the fill: they are left over from input fields, and
+        // this is not a form field.
         colors = TextFieldDefaults.colors(
             focusedContainerColor = MaterialTheme.colorScheme.surfaceContainerHigh,
             unfocusedContainerColor = MaterialTheme.colorScheme.surfaceContainerHigh,

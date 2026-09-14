@@ -8,12 +8,12 @@ import androidx.compose.ui.res.stringResource
 import com.pourista.R
 
 /**
- * Первый запуск: есть ли у человека весы. Ответ «нет» убирает из приложения
- * всё про Bluetooth, а главное — избавляет от системного запроса разрешений,
- * который иначе выскакивает у всех подряд, включая тех, кому весы не нужны.
+ * The first run: does the person have a scale. An answer of "no" removes everything about
+ * Bluetooth from the app and, most importantly, spares them the system permission request, which
+ * otherwise pops up for everyone, those who need no scale included.
  *
- * Окно без крестика и без закрытия по фону: ответ нужен обязательно, иначе
- * непонятно, спрашивать разрешения или нет.
+ * A dialog with no cross and no dismissal by tapping outside: the answer is required, otherwise
+ * there is no telling whether to ask for permissions.
  */
 @Composable
 fun ScaleQuestionDialog(onYes: () -> Unit, onNo: () -> Unit) {

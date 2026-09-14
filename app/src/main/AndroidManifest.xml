@@ -14,13 +14,13 @@
         android:usesPermissionFlags="neverForLocation"
         tools:targetApi="31" />
     <uses-permission android:name="android.permission.BLUETOOTH_CONNECT" />
-    <!-- Подсказки шагов пролива дублируются вибрацией. -->
+    <!-- The pour step cues are echoed by vibration. -->
     <uses-permission android:name="android.permission.VIBRATE" />
     <!--
-      Ничего из этого не обязательно: по рецепту с пошаговым таймером
-      заваривают и без весов. Объявляем явно, иначе разрешения выше сами
-      подставят «требуется», и магазины скроют приложение от устройств без
-      Bluetooth или без датчиков местоположения.
+      None of this is required: a recipe with a step-by-step timer is brewed without a scale
+      too. We declare it explicitly, otherwise the permissions above would put in "required"
+      by themselves and the stores would hide the app from devices with no Bluetooth or no
+      location sensors.
     -->
     <uses-feature
         android:name="android.hardware.bluetooth_le"
@@ -55,9 +55,9 @@
             </intent-filter>
 
             <!--
-              Файл рецепта, открытый снаружи: из мессенджера, почты, файлового
-              менеджера. Своего типа система не знает, поэтому ловим двумя
-              путями: по типу, если отправитель его проставил, и по имени файла.
+              A recipe file opened from outside: from a messenger, from mail, from a file
+              manager. The system does not know our type, so we catch it two ways: by the type,
+              if the sender set it, and by the file name.
             -->
             <intent-filter android:label="@string/recipe_file_label">
                 <action android:name="android.intent.action.VIEW" />
@@ -76,8 +76,8 @@
                 <data android:host="*" />
                 <data android:mimeType="*/*" />
                 <!--
-                  Шаблон пути дословный: точек в имени может быть сколько
-                  угодно, и каждый случай приходится описывать отдельно.
+                  The path pattern is literal: a name can hold any number of dots, and every
+                  case has to be described separately.
                 -->
                 <data android:pathPattern=".*\\.pour" />
                 <data android:pathPattern=".*\\..*\\.pour" />
@@ -86,7 +86,7 @@
                 <data android:pathSuffix=".pour" tools:targetApi="31" />
             </intent-filter>
 
-            <!-- «Поделиться → Pourista» из мессенджера. -->
+            <!-- "Share to Pourista" from a messenger. -->
             <intent-filter android:label="@string/recipe_file_label">
                 <action android:name="android.intent.action.SEND" />
                 <category android:name="android.intent.category.DEFAULT" />
@@ -96,8 +96,8 @@
         </activity>
 
         <!--
-          Журнал весов уходит наружу через «поделиться», а для этого системе
-          нужен доступ к файлу: своим путём из кэша она поделиться не даст.
+          The scale log goes outside through "share", and for that the system needs access to
+          the file: it will not share one by our own path from the cache.
         -->
         <provider
             android:name="androidx.core.content.FileProvider"

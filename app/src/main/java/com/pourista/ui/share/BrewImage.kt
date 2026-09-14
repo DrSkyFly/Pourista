@@ -37,7 +37,7 @@ import com.pourista.ui.components.chartAxis
 import java.io.File
 import java.io.FileOutputStream
 
-/** Цвета картинки: те же, что на экране, чтобы палитра совпадала. */
+/** The colours of the picture: the same as on screen, so the palette matches. */
 data class BrewImageColors(
     val background: Color,
     val onBackground: Color,
@@ -47,7 +47,7 @@ data class BrewImageColors(
     val grid: Color,
 )
 
-/** Что писать на картинке. Тексты приходят готовыми — переводит их экран. */
+/** What to write on the picture. The texts arrive ready — the screen translates them. */
 data class BrewImageContent(
     val title: String,
     val subtitle: String,
@@ -61,11 +61,11 @@ data class BrewImageContent(
 )
 
 /**
- * Картинка заваривания для «поделиться».
+ * The picture of a brew for "share".
  *
- * Рисуется не с экрана, а заново: снимок был бы обрезан по высоте телефона и
- * тащил бы с собой поля и кнопки. Размер фиксированный, поэтому в переписке
- * картинка выглядит одинаково у всех.
+ * It is drawn anew rather than from the screen: a screenshot would be cropped to the height of the
+ * phone and would drag the fields and buttons along. The size is fixed, so in a chat the picture
+ * looks the same for everyone.
  */
 object BrewImage {
 
@@ -98,8 +98,8 @@ object BrewImage {
             val body = TextStyle(fontSize = 15.sp, color = colors.onBackground)
             val muted = TextStyle(fontSize = 12.sp, color = colors.muted)
 
-            // Длинное название переносится и обрезается многоточием: за край
-            // полотна ему уходить нельзя.
+            // A long name wraps and is cut with an ellipsis: it must not run off the edge of the
+            // canvas.
             fun line(value: String, style: TextStyle, lines: Int, gap: Float) {
                 val layout = measurer.measure(
                     text = AnnotatedString(value),
@@ -117,8 +117,8 @@ object BrewImage {
             line(content.facts, body, lines = 1, gap = 4.dp.toPx())
             content.details?.let { line(it, muted, lines = 2, gap = 0f) }
 
-            // Подпись со значком внизу, и место под неё занято заранее:
-            // графики делят то, что осталось, и на неё не налезают.
+            // The caption with the icon is at the bottom, and the room for it is taken in advance:
+            // the charts share what is left and do not climb onto it.
             val footer = measurer.measure(
                 text = AnnotatedString(content.footer),
                 style = muted,
@@ -150,7 +150,7 @@ object BrewImage {
             val bottom = footerTop - GAP.toPx()
             val free = (bottom - y - GAP.toPx() * 2).coerceAtLeast(0f)
 
-            // Вес крупнее скорости: по нему читают заваривание.
+            // The weight is larger than the flow rate: the brew is read by it.
             val weightBlock = free * WEIGHT_SHARE
             y += GAP.toPx()
             y += drawChart(
@@ -188,12 +188,12 @@ object BrewImage {
         return bitmap
     }
 
-    /** Значок приложения для подписи. Не нашёлся — обойдёмся одним текстом. */
+    /** The app icon for the caption. Not found — we make do with the text alone. */
     private fun appIcon(context: Context, size: Int): android.graphics.Bitmap? = runCatching {
         ContextCompat.getDrawable(context, R.mipmap.ic_launcher)?.toBitmap(size, size)
     }.getOrNull()
 
-    /** Кладёт картинку в кэш и отдаёт файл — дальше его подхватывает «поделиться». */
+    /** Puts the picture in the cache and hands over the file — "share" picks it up from there. */
     fun save(context: Context, bitmap: Bitmap, name: String): File? = runCatching {
         val directory = File(context.cacheDir, SHARE_DIRECTORY).apply { mkdirs() }
         val file = File(directory, name)
@@ -204,8 +204,7 @@ object BrewImage {
     }.getOrNull()
 
     /**
-     * Заголовок и сам график. Возвращает занятую высоту — по ней сдвигается
-     * следующий блок.
+     * The title and the chart itself. Returns the height taken — the next block is shifted by it.
      */
     private fun androidx.compose.ui.graphics.drawscope.DrawScope.drawChart(
         title: String,
@@ -232,8 +231,8 @@ object BrewImage {
             steps = axisSteps,
             maxLines = axisLinesFor((plotHeight / density).dp),
         )
-        // Сдвигаем начало координат к месту графика и ужимаем поле до его
-        // размера: drawSeries рисует по всей выданной площади.
+        // We move the origin to the place of the chart and squeeze the field to its size: drawSeries
+        // draws over the whole area it is given.
         translate(left = left, top = plotTop) {
             inset(
                 left = 0f,
@@ -267,7 +266,7 @@ object BrewImage {
     private const val WIDTH_PX = 1080
     private const val HEIGHT_PX = 1600
 
-    /** Плотность фиксированная: картинка не должна зависеть от телефона. */
+    /** The density is fixed: the picture must not depend on the phone. */
     private const val DENSITY = 3f
 
     private val MARGIN = 32.dp
@@ -276,9 +275,9 @@ object BrewImage {
     private val ICON_GAP = 10.dp
     private val MIN_CHART = 76.dp
 
-    /** Доля свободной высоты под график веса, остальное — скорости. */
+    /** The share of the free height for the weight chart, the rest goes to the flow rate. */
     private const val WEIGHT_SHARE = 0.58f
 
-    /** Заголовок графика занимает строку: считаем её по кеглю с интерлиньяжем. */
+    /** The chart title takes a line: we count it from the type size with the leading. */
     private const val TITLE_LINE = 1.4f
 }

@@ -7,12 +7,12 @@ import org.junit.Assert.assertTrue
 import org.junit.Test
 
 /**
- * Ряд веса из истории — одна точка в секунду. Проверяем, что по нему выходит
- * тот же рецепт, что записался бы вживую.
+ * A weight series from the history — one point a second. We check that it gives the same recipe as
+ * would have been recorded live.
  */
 class RecipeFromHistoryTest {
 
-    /** Собирает посекундный ряд: пролив, пауза, пролив, пауза. */
+    /** Builds a per-second series: pour, pause, pour, pause. */
     private fun series(vararg parts: Pair<Float, Int>): List<Float> {
         val points = mutableListOf<Float>()
         var weight = 0f
@@ -27,39 +27,39 @@ class RecipeFromHistoryTest {
     }
 
     @Test
-    fun `по записи собирается рецепт с проливами и паузами`() {
-        // 50 г за 10 с, пауза 35 с, 100 г за 20 с, пауза 25 с.
+    fun `a recipe with pours and pauses is assembled from a recording`() {
+        // 50 g in 10 s, a 35 s pause, 100 g in 20 s, a 25 s pause.
         val weights = series(50f to 10, 0f to 35, 100f to 20, 0f to 25)
 
         val recipe = RecipeFromHistory.build(
             weightSeries = weights,
-            name = "Запись",
+            name = "Recording",
             brewer = "Hario V60-02",
             doseGrams = 15f,
             waterTempC = 94,
             elapsedMs = weights.size * 1_000L,
         )!!
 
-        // Два пролива и слив.
+        // Two pours and the drawdown.
         assertEquals(3, recipe.steps.size)
-        assertEquals("первый влив — блуминг", StepKind.BLOOM, recipe.steps.first().kind)
-        assertEquals("последний шаг — слив", StepKind.DRAWDOWN, recipe.steps.last().kind)
-        // Шаг длится от своего пролива до начала следующего, а не до конца влива.
+        assertEquals("the first pour is the bloom", StepKind.BLOOM, recipe.steps.first().kind)
+        assertEquals("the last step is the drawdown", StepKind.DRAWDOWN, recipe.steps.last().kind)
+        // A step lasts from its own pour to the start of the next, not to the end of the pour.
         assertEquals(listOf(0, 45), recipe.steps.take(2).map { it.startSec })
         assertEquals(45, recipe.steps.first().durationSec)
         assertEquals(listOf(50f, 150f, 150f), recipe.steps.map { it.targetWaterGrams })
         assertEquals(150f, recipe.waterGrams, 0.01f)
         assertEquals(15f, recipe.doseGrams, 0.01f)
         assertEquals("Hario V60-02", recipe.brewer)
-        assertTrue("последний шаг доводит до конца записи", recipe.totalSec >= 85)
+        assertTrue("the last step carries through to the end of the recording", recipe.totalSec >= 85)
     }
 
     @Test
-    fun `заваривание без весов рецепта не даёт`() {
+    fun `a brew without a scale gives no recipe`() {
         assertNull(
             RecipeFromHistory.build(
                 weightSeries = List(120) { 0f },
-                name = "Запись",
+                name = "Recording",
                 brewer = "",
                 doseGrams = 15f,
                 waterTempC = 94,
@@ -69,11 +69,11 @@ class RecipeFromHistoryTest {
     }
 
     @Test
-    fun `пустая запись рецепта не даёт`() {
+    fun `an empty recording gives no recipe`() {
         assertNull(
             RecipeFromHistory.build(
                 weightSeries = emptyList(),
-                name = "Запись",
+                name = "Recording",
                 brewer = "",
                 doseGrams = 15f,
                 waterTempC = 94,

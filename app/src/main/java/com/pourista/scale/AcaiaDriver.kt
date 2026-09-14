@@ -5,20 +5,19 @@ import java.util.UUID
 /**
  * Acaia: Pearl, Lunar, Pyxis, Cinco.
  *
- * Кадр: два байта заголовка EF DD, тип сообщения, длина, данные и две
- * контрольные суммы — отдельно по чётным и нечётным байтам данных.
+ * The frame: two header bytes EF DD, the message type, the length, the data and two
+ * checksums — separately over the even and the odd data bytes.
  *
- * Весы молчат, пока с ними не поздороваются: после подписки нужно отправить
- * представление и список событий, на которые мы подписываемся, а дальше раз в
- * секунду слать пульс. Без пульса поток веса обрывается через несколько
- * секунд.
+ * The scale keeps quiet until greeted: after subscribing it has to be sent an introduction
+ * and the list of events we subscribe to, and from then on a heartbeat once a second. Without
+ * the heartbeat the weight stream breaks off after a few seconds.
  *
- * Железо двух поколений отличается только идентификаторами службы, поэтому
- * разбор общий, а объектов два: [AcaiaClassicDriver] и [AcaiaPyxisDriver].
- * Какой из них подойдёт, видно после подключения — по службам устройства.
+ * The hardware of the two generations differs only in the service identifiers, so the parsing
+ * is shared and there are two objects: [AcaiaClassicDriver] and [AcaiaPyxisDriver]. Which one
+ * fits shows after connecting, by the services of the device.
  *
- * Протокол написан по открытым реализациям (pyacaia, Beanconqueror), на
- * железе не проверялся.
+ * The protocol is written from open implementations (pyacaia, Beanconqueror) and has not been
+ * checked on hardware.
  */
 sealed class AcaiaDriver(private val pyxisStyle: Boolean) : ScaleDriver {
 
@@ -27,9 +26,9 @@ sealed class AcaiaDriver(private val pyxisStyle: Boolean) : ScaleDriver {
     override val writeWithoutResponse = true
 
     /**
-     * Имя у Acaia начинается с модели и продолжается серийником без пробела:
-     * «LUNAR-1A2B3C», «PROCHBT001». Пробел сразу после модели выдаёт чужое
-     * устройство вроде «Pearl Bluetooth Speaker».
+     * An Acaia name starts with the model and continues with the serial without a space:
+     * "LUNAR-1A2B3C", "PROCHBT001". A space right after the model gives away a foreign device
+     * such as "Pearl Bluetooth Speaker".
      */
     override fun matches(deviceName: String): Boolean {
         val name = deviceName.trim().lowercase()
@@ -38,8 +37,8 @@ sealed class AcaiaDriver(private val pyxisStyle: Boolean) : ScaleDriver {
     }
 
     /**
-     * Куски кадров между пакетами: одно уведомление может принести половину
-     * сообщения или сразу несколько.
+     * Pieces of frames between packets: one notification can bring half a message, or several
+     * at once.
      */
     private var buffer = ByteArray(0)
 
@@ -62,8 +61,8 @@ sealed class AcaiaDriver(private val pyxisStyle: Boolean) : ScaleDriver {
     override fun tareCommand(): ByteArray = encode(MSG_TARE, byteArrayOf(0))
 
     /**
-     * Вес из потока кадров. Заряд и единица приходят отдельным сообщением
-     * настроек, поэтому копятся в драйвере и отдаются вместе с ближайшим весом.
+     * The weight out of the frame stream. The battery and the unit arrive in a separate
+     * settings message, so they pile up in the driver and go out with the nearest weight.
      */
     override fun parseWeight(value: ByteArray): WeightReading? {
         var grams: Float? = null
@@ -87,8 +86,8 @@ sealed class AcaiaDriver(private val pyxisStyle: Boolean) : ScaleDriver {
     }
 
     /**
-     * Заряд из пакета, в котором веса не было. Пакет к этому времени уже
-     * разобран в [parseWeight] — отдаём, что оттуда осталось.
+     * The battery from a packet that had no weight in it. By this time the packet is already
+     * parsed in [parseWeight] — we hand over what was left there.
      */
     override fun parseBattery(value: ByteArray): Int? {
         val battery = pendingBattery
@@ -96,13 +95,13 @@ sealed class AcaiaDriver(private val pyxisStyle: Boolean) : ScaleDriver {
         return battery
     }
 
-    /** Представление весам: пятнадцать байт, свои у каждого поколения. */
+    /** The introduction to the scale: fifteen bytes, its own for every generation. */
     private fun identCommand(): ByteArray =
         encode(MSG_IDENT, if (pyxisStyle) PYXIS_ID else CLASSIC_ID)
 
     /**
-     * На какие события подписываемся: вес, заряд, таймер и кнопки. Пары
-     * «событие, аргумент», перед ними длина.
+     * Which events we subscribe to: weight, battery, timer and buttons. Pairs of "event,
+     * argument", with the length in front of them.
      */
     private fun eventsCommand(): ByteArray {
         val payload = byteArrayOf(0, 1, 1, 2, 2, 5, 3, 4)
@@ -110,8 +109,8 @@ sealed class AcaiaDriver(private val pyxisStyle: Boolean) : ScaleDriver {
     }
 
     /**
-     * Собирает пакеты в поток и вынимает из него целые кадры. Мусор до
-     * заголовка отбрасывается, хвост остаётся ждать продолжения.
+     * Collects packets into a stream and pulls whole frames out of it. Rubbish before the
+     * header is thrown away, the tail stays waiting for its continuation.
      */
     private inline fun decode(packet: ByteArray, block: (AcaiaMessage) -> Unit) {
         buffer = if (buffer.isEmpty()) packet else buffer + packet
@@ -121,7 +120,7 @@ sealed class AcaiaDriver(private val pyxisStyle: Boolean) : ScaleDriver {
         while (true) {
             val start = headerAt(buffer, offset)
             if (start == null) {
-                // Заголовок может разорваться между пакетами: последний байт бережём.
+                // The header can break between packets: the last byte is kept.
                 offset = maxOf(buffer.size - 1, 0)
                 break
             }
@@ -148,14 +147,14 @@ sealed class AcaiaDriver(private val pyxisStyle: Boolean) : ScaleDriver {
                 val payload = data.copyOfRange(start + 5, end)
                 when (data[start + 4].toInt() and 0xff) {
                     EVENT_WEIGHT -> weight(payload)
-                    // Вес приходит и ответом на пульс, если весы им отвечают.
+                    // The weight also arrives as an answer to the heartbeat, if the scale answers it.
                     EVENT_HEARTBEAT ->
                         if (payload.getOrNull(2)?.toInt() == EVENT_WEIGHT) {
                             weight(payload.copyOfRange(3, payload.size))
                         } else {
                             null
                         }
-                    // Кнопки на весах: тара и таймер присылают заодно вес.
+                    // The buttons on the scale: the tare and the timer send the weight along.
                     EVENT_BUTTON -> buttonWeight(payload)
                     else -> null
                 }
@@ -166,7 +165,7 @@ sealed class AcaiaDriver(private val pyxisStyle: Boolean) : ScaleDriver {
         }
     }
 
-    /** Вес: два байта, делитель по числу знаков после запятой и знак. */
+    /** The weight: two bytes, a divisor by the number of decimals, and the sign. */
     private fun weight(payload: ByteArray): AcaiaMessage.Weight? {
         if (payload.size < WEIGHT_SIZE) return null
         val raw = ((payload[1].toInt() and 0xff) shl 8) or (payload[0].toInt() and 0xff)
@@ -181,15 +180,15 @@ sealed class AcaiaDriver(private val pyxisStyle: Boolean) : ScaleDriver {
         return AcaiaMessage.Weight(sign * raw / divisor)
     }
 
-    /** У нажатий кнопок свой заголовок, а вес лежит следом за ним. */
+    /** Button presses have a header of their own, and the weight lies right behind it. */
     private fun buttonWeight(payload: ByteArray): AcaiaMessage.Weight? {
         val first = payload.getOrNull(0)?.toInt() ?: return null
         val second = payload.getOrNull(1)?.toInt() ?: return null
         val offset = when {
-            first == 0 && second == 5 -> 2      // тара
-            first == 8 && second == 5 -> 2      // пуск таймера
-            first == 10 && second == 7 -> 6     // стоп: сначала время
-            first == 9 && second == 7 -> 6      // сброс: сначала время
+            first == 0 && second == 5 -> 2      // tare
+            first == 8 && second == 5 -> 2      // timer start
+            first == 10 && second == 7 -> 6     // stop: the time comes first
+            first == 9 && second == 7 -> 6      // reset: the time comes first
             else -> return null
         }
         if (payload.size <= offset) return null
@@ -205,7 +204,7 @@ sealed class AcaiaDriver(private val pyxisStyle: Boolean) : ScaleDriver {
         )
     }
 
-    /** Кадр с двумя контрольными суммами: по чётным и по нечётным байтам. */
+    /** A frame with two checksums: over the even and over the odd bytes. */
     private fun encode(type: Int, payload: ByteArray): ByteArray {
         val frame = ByteArray(payload.size + 5)
         frame[0] = HEADER_FIRST
@@ -231,7 +230,7 @@ sealed class AcaiaDriver(private val pyxisStyle: Boolean) : ScaleDriver {
         const val HEADER_FIRST = 0xEF.toByte()
         const val HEADER_SECOND = 0xDD.toByte()
 
-        /** Заголовок, тип, длина, две контрольные суммы. */
+        /** Header, type, length, two checksums. */
         const val MIN_FRAME = 6
         const val FRAME_EXTRA = 5
         const val MAX_BUFFER = 128
@@ -263,7 +262,7 @@ sealed class AcaiaDriver(private val pyxisStyle: Boolean) : ScaleDriver {
     }
 }
 
-/** Pearl, Lunar до 2021 года и PROCHBT001: одна характеристика на всё. */
+/** Pearl, Lunar before 2021 and PROCHBT001: one characteristic for everything. */
 object AcaiaClassicDriver : AcaiaDriver(pyxisStyle = false) {
     override val title = "Acaia Pearl / Lunar"
     override val service: UUID = bluetoothUuid("1820")
@@ -271,7 +270,7 @@ object AcaiaClassicDriver : AcaiaDriver(pyxisStyle = false) {
     override val commandCharacteristic: UUID = bluetoothUuid("2a80")
 }
 
-/** Pyxis, Lunar 2021 и Cinco: служба последовательного порта, две характеристики. */
+/** Pyxis, Lunar 2021 and Cinco: a serial port service, two characteristics. */
 object AcaiaPyxisDriver : AcaiaDriver(pyxisStyle = true) {
     override val title = "Acaia Pyxis / Lunar 2021"
     override val service: UUID = UUID.fromString("49535343-fe7d-4ae5-8fa9-9fafd205e455")

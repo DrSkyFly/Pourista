@@ -27,7 +27,7 @@ abstract class AppDatabase : RoomDatabase() {
         private const val TAG = "AppDatabase"
         private const val NAME = "coffee_scale.db"
 
-        /** Имя файла из ранних сборок; при первом запуске он переезжает под новое. */
+        /** The file name from early builds; on the first run it moves to the new one. */
         private const val PREVIOUS_NAME = "futula_coffee_scale_database.db"
 
         fun build(context: Context): AppDatabase {
@@ -39,8 +39,8 @@ abstract class AppDatabase : RoomDatabase() {
         }
 
         /**
-         * Переименование файла базы. Room умеет менять схему, но не имя файла,
-         * поэтому переносим его руками — до того, как база будет открыта.
+         * Renaming the database file. Room can change the schema but not the file name,
+         * so we move it by hand — before the database is opened.
          */
         private fun renamePreviousFile(context: Context) {
             val target = context.getDatabasePath(NAME)
@@ -48,30 +48,30 @@ abstract class AppDatabase : RoomDatabase() {
             val source = context.getDatabasePath(PREVIOUS_NAME)
             if (!source.exists()) return
 
-            // Журнал и разделяемая память переезжают вместе с базой: без них
-            // потерялись бы записи, не успевшие попасть в основной файл.
+            // The journal and the shared memory move together with the database: without
+            // them the records that had not reached the main file yet would be lost.
             val moved = listOf("", "-wal", "-shm").all { suffix ->
                 val from = File(source.path + suffix)
                 if (!from.exists()) true else from.renameTo(File(target.path + suffix))
             }
-            Log.i(TAG, if (moved) "База переименована в $NAME" else "Не удалось переименовать базу")
+            Log.i(TAG, if (moved) "Database renamed to $NAME" else "Could not rename the database")
         }
 
-        /** Версия 11: фильтр дописывается и в заметки к завариванию. */
+        /** Version 11: the filter is written into the brew notes as well. */
         internal val MIGRATION_10_11 = object : Migration(10, 11) {
             override fun migrate(db: SupportSQLiteDatabase) {
                 db.execSQL("ALTER TABLE `brew_notes` ADD COLUMN `filter_name` TEXT")
             }
         }
 
-        /** Версия 10: у рецепта появился фильтр. */
+        /** Version 10: a recipe got a filter. */
         internal val MIGRATION_9_10 = object : Migration(9, 10) {
             override fun migrate(db: SupportSQLiteDatabase) {
                 db.execSQL("ALTER TABLE `recipes` ADD COLUMN `filter_name` TEXT")
             }
         }
 
-        /** Версия 9: у рецепта появился режим аэропресса. */
+        /** Version 9: a recipe got aeropress mode. */
         internal val MIGRATION_8_9 = object : Migration(8, 9) {
             override fun migrate(db: SupportSQLiteDatabase) {
                 db.execSQL(
@@ -82,10 +82,10 @@ abstract class AppDatabase : RoomDatabase() {
         }
 
         /**
-         * Версия 8: имена таблиц и колонок больше не тянутся из первых версий.
-         * Заодно ушли поля, которые дублировали уже сохранённое: единица веса
-         * (всегда граммы), готовые строки времени и пропорции — они считаются
-         * из длительности и веса при показе.
+         * Version 8: table and column names no longer drag on from the first versions.
+         * The fields that duplicated what was already stored went away with them: the
+         * weight unit (always grams) and the ready-made time and ratio strings — those are
+         * counted from the duration and the weight when shown.
          */
         internal val MIGRATION_7_8 = object : Migration(7, 8) {
             override fun migrate(db: SupportSQLiteDatabase) {
@@ -137,8 +137,8 @@ abstract class AppDatabase : RoomDatabase() {
         }
 
         /**
-         * Длительность раньше лежала готовой строкой «1:23.4». Разбираем её
-         * обратно в миллисекунды, иначе у старых чашек пропало бы время.
+         * The duration used to lie there as a ready-made "1:23.4" string. We parse it back
+         * into milliseconds, otherwise old cups would lose their time.
          */
         private fun copyElapsedTime(db: SupportSQLiteDatabase) {
             db.query("SELECT `id`, `time_string` FROM `weight_history`").use { cursor ->
@@ -150,7 +150,7 @@ abstract class AppDatabase : RoomDatabase() {
             }
         }
 
-        /** «1:23.4» → 83 400 мс. Непонятную строку считаем нулём, а не падаем. */
+        /** "1:23.4" to 83,400 ms. An unreadable string counts as zero rather than crashing. */
         internal fun parseTimer(value: String?): Long {
             val text = value?.trim().orEmpty()
             val match = Regex("""^(\d+):(\d{1,2})(?:\.(\d))?$""").find(text) ?: return 0L

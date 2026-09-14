@@ -17,7 +17,7 @@ class RecipeJsonTest {
         doseGrams = 15f,
         waterGrams = 250f,
         waterTempC = 95,
-        grindSetting = "средний",
+        grindSetting = "medium",
         filterName = "Cafec Abaca",
         autoStart = true,
         steps = listOf(
@@ -45,7 +45,7 @@ class RecipeJsonTest {
     )
 
     @Test
-    fun `рецепт переживает выгрузку и загрузку`() {
+    fun `a recipe survives an export and an import`() {
         val restored = RecipeJson.decode(RecipeJson.encode(listOf(hoffmann))).single()
 
         assertEquals(hoffmann.name, restored.name)
@@ -65,21 +65,21 @@ class RecipeJsonTest {
     }
 
     @Test
-    fun `в файле объём шага — долив, а не сумма`() {
+    fun `in the file the step volume is the addition rather than the sum`() {
         val text = RecipeJson.encode(listOf(hoffmann))
 
-        // Второй шаг доливает 100 г до накопительных 150 г.
+        // The second step adds 100 g up to a cumulative 150 g.
         assertEquals(true, text.contains("\"water\": 100"))
     }
 
-    /** Рецепт может написать человек: обязательны только название и шаги. */
+    /** A recipe can be written by a person: only the name and the steps are required. */
     @Test
-    fun `минимальный рецепт читается`() {
+    fun `a minimal recipe is read`() {
         val text = """
             {
               "recipes": [
                 {
-                  "name": "Ручной",
+                  "name": "By hand",
                   "steps": [
                     { "duration": 30, "water": 50 },
                     { "kind": "DRAWDOWN", "duration": 60 }
@@ -91,44 +91,44 @@ class RecipeJsonTest {
 
         val recipe = RecipeJson.decode(text).single()
 
-        assertEquals("Ручной", recipe.name)
+        assertEquals("By hand", recipe.name)
         assertEquals(94, recipe.waterTempC)
         assertEquals(50f, recipe.waterGrams, 0.01f)
         assertEquals(listOf(StepKind.POUR, StepKind.DRAWDOWN), recipe.steps.map { it.kind })
         assertEquals(listOf(0, 30), recipe.steps.map { it.startSec })
     }
 
-    /** Из буфера обмена рецепт часто прилетает с обрамлением от нейросети. */
+    /** From the clipboard a recipe often arrives wrapped by a neural network. */
     @Test
-    fun `json в тройных кавычках и с пояснениями вокруг читается`() {
+    fun `json in triple backticks and with explanations around it is read`() {
         val text = """
-            Конечно! Вот рецепт:
+            Of course! Here is the recipe:
 
             ```json
             {
               "recipes": [
-                { "name": "Из чата", "steps": [ { "duration": 30, "water": 50 } ] }
+                { "name": "From a chat", "steps": [ { "duration": 30, "water": 50 } ] }
               ]
             }
             ```
 
-            Приятного кофе!
+            Enjoy your coffee!
         """.trimIndent()
 
         val recipe = RecipeJson.decode(text).single()
 
-        assertEquals("Из чата", recipe.name)
+        assertEquals("From a chat", recipe.name)
         assertEquals(50f, recipe.waterGrams, 0.01f)
     }
 
     @Test
-    fun `мусор вместо рецептов не проходит молча`() {
-        assertThrows(IllegalArgumentException::class.java) { RecipeJson.decode("не json") }
+    fun `rubbish instead of recipes does not pass quietly`() {
+        assertThrows(IllegalArgumentException::class.java) { RecipeJson.decode("not json") }
         assertThrows(IllegalArgumentException::class.java) { RecipeJson.decode("""{"recipes":[]}""") }
     }
 
     @Test
-    fun `режим аэропресса переживает выгрузку и загрузку`() {
+    fun `aeropress mode survives an export and an import`() {
         val recipe = Recipe(
             name = "AeroPress",
             brewer = "AeroPress",
@@ -144,11 +144,11 @@ class RecipeJsonTest {
         val restored = RecipeJson.decode(RecipeJson.encode(listOf(recipe)))
 
         assertEquals(1, restored.size)
-        assertTrue("Режим должен сохраниться", restored.first().aeropressMode)
+        assertTrue("The mode should be kept", restored.first().aeropressMode)
     }
 
     @Test
-    fun `рецепт без режима аэропресса читается как обычный`() {
+    fun `a recipe without aeropress mode is read as an ordinary one`() {
         val json = """
             {"recipes":[{"name":"V60","brewer":"Hario","doseGrams":15,"waterGrams":250,
              "waterTempC":95,"steps":[{"kind":"POUR","startSec":0,"durationSec":30,

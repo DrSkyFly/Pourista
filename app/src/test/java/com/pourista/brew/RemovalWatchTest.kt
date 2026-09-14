@@ -7,7 +7,7 @@ import org.junit.Test
 
 class RemovalWatchTest {
 
-    /** Наливаем 250 г за первые секунды: после этого можно взводить сторож. */
+    /** Pour 250 g in the first seconds: after that the watch can be armed. */
     private fun RemovalWatch.pourUpTo(grams: Float, untilMs: Long = 0L): Long {
         var now = 0L
         var weight = 0f
@@ -20,11 +20,11 @@ class RemovalWatchTest {
     }
 
     @Test
-    fun `до последнего влива падение веса ничего не значит`() {
+    fun `before the last pour a fall of the weight means nothing`() {
         val watch = RemovalWatch()
         var now = watch.pourUpTo(250f)
 
-        // Чашку сняли, но сторож не взведён: рецепт ещё требует воды.
+        // The cup was taken off, but the watch is not armed: the recipe still asks for water.
         repeat(10) {
             now += 1_000L
             assertFalse(watch.onSample(-300f, now))
@@ -32,7 +32,7 @@ class RemovalWatchTest {
     }
 
     @Test
-    fun `снятая чашка заканчивает заваривание через три секунды`() {
+    fun `a lifted cup ends the brew three seconds later`() {
         val watch = RemovalWatch()
         var now = watch.pourUpTo(250f)
         watch.arm(250f)
@@ -40,35 +40,35 @@ class RemovalWatchTest {
         now += 1_000L
         assertFalse(watch.onSample(250f, now))
 
-        // Воронку сняли: вес упал больше чем вдвое.
+        // The cone was lifted: the weight fell by more than half.
         val droppedAt = now + 100L
         assertFalse(watch.onSample(60f, droppedAt))
-        // Трёх секунд мало: столько длится покачивание воронки на весу.
+        // Three seconds is not enough: that is how long a cone is swirled in the air.
         assertFalse(watch.onSample(60f, droppedAt + 3_000L))
         assertFalse(watch.onSample(60f, droppedAt + 4_900L))
         assertTrue(watch.onSample(60f, droppedAt + 5_000L))
 
-        // Финиш относим к моменту падения, а вес в историю берём последний
-        // нормальный: снимали уже готовую чашку.
+        // The finish is placed at the moment of the fall, and the weight for the history is the
+        // last normal one: what was taken off was an already finished cup.
         assertEquals(droppedAt, watch.droppedAtMs)
         assertEquals(250f, watch.weightBeforeDrop, 0.01f)
     }
 
     @Test
-    fun `снятая целиком чашка уводит весы в минус и тоже считается финишем`() {
+    fun `a cup lifted off whole sends the scale negative and counts as a finish too`() {
         val watch = RemovalWatch()
         var now = watch.pourUpTo(250f)
         watch.arm(250f)
 
         now += 500L
         assertFalse(watch.onSample(-420f, now))
-        // Минусу верим быстрее: так бывает только когда сняли всё разом.
+        // A minus is believed sooner: that only happens when everything is taken off at once.
         assertFalse(watch.onSample(-420f, now + 2_900L))
         assertTrue(watch.onSample(-420f, now + 3_000L))
     }
 
     @Test
-    fun `короткий рывок весов заваривание не заканчивает`() {
+    fun `a short jerk of the scale does not end the brew`() {
         val watch = RemovalWatch()
         var now = watch.pourUpTo(250f)
         watch.arm(250f)
@@ -76,7 +76,7 @@ class RemovalWatchTest {
         now += 500L
         assertFalse(watch.onSample(10f, now))
         assertFalse(watch.onSample(10f, now + 1_500L))
-        // Чашку поставили обратно — отсчёт начинается заново.
+        // The cup was put back — the count starts over.
         assertFalse(watch.onSample(248f, now + 2_000L))
         assertFalse(watch.onSample(10f, now + 2_500L))
         assertFalse(watch.onSample(10f, now + 6_000L))
@@ -84,13 +84,13 @@ class RemovalWatchTest {
     }
 
     @Test
-    fun `на большом объёме снятая воронка весит меньше половины`() {
+    fun `on a large volume a lifted cone weighs less than half`() {
         val watch = RemovalWatch()
         var now = watch.pourUpTo(600f)
         watch.arm(600f)
 
-        // Воронка с намокшим кофе — около сотни граммов из шестисот: вдвое
-        // вес тут не упадёт никогда, а заваривание всё равно закончено.
+        // A cone with soaked coffee is about a hundred grams out of six hundred: the weight will
+        // never fall by half here, and the brew is over all the same.
         now += 1_000L
         val droppedAt = now
         assertFalse(watch.onSample(490f, droppedAt))
@@ -99,12 +99,12 @@ class RemovalWatchTest {
     }
 
     @Test
-    fun `покачивание воронки на весах за снятие не считаем`() {
+    fun `wobbling the cone on the scale does not count as a lift-off`() {
         val watch = RemovalWatch()
         var now = watch.pourUpTo(250f)
         watch.arm(250f)
 
-        // Двадцать граммов туда-сюда — обычный шум при свирле.
+        // Twenty grams back and forth is ordinary noise during a swirl.
         repeat(10) {
             now += 1_000L
             assertFalse(watch.onSample(if (it % 2 == 0) 232f else 250f, now))
@@ -112,10 +112,10 @@ class RemovalWatchTest {
     }
 
     @Test
-    fun `на совсем лёгком весе сторож молчит`() {
+    fun `on a really light weight the watch keeps quiet`() {
         val watch = RemovalWatch()
-        // Пятнадцать граммов — это ещё доза, а не заваривание: шум весов в
-        // пару граммов не должен считаться снятой чашкой.
+        // Fifteen grams is still a dose rather than a brew: a couple of grams of scale noise must
+        // not count as a lifted cup.
         assertFalse(watch.onSample(15f, 1_000L))
         watch.arm(15f)
         assertFalse(watch.onSample(1f, 2_000L))
@@ -123,48 +123,48 @@ class RemovalWatchTest {
     }
 
     @Test
-    fun `просевший вес виден до истечения выдержки`() {
+    fun `a sunken weight is visible before the wait runs out`() {
         val watch = RemovalWatch()
         val now = watch.pourUpTo(600f)
         watch.arm(600f)
         assertFalse(watch.dropPending)
 
-        // Воронку сняли секунду назад: выдержка ещё идёт, но факт падения
-        // уже известен — «Финиш» по кнопке должен считать так же.
+        // The cone was lifted a second ago: the wait is still running, but the fact of the fall is
+        // already known — "Finish" by the button has to count the same way.
         assertFalse(watch.onSample(400f, now + 1_000L))
         assertTrue(watch.dropPending)
         assertEquals(600f, watch.weightBeforeDrop, 0.01f)
     }
 
     @Test
-    fun `падение до взведения запоминается и досчитывается после`() {
+    fun `a fall before arming is remembered and counted out afterwards`() {
         val watch = RemovalWatch()
         val now = watch.pourUpTo(600f)
 
-        // Воронку сняли раньше, чем рецепт признал влив законченным.
+        // The cone was lifted before the recipe recognised the pour as finished.
         assertFalse(watch.onSample(400f, now + 1_000L))
-        assertTrue("падение видно и без взведения", watch.dropPending)
-        assertEquals("вес до падения запомнен", 600f, watch.weightBeforeDrop, 0.01f)
+        assertTrue("the fall is visible without arming too", watch.dropPending)
+        assertEquals("the weight before the fall is remembered", 600f, watch.weightBeforeDrop, 0.01f)
 
-        // Взвели позже — отсчёт идёт с самого падения, а не с этого момента.
+        // Armed later — the count runs from the fall itself rather than from this moment.
         watch.arm(400f)
         assertEquals(600f, watch.weightBeforeDrop, 0.01f)
         assertTrue(watch.onSample(400f, now + 6_000L))
     }
 
     @Test
-    fun `промежуточные показания снятия не занижают вес в истории`() {
+    fun `intermediate lift-off readings do not understate the weight in the history`() {
         val watch = RemovalWatch()
         var now = watch.pourUpTo(430f)
         watch.arm(430f)
 
-        // После чайника вес садится чуть ниже максимума и там и остаётся.
+        // After the kettle the weight settles slightly below the maximum and stays there.
         now += 1_000L
         assertFalse(watch.onSample(429.7f, now))
 
-        // Весы отдают снятие не одним скачком: пока воронку поднимают, приходит
-        // два-три промежуточных показания. Первое из них ещё выше порога, и
-        // раньше именно оно уезжало в историю вместо налитого.
+        // The scale does not give a lift-off in one jump: while the cone is being raised two or
+        // three intermediate readings arrive. The first of them is still above the threshold, and it
+        // used to be exactly the one that went into the history instead of what was poured.
         assertFalse(watch.onSample(403f, now + 100L))
         assertFalse(watch.onSample(180f, now + 200L))
         assertTrue(watch.onSample(150f, now + 5_200L))
@@ -173,16 +173,16 @@ class RemovalWatchTest {
     }
 
     @Test
-    fun `просадка, которая держится, всё-таки становится весом до падения`() {
+    fun `a dip that holds does become the weight before the fall after all`() {
         val watch = RemovalWatch()
         var now = watch.pourUpTo(430f)
         watch.arm(430f)
         now += 1_000L
         assertFalse(watch.onSample(429.7f, now))
 
-        // Не всякое падение внутри порога — снятие: чашку могли подвинуть, и
-        // новый вес держится на одном уровне. Пятнадцать секунд — это уже не
-        // рябь и не спуск на пути вниз.
+        // Not every fall inside the threshold is a lift-off: the cup could have been moved, and the
+        // new weight holds one level. Fifteen seconds is no longer ripple, nor a descent on the way
+        // down.
         repeat(15) {
             now += 1_000L
             assertFalse(watch.onSample(403f, now))
@@ -191,13 +191,13 @@ class RemovalWatchTest {
     }
 
     @Test
-    fun `после долгого слива снятие не занижает вес в истории`() {
+    fun `after a long drawdown a lift-off does not understate the weight in the history`() {
         val watch = RemovalWatch()
         var now = 0L
 
-        // Пролив. Максимум ставится на струе: падающая вода добавляет пару
-        // граммов, и после чайника вес садится чуть ниже. К самому максимуму
-        // он больше не вернётся — весь слив показания идут в пределах допуска.
+        // The pour. The maximum is set on the stream: falling water adds a couple of grams, and
+        // after the kettle the weight settles slightly lower. It will not come back to the maximum
+        // itself — the whole drawdown the readings run within the tolerance.
         for (grams in listOf(45f, 100f, 148f, 200f, 251.4f)) {
             now += 30_000L
             assertFalse(watch.onSample(grams, now))
@@ -206,7 +206,7 @@ class RemovalWatchTest {
         assertFalse(watch.onSample(251.2f, now))
         watch.arm(251.2f)
 
-        // Одна шумная посылка ниже допуска и минута слива.
+        // One noisy packet below the tolerance and a minute of drawdown.
         now += 3_000L
         assertFalse(watch.onSample(249.9f, now))
         repeat(60) {
@@ -214,8 +214,8 @@ class RemovalWatchTest {
             assertFalse(watch.onSample(251.0f, now))
         }
 
-        // Воронку сняли. Первое показание на пути вниз ещё выше порога — и
-        // раньше именно оно уезжало в историю вместо налитого.
+        // The cone was lifted. The first reading on the way down is still above the threshold — and
+        // it used to be exactly the one that went into the history instead of what was poured.
         now += 100L
         assertFalse(watch.onSample(230f, now))
         assertEquals(251.4f, watch.weightBeforeDrop, 0.01f)
@@ -227,18 +227,18 @@ class RemovalWatchTest {
     }
 
     @Test
-    fun `скачок вверх не поднимает порог снятия`() {
+    fun `a jump upwards does not raise the lift-off threshold`() {
         val watch = RemovalWatch()
         var now = watch.pourUpTo(300f)
         watch.arm(300f)
 
-        // Нажали на крышку: одно показание 410.8 г при налитых трёхстах.
+        // The lid was pressed: one reading of 410.8 g with three hundred poured.
         now += 100L
         assertFalse(watch.onSample(410.8f, now))
-        assertEquals("порог считается от налитого", 264f, watch.cutoffGrams, 0.1f)
+        assertEquals("the threshold is counted from what is poured", 264f, watch.cutoffGrams, 0.1f)
 
-        // Крышку отпустили. Настоящие триста граммов — не упавший вес, и
-        // заваривание закрывать не с чего.
+        // The lid was let go. A real three hundred grams is not a fallen weight, and there is
+        // nothing to close the brew on.
         repeat(30) {
             now += 200L
             assertFalse(watch.onSample(300f, now))
@@ -247,7 +247,7 @@ class RemovalWatchTest {
     }
 
     @Test
-    fun `сброс снимает сторож`() {
+    fun `a reset takes the watch off`() {
         val watch = RemovalWatch()
         val now = watch.pourUpTo(250f)
         watch.arm(250f)

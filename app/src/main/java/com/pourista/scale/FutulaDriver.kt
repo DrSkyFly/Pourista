@@ -4,10 +4,10 @@ import java.util.Calendar
 import java.util.UUID
 
 /**
- * Futula Kitchen Scale 3, они же LEFU CK811.
+ * Futula Kitchen Scale 3, also sold as LEFU CK811.
  *
- * Единственный протокол, проверенный на живом железе: тара, заряд, смена
- * единицы и разбор веса, включая отрицательный.
+ * The only protocol checked on live hardware: tare, battery, switching the unit and parsing
+ * the weight, negative included.
  */
 object FutulaDriver : ScaleDriver {
 
@@ -22,8 +22,8 @@ object FutulaDriver : ScaleDriver {
     override val batteryCharacteristic: UUID = bluetoothUuid("2a19")
 
     /**
-     * Вес лежит в позициях 3..4 младшим байтом вперёд, знак в позиции 5,
-     * единица на экране — в позиции 8. Сам вес весы всегда шлют в граммах.
+     * The weight lies at positions 3..4 little-endian, the sign at position 5, the unit on
+     * the display at position 8. The weight itself the scale always sends in grams.
      */
     override fun parseWeight(value: ByteArray): WeightReading? {
         if (value.size < 9) return null
@@ -44,8 +44,8 @@ object FutulaDriver : ScaleDriver {
     override fun onConnectCommands(): List<ByteArray> = listOf(timeSyncCommand())
 
     /**
-     * Синхронизация часов весов. Меняются только часы, минуты и секунды,
-     * остальные байты железо принимает как есть.
+     * Syncing the scale clock. Only the hours, minutes and seconds change, the rest of the
+     * bytes the hardware takes as they come.
      */
     fun timeSyncCommand(calendar: Calendar = Calendar.getInstance()): ByteArray = byteArrayOf(
         0xF1.toByte(), 0x07, 0xE8.toByte(), 0x07, 0x05,

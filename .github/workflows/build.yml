@@ -1,4 +1,4 @@
-name: Сборка
+name: Build
 
 on:
   push:
@@ -22,11 +22,11 @@ jobs:
       - name: Gradle
         uses: gradle/actions/setup-gradle@v4
 
-      # Образ раннера несёт не все платформы: android-37 и build-tools 36
-      # доставляем сами, иначе сборка полезет их скачивать посреди задачи.
-      # Пакет называется android-37.0: начиная с 36 в имя входит и минорная
-      # версия. Старое имя оставлено запасным, а если не найдётся ни одно —
-      # задача печатает список доступных платформ.
+      # The runner image does not carry every platform: android-37 and build-tools 36 we deliver
+      # ourselves, otherwise the build would go and download them in the middle of the job.
+      # The package is called android-37.0: from 36 on, the minor version is part of the name. The
+      # old name is left as a fallback, and if neither is found, the job prints the list of
+      # available platforms.
       - name: Android SDK
         run: |
           SDKMANAGER="$ANDROID_HOME/cmdline-tools/latest/bin/sdkmanager"
@@ -34,18 +34,18 @@ jobs:
           "$SDKMANAGER" "platforms;android-37.0" "build-tools;36.0.0" \
             || "$SDKMANAGER" "platforms;android-37" "build-tools;36.0.0" \
             || {
-              echo "::error::android-37 недоступен в репозитории SDK"
+              echo "::error::android-37 is not available in the SDK repository"
               "$SDKMANAGER" --list | grep -E "platforms;android-3[0-9]" || true
               exit 1
             }
 
-      - name: Модульные тесты
+      - name: Unit tests
         run: ./gradlew testGithubDebugUnitTest
 
-      - name: Отладочная сборка
+      - name: Debug build
         run: ./gradlew assembleGithubDebug
 
-      - name: Отчёты тестов
+      - name: Test reports
         if: failure()
         uses: actions/upload-artifact@v5
         with:

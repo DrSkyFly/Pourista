@@ -42,8 +42,8 @@ import com.pourista.ui.listSidePadding
 import com.pourista.ui.theme.AppTheme
 
 /**
- * Запись протокола весов. Экран ведёт по шагам: подключиться, начать запись,
- * поделать с весами понятные вещи, отправить файл.
+ * Recording the scale protocol. The screen leads through the steps: connect, start the recording, do
+ * a few understandable things with the scale, send the file.
  */
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable

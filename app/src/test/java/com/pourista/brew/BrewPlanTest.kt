@@ -10,8 +10,8 @@ import org.junit.Test
 class BrewPlanTest {
 
     @Test
-    fun `свирл начинается сразу после влива, а остаток уходит в паузу`() {
-        // Влив 30 с, свирл 5 с, пауза 10 с. Лили быстро и закончили на двадцатой.
+    fun `a swirl starts right after the pour and the remainder goes into the pause`() {
+        // A 30 s pour, a 5 s swirl, a 10 s pause. Poured fast and finished on the twentieth.
         val plan = listOf(
             step(StepKind.POUR, 0, 30, 300f),
             step(StepKind.SWIRL, 30, 5, 300f),
@@ -21,13 +21,13 @@ class BrewPlanTest {
         val pulled = plan.pulledIn(stepStartSec = 30, shiftSec = 10)
 
         assertEquals(listOf(0 to 20, 20 to 5, 25 to 20), pulled.times())
-        // Рецепт кончается тогда же: время не потеряно, оно в паузе.
+        // The recipe ends at the same moment: the time is not lost, it is in the pause.
         assertEquals(45, plan.last().endSec)
         assertEquals(45, pulled.last().endSec)
     }
 
     @Test
-    fun `паузы в рецепте нет — она появляется`() {
+    fun `the recipe has no pause so one appears`() {
         val plan = listOf(
             step(StepKind.POUR, 0, 30, 300f),
             step(StepKind.SWIRL, 30, 5, 300f),
@@ -38,14 +38,14 @@ class BrewPlanTest {
 
         assertEquals(listOf(0 to 20, 20 to 5, 25 to 10, 35 to 10), pulled.times())
         assertEquals(StepKind.WAIT, pulled[2].kind)
-        // Пауза — это то же самое количество воды, что и после свирла.
+        // The pause holds the same amount of water as after the swirl.
         assertEquals(300f, pulled[2].targetWaterGrams, 0.01f)
-        // Второй влив начинается тогда же, когда собирался.
+        // The second pour starts exactly when it meant to.
         assertEquals(35, pulled[3].startSec)
     }
 
     @Test
-    fun `перед сливом пауза не нужна`() {
+    fun `no pause is needed before the drawdown`() {
         val plan = listOf(
             step(StepKind.POUR, 75, 30, 250f),
             step(StepKind.SWIRL, 105, 10, 250f),
@@ -55,12 +55,12 @@ class BrewPlanTest {
         val pulled = plan.pulledIn(stepStartSec = 105, shiftSec = 10)
 
         assertEquals(listOf(75 to 20, 95 to 10, 105 to 95), pulled.times())
-        // Воды больше не будет, ждать нечего: заваривание кончается раньше.
+        // No more water is coming and nothing to wait for: the brew ends earlier.
         assertEquals(200, pulled.last().endSec)
     }
 
     @Test
-    fun `свирл в конце рецепта просто заканчивает его раньше`() {
+    fun `a swirl at the end of the recipe simply finishes it earlier`() {
         val plan = listOf(
             step(StepKind.POUR, 0, 30, 300f),
             step(StepKind.SWIRL, 30, 5, 300f),
@@ -72,7 +72,7 @@ class BrewPlanTest {
     }
 
     @Test
-    fun `размешивание подтягивается так же, как свирл`() {
+    fun `a stir is pulled in the same way as a swirl`() {
         val plan = listOf(
             step(StepKind.BLOOM, 0, 15, 66f),
             step(StepKind.STIR, 15, 30, 66f),
@@ -85,23 +85,23 @@ class BrewPlanTest {
     }
 
     @Test
-    fun `тянуть можно только свирл и только за вливом`() {
+    fun `only a swirl can be pulled, and only behind a pour`() {
         val plan = listOf(
             step(StepKind.POUR, 0, 30, 300f),
             step(StepKind.WAIT, 30, 10, 300f),
             step(StepKind.SWIRL, 40, 5, 300f),
         )
 
-        // Пауза после влива подождёт: её место в рецепте выбрано осознанно.
+        // A pause after a pour will wait: its place in the recipe was chosen deliberately.
         assertSame(plan, plan.pulledIn(stepStartSec = 30, shiftSec = 10))
-        // Свирл не за вливом, а за паузой — значит, влив кончился давно.
+        // The swirl is behind a pause rather than a pour — so the pour ended long ago.
         assertSame(plan, plan.pulledIn(stepStartSec = 40, shiftSec = 5))
-        // Такого шага в рецепте нет.
+        // There is no such step in the recipe.
         assertSame(plan, plan.pulledIn(stepStartSec = 33, shiftSec = 5))
     }
 
     @Test
-    fun `подтяжка не съедает влив целиком`() {
+    fun `a pull-in does not eat the whole pour`() {
         val plan = listOf(
             step(StepKind.POUR, 0, 30, 300f),
             step(StepKind.SWIRL, 30, 5, 300f),
@@ -114,7 +114,7 @@ class BrewPlanTest {
     }
 
     @Test
-    fun `подтяжки переносятся на рецепт, пересчитанный под дозу`() {
+    fun `pull-ins carry over to a recipe recalculated for the dose`() {
         val recipe = recipe(
             step(StepKind.POUR, 0, 30, 300f),
             step(StepKind.SWIRL, 30, 5, 300f),
@@ -130,7 +130,7 @@ class BrewPlanTest {
             listOf(0 to 20, 20 to 5, 25 to 20, 45 to 15, 60 to 5, 65 to 60),
             planned.steps.times(),
         )
-        // Рецепт без подтяжек остаётся тем же самым объектом.
+        // A recipe with no pull-ins stays the very same object.
         assertSame(recipe, recipe.withPullIns(emptyMap()))
     }
 
@@ -145,7 +145,7 @@ class BrewPlanTest {
     )
 
     private fun recipe(vararg steps: RecipeStep) = Recipe(
-        name = "Тест",
+        name = "Test",
         brewer = "V60",
         doseGrams = 18f,
         waterGrams = 300f,

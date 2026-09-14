@@ -5,59 +5,57 @@ import kotlin.math.abs
 import kotlin.math.roundToInt
 
 /**
- * Кофемолка: как её настройка превращается в размер частиц.
+ * A grinder: how its setting turns into a particle size.
  *
- * Шкала у всех линейная — от нулевого зазора до самого грубого помола, — и
- * разница только в записи. У Comandante это просто клики от сведённых
- * жерновов, у Timemore C5 ESP запись из трёх частей: оборот, деление, клик.
- * Поэтому настройка хранится как число кликов от нуля, а [radix] говорит,
- * сколько кликов стоит за каждой частью записи: [50, 5, 1] читается как
- * «оборот — 50 кликов, деление — 5, клик — 1».
+ * The scale is linear on all of them — from zero gap to the coarsest grind — and the difference is
+ * only in the notation. On a Comandante it is plain clicks from closed burrs, on a Timemore C5 ESP
+ * the notation has three parts: turn, tick, click. So a setting is stored as the number of clicks
+ * from zero, and [radix] says how many clicks stand behind every part of the notation: [50, 5, 1]
+ * reads as "a turn is 50 clicks, a tick is 5, a click is 1".
  *
- * Есть и третий вид шкалы: у Fellow Opus или Etzinger между числами стоят
- * четвертинки, и настройка пишется дробью — «2.25». Такие отмечены
- * [decimals]: точка там не разделяет разряды, а отделяет дробную часть.
+ * There is a third kind of scale too: on a Fellow Opus or an Etzinger there are quarters between the
+ * numbers, and the setting is written as a fraction — "2.25". Those are marked with [decimals]: the
+ * dot there does not separate the parts but the fractional half.
  */
 data class Grinder(
     val id: String,
     val brand: String,
     val model: String,
-    /** Микроны на нулевой настройке: не у всех кофемолок жернова сводятся. */
+    /** Microns at the zero setting: not every grinder closes its burrs. */
     val base: Double,
-    /** Насколько микрон грубеет помол за один клик. */
+    /** How many microns coarser the grind gets per click. */
     val step: Double,
     val radix: List<Int>,
-    /** Чем части записи разделены на самой кофемолке. */
+    /** How the parts of the notation are separated on the grinder itself. */
     val separator: Char,
     val minClicks: Int,
     val maxClicks: Int,
-    /** Знаков после точки, если настройка пишется дробью. 0 — запись разрядами. */
+    /** Decimal places, if the setting is written as a fraction. 0 means notation by parts. */
     val decimals: Int = 0,
 ) {
     val name: String get() = "$brand $model"
 
-    /** Размер частиц на этой настройке. */
+    /** The particle size at this setting. */
     fun microns(clicks: Int): Double = base + clicks * step
 
-    /** Настройка, дающая такой помол. Мельче или грубее шкалы — упираемся в край. */
+    /** The setting that gives such a grind. Finer or coarser than the scale — we stop at its edge. */
     fun clicksFor(microns: Double): Int =
         ((microns - base) / step).roundToInt().coerceIn(minClicks, maxClicks)
 
     /**
-     * Разбор того, что человек списал с кофемолки. Разделитель берём любой
-     * привычный: в инструкциях к одной и той же Timemore встречается и
-     * «1.7.2», и «1:7:2».
+     * Parsing what the person copied off the grinder. We take any of the usual separators: in the
+     * instructions to one and the same Timemore both "1.7.2" and "1:7:2" turn up.
      */
     fun parse(text: String): Int? {
-        // Дробная шкала: «2.25» — это два с четвертью, а не два и двадцать пять.
+        // A fractional scale: "2.25" is two and a quarter, not two and twenty-five.
         if (decimals > 0) {
             val value = text.trim().replace(',', '.').toDoubleOrNull() ?: return null
             return (value * radix[0]).roundToInt().takeIf { it in minClicks..maxClicks }
         }
         val parts = text.trim().split(*SEPARATORS).filter { it.isNotBlank() }
         if (parts.isEmpty() || parts.size > radix.size) return null
-        // Шкала без частей — тогда можно и дробную настройку: между делениями
-        // Encore есть куда встать, а мы всё равно округлим к ближайшему.
+        // A scale with no parts — then a fractional setting is allowed too: between the ticks of an
+        // Encore there is room to stand, and we round to the nearest one anyway.
         if (radix.size == 1) {
             val value = parts.single().replace(',', '.').toDoubleOrNull() ?: return null
             return (value / radix[0]).roundToInt().takeIf { it in minClicks..maxClicks }
@@ -71,11 +69,11 @@ data class Grinder(
         return clicks.takeIf { it in minClicks..maxClicks }
     }
 
-    /** Запись настройки так, как она подписана на самой кофемолке. */
+    /** The setting written the way it is labelled on the grinder itself. */
     fun format(clicks: Int): String {
         if (decimals > 0) {
             val text = String.format(Locale.US, "%.${decimals}f", clicks.toDouble() / radix[0])
-            // Нули в конце дроби только мешают: «2.5», а не «2.50».
+            // Trailing zeros in a fraction only get in the way: "2.5", not "2.50".
             return text.trimEnd('0').trimEnd('.')
         }
         if (radix.size == 1) return (clicks * radix[0]).toString()
@@ -88,23 +86,23 @@ data class Grinder(
     }
 
     private companion object {
-        /** Разделители частей записи, какие попадаются в инструкциях. */
+        /** The separators of the notation parts, as they turn up in the instructions. */
         val SEPARATORS = charArrayOf('.', ':', '/', '+', '-', ',', ' ').map { it.toString() }.toTypedArray()
     }
 }
 
-/** Настройка на целевой кофемолке и то, насколько точно в неё удалось попасть. */
+/** The setting on the target grinder and how exactly it could be hit. */
 data class GrindMatch(
     val clicks: Int,
     val microns: Double,
-    /** Помол, который просили: у грубой шкалы точно попасть не всегда выходит. */
+    /** The grind that was asked for: on a coarse scale hitting it exactly does not always work out. */
     val wantedMicrons: Double,
 ) {
-    /** Промах больше половины клика целевой кофемолки — значит шкала грубее нужного. */
+    /** A miss of more than half a click of the target grinder means the scale is coarser than needed. */
     fun isExact(target: Grinder): Boolean = abs(microns - wantedMicrons) <= target.step / 2 + 0.001
 }
 
-/** Пересчёт настройки с одной кофемолки на другую через размер частиц. */
+/** Converting a setting from one grinder to another through the particle size. */
 fun convert(from: Grinder, clicks: Int, to: Grinder): GrindMatch {
     val wanted = from.microns(clicks)
     val target = to.clicksFor(wanted)

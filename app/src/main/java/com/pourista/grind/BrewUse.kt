@@ -4,11 +4,11 @@ import androidx.annotation.StringRes
 import com.pourista.R
 
 /**
- * Для чего годится помол такого размера.
+ * What a grind of this size is good for.
  *
- * Полосы в микронах взяты у того же источника, что и шкалы кофемолок, поэтому
- * подпись согласована с пересчётом. Нужна она для проверки на глаз: если
- * вместо эспрессо в ответе оказалась турка, значит выбрана не та кофемолка.
+ * The micron bands are taken from the same source as the grinder scales, so the label agrees with
+ * the conversion. It is there for an eye check: if a cezve turns up in the answer instead of
+ * espresso, the wrong grinder was picked.
  */
 enum class BrewUse(
     private val from: Int,
@@ -24,7 +24,7 @@ enum class BrewUse(
     COLD_BREW(800, 1400, R.string.grind_use_cold_brew);
 
     companion object {
-        /** Способы, которым такой помол подходит. Больше трёх не показываем. */
+        /** The methods such a grind suits. We show no more than three. */
         fun forMicrons(microns: Double): List<BrewUse> =
             entries.filter { microns >= it.from && microns <= it.to }.take(3)
     }

@@ -6,24 +6,24 @@ import org.junit.Assert.assertTrue
 import org.junit.Test
 
 /**
- * Список версий в окне «Что нового» ведётся руками, и его легко забыть при
- * выпуске. Тест ловит именно это.
+ * The list of versions in the "What is new" dialog is kept by hand, and it is easy to forget at
+ * release time. This is exactly what the test catches.
  */
 class ReleaseNotesTest {
 
     @Test
-    fun `свежая версия описана в окне «Что нового»`() {
+    fun `the freshest version is described in the What is new dialog`() {
         assertEquals(BuildConfig.VERSION_NAME, ReleaseNotes.all.first().version)
     }
 
     @Test
-    fun `версии идут сверху вниз и не повторяются`() {
+    fun `the versions run top to bottom and do not repeat`() {
         val versions = ReleaseNotes.all.map { it.version }
         assertEquals(versions.distinct(), versions)
 
         val numbers = versions.map { version -> version.split(".").map { it.toInt() } }
         numbers.zipWithNext { newer, older ->
-            assertTrue("$newer должно быть выше $older", compare(newer, older) > 0)
+            assertTrue("$newer should stand above $older", compare(newer, older) > 0)
         }
     }
 

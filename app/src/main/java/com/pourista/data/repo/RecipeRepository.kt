@@ -27,8 +27,8 @@ class RecipeRepository(private val dao: RecipeDao) {
     }
 
     /**
-     * Новый рецепт встаёт в начало списка: его завели, чтобы заварить, а не
-     * чтобы искать в хвосте среди встроенных.
+     * A new recipe goes to the top of the list: it was created to be brewed, not to be
+     * looked for at the tail among the built-in ones.
      */
     suspend fun saveNewOnTop(recipe: Recipe, now: Long = System.currentTimeMillis()): Long {
         val top = (dao.minSortOrder() ?: TOP_SORT_ORDER) - SORT_ORDER_GAP
@@ -38,8 +38,8 @@ class RecipeRepository(private val dao: RecipeDao) {
     suspend fun delete(recipeId: Long) = dao.deleteRecipeById(recipeId)
 
     /**
-     * Записывает новый порядок списка. Перенумеровываем все строки: у рецептов
-     * из старых версий базы sort_order мог совпадать.
+     * Writes the new order of the list. All the rows are renumbered: recipes from older
+     * database versions could share a sort_order.
      */
     suspend fun reorder(ids: List<Long>) = dao.renumber(ids)
 
@@ -51,11 +51,11 @@ class RecipeRepository(private val dao: RecipeDao) {
 
     suspend fun deleteUntouchedBuiltIns(): Int = dao.deleteUntouchedBuiltIns()
 
-    /** Подставляет тексты встроенного рецепта на текущем языке приложения. */
+    /** Puts in the texts of a built-in recipe in the current app language. */
     suspend fun relocalizeBuiltIn(recipe: Recipe) =
         dao.localizeBuiltIn(recipe.name, recipe.notes, recipe.grindSetting)
 
-    /** Копия рецепта для правки: встроенные рецепты не редактируются на месте. */
+    /** A copy of a recipe for editing: built-in recipes are not edited in place. */
     suspend fun duplicate(recipe: Recipe, newName: String): Long = saveNewOnTop(
         recipe.copy(
             id = 0,
@@ -69,9 +69,9 @@ class RecipeRepository(private val dao: RecipeDao) {
     )
 
     /**
-     * Импортированные рецепты ложатся сверху, в порядке файла. Возвращает их
-     * id: открытый снаружи файл сразу берут в работу, а для этого нужен рецепт,
-     * а не число.
+     * Imported recipes land on top, in the order of the file. Returns their ids: a file
+     * opened from outside is taken into work at once, and that needs a recipe rather than
+     * a number.
      */
     suspend fun importAll(recipes: List<Recipe>): List<Long> =
         recipes.reversed().map { recipe ->
@@ -86,14 +86,13 @@ class RecipeRepository(private val dao: RecipeDao) {
             )
         }.reversed()
 
-    /** Всё, что есть в базе, — для резервной копии. */
+    /** Everything in the database — for a backup. */
     suspend fun exportAll(): List<Recipe> = dao.allRecipes().map { it.toDomain() }
 
     /**
-     * Восстановление из копии. Рецепт с таким же названием пропускаем: на
-     * свежей установке уже посеян встроенный набор, да и повторное
-     * восстановление не должно плодить двойники. Всё остальное переносим как
-     * есть — избранное, порядок, времена.
+     * Restoring from a backup. A recipe with the same name is skipped: a fresh installation
+     * already has the built-in set seeded, and restoring twice should not breed twins.
+     * Everything else carries over as it is — favourites, order, times.
      */
     suspend fun restoreAll(recipes: List<Recipe>): Int {
         val known = dao.recipeNames().map { it.lowercase() }.toMutableSet()

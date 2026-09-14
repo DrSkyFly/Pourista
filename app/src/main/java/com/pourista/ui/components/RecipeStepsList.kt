@@ -33,8 +33,8 @@ import com.pourista.data.model.RecipeStep
 import com.pourista.ui.labelRes
 
 /**
- * Кнопка «Показать этапы»: рецепт разворачивают, чтобы заранее увидеть весь
- * план пролива, а не догадываться о нём по одной строке с числом проливов.
+ * The "Show steps" button: a recipe is expanded to see the whole pour plan in advance rather
+ * than guess at it from a single line with the number of pours.
  */
 @Composable
 fun StepsToggle(
@@ -57,9 +57,9 @@ fun StepsToggle(
 }
 
 /**
- * Тот же разворот, но строкой, а не кнопкой. У кнопки площадь под палец в
- * 48 dp при строке в 20, и в плотной плитке рецепта она расталкивает соседей;
- * здесь высоту задаём сами, а под нажатие отдаём всю ширину.
+ * The same expander, but as a line rather than a button. A button has a 48 dp finger area for a
+ * 20 dp line, and in the dense recipe tile it pushes its neighbours apart; here we set the height
+ * ourselves and give the whole width to the press.
  */
 @Composable
 fun StepsToggleInline(
@@ -93,24 +93,24 @@ fun StepsToggleInline(
 }
 
 /**
- * Все этапы рецепта подряд: что делать, когда и сколько долить.
+ * Every step of the recipe in a row: what to do, when, and how much to add.
  *
- * Этапы идут лентой — кружок со значком, от кружка к кружку линия. Пролив
- * последователен, и порядок должен читаться раньше текста; заодно видно, что
- * список кончился, а не оборвался.
+ * The steps go as a ribbon — a circle with an icon, a line from circle to circle. Pouring is a
+ * sequence, and the order has to read before the text does; it also shows that the list ended
+ * rather than broke off.
  *
- * Вода в шаге хранится накопительной целью, а человеку нужен долив — разницу
- * считаем здесь, по тому же правилу, что и подсказки во время пролива.
+ * The water in a step is stored as a cumulative target, while a person needs the addition — the
+ * difference is counted here, by the same rule as the guidance during a pour.
  */
 @Composable
 fun RecipeStepsList(
     steps: List<RecipeStep>,
     modifier: Modifier = Modifier,
-    /** Шаг, который идёт прямо сейчас, — его подсвечиваем. */
+    /** The step running right now — we highlight it. */
     currentIndex: Int? = null,
 ) {
-    // Промежутки между строками отданы самим строкам: линия должна тянуться и
-    // через них, иначе лента распадётся на отдельные кружки.
+    // The gaps between rows are given to the rows themselves: the line has to run through them
+    // too, otherwise the ribbon falls apart into separate circles.
     Column(modifier = modifier.fillMaxWidth()) {
         var previousTarget = 0f
         steps.forEachIndexed { index, step ->
@@ -141,9 +141,9 @@ private fun StepRow(
 
     val details = stepDetails(step, deltaGrams)
     val note = step.note?.takeIf { it.isNotBlank() }
-    // У слива и ожидания нет ни долива, ни заметки — строка всего одна, и вся
-    // она встаёт по середине кружка. Где строк больше, по середине стоит
-    // кружок, а название с временем остаются наверху.
+    // A drawdown and a wait have neither an addition nor a note — there is only one line, and all
+    // of it stands level with the middle of the circle. Where there are more lines, the circle
+    // stands in the middle and the name with the time stays at the top.
     val single = details == null && note == null
     val rowAlign = if (single) Alignment.CenterVertically else Alignment.Top
 
@@ -161,7 +161,7 @@ private fun StepRow(
         Row(
             modifier = Modifier
                 .fillMaxWidth()
-                // Этап без подписей ниже кружка — линии тогда не от чего вести.
+                // A step with no labels below the circle — then there is nothing to run the lines from.
                 .heightIn(min = StepBadgeSize),
         ) {
             StepBadge(
@@ -169,8 +169,8 @@ private fun StepRow(
                 tint = if (current) MaterialTheme.colorScheme.onPrimary else muted,
                 ring = if (current) accent else line,
                 fill = if (current) accent else null,
-                // Кружок по середине всего этапа, а не по строке с названием:
-                // описание — часть того же этапа, и значок относится к нему же.
+                // The circle sits in the middle of the whole step rather than of the name line: the
+                // description is part of the same step, and the icon belongs to it too.
                 modifier = Modifier.align(Alignment.CenterVertically),
             )
             Spacer(Modifier.size(12.dp))
@@ -201,28 +201,28 @@ private fun StepRow(
                 text = "${formatClock(step.startSec)}–${formatClock(step.endSec)}",
                 style = MaterialTheme.typography.labelMedium,
                 color = muted,
-                // Время стоит вровень с названием: строчка у него мелче, и
-                // без поправки она уезжает вверх.
+                // The time stands level with the name: its line is smaller, and without the
+                // correction it drifts upwards.
                 modifier = Modifier
                     .align(rowAlign)
                     .padding(top = if (single) 0.dp else TIME_TOP),
             )
         }
-        // Просвет между этапами — часть строки: линия идёт и по нему.
+        // The gap between steps is part of the row: the line runs through it as well.
         if (!last) Spacer(Modifier.height(STEP_GAP))
     }
 }
 
 /**
- * Линия между кружками: рисуем по фону этапа, за текстом.
+ * The line between the circles: drawn on the background of the step, behind the text.
  *
- * Двумя кусками — от верха строки к своему кружку и от него вниз. Кружок стоит
- * посередине строки, и над ним у высокого этапа остаётся пустое место: рисуй
- * только вниз — и до следующего кружка линия не достанет.
+ * In two pieces — from the top of the row to its own circle and from it downwards. The circle
+ * stands in the middle of the row, and on a tall step there is empty space above it: draw only
+ * downwards and the line would not reach the next circle.
  */
 private fun DrawScope.drawStepLine(color: Color, first: Boolean, last: Boolean) {
     val badge = StepBadgeSize.toPx()
-    // Просвет до следующего этапа лежит под строкой; у последнего его нет.
+    // The gap to the next step lies under the row; the last one has none.
     val rowHeight = size.height - if (last) 0f else STEP_GAP.toPx()
     val x = badge / 2f
     val width = StepLineWidth.toPx()
@@ -234,13 +234,13 @@ private fun DrawScope.drawStepLine(color: Color, first: Boolean, last: Boolean) 
     }
 }
 
-/** Просвет между этапами: столько линии видно между кружками. */
+/** The gap between steps: this much of the line shows between the circles. */
 private val STEP_GAP = 18.dp
 
-/** Поправка для времени справа: у него строка мелче, чем у названия. */
+/** The correction for the time on the right: its line is smaller than the name's. */
 private val TIME_TOP = 2.dp
 
-/** «+50г до 50г · 45с · 5,0г/с» — шаги без долива обходятся без второй строки. */
+/** "+50 g to 50 g · 45 s · 5.0 g/s" — steps with no addition do without the second line. */
 @Composable
 private fun stepDetails(step: RecipeStep, deltaGrams: Float): String? {
     if (deltaGrams <= 0f) return null
@@ -249,7 +249,7 @@ private fun stepDetails(step: RecipeStep, deltaGrams: Float): String? {
         formatGrams(deltaGrams, 0),
         formatGrams(step.targetWaterGrams, 0),
     )
-    // Длительность шага: по диапазону справа её приходится вычитать в уме.
+    // The length of the step: from the range on the right it has to be subtracted in one's head.
     val duration = stringResource(R.string.step_row_duration, step.durationSec)
     val seconds = step.pourSeconds(deltaGrams)
     if (seconds <= 0f) return "$water · $duration"

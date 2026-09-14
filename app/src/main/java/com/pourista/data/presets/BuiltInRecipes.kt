@@ -7,31 +7,31 @@ import com.pourista.data.model.RecipeStep
 import com.pourista.data.model.StepKind
 
 /**
- * Рецепты, которыми приложение наполняется при первом запуске. Дальше это
- * обычные записи в базе: их можно скопировать и править под свою воронку.
+ * The recipes the app is filled with on the first run. After that they are ordinary
+ * records in the database: they can be copied and edited to fit your own cone.
  */
 object BuiltInRecipes {
 
     /**
-     * Версия набора. При росте встроенные рецепты пересеиваются, а изменённые
-     * пользователем и добавленные в избранное остаются нетронутыми.
+     * The version of the set. When it grows the built-in recipes are reseeded, while the
+     * ones the user changed or marked as favourites are left untouched.
      */
     const val VERSION = 10
 
     /**
-     * Набор для посева. [includeRetired] — рецепты, которые новичкам больше не
-     * предлагаем, но у кого они уже стоят, тем оставляем: человек мог к ним
-     * привыкнуть, а обновление не повод менять его полку.
+     * The set to seed. [includeRetired] covers recipes we no longer offer to newcomers but
+     * leave to those who already have them: a person may have got used to them, and an
+     * update is no reason to rearrange their shelf.
      */
     fun all(context: Context, includeRetired: Boolean = true): List<Recipe> {
         val medium = context.getString(R.string.grind_medium)
         val coarse = context.getString(R.string.grind_coarse)
         val fine = context.getString(R.string.grind_fine)
-        // Порядок списка задаётся здесь: сначала воронки V60, потом остальные
-        // способы. Каждому рецепту достаётся своё место в сортировке.
+        // The order of the list is set here: the V60 cones first, then the other methods.
+        // Every recipe gets a place of its own in the sorting.
         return listOf(
             hoffmann(context, medium),
-            // 4:6 ушёл из набора: тот же метод считает генератор, и точнее.
+            // 4:6 left the set: the generator counts the same method, and more precisely.
             kasuya(context, coarse).takeIf { includeRetired },
             rao(context, medium),
             espresso(context, fine),
@@ -182,8 +182,8 @@ object BuiltInRecipes {
     )
 
     /**
-     * Единственный рецепт с ручным стартом: у эспрессо вес начинает расти только
-     * после первых капель, а таймер нужно пускать вместе с помпой.
+     * The only recipe with a manual start: on espresso the weight only starts growing after
+     * the first drops, and the timer has to be started together with the pump.
      */
     private fun espresso(context: Context, grind: String) = recipe(
         name = "Espresso 1:2",
@@ -195,7 +195,7 @@ object BuiltInRecipes {
         notes = context.getString(R.string.preset_notes_espresso),
         autoStart = false,
         steps = listOf(
-            // Один непрерывный пролив от нажатия на помпу: 36 г к 0:28.
+            // One continuous pour from pressing the pump: 36 g by 0:28.
             step(StepKind.POUR, 0, 28, 36f, flow = 1.3f),
         ),
     )
@@ -208,7 +208,7 @@ object BuiltInRecipes {
         temp = 85,
         grind = grind,
         notes = context.getString(R.string.preset_notes_aeropress),
-        // Отжим роняет вес: сглаживать его и ловить по нему конец нельзя.
+        // The press drops the weight: it must not be smoothed, nor used to catch the end.
         aeropressMode = true,
         steps = listOf(
             step(StepKind.POUR, 0, 20, 220f, flow = 11f),

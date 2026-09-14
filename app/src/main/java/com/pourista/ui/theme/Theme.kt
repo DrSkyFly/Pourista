@@ -27,9 +27,9 @@ import androidx.core.view.WindowCompat
 enum class ThemeMode { SYSTEM, LIGHT, DARK }
 
 /**
- * Набор цветов. Порядок — как в списке настроек, [DYNAMIC] по умолчанию: он
- * берёт цвета из обоев системы и есть только с Android 12, на более старых
- * равносилен [COPPER].
+ * The set of colours. The order is as in the settings list, with [DYNAMIC] by default: it takes the
+ * colours from the system wallpaper and exists only from Android 12 on, while on older ones it is
+ * the same as [COPPER].
  */
 enum class AppPalette { DYNAMIC, CALM, COPPER, FOUR_SIX }
 
@@ -44,8 +44,8 @@ object AppTheme {
         @Composable @ReadOnlyComposable get() = LocalPalette.current
 
     /**
-     * Цвета шапки экрана. В палитре «4:6» она бирюзовая, как в оригинале;
-     * в остальных остаётся обычной поверхностью.
+     * The colours of the screen header. In the "4:6" palette it is turquoise, as in the original; in
+     * the rest it stays an ordinary surface.
      */
     @OptIn(ExperimentalMaterial3Api::class)
     @Composable
@@ -62,7 +62,7 @@ object AppTheme {
             TopAppBarDefaults.topAppBarColors()
         }
 
-    /** В палитре «4:6» шапка снизу скруглена, как в оригинале. */
+    /** In the "4:6" palette the header is rounded at the bottom, as in the original. */
     @Composable
     fun topBarModifier(): Modifier =
         if (palette == AppPalette.FOUR_SIX) {
@@ -72,8 +72,8 @@ object AppTheme {
         }
 
     /**
-     * Подложка плитки рецепта. Цветная она только там, где не спорит с
-     * основным цветом: рядом с жёлтым бирюза тяжела, и плитка остаётся тёмной.
+     * The backing of the recipe tile. It is coloured only where it does not argue with the main
+     * colour: next to yellow the turquoise is heavy, and the tile stays dark.
      */
     val recipeTile: Color
         @Composable get() = if (palette == AppPalette.FOUR_SIX) {
@@ -86,9 +86,9 @@ object AppTheme {
 private val BAR_CORNER = 24.dp
 
 /**
- * Формы. Крупнее стандартных: у Material скругление карточки 12 dp осталось с
- * первых версий, а нынешний язык системы — мягче и круглее. Кнопки и поля тут
- * не участвуют, у них своя форма.
+ * Shapes. Larger than the standard ones: Material's 12 dp card rounding is left over from the first
+ * versions, while the present language of the system is softer and rounder. Buttons and fields do
+ * not take part here, they have a shape of their own.
  */
 private val PouristaShapes = Shapes(
     extraSmall = RoundedCornerShape(8.dp),
@@ -118,8 +118,8 @@ fun PouristaTheme(
         dark -> DarkColors
         else -> LightColors
     }
-    // Подсказки пролива живут отдельно от палитры Material: их цвета обязаны
-    // сохранять смысл, поэтому у обоев системы они остаются кофейными.
+    // The pour guidance lives apart from the Material palette: its colours are obliged to keep their
+    // meaning, so with the system wallpaper they stay coffee-coloured.
     val accents = when {
         palette == AppPalette.FOUR_SIX -> if (dark) FourSixDarkAccents else FourSixLightAccents
         palette == AppPalette.CALM -> if (dark) CalmDarkAccents else CalmLightAccents
@@ -127,8 +127,8 @@ fun PouristaTheme(
         else -> LightAccents
     }
 
-    // Значки системной строки: под шапкой 4:6 всегда бирюза, поэтому там они
-    // светлые независимо от темы, а внизу цвет берётся от фона приложения.
+    // The system bar icons: under the 4:6 header it is always turquoise, so there they are light
+    // regardless of the theme, while at the bottom the colour comes from the app background.
     val view = LocalView.current
     if (!view.isInEditMode) {
         val barDark = dark || palette == AppPalette.FOUR_SIX

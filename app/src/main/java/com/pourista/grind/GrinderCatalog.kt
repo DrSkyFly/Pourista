@@ -5,10 +5,10 @@ import com.pourista.R
 import org.json.JSONObject
 
 /**
- * Список кофемолок из res/raw/grinders.json.
+ * The list of grinders from res/raw/grinders.json.
  *
- * Файл небольшой и лежит в самом приложении: пересчёт помола работает без
- * сети. Читаем один раз при первом обращении.
+ * The file is small and lies inside the app itself: the grind conversion works with no network. We
+ * read it once, on the first request.
  */
 object GrinderCatalog {
 
@@ -22,30 +22,30 @@ object GrinderCatalog {
     fun byId(context: Context, id: String?): Grinder? =
         id?.let { key -> all(context).firstOrNull { it.id == key } }
 
-    /** Фирмы по алфавиту. */
+    /** The makes in alphabetical order. */
     fun brands(context: Context): List<String> =
         all(context).map { it.brand }.distinct().sortedBy { it.lowercase() }
 
-    /** Модели одной фирмы. */
+    /** The models of one make. */
     fun models(context: Context, brand: String): List<Grinder> =
         all(context).filter { it.brand == brand }.sortedBy { it.model.lowercase() }
 
     /**
-     * Поиск модели по тому, как её записали в рецепте. Пишут по-разному —
-     * «Timemore C5 ESP», «1Zpresso JX-Pro», просто «C40 MK4», — поэтому
-     * сравниваем без пробелов, дефисов и регистра.
+     * Looking a model up by the way it was written down in a recipe. People write them differently —
+     * "Timemore C5 ESP", "1Zpresso JX-Pro", or plain "C40 MK4" — so we compare without spaces,
+     * hyphens and case.
      */
     fun find(context: Context, query: String?): Grinder? {
         val needle = simplify(query ?: return null)
         if (needle.length < 3) return null
         val all = all(context)
         all.firstOrNull { simplify(it.name) == needle }?.let { return it }
-        // В рецепте написано с лишним: ищем самое длинное название внутри.
+        // The recipe has more written down than needed: we look for the longest name inside it.
         all.filter { needle.contains(simplify(it.name)) }
             .maxByOrNull { simplify(it.name).length }
             ?.let { return it }
-        // Написано короче полного имени: берём самое короткое из подходящих,
-        // оно же самое точное.
+        // It is written shorter than the full name: we take the shortest of those that fit, which is
+        // also the most exact.
         return all.filter { simplify(it.name).contains(needle) }
             .minByOrNull { simplify(it.name).length }
     }

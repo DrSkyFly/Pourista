@@ -4,9 +4,9 @@ import androidx.compose.material3.darkColorScheme
 import androidx.compose.material3.lightColorScheme
 import androidx.compose.ui.graphics.Color
 
-// Кофейная палитра. Тон медный, но приглушённый: на экране во время пролива
-// заливкой идут целые карточки, и насыщенный цвет на такой площади утомляет
-// глаза. Цветом здесь помечают смысл, а не украшают.
+// The coffee palette. The tone is copper, but muted: on the screen during a pour whole cards go as
+// fills, and a saturated colour over such an area tires the eyes. Colour here marks meaning rather
+// than decorates.
 
 val LightColors = lightColorScheme(
     primary = Color(0xFF6E4B33),
@@ -79,8 +79,8 @@ val DarkColors = darkColorScheme(
 )
 
 /**
- * Цвета подсказок пролива. Живут отдельно от [androidx.compose.material3.ColorScheme],
- * потому что должны сохранять смысл и при динамической палитре Material You.
+ * The colours of the pour guidance. They live apart from [androidx.compose.material3.ColorScheme],
+ * because they have to keep their meaning under a dynamic Material You palette as well.
  */
 data class BrewAccents(
     val onTrack: Color,
@@ -90,7 +90,7 @@ data class BrewAccents(
     val tooSlow: Color,
     val tooSlowContainer: Color,
     val water: Color,
-    /** Тревога: весы не на связи. Заметнее, чем error из палитры Material You. */
+    /** Alarm: the scale is not connected. More noticeable than the error from the Material You palette. */
     val alarm: Color,
 )
 
@@ -116,21 +116,21 @@ val DarkAccents = BrewAccents(
     alarm = Color(0xFFE0776C),
 )
 
-// Палитра «4:6»: чёрный фон, бирюзовая шапка и янтарная кнопка — цвета сняты
-// с приложения метода 4:6 Тэцу Кацуи.
+// The "4:6" palette: a black background, a turquoise header and an amber button — the colours are
+// taken from the app of Tetsu Kasuya's 4:6 method.
 
 private val Amber = Color(0xFFFFC145)
 private val Teal = Color(0xFF1C677E)
 
-/** Шапка экрана в палитре «4:6» — та самая бирюза из оригинала. */
+/** The screen header in the "4:6" palette — that very turquoise from the original. */
 val FourSixBar = Teal
 val FourSixOnBar = Color(0xFFEBF6FA)
 private val SkyBlue = Color(0xFF1D89E4)
 
-/** Тёплый песочный фон светлой темы 4:6 — карточки на нём остаются белыми. */
+/** The warm sandy background of the light 4:6 theme — the cards on it stay white. */
 private val Sand = Color(0xFFECE7E3)
 
-/** Оранжевый кнопок и этапов светлой темы 4:6 — снят с кнопки оригинала. */
+/** The orange of the buttons and steps in the light 4:6 theme — taken from the button of the original. */
 private val Orange = Color(0xFFFFA62B)
 private val Ember = Color(0xFFF34433)
 
@@ -226,9 +226,9 @@ val FourSixLightAccents = BrewAccents(
     alarm = Color(0xFFD32020),
 )
 
-// Палитра «спокойная»: бледный оливковый фон, шалфейные карточки и травяной
-// акцент. Цвета сняты со светлой темы Material You на зелёных обоях — она
-// вышла тише всего, что рисуют динамические цвета.
+// The "calm" palette: a pale olive background, sage cards and a grassy accent. The colours are taken
+// from the light Material You theme on green wallpaper — it came out the quietest of everything the
+// dynamic colours draw.
 
 private val Herb = Color(0xFF47662E)
 private val Sage = Color(0xFFE0E4D6)

@@ -13,7 +13,7 @@ navigationCompose = "2.9.8"
 room = "2.8.4"
 datastorePreferences = "1.2.1"
 blessedAndroidCoroutines = "0.4.2"
-# navigation-compose тянет 1.7.3, а room-testing собран под свежее API сериализации.
+# navigation-compose pulls 1.7.3, while room-testing is built against a newer serialization API.
 kotlinxSerialization = "1.9.0"
 
 junit = "4.13.2"
@@ -33,7 +33,7 @@ androidx-compose-ui-tooling-preview = { module = "androidx.compose.ui:ui-tooling
 androidx-compose-material3 = { module = "androidx.compose.material3:material3" }
 androidx-compose-animation = { module = "androidx.compose.animation:animation" }
 androidx-compose-foundation = { module = "androidx.compose.foundation:foundation" }
-# Набор иконок заморожен на 1.7.8 и в Compose BOM больше не входит, поэтому версия задаётся явно.
+# The icon set is frozen at 1.7.8 and is no longer part of the Compose BOM, so the version is set explicitly.
 androidx-compose-material-icons-extended = { module = "androidx.compose.material:material-icons-extended", version.ref = "materialIcons" }
 
 androidx-lifecycle-runtime-ktx = { module = "androidx.lifecycle:lifecycle-runtime-ktx", version.ref = "lifecycle" }
