@@ -5,6 +5,18 @@ the numbering is [semantic](https://semver.org/).
 
 *[По-русски](CHANGELOG.md)*
 
+## [1.9.6] — 2026-09-14
+
+### Changed
+
+- The swirl starts as soon as the pour is over, and the time left over goes
+  into the pause behind it. If the recipe has no pause, one is added. A stir is
+  pulled in on a par with a swirl.
+
+### Fixed
+
+- The cooldown timer did not start by itself after a recipe was recorded.
+
 ## [1.9.5] — 2026-09-08
 
 ### Fixed
