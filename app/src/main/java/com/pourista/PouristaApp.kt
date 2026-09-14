@@ -214,15 +214,16 @@ class AppContainer(private val context: Context) {
     }
 
     /**
-     * The brew is over — we wind the cooldown, if that is how it is set. Recording a recipe and
-     * misses of the button do not count: there is no cup in them, and nothing to cool.
+     * The brew is over — we wind the cooldown, if that is how it is set. A miss of the button does
+     * not count: there is no cup in it, and nothing to cool. Recording a recipe does count — it is
+     * written from a real pour, and the coffee from it is just as hot.
      */
     private fun startCooldownAfterBrew() {
         scope.launch {
             brewEngine.events.filterIsInstance<BrewEvent.Finished>().collect {
                 val state = brewEngine.state.value
                 if (!settingsState.value.cooldownAutoStart) return@collect
-                if (state.recording || state.elapsedMs < MIN_SAVED_MS) return@collect
+                if (state.elapsedMs < MIN_SAVED_MS) return@collect
                 startCooldown(settingsState.value.cooldownSeconds)
             }
         }
