@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  Debug-only additions. The receiver below drives the app from adb while the store screenshots are
+  being shot: it fakes the scale, plays a brew and switches the app language, so that every screen
+  can be caught in the same state in every language of the listing.
+-->
+<manifest xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <application>
+        <receiver
+            android:name="com.pourista.debug.StoreShotsReceiver"
+            android:exported="true">
+            <intent-filter>
+                <action android:name="com.pourista.debug.SHOT" />
+            </intent-filter>
+        </receiver>
+    </application>
+
+</manifest>

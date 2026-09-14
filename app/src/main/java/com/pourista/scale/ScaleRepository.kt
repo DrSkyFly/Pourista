@@ -169,6 +169,29 @@ class ScaleRepository(context: Context) {
         _state.update { ScaleState(status = ConnectionStatus.BLUETOOTH_OFF) }
     }
 
+    /**
+     * Debug builds only: pretends a scale is connected and pushes readings from outside.
+     *
+     * The store screenshots are shot with it. An emulator has no Bluetooth and no scale to pair
+     * with, while half the screens of the app are about the weight — and they have to be shot in
+     * every language of the listing.
+     */
+    fun simulate(connected: Boolean, grams: Float = 0f, title: String = "LFSmart Scale") {
+        if (!BuildConfig.DEBUG) return
+        _state.update {
+            if (!connected) {
+                ScaleState()
+            } else {
+                it.copy(
+                    status = ConnectionStatus.CONNECTED,
+                    deviceName = title,
+                    weightGrams = grams,
+                    batteryPercent = 96,
+                )
+            }
+        }
+    }
+
     private fun bluetoothEnabled(): Boolean = adapter?.isEnabled == true
 
     fun keepGrams(enabled: Boolean) {
