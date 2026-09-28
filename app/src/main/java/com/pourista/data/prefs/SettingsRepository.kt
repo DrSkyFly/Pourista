@@ -43,9 +43,9 @@ data class AppSettings(
     val keepScreenOn: Boolean = true,
     /**
      * A tighter brew screen: the readings and the step guidance give up their air so that the
-     * charts fit under them without scrolling.
+     * charts fit under them without scrolling. Whoever wants the air back turns it off.
      */
-    val compactBrew: Boolean = false,
+    val compactBrew: Boolean = true,
     val soundCues: Boolean = true,
     val hapticCues: Boolean = true,
     val countdownCue: Boolean = true,
@@ -164,7 +164,7 @@ class SettingsRepository(private val context: Context) {
                 runCatching { AppPalette.valueOf(value) }.getOrNull()
             } ?: if (prefs[Keys.dynamicColor] == false) AppPalette.COPPER else AppPalette.DYNAMIC,
             keepScreenOn = prefs[Keys.keepScreenOn] ?: true,
-            compactBrew = prefs[Keys.compactBrew] ?: false,
+            compactBrew = prefs[Keys.compactBrew] ?: true,
             soundCues = prefs[Keys.soundCues] ?: true,
             hapticCues = prefs[Keys.hapticCues] ?: true,
             countdownCue = prefs[Keys.countdownCue] ?: true,
