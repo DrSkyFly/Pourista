@@ -126,8 +126,6 @@
     <string name="cooldown_stop">Parar o cronómetro</string>
 
     <string name="guidance_step_position">Etapa %1$d de %2$d</string>
-    <string name="guidance_seconds_left">s restantes</string>
-    <string name="guidance_seconds_total">s no total</string>
     <string name="guidance_pour_to">Despeje até %1$s g</string>
     <string name="guidance_remaining_at_rate">Faltam %1$s g, vazão %2$s g/s</string>
     <string name="guidance_add_at_rate">Acrescente %1$s g, vazão %2$s g/s</string>

@@ -126,8 +126,6 @@
     <string name="cooldown_stop">타이머 정지</string>
 
     <string name="guidance_step_position">%2$d단계 중 %1$d번째</string>
-    <string name="guidance_seconds_left">초 남음</string>
-    <string name="guidance_seconds_total">초 동안</string>
     <string name="guidance_pour_to">%1$sg까지 붓기</string>
     <string name="guidance_remaining_at_rate">%1$sg 남음, 유속 %2$sg/s</string>
     <string name="guidance_add_at_rate">%1$sg 더 붓기, 유속 %2$sg/s</string>

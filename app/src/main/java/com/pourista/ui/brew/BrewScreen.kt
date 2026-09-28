@@ -1283,9 +1283,6 @@ private fun GuidanceCard(
                     progress = guidance.stepProgress,
                     accent = paceColor,
                     centerText = "${guidance.secondsLeftInStep}",
-                    caption = stringResource(
-                        if (started) R.string.guidance_seconds_left else R.string.guidance_seconds_total
-                    ),
                     markerFraction = guidance.pourEndFraction.takeIf { it > 0f },
                     fillFraction = if (started) guidance.pourFill(currentGrams, measuring) else 0f,
                 )

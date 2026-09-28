@@ -126,8 +126,6 @@
     <string name="cooldown_stop">Снять таймер</string>
 
     <string name="guidance_step_position">Шаг %1$d из %2$d</string>
-    <string name="guidance_seconds_left">сек осталось</string>
-    <string name="guidance_seconds_total">сек длится</string>
     <string name="guidance_pour_to">Лейте до %1$sг</string>
     <string name="guidance_remaining_at_rate">Осталось %1$sг, скорость %2$sг/с</string>
     <string name="guidance_add_at_rate">Долить %1$sг, скорость %2$sг/с</string>

@@ -126,8 +126,6 @@
     <string name="cooldown_stop">Зняти таймер</string>
 
     <string name="guidance_step_position">Крок %1$d з %2$d</string>
-    <string name="guidance_seconds_left">с лишилося</string>
-    <string name="guidance_seconds_total">с триває</string>
     <string name="guidance_pour_to">Лийте до %1$sг</string>
     <string name="guidance_remaining_at_rate">Лишилося %1$sг, швидкість %2$sг/с</string>
     <string name="guidance_add_at_rate">Долити %1$sг, швидкість %2$sг/с</string>

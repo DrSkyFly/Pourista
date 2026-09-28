@@ -126,8 +126,6 @@
     <string name="cooldown_stop">Arrêter le minuteur</string>
 
     <string name="guidance_step_position">Étape %1$d sur %2$d</string>
-    <string name="guidance_seconds_left">s restantes</string>
-    <string name="guidance_seconds_total">s au total</string>
     <string name="guidance_pour_to">Versez jusqu\'à %1$s g</string>
     <string name="guidance_remaining_at_rate">Encore %1$s g, débit %2$s g/s</string>
     <string name="guidance_add_at_rate">Ajoutez %1$s g, débit %2$s g/s</string>

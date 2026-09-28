@@ -126,8 +126,6 @@
     <string name="cooldown_stop">Timer stoppen</string>
 
     <string name="guidance_step_position">Stap %1$d van %2$d</string>
-    <string name="guidance_seconds_left">sec over</string>
-    <string name="guidance_seconds_total">sec lang</string>
     <string name="guidance_pour_to">Schenk tot %1$s g</string>
     <string name="guidance_remaining_at_rate">Nog %1$s g, flow %2$s g/s</string>
     <string name="guidance_add_at_rate">Schenk %1$s g bij, %2$s g/s</string>

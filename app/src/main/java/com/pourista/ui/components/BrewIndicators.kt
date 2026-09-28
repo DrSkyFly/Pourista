@@ -110,7 +110,6 @@ fun StepRing(
     modifier: Modifier = Modifier,
     diameter: Dp = 116.dp,
     centerText: String,
-    caption: String? = null,
     /** The mark the pour should end by, as a share of the step, 0..1. */
     markerFraction: Float? = null,
     /** How much of the pour is already done, 0..1: it fills the ring with water. */
@@ -182,21 +181,13 @@ fun StepRing(
                 )
             }
         }
-        Column(horizontalAlignment = Alignment.CenterHorizontally) {
-            Text(
-                text = centerText,
-                style = MaterialTheme.typography.headlineMedium,
-                textAlign = TextAlign.Center,
-            )
-            if (caption != null) {
-                Text(
-                    text = caption,
-                    style = MaterialTheme.typography.labelSmall,
-                    color = MaterialTheme.colorScheme.onSurfaceVariant,
-                    textAlign = TextAlign.Center,
-                )
-            }
-        }
+        // The figure alone, without a word under it: a countdown inside a running ring is not
+        // taken for anything else, and the caption only bit into the circle.
+        Text(
+            text = centerText,
+            style = MaterialTheme.typography.headlineMedium,
+            textAlign = TextAlign.Center,
+        )
     }
 }
 

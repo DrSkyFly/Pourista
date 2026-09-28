@@ -126,8 +126,6 @@
     <string name="cooldown_stop">Ferma il timer</string>
 
     <string name="guidance_step_position">Passo %1$d di %2$d</string>
-    <string name="guidance_seconds_left">s rimasti</string>
-    <string name="guidance_seconds_total">s in tutto</string>
     <string name="guidance_pour_to">Versa fino a %1$s g</string>
     <string name="guidance_remaining_at_rate">Mancano %1$s g, flusso %2$s g/s</string>
     <string name="guidance_add_at_rate">Aggiungi %1$s g, flusso %2$s g/s</string>

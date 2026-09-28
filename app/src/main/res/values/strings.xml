@@ -126,8 +126,6 @@
     <string name="cooldown_stop">Stop the timer</string>
 
     <string name="guidance_step_position">Step %1$d of %2$d</string>
-    <string name="guidance_seconds_left">sec left</string>
-    <string name="guidance_seconds_total">sec long</string>
     <string name="guidance_pour_to">Pour up to %1$sg</string>
     <string name="guidance_remaining_at_rate">%1$sg to go at %2$sg/s</string>
     <string name="guidance_add_at_rate">Add %1$sg at %2$sg/s</string>

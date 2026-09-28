@@ -126,8 +126,6 @@
     <string name="cooldown_stop">停止计时</string>
 
     <string name="guidance_step_position">第 %1$d 步，共 %2$d 步</string>
-    <string name="guidance_seconds_left">秒剩余</string>
-    <string name="guidance_seconds_total">秒时长</string>
     <string name="guidance_pour_to">注到 %1$sg</string>
     <string name="guidance_remaining_at_rate">还差 %1$sg，流速 %2$sg/s</string>
     <string name="guidance_add_at_rate">再注 %1$sg，流速 %2$sg/s</string>

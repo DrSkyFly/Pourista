@@ -126,8 +126,6 @@
     <string name="cooldown_stop">Wyłącz minutnik</string>
 
     <string name="guidance_step_position">Krok %1$d z %2$d</string>
-    <string name="guidance_seconds_left">s zostało</string>
-    <string name="guidance_seconds_total">s trwa</string>
     <string name="guidance_pour_to">Lej do %1$s g</string>
     <string name="guidance_remaining_at_rate">Zostało %1$s g, przepływ %2$s g/s</string>
     <string name="guidance_add_at_rate">Dolej %1$s g, przepływ %2$s g/s</string>

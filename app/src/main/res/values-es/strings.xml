@@ -126,8 +126,6 @@
     <string name="cooldown_stop">Detener el temporizador</string>
 
     <string name="guidance_step_position">Paso %1$d de %2$d</string>
-    <string name="guidance_seconds_left">s restantes</string>
-    <string name="guidance_seconds_total">s en total</string>
     <string name="guidance_pour_to">Vierte hasta %1$s g</string>
     <string name="guidance_remaining_at_rate">Faltan %1$s g, caudal %2$s g/s</string>
     <string name="guidance_add_at_rate">Añade %1$s g, caudal %2$s g/s</string>

@@ -126,8 +126,6 @@
     <string name="cooldown_stop">Timer stoppen</string>
 
     <string name="guidance_step_position">Schritt %1$d von %2$d</string>
-    <string name="guidance_seconds_left">Sek. übrig</string>
-    <string name="guidance_seconds_total">Sek. lang</string>
     <string name="guidance_pour_to">Bis %1$s g aufgießen</string>
     <string name="guidance_remaining_at_rate">Noch %1$s g, Flussrate %2$s g/s</string>
     <string name="guidance_add_at_rate">%1$s g nachgießen, %2$s g/s</string>
