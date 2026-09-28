@@ -227,6 +227,8 @@
     <string name="settings_countdown">注湯前のカウントダウン</string>
     <string name="settings_countdown_hint">次の注湯の直前に短く3回</string>
     <string name="settings_scale">スケール</string>
+    <string name="settings_compact">抽出画面をコンパクトに</string>
+    <string name="settings_compact_hint">計測値とステップの余白を詰めて、グラフをスクロールせずに表示します</string>
     <string name="settings_auto_finish">自動で終了</string>
     <string name="settings_auto_finish_hint">ドリッパーやカップをスケールから外したら抽出を終える</string>
     <string name="settings_pace_tolerance">流速の許容範囲</string>

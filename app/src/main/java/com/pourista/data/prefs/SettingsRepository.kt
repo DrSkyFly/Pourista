@@ -41,6 +41,11 @@ data class AppSettings(
     val themeMode: ThemeMode = ThemeMode.SYSTEM,
     val palette: AppPalette = AppPalette.DYNAMIC,
     val keepScreenOn: Boolean = true,
+    /**
+     * A tighter brew screen: the readings and the step guidance give up their air so that the
+     * charts fit under them without scrolling.
+     */
+    val compactBrew: Boolean = false,
     val soundCues: Boolean = true,
     val hapticCues: Boolean = true,
     val countdownCue: Boolean = true,
@@ -117,6 +122,7 @@ class SettingsRepository(private val context: Context) {
         /** The old shape of the setting: before the palettes the wallpaper was a checkbox. */
         val dynamicColor = booleanPreferencesKey("dynamic_color")
         val keepScreenOn = booleanPreferencesKey("keep_screen_on")
+        val compactBrew = booleanPreferencesKey("compact_brew")
         val soundCues = booleanPreferencesKey("sound_cues")
         val hapticCues = booleanPreferencesKey("haptic_cues")
         val countdownCue = booleanPreferencesKey("countdown_cue")
@@ -158,6 +164,7 @@ class SettingsRepository(private val context: Context) {
                 runCatching { AppPalette.valueOf(value) }.getOrNull()
             } ?: if (prefs[Keys.dynamicColor] == false) AppPalette.COPPER else AppPalette.DYNAMIC,
             keepScreenOn = prefs[Keys.keepScreenOn] ?: true,
+            compactBrew = prefs[Keys.compactBrew] ?: false,
             soundCues = prefs[Keys.soundCues] ?: true,
             hapticCues = prefs[Keys.hapticCues] ?: true,
             countdownCue = prefs[Keys.countdownCue] ?: true,
@@ -221,6 +228,8 @@ class SettingsRepository(private val context: Context) {
         edit { it[Keys.flowSmoothing] = smoothing.name }
 
     suspend fun setAutoFinish(enabled: Boolean) = edit { it[Keys.autoFinish] = enabled }
+
+    suspend fun setCompactBrew(enabled: Boolean) = edit { it[Keys.compactBrew] = enabled }
 
     suspend fun setUseScale(enabled: Boolean) = edit { it[Keys.useScale] = enabled }
 

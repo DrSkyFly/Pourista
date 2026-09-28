@@ -227,6 +227,8 @@
     <string name="settings_countdown">Відлік перед проливом</string>
     <string name="settings_countdown_hint">Три короткі сигнали до наступного проливу</string>
     <string name="settings_scale">Ваги</string>
+    <string name="settings_compact">Компактний екран заварювання</string>
+    <string name="settings_compact_hint">Показники й етапи поступаються місцем, щоб графіки вмістилися без прокручування</string>
     <string name="settings_auto_finish">Автофініш</string>
     <string name="settings_auto_finish_hint">Завершувати заварювання, коли з ваг знімають лійку або чашку</string>
     <string name="settings_pace_tolerance">Допуск за швидкістю</string>

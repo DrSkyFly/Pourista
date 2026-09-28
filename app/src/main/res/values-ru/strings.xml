@@ -227,6 +227,8 @@
     <string name="settings_countdown">Отсчёт перед проливом</string>
     <string name="settings_countdown_hint">Три коротких сигнала до следующего пролива</string>
     <string name="settings_scale">Весы</string>
+    <string name="settings_compact">Компактный экран заваривания</string>
+    <string name="settings_compact_hint">Показания и этапы поступаются местом, чтобы графики поместились без прокрутки</string>
     <string name="settings_auto_finish">Автофиниш</string>
     <string name="settings_auto_finish_hint">Заканчивать заваривание, когда с весов сняли воронку или чашку</string>
     <string name="settings_pace_tolerance">Допуск по скорости</string>

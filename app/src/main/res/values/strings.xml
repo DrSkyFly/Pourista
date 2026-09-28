@@ -227,6 +227,8 @@
     <string name="settings_countdown">Countdown before a pour</string>
     <string name="settings_countdown_hint">Three short cues before the next pour</string>
     <string name="settings_scale">Scale</string>
+    <string name="settings_compact">Compact brew screen</string>
+    <string name="settings_compact_hint">The readings and the steps give up their air so the charts fit without scrolling</string>
     <string name="settings_auto_finish">Automatic finish</string>
     <string name="settings_auto_finish_hint">End the brew once the dripper or the cup is lifted off the scale</string>
     <string name="settings_pace_tolerance">Flow rate tolerance</string>

@@ -227,6 +227,8 @@
     <string name="settings_countdown">Décompte avant le versement</string>
     <string name="settings_countdown_hint">Trois signaux courts avant le versement suivant</string>
     <string name="settings_scale">Balance</string>
+    <string name="settings_compact">Écran d’infusion compact</string>
+    <string name="settings_compact_hint">Les mesures et les étapes se resserrent pour que les graphiques tiennent sans défilement</string>
     <string name="settings_auto_finish">Fin automatique</string>
     <string name="settings_auto_finish_hint">Terminer l\'extraction dès que le dripper ou la tasse quitte la balance</string>
     <string name="settings_pace_tolerance">Tolérance du débit</string>

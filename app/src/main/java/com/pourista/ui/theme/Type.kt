@@ -39,6 +39,16 @@ val WeightReadoutStyle = TextStyle(
     fontFeatureSettings = TabularFigures,
 )
 
+/**
+ * The same reading on the compact brew screen. It gives up a third of its height and stays the
+ * largest figure there: the charts move up under it, and the weight is still read from arm's length.
+ */
+val CompactReadoutStyle = WeightReadoutStyle.copy(
+    fontSize = 60.sp,
+    lineHeight = 64.sp,
+    letterSpacing = (-1.5).sp,
+)
+
 /** The timer and the secondary large values. */
 val MetricValueStyle = TextStyle(
     fontFamily = FontFamily.Default,

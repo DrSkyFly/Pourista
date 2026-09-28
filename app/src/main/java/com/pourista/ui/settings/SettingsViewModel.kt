@@ -49,6 +49,8 @@ class SettingsViewModel(private val container: AppContainer) : ViewModel() {
     fun setFlowSmoothing(value: FlowSmoothing) = update { container.settings.setFlowSmoothing(value) }
     fun setAutoFinish(value: Boolean) = update { container.settings.setAutoFinish(value) }
 
+    fun setCompactBrew(value: Boolean) = update { container.settings.setCompactBrew(value) }
+
     /** Refusing a scale breaks the current connection too: otherwise the icon would stay hanging. */
     fun setUseScale(value: Boolean) = update {
         container.settings.setUseScale(value)

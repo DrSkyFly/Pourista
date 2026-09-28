@@ -227,6 +227,8 @@
     <string name="settings_countdown">Cuenta atrás antes del vertido</string>
     <string name="settings_countdown_hint">Tres señales cortas antes del siguiente vertido</string>
     <string name="settings_scale">Báscula</string>
+    <string name="settings_compact">Pantalla de preparación compacta</string>
+    <string name="settings_compact_hint">Las lecturas y los pasos ceden espacio para que los gráficos quepan sin desplazarse</string>
     <string name="settings_auto_finish">Final automático</string>
     <string name="settings_auto_finish_hint">Terminar la preparación en cuanto se retire de la báscula el dripper o la taza</string>
     <string name="settings_pace_tolerance">Tolerancia del caudal</string>

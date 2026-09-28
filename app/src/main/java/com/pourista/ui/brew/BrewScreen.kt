@@ -29,6 +29,7 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
@@ -83,6 +84,8 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
+import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalView
 import androidx.compose.ui.layout.layout
@@ -122,6 +125,7 @@ import com.pourista.ui.components.StepBadge
 import com.pourista.ui.components.StepRing
 import com.pourista.ui.components.StepTimeline
 import com.pourista.ui.theme.AppTheme
+import com.pourista.ui.theme.CompactReadoutStyle
 import com.pourista.ui.theme.MetricValueStyle
 import com.pourista.ui.theme.WeightReadoutStyle
 import kotlinx.coroutines.flow.StateFlow
@@ -182,6 +186,10 @@ fun BrewScreen(
     LaunchedEffect(scale.isConnected, brewing) {
         if (scale.isConnected) weightMode = true else if (!brewing) weightMode = false
     }
+
+    // The tight screen is worth it only during a brew: before the start the charts are empty and
+    // there is nothing to make room for.
+    val compact = settings.compactBrew && brewing
 
     val savedMessage = stringResource(R.string.brew_saved)
     val draftReady by viewModel.draftReady.collectAsStateWithLifecycle()
@@ -327,6 +335,29 @@ fun BrewScreen(
         // During a pour the recipe tile goes away: it is too late to pick a recipe, and its figures
         // are repeated by the step guidance. The readings are pinned at the top instead, so that the
         // weight, the target and the timer stay in sight while the steps and charts scroll below.
+        val pourGuides = brew.recipe?.steps
+            ?.filter { it.kind.isPour }
+            ?.map { it.targetWaterGrams }
+            .orEmpty()
+        val activeGuidance = brew.guidance
+        val paceColor = paceAccent(activeGuidance, started = brewing)
+        // In the compact mode the pour gauge leaves the guidance card for the readings: it measures
+        // the water, and under the weight it is read without moving the eye.
+        val gauge: (@Composable () -> Unit)? =
+            if (compact && weightMode && activeGuidance != null) {
+                {
+                    PourGauge(
+                        current = brew.weightGrams,
+                        targetNow = activeGuidance.targetNowGrams,
+                        total = brew.recipe?.finalTargetGrams ?: activeGuidance.targetEndGrams,
+                        marks = pourGuides,
+                        accent = paceColor,
+                        height = 16.dp,
+                    )
+                }
+            } else {
+                null
+            }
         val readout: @Composable (Modifier) -> Unit = { cardModifier ->
             ReadoutCard(
                 modifier = cardModifier,
@@ -340,6 +371,8 @@ fun BrewScreen(
                     ?.remainingGrams,
                 unitLabel = stringResource(R.string.unit_gram),
                 weightMode = weightMode,
+                compact = compact,
+                gauge = gauge,
                 onDoseClick = { showDoseDialog = true },
             )
         }
@@ -377,14 +410,11 @@ fun BrewScreen(
                     recipe = brew.recipe,
                     phase = brew.phase,
                     measuring = scale.isConnected,
+                    compact = compact,
                 )
             }
         }
         val hasCharts = weightMode && brew.weightSeries.size > 1
-        val pourGuides = brew.recipe?.steps
-            ?.filter { it.kind.isPour }
-            ?.map { it.targetWaterGrams }
-            .orEmpty()
         // The axis is stretched to the target of the next step, otherwise its line would end up
         // beyond the top edge of the chart.
         val chartFocusMax = brew.guidance?.let { g ->
@@ -1020,8 +1050,13 @@ private fun ReadoutCard(
     unitLabel: String,
     /** Show the weight: the scale is connected. Otherwise the main figure is the time. */
     weightMode: Boolean,
+    /** The tight version: a smaller figure and one line instead of three tiles. */
+    compact: Boolean = false,
+    /** The pour gauge. In the compact mode it lives here rather than in the guidance card. */
+    gauge: (@Composable () -> Unit)? = null,
     onDoseClick: () -> Unit,
 ) {
+    // Without a scale the card is about time alone, and there are no charts to make room for.
     if (!weightMode) {
         TimerReadoutCard(
             modifier = modifier,
@@ -1034,8 +1069,10 @@ private fun ReadoutCard(
         return
     }
 
+    val readoutStyle = if (compact) CompactReadoutStyle else WeightReadoutStyle
+
     Card(modifier = modifier.fillMaxWidth()) {
-        Column(Modifier.padding(16.dp)) {
+        Column(Modifier.padding(if (compact) 14.dp else 16.dp)) {
             Row(verticalAlignment = Alignment.Bottom) {
                 Column(Modifier.weight(1f)) {
                     Text(
@@ -1048,13 +1085,13 @@ private fun ReadoutCard(
                         // a half times, "1000.0" would otherwise break the card.
                         BasicText(
                             text = formatGrams(weightGrams),
-                            style = WeightReadoutStyle.copy(
+                            style = readoutStyle.copy(
                                 color = MaterialTheme.colorScheme.onSurface,
                             ),
                             maxLines = 1,
                             autoSize = TextAutoSize.StepBased(
                                 minFontSize = WeightReadoutMinSize,
-                                maxFontSize = WeightReadoutStyle.fontSize,
+                                maxFontSize = readoutStyle.fontSize,
                             ),
                             modifier = Modifier.weight(1f, fill = false),
                         )
@@ -1062,9 +1099,28 @@ private fun ReadoutCard(
                             text = unitLabel,
                             style = MaterialTheme.typography.titleMedium,
                             color = MaterialTheme.colorScheme.onSurfaceVariant,
-                            modifier = Modifier.padding(bottom = 12.dp),
+                            modifier = Modifier.padding(bottom = if (compact) 8.dp else 12.dp),
                         )
                     }
+                }
+                // Label and figure on one line: the column then stands no taller than the weight
+                // beside it, and the card loses the empty half it used to keep over the label. What
+                // is left to pour is not repeated here — the gauge below and the guidance card say it.
+                if (compact) {
+                    Column(horizontalAlignment = Alignment.End) {
+                        if (targetGrams != null) {
+                            CompactMetric(
+                                label = stringResource(R.string.readout_target),
+                                value = "${formatGrams(targetGrams, 0)}$unitLabel",
+                                valueColor = MaterialTheme.colorScheme.primary,
+                            )
+                        }
+                        CompactMetric(
+                            label = stringResource(R.string.readout_time),
+                            value = formatTimerWithTenths(elapsedMs),
+                        )
+                    }
+                    return@Row
                 }
                 Column(horizontalAlignment = Alignment.End) {
                     // The step target stands next to the current weight: the eye must not jump
@@ -1090,7 +1146,7 @@ private fun ReadoutCard(
                                 color = MaterialTheme.colorScheme.onSurfaceVariant,
                             )
                         }
-                        Spacer(Modifier.size(10.dp))
+                        Spacer(Modifier.size(if (compact) 6.dp else 10.dp))
                     }
                     Text(
                         text = stringResource(R.string.readout_time),
@@ -1100,32 +1156,102 @@ private fun ReadoutCard(
                     Text(text = formatTimerWithTenths(elapsedMs), style = MetricValueStyle)
                 }
             }
-            HorizontalDivider(Modifier.padding(vertical = 12.dp))
-            Row(
-                modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.SpaceBetween,
-            ) {
-                StatTile(
-                    label = stringResource(R.string.readout_dose),
-                    value = formatGrams(doseGrams),
-                    unit = stringResource(R.string.unit_gram),
-                    onClick = onDoseClick,
-                    modifier = Modifier.weight(1f),
+            if (compact) {
+                if (gauge != null) {
+                    Spacer(Modifier.height(10.dp))
+                    gauge()
+                }
+                Spacer(Modifier.height(8.dp))
+                CompactStats(
+                    doseGrams = doseGrams,
+                    flowRate = flowRate,
+                    weightGrams = weightGrams,
+                    onDoseClick = onDoseClick,
                 )
-                StatTile(
-                    label = stringResource(R.string.readout_flow),
-                    value = formatGrams(flowRate),
-                    unit = stringResource(R.string.unit_gram_per_second),
-                    modifier = Modifier.weight(1f),
-                )
-                StatTile(
-                    label = stringResource(R.string.readout_ratio),
-                    value = formatRatio(doseGrams, weightGrams),
-                    modifier = Modifier.weight(1f),
-                )
+            } else {
+                HorizontalDivider(Modifier.padding(vertical = 12.dp))
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.SpaceBetween,
+                ) {
+                    StatTile(
+                        label = stringResource(R.string.readout_dose),
+                        value = formatGrams(doseGrams),
+                        unit = stringResource(R.string.unit_gram),
+                        onClick = onDoseClick,
+                        modifier = Modifier.weight(1f),
+                    )
+                    StatTile(
+                        label = stringResource(R.string.readout_flow),
+                        value = formatGrams(flowRate),
+                        unit = stringResource(R.string.unit_gram_per_second),
+                        modifier = Modifier.weight(1f),
+                    )
+                    StatTile(
+                        label = stringResource(R.string.readout_ratio),
+                        value = formatRatio(doseGrams, weightGrams),
+                        modifier = Modifier.weight(1f),
+                    )
+                }
             }
         }
     }
+}
+
+/** A label and a figure on one line: that is how the compact readings stand. */
+@Composable
+private fun CompactMetric(
+    label: String,
+    value: String,
+    valueColor: Color = MaterialTheme.colorScheme.onSurface,
+) {
+    Row(verticalAlignment = Alignment.Bottom) {
+        Text(
+            text = label,
+            style = MaterialTheme.typography.labelMedium,
+            color = MaterialTheme.colorScheme.onSurfaceVariant,
+            modifier = Modifier.padding(end = 6.dp, bottom = 4.dp),
+        )
+        Text(text = value, style = MetricValueStyle, color = valueColor)
+    }
+}
+
+/**
+ * Dose, flow rate and ratio in one line. Three tiles cost a line of labels and a line of figures;
+ * here the units tell the figures apart, and only the dose keeps its word — it is the one that is
+ * pressed to be entered by hand.
+ */
+@Composable
+private fun CompactStats(
+    doseGrams: Float,
+    flowRate: Float,
+    weightGrams: Float,
+    onDoseClick: () -> Unit,
+) {
+    val gram = stringResource(R.string.unit_gram)
+    val text = buildString {
+        append(stringResource(R.string.readout_dose))
+        append(' ')
+        append(formatGrams(doseGrams))
+        append(gram)
+        append("  ·  ")
+        append(formatGrams(flowRate))
+        append(stringResource(R.string.unit_gram_per_second))
+        append("  ·  ")
+        append(formatRatio(doseGrams, weightGrams))
+    }
+    Text(
+        text = text,
+        style = MaterialTheme.typography.labelLarge,
+        color = MaterialTheme.colorScheme.onSurfaceVariant,
+        maxLines = 1,
+        overflow = TextOverflow.Ellipsis,
+        modifier = Modifier
+            .offset(x = -6.dp)
+            .clip(MaterialTheme.shapes.small)
+            .clickable(onClick = onDoseClick)
+            .padding(horizontal = 6.dp, vertical = 2.dp),
+    )
 }
 
 /** The readings without a scale: the time large, the step target beside it, the entered dose below. */
@@ -1197,24 +1323,15 @@ private fun GuidanceCard(
     phase: BrewPhase,
     /** The scale is connected: only then does it make sense to talk about what is left and the pace. */
     measuring: Boolean,
+    /** The tight version: the header joins the ring row and the gauge is shown by the readings. */
+    compact: Boolean = false,
 ) {
     val accents = AppTheme.accents
     // Before the start the card is a preview of the first step. There is nothing to judge the pace
     // by there: the time is not running, and any weight on the scale would look like being ahead.
     val started = phase == BrewPhase.RUNNING || phase == BrewPhase.PAUSED
     val running = phase == BrewPhase.RUNNING
-    // The pace colour changes by a transition: a pour is now ahead of the plan, now behind, and a
-    // card blinking at every wobble of the scale tugs at the eye harder than the pace itself is
-    // worth.
-    val paceColor by animateColorAsState(
-        targetValue = when {
-            !started -> MaterialTheme.colorScheme.primary
-            guidance.pace == Pace.TOO_FAST -> accents.tooFast
-            guidance.pace == Pace.TOO_SLOW -> accents.tooSlow
-            else -> accents.onTrack
-        },
-        label = "paceColor",
-    )
+    val paceColor = paceAccent(guidance, started)
     val container by animateColorAsState(
         targetValue = when {
             !started -> MaterialTheme.colorScheme.surfaceContainer
@@ -1237,57 +1354,87 @@ private fun GuidanceCard(
             containerColor = if (running) container else MaterialTheme.colorScheme.surfaceContainer,
         ),
     ) {
-        Column(Modifier.padding(16.dp)) {
-            Row(verticalAlignment = Alignment.CenterVertically) {
-                // The circle is the same as in the list of steps: it is one and the same step, only
-                // larger — and it has to be recognised without reading.
-                StepBadge(
-                    kind = guidance.step.kind,
-                    size = 36.dp,
-                    tint = paceColor,
-                    ring = paceColor,
-                )
-                Spacer(Modifier.size(12.dp))
-                Column(Modifier.weight(1f)) {
-                    Text(
-                        text = guidance.step.title?.takeIf { it.isNotBlank() } ?: stepName,
-                        style = MaterialTheme.typography.titleMedium,
+        Column(Modifier.padding(if (compact) 14.dp else 16.dp)) {
+            if (!compact) {
+                Row(verticalAlignment = Alignment.CenterVertically) {
+                    // The circle is the same as in the list of steps: it is one and the same step,
+                    // only larger — and it has to be recognised without reading.
+                    StepBadge(
+                        kind = guidance.step.kind,
+                        size = 36.dp,
+                        tint = paceColor,
+                        ring = paceColor,
                     )
-                    // The recipe tile is hidden during a pour, so the recipe name lives here — the
-                    // line is there anyway and adds no height.
-                    val position = stringResource(
-                        R.string.guidance_step_position,
-                        guidance.stepIndex + 1,
-                        guidance.stepCount,
-                    )
+                    Spacer(Modifier.size(12.dp))
+                    Column(Modifier.weight(1f)) {
+                        Text(
+                            text = guidance.step.title?.takeIf { it.isNotBlank() } ?: stepName,
+                            style = MaterialTheme.typography.titleMedium,
+                        )
+                        // The recipe tile is hidden during a pour, so the recipe name lives here —
+                        // the line is there anyway and adds no height.
+                        val position = stringResource(
+                            R.string.guidance_step_position,
+                            guidance.stepIndex + 1,
+                            guidance.stepCount,
+                        )
+                        Text(
+                            text = recipe?.name?.let { "$position · $it" } ?: position,
+                            style = MaterialTheme.typography.labelMedium,
+                            color = MaterialTheme.colorScheme.onSurfaceVariant,
+                        )
+                    }
                     Text(
-                        text = recipe?.name?.let { "$position · $it" } ?: position,
+                        text = "${formatClock(guidance.step.startSec)}–${formatClock(guidance.step.endSec)}",
                         style = MaterialTheme.typography.labelMedium,
                         color = MaterialTheme.colorScheme.onSurfaceVariant,
                     )
                 }
-                Text(
-                    text = "${formatClock(guidance.step.startSec)}–${formatClock(guidance.step.endSec)}",
-                    style = MaterialTheme.typography.labelMedium,
-                    color = MaterialTheme.colorScheme.onSurfaceVariant,
-                )
             }
 
             Row(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .padding(top = 16.dp),
+                    .padding(top = if (compact) 0.dp else 16.dp),
                 verticalAlignment = Alignment.CenterVertically,
             ) {
                 StepRing(
                     progress = guidance.stepProgress,
                     accent = paceColor,
+                    diameter = if (compact) 88.dp else 116.dp,
                     centerText = "${guidance.secondsLeftInStep}",
                     markerFraction = guidance.pourEndFraction.takeIf { it > 0f },
                     fillFraction = if (started) guidance.pourFill(currentGrams, measuring) else 0f,
                 )
-                Spacer(Modifier.size(16.dp))
+                Spacer(Modifier.size(if (compact) 14.dp else 16.dp))
                 Column(Modifier.weight(1f)) {
+                    // The header that the compact card gave up: the step badge and its number go
+                    // above the target, and a whole line of the card is saved without losing
+                    // anything that had to be read.
+                    if (compact) {
+                        Row(verticalAlignment = Alignment.CenterVertically) {
+                            StepBadge(
+                                kind = guidance.step.kind,
+                                size = 20.dp,
+                                tint = paceColor,
+                                ring = paceColor,
+                            )
+                            Spacer(Modifier.size(6.dp))
+                            Text(
+                                text = guidance.step.title?.takeIf { it.isNotBlank() } ?: stepName,
+                                style = MaterialTheme.typography.labelLarge,
+                                color = MaterialTheme.colorScheme.onSurfaceVariant,
+                                maxLines = 1,
+                                overflow = TextOverflow.Ellipsis,
+                                modifier = Modifier.weight(1f),
+                            )
+                            Text(
+                                text = "${guidance.stepIndex + 1}/${guidance.stepCount}",
+                                style = MaterialTheme.typography.labelMedium,
+                                color = MaterialTheme.colorScheme.onSurfaceVariant,
+                            )
+                        }
+                    }
                     if (guidance.stepPhase == StepPhase.POURING) {
                         Text(
                             text = stringResource(
@@ -1316,14 +1463,26 @@ private fun GuidanceCard(
                             color = MaterialTheme.colorScheme.onSurfaceVariant,
                         )
                     } else {
-                        Text(text = stepName, style = MaterialTheme.typography.headlineSmall)
+                        // In the compact card the name of the step is already in the line above the
+                        // target, and saying "Wait" twice in a row is not worth a line of the screen.
+                        if (!compact) {
+                            Text(text = stepName, style = MaterialTheme.typography.headlineSmall)
+                        }
                         Text(
                             text = stringResource(
                                 R.string.guidance_hold_at,
                                 formatGrams(guidance.targetEndGrams, 0),
                             ),
-                            style = MaterialTheme.typography.bodyMedium,
-                            color = MaterialTheme.colorScheme.onSurfaceVariant,
+                            style = if (compact) {
+                                MaterialTheme.typography.headlineSmall
+                            } else {
+                                MaterialTheme.typography.bodyMedium
+                            },
+                            color = if (compact) {
+                                MaterialTheme.colorScheme.onSurface
+                            } else {
+                                MaterialTheme.colorScheme.onSurfaceVariant
+                            },
                         )
                     }
                     // Judging the pace rests on the scale: without it the line keeps quiet rather
@@ -1356,8 +1515,9 @@ private fun GuidanceCard(
             }
 
             // The scale shows what is poured against the plan — without a scale what is poured is
-            // unknown, and the bar would stand at zero forever, portraying a hopeless lag.
-            if (measuring) {
+            // unknown, and the bar would stand at zero forever, portraying a hopeless lag. In the
+            // compact mode the gauge stands by the readings instead.
+            if (measuring && !compact) {
                 PourGauge(
                     current = currentGrams,
                     targetNow = guidance.targetNowGrams,
@@ -1373,7 +1533,7 @@ private fun GuidanceCard(
                 stepCount = guidance.stepCount,
                 currentIndex = guidance.stepIndex,
                 accent = paceColor,
-                modifier = Modifier.padding(top = 12.dp),
+                modifier = Modifier.padding(top = if (compact) 10.dp else 12.dp),
             )
 
             val next = guidance.nextStep
@@ -1399,7 +1559,7 @@ private fun GuidanceCard(
                     },
                     style = MaterialTheme.typography.titleSmall,
                     color = MaterialTheme.colorScheme.onSurface,
-                    modifier = Modifier.padding(top = 10.dp),
+                    modifier = Modifier.padding(top = if (compact) 8.dp else 10.dp),
                 )
             }
 
@@ -1423,6 +1583,28 @@ private fun GuidanceCard(
             }
         }
     }
+}
+
+/**
+ * The colour of the pace. The guidance card is not the only one who needs it: in the compact mode
+ * the pour gauge moves out to the readings and has to agree with the card it came from.
+ *
+ * The change goes through a transition — a pour is now ahead of the plan, now behind, and a colour
+ * blinking at every wobble of the scale tugs at the eye harder than the pace itself is worth.
+ */
+@Composable
+private fun paceAccent(guidance: Guidance?, started: Boolean): Color {
+    val accents = AppTheme.accents
+    val color by animateColorAsState(
+        targetValue = when {
+            guidance == null || !started -> MaterialTheme.colorScheme.primary
+            guidance.pace == Pace.TOO_FAST -> accents.tooFast
+            guidance.pace == Pace.TOO_SLOW -> accents.tooSlow
+            else -> accents.onTrack
+        },
+        label = "paceColor",
+    )
+    return color
 }
 
 /**

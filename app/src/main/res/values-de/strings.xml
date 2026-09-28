@@ -227,6 +227,8 @@
     <string name="settings_countdown">Countdown vor dem Guss</string>
     <string name="settings_countdown_hint">Drei kurze Signale vor dem nächsten Guss</string>
     <string name="settings_scale">Waage</string>
+    <string name="settings_compact">Kompakter Brühbildschirm</string>
+    <string name="settings_compact_hint">Anzeige und Schritte rücken zusammen, damit die Diagramme ohne Scrollen passen</string>
     <string name="settings_auto_finish">Automatisch beenden</string>
     <string name="settings_auto_finish_hint">Die Brühung beenden, sobald Dripper oder Tasse von der Waage genommen werden</string>
     <string name="settings_pace_tolerance">Toleranz der Flussrate</string>

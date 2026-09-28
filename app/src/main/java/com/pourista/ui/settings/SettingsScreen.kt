@@ -200,6 +200,12 @@ fun SettingsScreen(
                         onCheckedChange = viewModel::setCountdownCue,
                     )
                     SwitchRow(
+                        title = stringResource(R.string.settings_compact),
+                        subtitle = stringResource(R.string.settings_compact_hint),
+                        checked = settings.compactBrew,
+                        onCheckedChange = viewModel::setCompactBrew,
+                    )
+                    SwitchRow(
                         title = stringResource(R.string.settings_auto_finish),
                         subtitle = stringResource(R.string.settings_auto_finish_hint),
                         checked = settings.autoFinish,

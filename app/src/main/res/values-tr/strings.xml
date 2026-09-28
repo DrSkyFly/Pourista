@@ -227,6 +227,8 @@
     <string name="settings_countdown">Dökümden önce geri sayım</string>
     <string name="settings_countdown_hint">Sonraki dökümden önce üç kısa sinyal</string>
     <string name="settings_scale">Terazi</string>
+    <string name="settings_compact">Kompakt demleme ekranı</string>
+    <string name="settings_compact_hint">Ölçümler ve adımlar yer açar, grafikler kaydırmadan sığar</string>
     <string name="settings_auto_finish">Otomatik bitiş</string>
     <string name="settings_auto_finish_hint">Dripper ya da fincan teraziden kalkar kalkmaz demlemeyi bitir</string>
     <string name="settings_pace_tolerance">Akış toleransı</string>
