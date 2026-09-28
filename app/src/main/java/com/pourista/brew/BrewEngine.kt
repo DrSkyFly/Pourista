@@ -291,11 +291,25 @@ class BrewEngine(
 
     fun tare() = scale.tare()
 
-    /** Start recording: the brew begins with a clean sheet. */
+    /**
+     * Start recording: the brew begins with a clean sheet. The dose and an armed
+     * auto-start live through it — they are set up before "Record" is pressed, and a
+     * clean sheet that took them with it would leave the timer waiting for a start
+     * nobody is going to press and the recorded recipe without a dose.
+     */
     fun startRecording() {
+        val dose = _state.value.doseGrams
+        val armed = _state.value.autoStartArmed
         reset()
         recorder.reset()
-        _state.update { it.copy(recording = true, recordedPours = 0) }
+        _state.update {
+            it.copy(
+                recording = true,
+                recordedPours = 0,
+                doseGrams = dose,
+                autoStartArmed = armed,
+            ).withRecipeForDose(baseRecipe, dose)
+        }
     }
 
     fun cancelRecording() {
