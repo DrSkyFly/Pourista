@@ -447,12 +447,11 @@ class BrewEngine(
             weightSeries = if (appendChartPoint) current.weightSeries + weight else current.weightSeries,
             flowSeries = if (appendChartPoint) current.flowSeries + flowRate else current.flowSeries,
         )
-        if (next.recording) {
-            recorder.onSample(elapsed, weight)
-            if (recorder.pourCount != next.recordedPours) {
-                _state.value = next.copy(recordedPours = recorder.pourCount)
-            }
-        }
+        if (next.recording) recorder.onSample(elapsed, weight)
+        // The count goes into the same update as the guidance below. Written on its
+        // own it would be overwritten by that update, which is built from `next`, and
+        // the card would stay at nought for the whole recording.
+        val pours = if (next.recording) recorder.pourCount else next.recordedPours
 
         val firstPass = next.recipe?.let { guidanceFor(it, next) }
         if (firstPass != null) detectPourFinished(firstPass, weight, nowMs)
@@ -463,7 +462,7 @@ class BrewEngine(
         // may have pulled the swirl in, and the schedule there is a different one.
         val plan = _state.value.recipe
         val guidance = plan?.let { guidanceFor(it, next) }
-        _state.value = next.copy(recipe = plan, guidance = guidance)
+        _state.value = next.copy(recipe = plan, guidance = guidance, recordedPours = pours)
 
         if (guidance != null) {
             emitCues(guidance)
