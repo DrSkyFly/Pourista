@@ -467,6 +467,8 @@ class BrewEngine(
         if (guidance != null) {
             emitCues(guidance)
             armRemovalWhenWaterDone(guidance, weight)
+        } else if (next.recording) {
+            armRemovalWhenPourRecorded(pours, weight)
         }
 
         // The weight is taken as it is, without clamping at zero: a cup lifted off
@@ -496,6 +498,17 @@ class BrewEngine(
         val planOver = guidance.stepIndex == guidance.stepCount - 1 &&
             guidance.secondsLeftInStep <= 0
         if (poured || planOver) removal.arm(weight)
+    }
+
+    /**
+     * The same watch for a recording without a recipe. There is no plan to be over and
+     * no target to reach, so the arming goes by the first recognised pour: from that
+     * moment the weight falling is the cone coming off rather than a gap before the
+     * next pour, which the watch sits out anyway — it wants a drop that holds.
+     */
+    private fun armRemovalWhenPourRecorded(pours: Int, weight: Float) {
+        if (removal.armed || pours == 0) return
+        removal.arm(weight)
     }
 
     /**
