@@ -31,7 +31,7 @@ import kotlinx.coroutines.launch
  *   --es cmd lang --es tag de
  * ```
  *
- * Commands: `lang` (tag), `seed`, `brew` (pace, until, recipe), `idle`, `off`.
+ * Commands: `lang` (tag), `seed`, `brew` (pace, until, recipe), `idle`, `compact` (on), `off`.
  */
 class StoreShotsReceiver : BroadcastReceiver() {
 
@@ -57,6 +57,10 @@ class StoreShotsReceiver : BroadcastReceiver() {
                     recipeName = intent.getStringExtra("recipe"),
                     freeze = intent.getBooleanExtra("freeze", true),
                 )
+            }
+            // The tight brew screen is a setting, and the shots are wanted in both sizes.
+            "compact" -> scene {
+                app.appContainer.settings.setCompactBrew(intent.getBooleanExtra("on", true))
             }
             // The screen before the start: a scale on the line, an empty cone, no timer running.
             "idle" -> scene { idle(app, intent.getStringExtra("recipe")) }
