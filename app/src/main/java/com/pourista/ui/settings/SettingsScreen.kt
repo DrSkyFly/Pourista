@@ -64,6 +64,7 @@ import com.pourista.BuildConfig
 import com.pourista.R
 import com.pourista.brew.FlowSmoothing
 import com.pourista.appContainer
+import com.pourista.brew.PaceTolerance
 import com.pourista.core.AppLocale
 import com.pourista.ui.components.ReleaseNotesDialog
 import com.pourista.ui.listSidePadding
@@ -214,8 +215,8 @@ fun SettingsScreen(
                     ChoiceRow(
                         title = stringResource(R.string.settings_pace_tolerance),
                         subtitle = stringResource(R.string.settings_pace_tolerance_hint),
-                        current = percentLabel(settings.paceTolerance),
-                        options = PACE_TOLERANCE_OPTIONS.map { percentLabel(it) to it },
+                        current = paceToleranceLabel(settings.paceTolerance),
+                        options = PACE_TOLERANCE_OPTIONS.map { paceToleranceLabel(it) to it },
                         onSelect = viewModel::setPaceTolerance,
                     )
                     ChoiceRow(
@@ -627,12 +628,33 @@ private fun <T> ChoiceRow(
 
 private val NEAR_TARGET_OPTIONS = listOf(3f, 5f, 10f, 15f)
 
-private val PACE_TOLERANCE_OPTIONS = listOf(0.05f, 0.1f, 0.15f, 0.2f, 0.3f)
+/**
+ * Both kinds in one list: the shares first, the grams per second after them. The list is short
+ * enough that a switch above it would cost more room than it saves.
+ */
+private val PACE_TOLERANCE_OPTIONS = listOf(
+    PaceTolerance(0.05f),
+    PaceTolerance(0.1f),
+    PaceTolerance(0.15f),
+    PaceTolerance(0.2f),
+    PaceTolerance(0.5f, absolute = true),
+    PaceTolerance(1f, absolute = true),
+    PaceTolerance(1.5f, absolute = true),
+    PaceTolerance(2f, absolute = true),
+    PaceTolerance(3f, absolute = true),
+)
 
-/** "±10%" — the share is shown as a percentage, that way it is easier to try on. */
+/** "±10 %" or "±1г/с" — the unit is the whole answer to which of the two kinds this is. */
 @Composable
-private fun percentLabel(share: Float): String =
-    stringResource(R.string.settings_pace_tolerance_value, kotlin.math.round(share * 100).toInt())
+private fun paceToleranceLabel(tolerance: PaceTolerance): String =
+    if (tolerance.absolute) {
+        "±${formatGrams(tolerance.value)}${stringResource(R.string.unit_gram_per_second)}"
+    } else {
+        stringResource(
+            R.string.settings_pace_tolerance_value,
+            kotlin.math.round(tolerance.value * 100).toInt(),
+        )
+    }
 
 private fun FlowSmoothing.labelRes(): Int = when (this) {
     FlowSmoothing.NONE -> R.string.flow_smoothing_none

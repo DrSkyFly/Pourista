@@ -233,7 +233,7 @@
     <string name="settings_auto_finish">自動で終了</string>
     <string name="settings_auto_finish_hint">ドリッパーやカップをスケールから外したら抽出を終える</string>
     <string name="settings_pace_tolerance">流速の許容範囲</string>
-    <string name="settings_pace_tolerance_hint">流速がレシピからどれだけずれたら、速く・ゆっくり注ぐよう知らせるか</string>
+    <string name="settings_pace_tolerance_hint">レシピの注湯速度からどれだけ離れたら、速く／ゆっくり注ぐよう伝えるか。％ではステップの速度に合わせて変わり、g/s ではどの注湯でも同じ幅になります</string>
     <string name="settings_pace_tolerance_value">±%1$d %%</string>
     <string name="settings_flow_smoothing">流量の平滑化</string>
     <string name="settings_flow_smoothing_hint">表示する流量をどれだけ平均するか。強いほど数値は読みやすく、弱いほど実際の値に近くなります</string>

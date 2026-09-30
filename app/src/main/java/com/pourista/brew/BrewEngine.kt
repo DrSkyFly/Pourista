@@ -25,9 +25,27 @@ const val DEFAULT_NEAR_TARGET_GRAMS = 5f
 
 /**
  * How far the flow rate may drift from the recipe before the app says to pour
- * faster or slower. A share of the target rate.
+ * faster or slower.
+ *
+ * Two ways of asking for the same thing. A share is fair on any recipe: a bloom at
+ * 2 g/s and a main pour at 8 g/s each get a margin of their own. Grams per second
+ * are easier to feel — the spout is either steady or it is not — and on a slow bloom
+ * a share comes out so tight that the app grumbles at every wobble of the kettle.
+ *
+ * Which of the two it is is told by [absolute] alone: there is no switch for it in
+ * the settings, the two sets of values stand in one list.
  */
-const val DEFAULT_PACE_TOLERANCE = 0.1f
+data class PaceTolerance(
+    val value: Float,
+    /** The value is grams per second rather than a share of the target rate. */
+    val absolute: Boolean = false,
+) {
+    /** The drift allowed at a target of [targetFlowRate], in grams per second. */
+    fun gramsPerSecond(targetFlowRate: Float): Float =
+        if (absolute) value else targetFlowRate * value
+}
+
+val DEFAULT_PACE_TOLERANCE = PaceTolerance(0.1f)
 
 enum class BrewPhase { IDLE, RUNNING, PAUSED, FINISHED }
 
@@ -48,13 +66,14 @@ enum class NextPourHint { SAME, FASTER, SLOWER }
 internal fun compareNextPour(
     lastFlowRate: Float,
     nextFlowRate: Float?,
-    tolerance: Float = DEFAULT_PACE_TOLERANCE,
+    tolerance: PaceTolerance = DEFAULT_PACE_TOLERANCE,
 ): NextPourHint? {
     if (lastFlowRate <= 0f || nextFlowRate == null || nextFlowRate <= 0f) return null
-    val ratio = nextFlowRate / lastFlowRate
+    // The margin is counted off the rate just shown: that is the one being compared against.
+    val margin = tolerance.gramsPerSecond(lastFlowRate)
     return when {
-        ratio > 1f + tolerance -> NextPourHint.FASTER
-        ratio < 1f - tolerance -> NextPourHint.SLOWER
+        nextFlowRate > lastFlowRate + margin -> NextPourHint.FASTER
+        nextFlowRate < lastFlowRate - margin -> NextPourHint.SLOWER
         else -> NextPourHint.SAME
     }
 }
@@ -188,7 +207,7 @@ class BrewEngine(
 
     /** Allowed drift of the flow rate from the recipe. Set in the settings. */
     @Volatile
-    var paceTolerance: Float = DEFAULT_PACE_TOLERANCE
+    var paceTolerance: PaceTolerance = DEFAULT_PACE_TOLERANCE
 
     /** How much to smooth the flow rate on screen. Set in the settings. */
     var flowSmoothing: FlowSmoothing
@@ -630,6 +649,7 @@ class BrewEngine(
         val stepPhase = if (pourDone) StepPhase.WAITING else StepPhase.POURING
         val targetNow = previousTarget + delta * pourProgress
 
+        val paceMargin = paceTolerance.gramsPerSecond(targetFlowRate)
         val pace = when {
             // The pace can only be judged by the scale. Without it any verdict is a
             // fabrication: the weight sits at zero, and the whole brew would be spent
@@ -638,8 +658,8 @@ class BrewEngine(
             stepPhase == StepPhase.WAITING || targetFlowRate <= 0f -> Pace.ON_TRACK
             // In the first seconds the stream is only settling in, too early to complain.
             stepElapsed < PACE_GRACE_SECONDS -> Pace.ON_TRACK
-            state.flowRate > targetFlowRate * (1f + paceTolerance) -> Pace.TOO_FAST
-            state.flowRate < targetFlowRate * (1f - paceTolerance) -> Pace.TOO_SLOW
+            state.flowRate > targetFlowRate + paceMargin -> Pace.TOO_FAST
+            state.flowRate < targetFlowRate - paceMargin -> Pace.TOO_SLOW
             else -> Pace.ON_TRACK
         }
 

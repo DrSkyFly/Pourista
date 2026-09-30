@@ -233,7 +233,7 @@
     <string name="settings_auto_finish">Автофиниш</string>
     <string name="settings_auto_finish_hint">Заканчивать заваривание, когда с весов сняли воронку или чашку</string>
     <string name="settings_pace_tolerance">Допуск по скорости</string>
-    <string name="settings_pace_tolerance_hint">Насколько скорость может разойтись с рецептом, прежде чем приложение попросит лить быстрее или медленнее</string>
+    <string name="settings_pace_tolerance_hint">Насколько скорость может разойтись с рецептом, прежде чем приложение попросит лить быстрее или медленнее. В процентах допуск считается от скорости этапа, в г/с он одинаков на всех проливах</string>
     <string name="settings_pace_tolerance_value">±%1$d %%</string>
     <string name="settings_flow_smoothing">Сглаживание скорости</string>
     <string name="settings_flow_smoothing_hint">Насколько усреднять показанную скорость: сильнее — цифра ровнее, слабее — ближе к реальной</string>

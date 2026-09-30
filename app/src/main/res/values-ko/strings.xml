@@ -233,7 +233,7 @@
     <string name="settings_auto_finish">자동 종료</string>
     <string name="settings_auto_finish_hint">드리퍼나 잔을 저울에서 내리면 추출을 끝냅니다</string>
     <string name="settings_pace_tolerance">유속 허용 범위</string>
-    <string name="settings_pace_tolerance_hint">유속이 레시피에서 얼마나 벗어나면 더 빠르게, 또는 더 천천히 부으라고 알릴지</string>
+    <string name="settings_pace_tolerance_hint">레시피의 속도에서 얼마나 벗어나면 더 빠르게 또는 더 천천히 부으라고 알릴지. %는 단계의 속도에 맞춰 달라지고, g/s는 모든 푸어에서 같습니다</string>
     <string name="settings_pace_tolerance_value">±%1$d %%</string>
     <string name="settings_flow_smoothing">유량 평활화</string>
     <string name="settings_flow_smoothing_hint">표시되는 유량을 얼마나 평균할지. 강할수록 숫자가 안정되고, 약할수록 실제 값에 가까워집니다</string>

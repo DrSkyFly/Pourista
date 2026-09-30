@@ -233,7 +233,7 @@
     <string name="settings_auto_finish">Final automático</string>
     <string name="settings_auto_finish_hint">Terminar la preparación en cuanto se retire de la báscula el dripper o la taza</string>
     <string name="settings_pace_tolerance">Tolerancia del caudal</string>
-    <string name="settings_pace_tolerance_hint">Cuánto puede desviarse el caudal de la receta antes de que la app pida verter más rápido o más despacio</string>
+    <string name="settings_pace_tolerance_hint">Cuánto puede alejarse el caudal de la receta antes de que la app pida verter más rápido o más despacio. En porcentaje el margen sigue al caudal del paso; en g/s es el mismo en todos los vertidos</string>
     <string name="settings_pace_tolerance_value">±%1$d %%</string>
     <string name="settings_flow_smoothing">Suavizado del caudal</string>
     <string name="settings_flow_smoothing_hint">Cuánto se promedia el caudal mostrado: más suave se lee mejor, menos se acerca al valor real</string>

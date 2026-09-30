@@ -233,7 +233,7 @@
     <string name="settings_auto_finish">Fine automatica</string>
     <string name="settings_auto_finish_hint">Chiudere l\'estrazione appena dripper o tazza vengono tolti dalla bilancia</string>
     <string name="settings_pace_tolerance">Tolleranza del flusso</string>
-    <string name="settings_pace_tolerance_hint">Di quanto il flusso può discostarsi dalla ricetta prima che l\'app chieda di versare più veloce o più piano</string>
+    <string name="settings_pace_tolerance_hint">Di quanto il flusso può discostarsi dalla ricetta prima che l\'app chieda di versare più veloce o più piano. In percentuale il margine segue il flusso della fase, in g/s è lo stesso a ogni versamento</string>
     <string name="settings_pace_tolerance_value">±%1$d %%</string>
     <string name="settings_flow_smoothing">Livellamento del flusso</string>
     <string name="settings_flow_smoothing_hint">Quanto mediare il flusso mostrato: più forte è più stabile da leggere, più leggero è più vicino al valore reale</string>

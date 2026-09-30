@@ -233,7 +233,7 @@
     <string name="settings_auto_finish">Automatyczne zakończenie</string>
     <string name="settings_auto_finish_hint">Kończyć parzenie, gdy z wagi znika dripper albo filiżanka</string>
     <string name="settings_pace_tolerance">Tolerancja przepływu</string>
-    <string name="settings_pace_tolerance_hint">O ile przepływ może odbiegać od przepisu, zanim aplikacja poprosi, by lać szybciej lub wolniej</string>
+    <string name="settings_pace_tolerance_hint">O ile przepływ może odbiec od przepisu, zanim aplikacja poprosi o szybsze lub wolniejsze lanie. W procentach margines zależy od przepływu etapu, w g/s jest taki sam przy każdym laniu</string>
     <string name="settings_pace_tolerance_value">±%1$d %%</string>
     <string name="settings_flow_smoothing">Wygładzanie przepływu</string>
     <string name="settings_flow_smoothing_hint">Jak mocno uśredniać pokazywany przepływ: mocniej — liczba jest spokojniejsza, słabiej — bliżej rzeczywistej</string>

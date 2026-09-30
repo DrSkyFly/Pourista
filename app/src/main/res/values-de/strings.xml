@@ -233,7 +233,7 @@
     <string name="settings_auto_finish">Automatisch beenden</string>
     <string name="settings_auto_finish_hint">Die Brühung beenden, sobald Dripper oder Tasse von der Waage genommen werden</string>
     <string name="settings_pace_tolerance">Toleranz der Flussrate</string>
-    <string name="settings_pace_tolerance_hint">Wie weit die Flussrate vom Rezept abweichen darf, bevor die App bittet, schneller oder langsamer zu gießen</string>
+    <string name="settings_pace_tolerance_hint">Wie weit die Flussrate vom Rezept abweichen darf, bevor die App bittet, schneller oder langsamer zu gießen. In Prozent richtet sich der Spielraum nach der Rate des Schritts, in g/s ist er bei jedem Guss gleich</string>
     <string name="settings_pace_tolerance_value">±%1$d %%</string>
     <string name="settings_flow_smoothing">Glättung der Flussrate</string>
     <string name="settings_flow_smoothing_hint">Wie stark die angezeigte Flussrate gemittelt wird: stärker ist ruhiger abzulesen, schwächer liegt näher am tatsächlichen Wert</string>

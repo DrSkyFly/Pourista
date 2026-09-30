@@ -15,6 +15,7 @@ import androidx.datastore.preferences.preferencesDataStore
 import com.pourista.brew.DEFAULT_NEAR_TARGET_GRAMS
 import com.pourista.brew.DEFAULT_COOLDOWN_SECONDS
 import com.pourista.brew.DEFAULT_PACE_TOLERANCE
+import com.pourista.brew.PaceTolerance
 import com.pourista.brew.FlowSmoothing
 import com.pourista.data.presets.FortySixParams
 import com.pourista.data.presets.FortySixStrength
@@ -51,8 +52,8 @@ data class AppSettings(
     val countdownCue: Boolean = true,
     /** How many grams before the step target to give a cue. */
     val nearTargetGrams: Float = DEFAULT_NEAR_TARGET_GRAMS,
-    /** Allowed drift of the flow rate from the recipe, as a share of the target. */
-    val paceTolerance: Float = DEFAULT_PACE_TOLERANCE,
+    /** Allowed drift of the flow rate from the recipe: a share of the target or grams per second. */
+    val paceTolerance: PaceTolerance = DEFAULT_PACE_TOLERANCE,
     /** How much to smooth the flow rate shown on screen. */
     val flowSmoothing: FlowSmoothing = FlowSmoothing.NORMAL,
     /**
@@ -128,6 +129,13 @@ class SettingsRepository(private val context: Context) {
         val countdownCue = booleanPreferencesKey("countdown_cue")
         val nearTargetGrams = floatPreferencesKey("near_target_grams")
         val paceTolerance = floatPreferencesKey("pace_tolerance")
+
+        /**
+         * The figure above is grams per second rather than a share. A key of its own rather
+         * than a sign on the figure: whoever set the tolerance before there were two kinds
+         * has no such key, and their share is read as a share.
+         */
+        val paceToleranceAbsolute = booleanPreferencesKey("pace_tolerance_absolute")
         val flowSmoothing = stringPreferencesKey("flow_smoothing")
         val autoFinish = booleanPreferencesKey("auto_finish")
         val scaleAsked = booleanPreferencesKey("scale_asked")
@@ -169,7 +177,10 @@ class SettingsRepository(private val context: Context) {
             hapticCues = prefs[Keys.hapticCues] ?: true,
             countdownCue = prefs[Keys.countdownCue] ?: true,
             nearTargetGrams = prefs[Keys.nearTargetGrams] ?: DEFAULT_NEAR_TARGET_GRAMS,
-            paceTolerance = prefs[Keys.paceTolerance] ?: DEFAULT_PACE_TOLERANCE,
+            paceTolerance = PaceTolerance(
+                value = prefs[Keys.paceTolerance] ?: DEFAULT_PACE_TOLERANCE.value,
+                absolute = prefs[Keys.paceToleranceAbsolute] ?: false,
+            ),
             flowSmoothing = prefs[Keys.flowSmoothing]?.let { value ->
                 runCatching { FlowSmoothing.valueOf(value) }.getOrNull()
             } ?: FlowSmoothing.NORMAL,
@@ -222,7 +233,10 @@ class SettingsRepository(private val context: Context) {
 
     suspend fun setNearTargetGrams(grams: Float) = edit { it[Keys.nearTargetGrams] = grams }
 
-    suspend fun setPaceTolerance(share: Float) = edit { it[Keys.paceTolerance] = share }
+    suspend fun setPaceTolerance(tolerance: PaceTolerance) = edit {
+        it[Keys.paceTolerance] = tolerance.value
+        it[Keys.paceToleranceAbsolute] = tolerance.absolute
+    }
 
     suspend fun setFlowSmoothing(smoothing: FlowSmoothing) =
         edit { it[Keys.flowSmoothing] = smoothing.name }

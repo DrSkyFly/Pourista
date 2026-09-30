@@ -233,7 +233,7 @@
     <string name="settings_auto_finish">Automatic finish</string>
     <string name="settings_auto_finish_hint">End the brew once the dripper or the cup is lifted off the scale</string>
     <string name="settings_pace_tolerance">Flow rate tolerance</string>
-    <string name="settings_pace_tolerance_hint">How far the flow rate may drift from the recipe before the app asks to pour faster or slower</string>
+    <string name="settings_pace_tolerance_hint">How far the flow rate may drift from the recipe before the app asks to pour faster or slower. In percent the margin follows the rate of the step, in g/s it is the same on every pour</string>
     <string name="settings_pace_tolerance_value">±%1$d %%</string>
     <string name="settings_flow_smoothing">Flow rate smoothing</string>
     <string name="settings_flow_smoothing_hint">How much to average the shown flow rate: more is steadier to read, less is closer to the real value</string>

@@ -233,7 +233,7 @@
     <string name="settings_auto_finish">Fin automatique</string>
     <string name="settings_auto_finish_hint">Terminer l\'extraction dès que le dripper ou la tasse quitte la balance</string>
     <string name="settings_pace_tolerance">Tolérance du débit</string>
-    <string name="settings_pace_tolerance_hint">De combien le débit peut s\'écarter de la recette avant que l\'app demande de verser plus vite ou plus lentement</string>
+    <string name="settings_pace_tolerance_hint">De combien le débit peut s\'écarter de la recette avant que l\'app demande de verser plus vite ou plus lentement. En pourcentage la marge suit le débit de l\'étape, en g/s elle est la même à chaque versement</string>
     <string name="settings_pace_tolerance_value">±%1$d %%</string>
     <string name="settings_flow_smoothing">Lissage du débit</string>
     <string name="settings_flow_smoothing_hint">Dans quelle mesure lisser le débit affiché : plus fort, le chiffre est stable ; plus faible, il est plus proche de la valeur réelle</string>

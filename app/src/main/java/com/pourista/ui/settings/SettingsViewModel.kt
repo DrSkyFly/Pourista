@@ -7,6 +7,7 @@ import androidx.lifecycle.viewModelScope
 import com.pourista.AppContainer
 import com.pourista.R
 import com.pourista.brew.FlowSmoothing
+import com.pourista.brew.PaceTolerance
 import com.pourista.data.io.BackupJson
 import com.pourista.data.prefs.AppSettings
 import com.pourista.ui.theme.AppPalette
@@ -44,7 +45,7 @@ class SettingsViewModel(private val container: AppContainer) : ViewModel() {
     fun setCountdownCue(value: Boolean) = update { container.settings.setCountdownCue(value) }
     fun setNearTargetGrams(value: Float) = update { container.settings.setNearTargetGrams(value) }
 
-    fun setPaceTolerance(value: Float) = update { container.settings.setPaceTolerance(value) }
+    fun setPaceTolerance(value: PaceTolerance) = update { container.settings.setPaceTolerance(value) }
 
     fun setFlowSmoothing(value: FlowSmoothing) = update { container.settings.setFlowSmoothing(value) }
     fun setAutoFinish(value: Boolean) = update { container.settings.setAutoFinish(value) }

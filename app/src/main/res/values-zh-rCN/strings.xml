@@ -233,7 +233,7 @@
     <string name="settings_auto_finish">自动结束</string>
     <string name="settings_auto_finish_hint">滤杯或杯子一离开秤面就结束这次冲煮</string>
     <string name="settings_pace_tolerance">流速容差</string>
-    <string name="settings_pace_tolerance_hint">流速偏离配方多少之后，App 才提醒注快点或慢点</string>
+    <string name="settings_pace_tolerance_hint">流速偏离配方多少后，应用会提示倒快一点或慢一点。按百分比时余量随该步骤的流速变化，按 g/s 时每次注水都一样</string>
     <string name="settings_pace_tolerance_value">±%1$d %%</string>
     <string name="settings_flow_smoothing">流速平滑</string>
     <string name="settings_flow_smoothing_hint">对显示的流速做多少平均：越强数值越稳，越弱越接近实际值</string>

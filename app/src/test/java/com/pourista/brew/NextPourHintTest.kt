@@ -25,7 +25,30 @@ class NextPourHintTest {
         // The same case under a wide tolerance is not worth mentioning.
         assertEquals(
             NextPourHint.SAME,
-            compareNextPour(lastFlowRate = 5f, nextFlowRate = 5.6f, tolerance = 0.3f),
+            compareNextPour(lastFlowRate = 5f, nextFlowRate = 5.6f, tolerance = PaceTolerance(0.3f)),
+        )
+    }
+
+    @Test
+    fun `a tolerance in grams per second is the same at any rate`() {
+        val tolerance = PaceTolerance(1f, absolute = true)
+        // A gram per second is a tenth of a fast pour and half of a slow one, and it stays a
+        // gram per second on both.
+        assertEquals(
+            NextPourHint.SAME,
+            compareNextPour(lastFlowRate = 8f, nextFlowRate = 8.9f, tolerance = tolerance),
+        )
+        assertEquals(
+            NextPourHint.SAME,
+            compareNextPour(lastFlowRate = 2f, nextFlowRate = 2.9f, tolerance = tolerance),
+        )
+        assertEquals(
+            NextPourHint.FASTER,
+            compareNextPour(lastFlowRate = 2f, nextFlowRate = 3.1f, tolerance = tolerance),
+        )
+        assertEquals(
+            NextPourHint.SLOWER,
+            compareNextPour(lastFlowRate = 8f, nextFlowRate = 6.9f, tolerance = tolerance),
         )
     }
 

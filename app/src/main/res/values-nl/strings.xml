@@ -233,7 +233,7 @@
     <string name="settings_auto_finish">Automatisch afronden</string>
     <string name="settings_auto_finish_hint">Het zetsel afsluiten zodra de dripper of de kop van de weegschaal gaat</string>
     <string name="settings_pace_tolerance">Speling in de flow</string>
-    <string name="settings_pace_tolerance_hint">Hoe ver de flow van het recept mag afwijken voordat de app vraagt om sneller of langzamer te schenken</string>
+    <string name="settings_pace_tolerance_hint">Hoe ver de flow van het recept mag afwijken voordat de app vraagt sneller of langzamer te gieten. In procenten volgt de marge de flow van de stap, in g/s is die bij elke gieting gelijk</string>
     <string name="settings_pace_tolerance_value">±%1$d %%</string>
     <string name="settings_flow_smoothing">Afvlakking van de doorstroming</string>
     <string name="settings_flow_smoothing_hint">Hoeveel de getoonde doorstroming wordt gemiddeld: meer leest rustiger, minder ligt dichter bij de werkelijke waarde</string>

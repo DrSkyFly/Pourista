@@ -233,7 +233,7 @@
     <string name="settings_auto_finish">Otomatik bitiş</string>
     <string name="settings_auto_finish_hint">Dripper ya da fincan teraziden kalkar kalkmaz demlemeyi bitir</string>
     <string name="settings_pace_tolerance">Akış toleransı</string>
-    <string name="settings_pace_tolerance_hint">Uygulama daha hızlı ya da daha yavaş dökmeni istemeden önce akış tariften ne kadar sapabilir</string>
+    <string name="settings_pace_tolerance_hint">Akış tarifteki hızdan ne kadar sapabilir; sonrasında uygulama daha hızlı ya da daha yavaş dökmeni ister. Yüzdede pay adımın hızına göre değişir, g/s\'de her dökümde aynıdır</string>
     <string name="settings_pace_tolerance_value">±%%%1$d</string>
     <string name="settings_flow_smoothing">Akış hızı yumuşatma</string>
     <string name="settings_flow_smoothing_hint">Gösterilen akış hızı ne kadar ortalanacak: daha güçlüsü okumayı kolaylaştırır, daha zayıfı gerçek değere daha yakındır</string>

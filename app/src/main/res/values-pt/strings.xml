@@ -233,7 +233,7 @@
     <string name="settings_auto_finish">Fim automático</string>
     <string name="settings_auto_finish_hint">Encerrar o preparo assim que o dripper ou a xícara sair da balança</string>
     <string name="settings_pace_tolerance">Tolerância da vazão</string>
-    <string name="settings_pace_tolerance_hint">O quanto a vazão pode fugir da receita antes de o app pedir para despejar mais rápido ou mais devagar</string>
+    <string name="settings_pace_tolerance_hint">O quanto a vazão pode se afastar da receita antes de o app pedir para verter mais rápido ou mais devagar. Em porcentagem a margem acompanha a vazão da etapa; em g/s ela é a mesma em todas as vertidas</string>
     <string name="settings_pace_tolerance_value">±%1$d %%</string>
     <string name="settings_flow_smoothing">Suavização do fluxo</string>
     <string name="settings_flow_smoothing_hint">Quanto suavizar o fluxo mostrado: mais forte fica mais estável de ler, mais fraco fica mais perto do valor real</string>
