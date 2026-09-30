@@ -31,7 +31,8 @@ import kotlinx.coroutines.launch
  *   --es cmd lang --es tag de
  * ```
  *
- * Commands: `lang` (tag), `seed`, `brew` (pace, until, recipe), `idle`, `compact` (on), `off`.
+ * Commands: `lang` (tag), `seed`, `brew` (pace, until, recipe), `idle`, `compact` (on),
+ * `notes`, `off`.
  */
 class StoreShotsReceiver : BroadcastReceiver() {
 
@@ -58,6 +59,9 @@ class StoreShotsReceiver : BroadcastReceiver() {
                     freeze = intent.getBooleanExtra("freeze", true),
                 )
             }
+            // "What is new" is shown once per version. This makes it due again — for a shot of
+            // it, and for looking at the notes after a build that left the version alone.
+            "notes" -> scene { app.appContainer.settings.setWhatsNewSeenVersion(0) }
             // The tight brew screen is a setting, and the shots are wanted in both sizes.
             "compact" -> scene {
                 app.appContainer.settings.setCompactBrew(intent.getBooleanExtra("on", true))
