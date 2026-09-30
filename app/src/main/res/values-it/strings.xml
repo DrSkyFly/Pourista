@@ -229,7 +229,7 @@
     <string name="settings_countdown_hint">Tre segnali brevi prima della versata successiva</string>
     <string name="settings_scale">Bilancia</string>
     <string name="settings_compact">Schermata di preparazione compatta</string>
-    <string name="settings_compact_hint">Letture e fasi si stringono perché i grafici entrino senza scorrere</string>
+    <string name="settings_compact_hint">Letture e fasi si stringono perché i grafici entrino senza scorrere. Senza bilancia non ci sono grafici e la schermata resta spaziosa.</string>
     <string name="settings_auto_finish">Fine automatica</string>
     <string name="settings_auto_finish_hint">Chiudere l\'estrazione appena dripper o tazza vengono tolti dalla bilancia</string>
     <string name="settings_pace_tolerance">Tolleranza del flusso</string>

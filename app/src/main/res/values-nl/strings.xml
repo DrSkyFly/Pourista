@@ -229,7 +229,7 @@
     <string name="settings_countdown_hint">Drie korte signalen voor de volgende schenkbeurt</string>
     <string name="settings_scale">Weegschaal</string>
     <string name="settings_compact">Compact brouwscherm</string>
-    <string name="settings_compact_hint">Metingen en stappen geven ruimte prijs zodat de grafieken zonder scrollen passen</string>
+    <string name="settings_compact_hint">Metingen en stappen geven ruimte prijs zodat de grafieken zonder scrollen passen. Zonder weegschaal zijn er geen grafieken en blijft het scherm ruim.</string>
     <string name="settings_auto_finish">Automatisch afronden</string>
     <string name="settings_auto_finish_hint">Het zetsel afsluiten zodra de dripper of de kop van de weegschaal gaat</string>
     <string name="settings_pace_tolerance">Speling in de flow</string>

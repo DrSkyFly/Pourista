@@ -229,7 +229,7 @@
     <string name="settings_countdown_hint">다음 푸어 직전에 짧게 세 번</string>
     <string name="settings_scale">저울</string>
     <string name="settings_compact">간결한 추출 화면</string>
-    <string name="settings_compact_hint">계측값과 단계의 여백을 줄여 그래프를 스크롤 없이 보여 줍니다</string>
+    <string name="settings_compact_hint">계측값과 단계의 여백을 줄여 그래프를 스크롤 없이 보여 줍니다. 저울이 없으면 그래프도 없으므로 화면은 여유롭게 유지됩니다.</string>
     <string name="settings_auto_finish">자동 종료</string>
     <string name="settings_auto_finish_hint">드리퍼나 잔을 저울에서 내리면 추출을 끝냅니다</string>
     <string name="settings_pace_tolerance">유속 허용 범위</string>

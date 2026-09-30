@@ -229,7 +229,7 @@
     <string name="settings_countdown_hint">Três sinais curtos antes do próximo despejo</string>
     <string name="settings_scale">Balança</string>
     <string name="settings_compact">Tela de preparo compacta</string>
-    <string name="settings_compact_hint">As leituras e as etapas cedem espaço para os gráficos caberem sem rolagem</string>
+    <string name="settings_compact_hint">As leituras e as etapas cedem espaço para os gráficos caberem sem rolagem. Sem balança não há gráficos e a tela continua espaçosa.</string>
     <string name="settings_auto_finish">Fim automático</string>
     <string name="settings_auto_finish_hint">Encerrar o preparo assim que o dripper ou a xícara sair da balança</string>
     <string name="settings_pace_tolerance">Tolerância da vazão</string>

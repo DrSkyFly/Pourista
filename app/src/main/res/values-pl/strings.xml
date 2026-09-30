@@ -229,7 +229,7 @@
     <string name="settings_countdown_hint">Trzy krótkie sygnały przed następnym nalewem</string>
     <string name="settings_scale">Waga</string>
     <string name="settings_compact">Kompaktowy ekran parzenia</string>
-    <string name="settings_compact_hint">Odczyty i etapy oddają miejsce, aby wykresy zmieściły się bez przewijania</string>
+    <string name="settings_compact_hint">Odczyty i etapy oddają miejsce, aby wykresy zmieściły się bez przewijania. Bez wagi nie ma wykresów i ekran zostaje przestronny.</string>
     <string name="settings_auto_finish">Automatyczne zakończenie</string>
     <string name="settings_auto_finish_hint">Kończyć parzenie, gdy z wagi znika dripper albo filiżanka</string>
     <string name="settings_pace_tolerance">Tolerancja przepływu</string>

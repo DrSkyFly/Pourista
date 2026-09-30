@@ -229,7 +229,7 @@
     <string name="settings_countdown_hint">下一段注水前响三声短提示</string>
     <string name="settings_scale">咖啡秤</string>
     <string name="settings_compact">紧凑的冲煮界面</string>
-    <string name="settings_compact_hint">读数和步骤收紧留白，图表无需滚动即可看全</string>
+    <string name="settings_compact_hint">读数和步骤收紧留白，图表无需滚动即可看全。没有秤就没有图表，界面保持宽松。</string>
     <string name="settings_auto_finish">自动结束</string>
     <string name="settings_auto_finish_hint">滤杯或杯子一离开秤面就结束这次冲煮</string>
     <string name="settings_pace_tolerance">流速容差</string>

@@ -187,9 +187,10 @@ fun BrewScreen(
         if (scale.isConnected) weightMode = true else if (!brewing) weightMode = false
     }
 
-    // The tight screen is worth it only during a brew: before the start the charts are empty and
-    // there is nothing to make room for.
-    val compact = settings.compactBrew && brewing
+    // The tight screen is worth it only during a brew, and only with a scale: before the start the
+    // charts are empty, and without a scale there are none at all — squeezing the cards would then
+    // take the air away for nothing.
+    val compact = settings.compactBrew && brewing && weightMode
 
     val savedMessage = stringResource(R.string.brew_saved)
     val draftReady by viewModel.draftReady.collectAsStateWithLifecycle()
