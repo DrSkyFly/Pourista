@@ -212,8 +212,9 @@
     <string name="theme_light">Açık</string>
     <string name="theme_dark">Koyu</string>
     <string name="whats_new_title">Yenilikler</string>
-    <string name="testers_title">Test edenler aranıyor</string>
-    <string name="testers_body">Pourista\'yı Google Play\'de yayınlamak için test edenlere ihtiyaç var: iki hafta boyunca uygulamayı günde en az bir kez açmak yeter. Yardım etmek isteyen yazara ulaşsın.</string>
+    <string name="play_title">Pourista Google Play\'de</string>
+    <string name="play_body">Uygulamayı mağazadan kurun, güncellemeler kendiliğinden gelsin.</string>
+    <string name="play_open">Google Play\'de aç</string>
 
     <string name="settings_palette">Palet</string>
     <string name="palette_copper">Kahve</string>

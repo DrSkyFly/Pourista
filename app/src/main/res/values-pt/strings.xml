@@ -212,8 +212,9 @@
     <string name="theme_light">Claro</string>
     <string name="theme_dark">Escuro</string>
     <string name="whats_new_title">Novidades</string>
-    <string name="testers_title">Procuram-se testadores</string>
-    <string name="testers_body">Para publicar o Pourista no Google Play são necessários testadores: abrir o app pelo menos uma vez por dia durante duas semanas. Quer ajudar? Escreva para o autor.</string>
+    <string name="play_title">O Pourista está no Google Play</string>
+    <string name="play_body">Instale pela loja e as atualizações chegam sozinhas.</string>
+    <string name="play_open">Abrir no Google Play</string>
 
     <string name="settings_palette">Paleta</string>
     <string name="palette_copper">Café</string>

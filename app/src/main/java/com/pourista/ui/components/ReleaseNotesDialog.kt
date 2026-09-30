@@ -11,6 +11,7 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.rounded.OpenInNew
+import androidx.compose.material.icons.rounded.Shop
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
@@ -44,7 +45,7 @@ fun ReleaseNotesDialog(onDismiss: () -> Unit) {
                     .verticalScroll(rememberScrollState()),
                 verticalArrangement = Arrangement.spacedBy(12.dp),
             ) {
-                if (BuildConfig.TESTERS_CALL) TestersCall()
+                if (BuildConfig.PLAY_LINK) GooglePlayCall()
                 ReleaseNotes.all.forEach { release ->
                     Column(verticalArrangement = Arrangement.spacedBy(2.dp)) {
                         Text(
@@ -67,50 +68,60 @@ fun ReleaseNotesDialog(onDismiss: () -> Unit) {
 }
 
 /**
- * Recruiting testers. It stands above the list of changes and is set off in colour: this is a
- * request rather than news about a version, and scrolling past it must not be easier than
- * reading it.
+ * The app is in the store. It stands above the list of changes and is set off in colour: whoever
+ * put the APK on by hand goes on updating it by hand, while from the store the updates come by
+ * themselves.
  *
- * Writing to the author goes by the same link as in the settings: a channel known to be alive.
+ * The store's own badge artwork is not used: it comes under brand rules of its own, it is drawn
+ * anew for every language, and a banner pasted into a dialog would look like an advertisement.
+ * A card of the app's own, pressable whole, says the same thing.
  */
 @Composable
-private fun TestersCall() {
+private fun GooglePlayCall() {
     val uriHandler = LocalUriHandler.current
-    val contact = stringResource(R.string.settings_contact_telegram)
+    val link = stringResource(R.string.play_link)
 
     Surface(
         color = MaterialTheme.colorScheme.primaryContainer,
         contentColor = MaterialTheme.colorScheme.onPrimaryContainer,
         shape = MaterialTheme.shapes.medium,
-        onClick = { runCatching { uriHandler.openUri("https://$contact") } },
+        onClick = { runCatching { uriHandler.openUri("https://$link") } },
     ) {
-        Column(
+        Row(
             modifier = Modifier.padding(horizontal = 14.dp, vertical = 12.dp),
-            verticalArrangement = Arrangement.spacedBy(4.dp),
+            verticalAlignment = Alignment.CenterVertically,
         ) {
-            Text(
-                text = stringResource(R.string.testers_title),
-                style = MaterialTheme.typography.titleSmall,
+            Icon(
+                imageVector = Icons.Rounded.Shop,
+                contentDescription = null,
+                modifier = Modifier.size(28.dp),
             )
-            Text(
-                text = stringResource(R.string.testers_body),
-                style = MaterialTheme.typography.bodyMedium,
-            )
-            Row(
-                modifier = Modifier.padding(top = 4.dp),
-                verticalAlignment = Alignment.CenterVertically,
-            ) {
+            Spacer(Modifier.size(12.dp))
+            Column(verticalArrangement = Arrangement.spacedBy(4.dp)) {
                 Text(
-                    text = contact,
-                    style = MaterialTheme.typography.labelLarge,
-                    textDecoration = TextDecoration.Underline,
+                    text = stringResource(R.string.play_title),
+                    style = MaterialTheme.typography.titleSmall,
                 )
-                Spacer(Modifier.size(6.dp))
-                Icon(
-                    imageVector = Icons.AutoMirrored.Rounded.OpenInNew,
-                    contentDescription = null,
-                    modifier = Modifier.size(16.dp),
+                Text(
+                    text = stringResource(R.string.play_body),
+                    style = MaterialTheme.typography.bodyMedium,
                 )
+                Row(
+                    modifier = Modifier.padding(top = 2.dp),
+                    verticalAlignment = Alignment.CenterVertically,
+                ) {
+                    Text(
+                        text = stringResource(R.string.play_open),
+                        style = MaterialTheme.typography.labelLarge,
+                        textDecoration = TextDecoration.Underline,
+                    )
+                    Spacer(Modifier.size(6.dp))
+                    Icon(
+                        imageVector = Icons.AutoMirrored.Rounded.OpenInNew,
+                        contentDescription = null,
+                        modifier = Modifier.size(16.dp),
+                    )
+                }
             }
         }
     }

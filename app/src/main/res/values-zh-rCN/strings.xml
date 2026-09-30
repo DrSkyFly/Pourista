@@ -212,8 +212,9 @@
     <string name="theme_light">浅色</string>
     <string name="theme_dark">深色</string>
     <string name="whats_new_title">更新内容</string>
-    <string name="testers_title">招募测试者</string>
-    <string name="testers_body">上架 Google Play 需要测试者：连续两周，每天至少打开一次应用。愿意帮忙的请联系作者。</string>
+    <string name="play_title">Pourista 已上架 Google Play</string>
+    <string name="play_body">从商店安装，更新会自己送到。</string>
+    <string name="play_open">在 Google Play 中打开</string>
 
     <string name="settings_palette">配色</string>
     <string name="palette_copper">咖啡</string>

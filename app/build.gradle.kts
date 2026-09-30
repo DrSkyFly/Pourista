@@ -38,16 +38,16 @@ android {
             dimension = "store"
             // The link to the releases page: an update from there is installed by hand.
             buildConfigField("boolean", "UPDATE_LINK", "true")
-            // We look for testers among those who install the APK by hand.
-            buildConfigField("boolean", "TESTERS_CALL", "true")
+            // Whoever put the APK on by hand does not know the app is in the store.
+            buildConfigField("boolean", "PLAY_LINK", "true")
         }
         create("play") {
             dimension = "store"
             // In the store, updating is the store's business, and calling people for an APK past
             // it is not allowed by the Play rules anyway.
             buildConfigField("boolean", "UPDATE_LINK", "false")
-            // Whoever installs from Play is a tester already: no need to call them.
-            buildConfigField("boolean", "TESTERS_CALL", "false")
+            // Pointing at the store from inside the store is of no use to anyone.
+            buildConfigField("boolean", "PLAY_LINK", "false")
         }
     }
     signingConfigs {

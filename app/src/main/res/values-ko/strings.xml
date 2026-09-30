@@ -212,8 +212,9 @@
     <string name="theme_light">밝게</string>
     <string name="theme_dark">어둡게</string>
     <string name="whats_new_title">새로운 기능</string>
-    <string name="testers_title">테스터를 찾습니다</string>
-    <string name="testers_body">Google Play 출시를 위해 테스터가 필요합니다. 2주 동안 하루에 한 번은 앱을 열어 주시면 됩니다. 도와주실 분은 제작자에게 연락해 주세요.</string>
+    <string name="play_title">Pourista가 Google Play에 있습니다</string>
+    <string name="play_body">스토어에서 설치하면 업데이트가 알아서 도착합니다.</string>
+    <string name="play_open">Google Play에서 열기</string>
 
     <string name="settings_palette">색상</string>
     <string name="palette_copper">커피</string>

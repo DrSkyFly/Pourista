@@ -212,8 +212,9 @@
     <string name="theme_light">ライト</string>
     <string name="theme_dark">ダーク</string>
     <string name="whats_new_title">新機能</string>
-    <string name="testers_title">テスター募集</string>
-    <string name="testers_body">Google Play で公開するにはテスターが必要です。二週間、一日一回はアプリを開いてもらえる方を探しています。協力できる方は作者までご連絡ください。</string>
+    <string name="play_title">Pourista は Google Play にあります</string>
+    <string name="play_body">ストアから入れておけば、更新はひとりでに届きます。</string>
+    <string name="play_open">Google Play で開く</string>
 
     <string name="settings_palette">配色</string>
     <string name="palette_copper">コーヒー</string>

@@ -212,8 +212,9 @@
     <string name="theme_light">Hell</string>
     <string name="theme_dark">Dunkel</string>
     <string name="whats_new_title">Neu in dieser Version</string>
-    <string name="testers_title">Tester gesucht</string>
-    <string name="testers_body">Für die Veröffentlichung bei Google Play braucht Pourista Tester: zwei Wochen lang die App mindestens einmal täglich öffnen. Wer mitmachen mag, schreibt dem Autor.</string>
+    <string name="play_title">Pourista ist bei Google Play</string>
+    <string name="play_body">Installiere die App aus dem Store, dann kommen die Updates von selbst.</string>
+    <string name="play_open">In Google Play öffnen</string>
 
     <string name="settings_palette">Palette</string>
     <string name="palette_copper">Kaffee</string>

@@ -212,8 +212,9 @@
     <string name="theme_light">Licht</string>
     <string name="theme_dark">Donker</string>
     <string name="whats_new_title">Wat is er nieuw</string>
-    <string name="testers_title">Testers gezocht</string>
-    <string name="testers_body">Om Pourista in Google Play te krijgen zijn testers nodig: twee weken lang de app minstens één keer per dag openen. Wil je helpen? Schrijf de maker.</string>
+    <string name="play_title">Pourista staat in Google Play</string>
+    <string name="play_body">Installeer de app uit de store, dan komen de updates vanzelf.</string>
+    <string name="play_open">Openen in Google Play</string>
 
     <string name="settings_palette">Palet</string>
     <string name="palette_copper">Koffie</string>

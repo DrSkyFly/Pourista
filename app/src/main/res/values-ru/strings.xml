@@ -212,8 +212,9 @@
     <string name="theme_light">Светлая</string>
     <string name="theme_dark">Тёмная</string>
     <string name="whats_new_title">Что нового</string>
-    <string name="testers_title">Нужны тестировщики</string>
-    <string name="testers_body">Для публикации в Google Play нужны тестировщики: две недели подряд открывать приложение хотя бы раз в день. Готовы помочь — напишите автору.</string>
+    <string name="play_title">Мы в Google Play</string>
+    <string name="play_body">Поставьте приложение из магазина — обновления будут приходить сами.</string>
+    <string name="play_open">Открыть в Google Play</string>
 
     <string name="settings_palette">Палитра</string>
     <string name="palette_copper">Кофейная</string>

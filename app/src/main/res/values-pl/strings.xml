@@ -212,8 +212,9 @@
     <string name="theme_light">Jasny</string>
     <string name="theme_dark">Ciemny</string>
     <string name="whats_new_title">Co nowego</string>
-    <string name="testers_title">Poszukiwani testerzy</string>
-    <string name="testers_body">Do publikacji Pouristy w Google Play potrzebni są testerzy: przez dwa tygodnie otwierać aplikację przynajmniej raz dziennie. Chcesz pomóc — napisz do autora.</string>
+    <string name="play_title">Pourista jest w Google Play</string>
+    <string name="play_body">Zainstaluj aplikację ze sklepu, a aktualizacje przyjdą same.</string>
+    <string name="play_open">Otwórz w Google Play</string>
 
     <string name="settings_palette">Paleta</string>
     <string name="palette_copper">Kawowa</string>

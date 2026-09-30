@@ -212,8 +212,9 @@
     <string name="theme_light">Світла</string>
     <string name="theme_dark">Темна</string>
     <string name="whats_new_title">Що нового</string>
-    <string name="testers_title">Потрібні тестувальники</string>
-    <string name="testers_body">Щоб Pourista потрапила в Google Play, потрібні тестувальники: два тижні поспіль відкривати застосунок хоча б раз на день. Готові допомогти — напишіть автору.</string>
+    <string name="play_title">Ми в Google Play</string>
+    <string name="play_body">Встановіть застосунок із крамниці — оновлення приходитимуть самі.</string>
+    <string name="play_open">Відкрити в Google Play</string>
 
     <string name="settings_palette">Палітра</string>
     <string name="palette_copper">Кавова</string>
