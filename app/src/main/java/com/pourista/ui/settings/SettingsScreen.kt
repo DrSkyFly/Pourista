@@ -626,7 +626,8 @@ private fun <T> ChoiceRow(
     }
 }
 
-private val NEAR_TARGET_OPTIONS = listOf(3f, 5f, 10f, 15f)
+/** Nought is a choice of its own: the cue then comes at the target rather than before it. */
+private val NEAR_TARGET_OPTIONS = listOf(0f, 3f, 5f, 10f, 15f)
 
 /**
  * Both kinds in one list: the shares first, the grams per second after them. The list is short

@@ -242,7 +242,7 @@
     <string name="flow_smoothing_normal">Normal</string>
     <string name="flow_smoothing_strong">Güçlü</string>
     <string name="settings_near_target">Hedeften önce uyarı</string>
-    <string name="settings_near_target_hint">Adımın hedefinden kaç gram önce uyarılacağı</string>
+    <string name="settings_near_target_hint">Adımın hedefinden kaç gram önce uyarılsın. 0 — tam ulaşıldığında</string>
     <string name="scale_question_title">Bluetooth’lu teraziniz var mı?</string>
     <string name="scale_question_text">Terazi varken uygulama ağırlığı ve akış hızını gösterir. Yokken tarifi izleyen bir kronometre olarak kalır. Yanıtı ayarlardan değiştirebilirsiniz.</string>
     <string name="scale_question_yes">Var</string>

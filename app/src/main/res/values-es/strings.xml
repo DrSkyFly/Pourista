@@ -242,7 +242,7 @@
     <string name="flow_smoothing_normal">Normal</string>
     <string name="flow_smoothing_strong">Fuerte</string>
     <string name="settings_near_target">Aviso antes del objetivo</string>
-    <string name="settings_near_target_hint">Cuántos gramos antes del objetivo del paso hay que avisar</string>
+    <string name="settings_near_target_hint">Cuántos gramos antes del objetivo del paso avisar. 0: justo al alcanzarlo</string>
     <string name="scale_question_title">¿Tienes una báscula con Bluetooth?</string>
     <string name="scale_question_text">Con báscula la app muestra el peso y el caudal. Sin ella queda un temporizador que sigue la receta. Puedes cambiar la respuesta en los ajustes.</string>
     <string name="scale_question_yes">Sí</string>

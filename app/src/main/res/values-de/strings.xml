@@ -242,7 +242,7 @@
     <string name="flow_smoothing_normal">Normal</string>
     <string name="flow_smoothing_strong">Stark</string>
     <string name="settings_near_target">Signal vor dem Ziel</string>
-    <string name="settings_near_target_hint">Wie viele Gramm vor dem Ziel des Schritts gewarnt wird</string>
+    <string name="settings_near_target_hint">Wie viele Gramm vor dem Ziel des Schritts gewarnt wird. 0 — genau beim Erreichen</string>
     <string name="scale_question_title">Hast du eine Bluetooth-Waage?</string>
     <string name="scale_question_text">Mit Waage zeigt die App Gewicht und Flussrate. Ohne bleibt ein Timer, der dem Rezept folgt. Die Antwort lässt sich in den Einstellungen ändern.</string>
     <string name="scale_question_yes">Ja</string>

@@ -242,7 +242,7 @@
     <string name="flow_smoothing_normal">보통</string>
     <string name="flow_smoothing_strong">강하게</string>
     <string name="settings_near_target">목표 직전 신호</string>
-    <string name="settings_near_target_hint">단계 목표까지 몇 그램 남았을 때 알릴지</string>
+    <string name="settings_near_target_hint">단계 목표에 몇 그램 앞서 알릴지. 0이면 도달하는 순간</string>
     <string name="scale_question_title">블루투스 저울이 있나요?</string>
     <string name="scale_question_text">저울이 있으면 무게와 푸어 속도를 보여줍니다. 없으면 레시피를 따라가는 타이머로 씁니다. 답은 설정에서 바꿀 수 있습니다.</string>
     <string name="scale_question_yes">있음</string>

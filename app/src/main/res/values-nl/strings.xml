@@ -242,7 +242,7 @@
     <string name="flow_smoothing_normal">Normaal</string>
     <string name="flow_smoothing_strong">Sterk</string>
     <string name="settings_near_target">Signaal voor het doel</string>
-    <string name="settings_near_target_hint">Hoeveel gram voor het doel van de stap er gewaarschuwd wordt</string>
+    <string name="settings_near_target_hint">Hoeveel gram voor het doel van de stap waarschuwen. 0 — precies bij het bereiken</string>
     <string name="scale_question_title">Heb je een bluetooth-weegschaal?</string>
     <string name="scale_question_text">Met een weegschaal toont de app gewicht en flow. Zonder blijft het een timer die het recept volgt. Het antwoord kun je in de instellingen wijzigen.</string>
     <string name="scale_question_yes">Ja</string>

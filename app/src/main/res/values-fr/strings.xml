@@ -242,7 +242,7 @@
     <string name="flow_smoothing_normal">Normal</string>
     <string name="flow_smoothing_strong">Fort</string>
     <string name="settings_near_target">Signal avant la cible</string>
-    <string name="settings_near_target_hint">Combien de grammes avant la cible de l\'étape prévenir</string>
+    <string name="settings_near_target_hint">Combien de grammes avant la cible de l\'étape prévenir. 0 — pile à l\'arrivée</string>
     <string name="scale_question_title">Avez-vous une balance Bluetooth ?</string>
     <string name="scale_question_text">Avec une balance, l\'app affiche le poids et le débit. Sans balance, il reste un minuteur qui suit la recette. La réponse se change dans les réglages.</string>
     <string name="scale_question_yes">Oui</string>

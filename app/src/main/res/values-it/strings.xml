@@ -242,7 +242,7 @@
     <string name="flow_smoothing_normal">Normale</string>
     <string name="flow_smoothing_strong">Forte</string>
     <string name="settings_near_target">Segnale prima dell\'obiettivo</string>
-    <string name="settings_near_target_hint">Quanti grammi prima dell\'obiettivo del passo avvisare</string>
+    <string name="settings_near_target_hint">Quanti grammi prima dell\'obiettivo della fase avvisare. 0 — esattamente al raggiungimento</string>
     <string name="scale_question_title">Hai una bilancia Bluetooth?</string>
     <string name="scale_question_text">Con la bilancia l\'app mostra peso e flusso. Senza resta un timer che segue la ricetta. La risposta si cambia nelle impostazioni.</string>
     <string name="scale_question_yes">Sì</string>

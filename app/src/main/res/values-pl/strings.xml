@@ -242,7 +242,7 @@
     <string name="flow_smoothing_normal">Zwykłe</string>
     <string name="flow_smoothing_strong">Mocne</string>
     <string name="settings_near_target">Sygnał przed celem</string>
-    <string name="settings_near_target_hint">Na ile gramów przed celem kroku ostrzec</string>
+    <string name="settings_near_target_hint">Ile gramów przed celem etapu ostrzec. 0 — dokładnie w momencie osiągnięcia</string>
     <string name="scale_question_title">Czy masz wagę z Bluetooth?</string>
     <string name="scale_question_text">Z wagą aplikacja pokazuje masę i przepływ. Bez niej zostaje minutnik prowadzony przez przepis. Odpowiedź można zmienić w ustawieniach.</string>
     <string name="scale_question_yes">Mam</string>

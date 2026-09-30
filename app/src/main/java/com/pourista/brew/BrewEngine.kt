@@ -576,10 +576,17 @@ class BrewEngine(
 
         // A separate cue shortly before the target: the kettle has to be closed in
         // advance, water keeps coming out of the spout for another couple of seconds.
-        if (guidance.stepPhase == StepPhase.POURING &&
-            guidance.stepIndex != nearTargetStepIndex &&
-            guidance.remainingGrams in 0.1f..nearTargetGrams
-        ) {
+        //
+        // A margin of nought asks for the target itself. The step is not a pour any more by
+        // then — reaching the water is what ends the pour — so the cue is due by the water
+        // alone, and only on steps that ask for any.
+        val nearTarget = if (nearTargetGrams > 0f) {
+            guidance.stepPhase == StepPhase.POURING &&
+                guidance.remainingGrams in 0.1f..nearTargetGrams
+        } else {
+            guidance.stepDeltaGrams > 0f && guidance.remainingGrams <= 0f
+        }
+        if (nearTarget && guidance.stepIndex != nearTargetStepIndex) {
             nearTargetStepIndex = guidance.stepIndex
             _events.tryEmit(BrewEvent.NearTarget(guidance.remainingGrams))
         }

@@ -242,7 +242,7 @@
     <string name="flow_smoothing_normal">標準</string>
     <string name="flow_smoothing_strong">強</string>
     <string name="settings_near_target">目標手前の合図</string>
-    <string name="settings_near_target_hint">ステップの目標の何グラム手前で知らせるか</string>
+    <string name="settings_near_target_hint">ステップの目標の何グラム手前で知らせるか。0 なら到達ちょうど</string>
     <string name="scale_question_title">Bluetooth スケールをお持ちですか？</string>
     <string name="scale_question_text">スケールがあれば重量と注湯速度を表示します。なければレシピに沿ったタイマーとして使えます。答えは設定で変更できます。</string>
     <string name="scale_question_yes">ある</string>

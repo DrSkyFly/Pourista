@@ -242,7 +242,7 @@
     <string name="flow_smoothing_normal">Звичайне</string>
     <string name="flow_smoothing_strong">Сильне</string>
     <string name="settings_near_target">Сигнал перед ціллю</string>
-    <string name="settings_near_target_hint">За скільки грамів до цілі кроку попередити</string>
+    <string name="settings_near_target_hint">За скільки грамів до цілі етапу попередити. 0 — рівно при досягненні</string>
     <string name="scale_question_title">Чи є у вас ваги з Bluetooth?</string>
     <string name="scale_question_text">З вагами застосунок показує вагу та швидкість проливу. Без них лишається таймер за рецептом. Відповідь можна змінити в налаштуваннях.</string>
     <string name="scale_question_yes">Є</string>

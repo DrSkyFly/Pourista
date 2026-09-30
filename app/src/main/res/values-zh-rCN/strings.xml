@@ -242,7 +242,7 @@
     <string name="flow_smoothing_normal">标准</string>
     <string name="flow_smoothing_strong">强</string>
     <string name="settings_near_target">接近目标时提示</string>
-    <string name="settings_near_target_hint">离这一步的目标还有几克时提醒</string>
+    <string name="settings_near_target_hint">在距离该步骤目标多少克时提示。0 表示正好达到时</string>
     <string name="scale_question_title">你有蓝牙咖啡秤吗？</string>
     <string name="scale_question_text">有秤时，应用会显示重量和注水速度；没有秤，它就是一个跟着配方走的计时器。答案可以在设置中修改。</string>
     <string name="scale_question_yes">有</string>

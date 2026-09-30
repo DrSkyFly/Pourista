@@ -242,7 +242,7 @@
     <string name="flow_smoothing_normal">Normal</string>
     <string name="flow_smoothing_strong">Forte</string>
     <string name="settings_near_target">Aviso antes do alvo</string>
-    <string name="settings_near_target_hint">Quantos gramas antes do alvo da etapa avisar</string>
+    <string name="settings_near_target_hint">Quantos gramas antes do objetivo da etapa avisar. 0 — exatamente ao alcançar</string>
     <string name="scale_question_title">Você tem uma balança com Bluetooth?</string>
     <string name="scale_question_text">Com balança o app mostra o peso e a vazão. Sem ela fica um cronômetro que segue a receita. A resposta pode ser mudada nos ajustes.</string>
     <string name="scale_question_yes">Tenho</string>

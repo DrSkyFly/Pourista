@@ -242,7 +242,7 @@
     <string name="flow_smoothing_normal">Normal</string>
     <string name="flow_smoothing_strong">Strong</string>
     <string name="settings_near_target">Cue before the target</string>
-    <string name="settings_near_target_hint">How many grams before the step target to warn</string>
+    <string name="settings_near_target_hint">How many grams before the step target to warn. 0 — right when it is reached</string>
     <string name="scale_question_title">Do you have a Bluetooth scale?</string>
     <string name="scale_question_text">With a scale the app shows the weight and the pour rate. Without one it stays a timer that follows the recipe. You can change the answer in settings.</string>
     <string name="scale_question_yes">I do</string>
