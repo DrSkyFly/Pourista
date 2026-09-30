@@ -321,6 +321,7 @@
     <string name="settings_scale_log">Scale log</string>
     <string name="settings_scale_log_hint">Record the exchange with the scale to a file and send it to the developer</string>
     <string name="settings_release_notes">Release notes</string>
+    <string name="notes_1_9_7">• A compact brew screen: the weight chart fits without scrolling. On by default, switched off in the settings\n• The flow rate tolerance can now be set in grams per second\n• The cue before the target accepts 0 — it sounds at the target itself\n• Auto-start and the automatic finish did not work while a recipe was being recorded\n• The counter of recorded pours always showed 0</string>
     <string name="notes_1_9_6">• The swirl starts as soon as the pour is over — the time left over goes into the pause behind it\n• The cooldown timer did not start by itself after a recipe was recorded</string>
     <string name="notes_1_9_5">• Brewing ended by itself in the middle of a recipe when the dripper was pressed or the scale was nudged\n• A sudden jump in weight no longer goes into the flow rate and the chart</string>
     <string name="notes_1_9_4">• Cooldown timer: from 30 seconds to 20 minutes, counting down in the brew header\n• Start it by hand or switch on the automatic start when brewing finishes</string>

@@ -314,6 +314,7 @@
     <string name="settings_scale_log">咖啡秤日志</string>
     <string name="settings_scale_log_hint">把与秤之间的通信记进文件，发给开发者</string>
     <string name="settings_release_notes">更新历史</string>
+    <string name="notes_1_9_7">• 紧凑的冲煮界面：重量图表无需滚动即可看全。默认开启，可在设置中关闭\n• 流速余量现在也能按每秒克数设置\n• 目标前提示可选 0，正好达到时响起\n• 修复了记录配方时自动开始和自动结束不工作的问题\n• 修复了已记录注水次数始终显示为 0 的问题</string>
     <string name="notes_1_9_1">• 屏幕上的流速反应快了一倍\n• Timemore Black Mirror Dot 和 Basic 3 的流速直接来自咖啡秤\n• 修正流速：冲煮刚开始时偏低，手机繁忙时偏高</string>
     <string name="notes_1_9_0">• 研磨度换算：选择两台磨豆机的品牌和型号，输入自己的刻度即可得到对应刻度——图标在冲煮界面顶部\n• 同时显示颗粒大小（µm）以及适合该研磨度的冲煮方式。66 个品牌 206 款型号，无需联网\n• 配方编辑器的研磨度栏下方新增「研磨度换算」按钮：源磨豆机取自配方，「应用」会把结果写回各栏</string>
     <string name="notes_1_8_2">• 首次启动时先询问是否有蓝牙咖啡秤，之后才申请权限\n• 设置「不使用咖啡秤」：没有蓝牙图标，也不搜索\n• 摇匀步骤改名为 Swirl</string>

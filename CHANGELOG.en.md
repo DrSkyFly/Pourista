@@ -5,6 +5,33 @@ the numbering is [semantic](https://semver.org/).
 
 *[По-русски](CHANGELOG.md)*
 
+## [1.9.7] — 2026-09-30
+
+### Added
+
+- A compact brew screen: the readings and the steps take less room, and the
+  weight chart fits without scrolling. On by default, switched off in the
+  settings.
+- The flow rate tolerance can also be set in grams per second: ±0.5, 1, 1.5,
+  2, 3.
+- The cue before the target accepts 0 — it sounds at the step target itself.
+
+### Changed
+
+- Without a scale connected the brew screen stays roomy.
+- The caption inside the countdown ring is gone.
+- The 30 % flow rate tolerance is gone.
+- In the GitHub build the "What is new" dialog leads to Google Play instead of
+  calling for testers.
+
+### Fixed
+
+- Auto-start did not work while a recipe was being recorded: pressing "Record"
+  wiped both the armed switch and the recorded dose.
+- The automatic finish by the lifted cone did not work while a recipe was being
+  recorded.
+- The counter of recorded pours always showed 0.
+
 ## [1.9.6] — 2026-09-14
 
 ### Changed
