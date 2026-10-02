@@ -1488,24 +1488,33 @@ private fun GuidanceCard(
                         // pour the next one compared with the one just shown.
                         val hint = guidance.nextPourHint
                         val last = guidance.lastPourFlowRate
-                        val text = if (hint != null && guidance.nextPourFlowRate != null && last != null) {
-                            // Our own rate as the first figure: that is what the comparison is asked against.
-                            stringResource(
-                                hint.labelRes(),
-                                formatGrams(last),
-                                formatGrams(guidance.nextPourFlowRate),
-                            )
-                        } else {
-                            stringResource(
-                                guidance.pace.labelRes(guidance.stepPhase == StepPhase.POURING)
+                        val text = when {
+                            hint != null && guidance.nextPourFlowRate != null && last != null ->
+                                // Our own rate as the first figure: that is what the comparison is
+                                // asked against.
+                                stringResource(
+                                    hint.labelRes(),
+                                    formatGrams(last),
+                                    formatGrams(guidance.nextPourFlowRate),
+                                )
+
+                            guidance.stepPhase == StepPhase.POURING ->
+                                stringResource(guidance.pace.labelRes())
+
+                            // Outside a pour there is no pace to judge. The step says what to do by
+                            // its own name, and a line adding "and do not pour" would be the same
+                            // words on every swirl, pause and drawdown — a row of the card for
+                            // nothing.
+                            else -> null
+                        }
+                        if (text != null) {
+                            Text(
+                                text = text,
+                                style = MaterialTheme.typography.titleSmall,
+                                color = paceColor,
+                                modifier = Modifier.padding(top = 6.dp),
                             )
                         }
-                        Text(
-                            text = text,
-                            style = MaterialTheme.typography.titleSmall,
-                            color = paceColor,
-                            modifier = Modifier.padding(top = 6.dp),
-                        )
                     }
                 }
             }

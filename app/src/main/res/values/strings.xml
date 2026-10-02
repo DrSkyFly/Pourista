@@ -139,7 +139,6 @@
     <string name="pace_on_track">Flow rate is good</string>
     <string name="pace_too_fast">Pour slower</string>
     <string name="pace_too_slow">Pour faster</string>
-    <string name="pace_hold">Hands off the kettle</string>
 
     <string name="step_pour">Pour</string>
     <string name="step_wait">Wait</string>

@@ -139,7 +139,6 @@
     <string name="pace_on_track">Vazão está boa</string>
     <string name="pace_too_fast">Despeje mais devagar</string>
     <string name="pace_too_slow">Despeje mais rápido</string>
-    <string name="pace_hold">Largue a chaleira</string>
 
     <string name="step_pour">Despejo</string>
     <string name="step_wait">Pausa</string>

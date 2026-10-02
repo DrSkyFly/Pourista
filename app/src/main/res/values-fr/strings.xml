@@ -139,7 +139,6 @@
     <string name="pace_on_track">Débit correct</string>
     <string name="pace_too_fast">Versez plus lentement</string>
     <string name="pace_too_slow">Versez plus vite</string>
-    <string name="pace_hold">Posez la bouilloire</string>
 
     <string name="step_pour">Versement</string>
     <string name="step_wait">Pause</string>

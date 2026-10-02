@@ -139,7 +139,6 @@
     <string name="pace_on_track">Flow is goed</string>
     <string name="pace_too_fast">Schenk langzamer</string>
     <string name="pace_too_slow">Schenk sneller</string>
-    <string name="pace_hold">Ketel opzij</string>
 
     <string name="step_pour">Schenken</string>
     <string name="step_wait">Pauze</string>

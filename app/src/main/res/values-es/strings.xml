@@ -139,7 +139,6 @@
     <string name="pace_on_track">Caudal correcto</string>
     <string name="pace_too_fast">Vierte más despacio</string>
     <string name="pace_too_slow">Vierte más rápido</string>
-    <string name="pace_hold">Aparta el hervidor</string>
 
     <string name="step_pour">Vertido</string>
     <string name="step_wait">Pausa</string>

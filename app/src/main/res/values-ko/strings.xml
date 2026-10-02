@@ -139,7 +139,6 @@
     <string name="pace_on_track">유속 좋습니다</string>
     <string name="pace_too_fast">더 천천히 부으세요</string>
     <string name="pace_too_slow">더 빠르게 부으세요</string>
-    <string name="pace_hold">주전자 내려놓기</string>
 
     <string name="step_pour">푸어</string>
     <string name="step_wait">대기</string>

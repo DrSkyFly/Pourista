@@ -39,11 +39,10 @@ fun StepKind.icon(): ImageVector = when (this) {
 }
 
 @StringRes
-fun Pace.labelRes(isPour: Boolean): Int = when {
-    !isPour -> R.string.pace_hold
-    this == Pace.ON_TRACK -> R.string.pace_on_track
-    this == Pace.TOO_FAST -> R.string.pace_too_fast
-    else -> R.string.pace_too_slow
+fun Pace.labelRes(): Int = when (this) {
+    Pace.ON_TRACK -> R.string.pace_on_track
+    Pace.TOO_FAST -> R.string.pace_too_fast
+    Pace.TOO_SLOW -> R.string.pace_too_slow
 }
 
 @StringRes

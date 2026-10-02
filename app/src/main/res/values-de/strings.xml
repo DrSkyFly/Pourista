@@ -139,7 +139,6 @@
     <string name="pace_on_track">Flussrate passt</string>
     <string name="pace_too_fast">Langsamer gießen</string>
     <string name="pace_too_slow">Schneller gießen</string>
-    <string name="pace_hold">Kanne zur Seite</string>
 
     <string name="step_pour">Guss</string>
     <string name="step_wait">Pause</string>

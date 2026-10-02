@@ -139,7 +139,6 @@
     <string name="pace_on_track">Przepływ w normie</string>
     <string name="pace_too_fast">Lej wolniej</string>
     <string name="pace_too_slow">Lej szybciej</string>
-    <string name="pace_hold">Odstaw czajnik</string>
 
     <string name="step_pour">Nalew</string>
     <string name="step_wait">Przerwa</string>

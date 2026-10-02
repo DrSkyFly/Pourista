@@ -139,7 +139,6 @@
     <string name="pace_on_track">Скорость в норме</string>
     <string name="pace_too_fast">Лейте медленнее</string>
     <string name="pace_too_slow">Лейте быстрее</string>
-    <string name="pace_hold">Чайник в сторону</string>
 
     <string name="step_pour">Пролив</string>
     <string name="step_wait">Пауза</string>
