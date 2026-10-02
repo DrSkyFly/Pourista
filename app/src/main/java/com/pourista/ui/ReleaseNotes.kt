@@ -14,6 +14,7 @@ object ReleaseNotes {
     data class Release(val version: String, @param:StringRes val body: Int)
 
     val all: List<Release> = listOf(
+        Release("1.9.8", R.string.notes_1_9_8),
         Release("1.9.7", R.string.notes_1_9_7),
         Release("1.9.6", R.string.notes_1_9_6),
         Release("1.9.5", R.string.notes_1_9_5),

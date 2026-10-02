@@ -5,6 +5,18 @@ the numbering is [semantic](https://semver.org/).
 
 *[По-русски](CHANGELOG.md)*
 
+## [1.9.8] — 2026-10-02
+
+### Changed
+
+- The "Hands off the kettle" line is gone from the step card.
+
+### Fixed
+
+- In the compact mode the headline of a step without a pour was the weight to
+  keep, while the name of the step stood in small letters above it. The headline
+  now carries what to do, and the weight goes on the line below.
+
 ## [1.9.7] — 2026-09-30
 
 ### Added
