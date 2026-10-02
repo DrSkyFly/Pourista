@@ -1409,9 +1409,11 @@ private fun GuidanceCard(
                 )
                 Spacer(Modifier.size(if (compact) 14.dp else 16.dp))
                 Column(Modifier.weight(1f)) {
-                    // The header that the compact card gave up: the step badge and its number go
-                    // above the target, and a whole line of the card is saved without losing
-                    // anything that had to be read.
+                    // The header that the compact card gave up. The name of the step is not in
+                    // it: that is the thing to be done now, and it belongs in the headline below,
+                    // not in small letters above. What is left here is where in the recipe we
+                    // stand — unless the step was given a title of its own, which nothing else
+                    // would show.
                     if (compact) {
                         Row(verticalAlignment = Alignment.CenterVertically) {
                             StepBadge(
@@ -1421,9 +1423,11 @@ private fun GuidanceCard(
                                 ring = paceColor,
                             )
                             Spacer(Modifier.size(6.dp))
+                            val title = guidance.step.title?.takeIf { it.isNotBlank() }
                             Text(
-                                text = guidance.step.title?.takeIf { it.isNotBlank() } ?: stepName,
-                                style = MaterialTheme.typography.labelLarge,
+                                text = title ?: "${formatClock(guidance.step.startSec)}–" +
+                                    formatClock(guidance.step.endSec),
+                                style = MaterialTheme.typography.labelMedium,
                                 color = MaterialTheme.colorScheme.onSurfaceVariant,
                                 maxLines = 1,
                                 overflow = TextOverflow.Ellipsis,
@@ -1464,26 +1468,17 @@ private fun GuidanceCard(
                             color = MaterialTheme.colorScheme.onSurfaceVariant,
                         )
                     } else {
-                        // In the compact card the name of the step is already in the line above the
-                        // target, and saying "Wait" twice in a row is not worth a line of the screen.
-                        if (!compact) {
-                            Text(text = stepName, style = MaterialTheme.typography.headlineSmall)
-                        }
+                        // The swirl, the stir, the drawdown: here the name of the step is the whole
+                        // instruction, so it is the headline. The weight to keep is a figure to
+                        // glance at, and it goes under it in small letters.
+                        Text(text = stepName, style = MaterialTheme.typography.headlineSmall)
                         Text(
                             text = stringResource(
                                 R.string.guidance_hold_at,
                                 formatGrams(guidance.targetEndGrams, 0),
                             ),
-                            style = if (compact) {
-                                MaterialTheme.typography.headlineSmall
-                            } else {
-                                MaterialTheme.typography.bodyMedium
-                            },
-                            color = if (compact) {
-                                MaterialTheme.colorScheme.onSurface
-                            } else {
-                                MaterialTheme.colorScheme.onSurfaceVariant
-                            },
+                            style = MaterialTheme.typography.bodyMedium,
+                            color = MaterialTheme.colorScheme.onSurfaceVariant,
                         )
                     }
                     // Judging the pace rests on the scale: without it the line keeps quiet rather
