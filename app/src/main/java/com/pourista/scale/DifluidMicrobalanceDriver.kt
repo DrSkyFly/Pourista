@@ -1,64 +1,78 @@
 package com.pourista.scale
 
-import java.util.UUID
+import java.nio.ByteBuffer
 
-/**
- * DiFluid Microbalance.
- *
- * The frame: two header bytes DF DF, the group, the command, the data length and a checksum —
- * a plain sum of the preceding bytes. The weight arrives in four bytes big-endian in tenths
- * of a gram.
- *
- * The scale sends no weight until asked: after connecting we turn on automatic notifications
- * and ask for grams.
- *
- * The protocol is written from open implementations and has not been checked on hardware.
- */
-object DifluidMicrobalanceDriver : ScaleDriver {
+object DifluidMicrobalanceDriver : DifluidDriver("DiFluid Microbalance", "00ee", listOf("microbalance"))
 
-    override val title = "DiFluid Microbalance"
-    override val nameFragments = listOf("microbalance")
+object DifluidMicrobalanceTiDriver : DifluidDriver(
+    "DiFluid Microbalance Ti", "00dd", listOf("microbalance ti", "mb ti"),
+)
 
-    override val service: UUID = bluetoothUuid("00ee")
-    override val weightCharacteristic: UUID = bluetoothUuid("aa01")
-    override val commandCharacteristic: UUID = bluetoothUuid("aa01")
+sealed class DifluidDriver(
+    final override val title: String,
+    shortService: String,
+    final override val nameFragments: List<String>,
+) : ScaleDriver {
+    final override val service = bluetoothUuid(shortService)
+    final override val weightCharacteristic = bluetoothUuid("aa01")
+    final override val commandCharacteristic = weightCharacteristic
+
+    // Одна нотификация может содержать несколько полных кадров. Хвост с неверной
+    // длиной передаём в диагностику, но не принимаем в качестве измерения.
+    fun frames(value: ByteArray): List<ByteArray> {
+        val frames = mutableListOf<ByteArray>()
+        var offset = 0
+        while (offset < value.size) {
+            val end = if (value.size - offset >= 6) {
+                (offset + 6 + (value[offset + 4].toInt() and 0xff)).coerceAtMost(value.size)
+            } else value.size
+            frames += value.copyOfRange(offset, end)
+            offset = end
+        }
+        return frames
+    }
+
+    private fun valid(value: ByteArray, cmd: Int, length: Int): Boolean =
+        value.size == length + 6 &&
+            value[0] == HEADER && value[1] == HEADER &&
+            value[2] == 3.toByte() && value[3].toInt() == cmd && value[4].toInt() == length &&
+            checksum(value, value.lastIndex) == value.last()
 
     override fun parseWeight(value: ByteArray): WeightReading? {
-        if (value.size < PACKET_SIZE) return null
-        if (value[0] != HEADER_FIRST || value[1] != HEADER_SECOND) return null
-        if (value[3].toInt() != DATA_WEIGHT) return null
-
-        val tenths = ((value[5].toInt() and 0xff) shl 24) or
-            ((value[6].toInt() and 0xff) shl 16) or
-            ((value[7].toInt() and 0xff) shl 8) or
-            (value[8].toInt() and 0xff)
-        return WeightReading(grams = tenths / 10f)
+        if (!valid(value, 0, 13)) return null
+        val raw = ByteBuffer.wrap(value).getInt(5)
+        // Поле скорости бывает нулевым даже при изменении веса. BrewEngine
+        // рассчитывает г/с по тем же отсчётам, что использует для графика веса.
+        return when (value[17].toInt()) {
+            0 -> WeightReading(raw / 10f, unitOnScale = WeightUnit.GRAM)
+            1 -> WeightReading(raw / 1000f * 28.349523f, unitOnScale = WeightUnit.OUNCE)
+            else -> null
+        }
     }
 
-    override fun tareCommand(): ByteArray = command(0x03, 0x02, 0x01, 0x01)
+    override fun parseBattery(value: ByteArray): Int? =
+        if (valid(value, 5, 8)) (value[6].toInt() and 0xff).takeIf { it <= 100 } else null
 
-    override fun unitCommand(unit: WeightUnit): ByteArray? =
-        if (unit == WeightUnit.GRAM) command(0x01, 0x04, 0x01, 0x00) else null
+    override fun tareCommand() = command(3, 2, 1)
 
-    /** Without this command the scale keeps quiet and only answers polling. */
-    override fun onConnectCommands(): List<ByteArray> = listOf(command(0x01, 0x00, 0x01, 0x01))
+    override fun unitCommand(unit: WeightUnit) =
+        if (unit == WeightUnit.GRAM) command(1, 4, 0) else null
 
-    private fun command(group: Int, code: Int, length: Int, argument: Int): ByteArray {
-        val body = byteArrayOf(
-            HEADER_FIRST,
-            HEADER_SECOND,
-            group.toByte(),
-            code.toByte(),
-            length.toByte(),
-            argument.toByte(),
-        )
-        var checksum = 0
-        body.forEach { checksum += it.toInt() and 0xff }
-        return body + (checksum and 0xff).toByte()
+    override fun onConnectCommands() = listOf(command(1, 0, 1), command(3, 5))
+
+    private fun command(group: Int, code: Int, argument: Int? = null): ByteArray {
+        val data = if (argument == null) byteArrayOf() else byteArrayOf(argument.toByte())
+        val body = byteArrayOf(HEADER, HEADER, group.toByte(), code.toByte(), data.size.toByte()) + data
+        return body + checksum(body, body.size)
     }
 
-    private const val PACKET_SIZE = 19
-    private const val DATA_WEIGHT = 0
-    private const val HEADER_FIRST = 0xDF.toByte()
-    private const val HEADER_SECOND = 0xDF.toByte()
+    private fun checksum(bytes: ByteArray, count: Int): Byte {
+        var sum = 0
+        for (i in 0 until count) sum += bytes[i].toInt()
+        return sum.toByte()
+    }
+
+    private companion object {
+        val HEADER = 0xdf.toByte()
+    }
 }

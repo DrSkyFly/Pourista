@@ -118,6 +118,7 @@ object ScaleDrivers {
         TimemoreDotDriver,
         EurekaPrecisaDriver,
         VariaAkuDriver,
+        DifluidMicrobalanceTiDriver,
         DifluidMicrobalanceDriver,
         AcaiaClassicDriver,
         AcaiaPyxisDriver,
@@ -127,6 +128,15 @@ object ScaleDrivers {
         val name = deviceName?.takeIf { it.isNotBlank() } ?: return null
         return all.firstOrNull { it.matches(name) }
     }
+
+    // В рекламе некоторых прошивок есть только имя. Общая характеристика AA01
+    // и идентификатор производителя сами по себе модель не определяют.
+    fun forAdvertisement(name: String?, cachedName: String?, services: List<UUID>): ScaleDriver? =
+        when {
+            DifluidMicrobalanceTiDriver.service in services -> DifluidMicrobalanceTiDriver
+            DifluidMicrobalanceDriver.service in services -> DifluidMicrobalanceDriver
+            else -> forName(name) ?: forName(cachedName)
+        }
 
     fun hexToBytes(hex: String): ByteArray {
         val clean = hex.filterNot { it.isWhitespace() }
