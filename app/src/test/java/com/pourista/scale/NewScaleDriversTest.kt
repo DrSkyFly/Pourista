@@ -110,21 +110,16 @@ class NewScaleDriversTest {
 
     @Test
     fun `DiFluid reads the weight in four bytes and signs commands with a sum`() {
-        val packet = ByteArray(19)
-        packet[0] = 0xDF.toByte()
-        packet[1] = 0xDF.toByte()
-        packet[3] = 0x00
-        packet[7] = 0x04
-        packet[8] = 0xD2.toByte()   // 1234 is 123.4 g
-        assertEquals(123.4f, DifluidMicrobalanceDriver.parseWeight(packet)!!.grams, 0.01f)
+        val packet = hex("DF DF 03 00 0D 00 00 02 F8 00 00 00 00 00 0A 27 B0 00 A9")
+        assertEquals(76f, DifluidMicrobalanceDriver.parseWeight(packet)!!.grams, 0.01f)
 
-        assertEquals("dfdf03020101c5", DifluidMicrobalanceDriver.tareCommand()!!.toHex())
+        assertEquals("dfdf03020101c5", DifluidMicrobalanceDriver.tareCommand().toHex())
         assertEquals(
             "dfdf01040100c4",
             DifluidMicrobalanceDriver.unitCommand(WeightUnit.GRAM)!!.toHex(),
         )
         assertEquals(
-            listOf("dfdf01000101c1"),
+            listOf("dfdf01000101c1", "dfdf030500c6"),
             DifluidMicrobalanceDriver.onConnectCommands().map { it.toHex() },
         )
     }

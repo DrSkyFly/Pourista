@@ -62,11 +62,7 @@ android {
     }
     buildTypes {
         debug {
-            // With the same key as the release: otherwise a debug build cannot be installed over
-            // one downloaded from GitHub, nor a release build over a debug one, and every check on
-            // a live phone would require uninstalling the app.
-            // No key (on CI, for instance) — and the ordinary debug signature is left.
-            signingConfigs.findByName("release")?.let { signingConfig = it }
+            signingConfig = signingConfigs.getByName("debug")
         }
         release {
             signingConfig = signingConfigs.findByName("release")
@@ -99,6 +95,10 @@ android {
             enableSplit = false
         }
     }
+}
+
+androidComponents.onVariants(androidComponents.selector().withName("githubDebug")) {
+    it.applicationId.set("com.pourista.titest")
 }
 
 room {

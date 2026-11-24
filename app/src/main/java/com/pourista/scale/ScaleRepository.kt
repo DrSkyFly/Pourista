@@ -5,7 +5,6 @@ import android.annotation.SuppressLint
 import android.bluetooth.BluetoothAdapter
 import android.bluetooth.BluetoothGattCharacteristic
 import android.bluetooth.BluetoothManager
-import android.bluetooth.le.ScanResult
 import android.content.Context
 import android.content.pm.PackageManager
 import android.os.Build
@@ -90,6 +89,7 @@ class ScaleRepository(context: Context) {
     private val _state = MutableStateFlow(ScaleState())
     val state: StateFlow<ScaleState> = _state.asStateFlow()
 
+    @Volatile
     private var peripheral: BluetoothPeripheral? = null
     private var reconnectJob: Job? = null
     private var heartbeatJob: Job? = null
@@ -102,6 +102,7 @@ class ScaleRepository(context: Context) {
     private var driver: ScaleDriver = FutulaDriver
 
     /** The user disconnected on purpose — we do not reconnect quietly. */
+    @Volatile
     private var userDisconnected = false
 
     /** Whether to put the scale back into grams if it was switched by the button on its body. */
@@ -109,8 +110,19 @@ class ScaleRepository(context: Context) {
 
     private var connectionObserverStarted = false
 
-    /** The diagnostics looks over the air itself — the ordinary search does not run meanwhile. */
-    private var diagnosticScan = false
+    private var scanTimeout: Job? = null
+    private var scanId = 0L
+    private var connectionTimeout: Job? = null
+    private var observationJob: Job? = null
+    private val recentEvents = ArrayDeque<String>()
+
+    @Synchronized
+    private fun event(message: String) {
+        Log.d(DIFLUID_TAG, message)
+        if (recentEvents.size == 100) recentEvents.removeFirst()
+        recentEvents.addLast("${SystemClock.elapsedRealtime()} ms  $message")
+        diagnostics?.event(message)
+    }
 
     private var lastPacketLogAt = 0L
 
@@ -160,8 +172,13 @@ class ScaleRepository(context: Context) {
      * it can no longer be asked to disconnect — it throws an exception. So the reference to the
      * scale is let go right here.
      */
+    @Synchronized
     private fun onBluetoothOff() {
-        Log.d(TAG, "Bluetooth turned off")
+        event("Bluetooth turned off")
+        scanId++
+        scanTimeout?.cancel()
+        connectionTimeout?.cancel()
+        observationJob?.cancel()
         reconnectJob?.cancel()
         heartbeatJob?.cancel()
         tareJob?.cancel()
@@ -212,19 +229,32 @@ class ScaleRepository(context: Context) {
     }
 
     @SuppressLint("MissingPermission")
+    @Synchronized
     fun startScan() {
         if (!hasPermissions()) {
-            Log.d(TAG, "No Bluetooth permissions, not starting the search")
+            event("Bluetooth permissions denied")
             return
         }
         // Without this check the status would go to "searching" while no search started at
         // all, and the next call would run into the check a line below.
         if (!bluetoothEnabled()) {
-            Log.d(TAG, "Bluetooth is off, not starting the search")
+            event("Bluetooth is off")
             _state.update { it.copy(status = ConnectionStatus.BLUETOOTH_OFF) }
             return
         }
-        if (_state.value.isConnected || _state.value.status == ConnectionStatus.SCANNING) return
+        if (_state.value.isConnected || _state.value.isBusy) return
+        val id = ++scanId
+        val seen = mutableSetOf<String>()
+        event("BLE scan started")
+        scanTimeout = scope.launch {
+            delay(SCAN_TIMEOUT_MS)
+            synchronized(this@ScaleRepository) {
+                if (id == scanId) {
+                    event("BLE scan timed out")
+                    stopScan()
+                }
+            }
+        }
         userDisconnected = false
         observeConnectionStateOnce()
         _state.update { it.copy(status = ConnectionStatus.SCANNING) }
@@ -234,44 +264,64 @@ class ScaleRepository(context: Context) {
             // lowercase "timemore".
             central.scanForPeripherals(
                 { found, scanResult ->
-                    val name = found.advertisedName(scanResult)
-                    val matched = ScaleDrivers.forName(name) ?: return@scanForPeripherals
-                    val mark = if (matched.experimental) ", support is in beta" else ""
-                    Log.d(TAG, "Found a scale $name (${matched.title}$mark), RSSI ${scanResult.rssi}")
-                    central.stopScan()
-                    peripheral = found
-                    driver = matched
-                    _state.update {
-                        it.copy(status = ConnectionStatus.CONNECTING, deviceName = name)
+                    synchronized(this@ScaleRepository) {
+                        if (id != scanId) return@scanForPeripherals
+                        val record = scanResult.scanRecord
+                        val name = record?.deviceName?.takeIf { it.isNotBlank() } ?: found.name
+                        val services = record?.serviceUuids.orEmpty().map { it.uuid }
+                        val matched = ScaleDrivers.forAdvertisement(name, found.name, services)
+                        val manufacturers = record?.manufacturerSpecificData
+                        val ids = manufacturers?.let { data -> (0 until data.size()).map(data::keyAt) }.orEmpty()
+                        val detail = "name=$name, services=$services, manufacturer IDs=$ids → ${matched?.title ?: "unknown"}"
+                        if (seen.add(detail)) event(detail)
+                        if (matched == null) return@scanForPeripherals
+                        stopScan()
+                        peripheral = found
+                        driver = matched
+                        _state.value = ScaleState(
+                            status = ConnectionStatus.CONNECTING,
+                            deviceName = name.ifBlank { matched.title },
+                        )
+                        connect(found)
                     }
-                    connect(found)
                 },
                 { failure ->
-                    Log.d(TAG, "The search failed: $failure")
-                    _state.update { it.copy(status = ConnectionStatus.IDLE) }
+                    synchronized(this@ScaleRepository) {
+                        if (id == scanId) {
+                            event("Scan failed: $failure")
+                            stopScan()
+                        }
+                    }
                 },
             )
-        }.onFailure { error ->
-            Log.d(TAG, "Could not start the search: $error")
-            _state.update { it.copy(status = ConnectionStatus.IDLE) }
+        }.onFailure {
+            event("Cannot start scan: $it")
+            stopScan()
         }
     }
 
     @SuppressLint("MissingPermission")
+    @Synchronized
     fun stopScan() {
-        central.stopScan()
+        scanId++
+        scanTimeout?.cancel()
+        runCatching { central.stopScan() }
         if (_state.value.status == ConnectionStatus.SCANNING) {
             _state.update { it.copy(status = ConnectionStatus.IDLE) }
         }
     }
 
     @SuppressLint("MissingPermission")
+    @Synchronized
     fun disconnect() {
+        event("Closing GATT connection")
+        stopScan()
+        connectionTimeout?.cancel()
+        observationJob?.cancel()
         userDisconnected = true
         reconnectJob?.cancel()
         heartbeatJob?.cancel()
         tareJob?.cancel()
-        runCatching { central.stopScan() }
         // The library may have forgotten the device already — that happens after the adapter is
         // turned off. It then throws an exception when asked to disconnect.
         peripheral?.let { device ->
@@ -307,7 +357,7 @@ class ScaleRepository(context: Context) {
                 if (!_state.value.isConnected) return@launch
                 if (attempt > 0) diagnostics?.event("the tare did not work, sending again")
                 sendCommand(current, command)
-                delay(TARE_CHECK_MS)
+                delay(if (driver is DifluidDriver) 2_000L else TARE_CHECK_MS)
                 val now = _state.value.weightGrams
                 if (abs(now) <= TARE_TOLERANCE_GRAMS) return@launch
                 if (abs(now - before) > TARE_TOLERANCE_GRAMS) return@launch
@@ -325,8 +375,10 @@ class ScaleRepository(context: Context) {
      * advertisement shows whether the app recognises this scale at all.
      */
     @SuppressLint("MissingPermission")
+    @Synchronized
     fun startDiagnostics(header: List<String>) {
         val log = ScaleDiagnostics(header)
+        recentEvents.forEach(log::note)
         diagnostics = log
         _diagnosticsPackets.value = 0
 
@@ -334,11 +386,11 @@ class ScaleRepository(context: Context) {
         if (_state.value.isConnected && device != null) {
             log.note("Driver: ${driver.title}")
             dumpServices(device, log)
-            observeEverything(device, log)
+            if (BuildConfig.DEBUG) observeEverything(device, log)
         } else {
             log.note("The scale is not connected — looking at what is on the air")
             log.note("")
-            scanForDiagnostics(log)
+            startScan()
         }
     }
 
@@ -347,13 +399,6 @@ class ScaleRepository(context: Context) {
     fun stopDiagnostics(): String? {
         val log = diagnostics ?: return null
         diagnostics = null
-        if (diagnosticScan) {
-            diagnosticScan = false
-            central.stopScan()
-            if (_state.value.status == ConnectionStatus.SCANNING) {
-                _state.update { it.copy(status = ConnectionStatus.IDLE) }
-            }
-        }
         return log.text()
     }
 
@@ -397,78 +442,68 @@ class ScaleRepository(context: Context) {
         }
     }
 
-    @SuppressLint("MissingPermission")
-    private fun scanForDiagnostics(log: ScaleDiagnostics) {
-        if (!hasPermissions()) {
-            log.note("No Bluetooth permission — could not look over the air")
-            return
-        }
-        diagnosticScan = true
-        val seen = mutableSetOf<String>()
-        runCatching {
-            central.scanForPeripherals(
-                { found, result ->
-                    // The address is only needed so as not to repeat a device in the log.
-                    if (!seen.add(found.address)) return@scanForPeripherals
-                    val advertised = found.advertisedName(result)
-                    val name = advertised.ifBlank { "(no name)" }
-                    val services = result.scanRecord?.serviceUuids
-                        ?.joinToString(", ") { it.uuid.toString() }
-                        ?: "not advertised"
-                    val known = ScaleDrivers.forName(advertised)?.title ?: "not known to the app"
-                    log.event("on the air: \"$name\", RSSI ${result.rssi}, services: $services → $known")
-                },
-                { failure -> log.event("the search failed: $failure") },
-            )
-        }.onFailure { log.event("the search did not start: $it") }
-    }
-
     private fun connect(target: BluetoothPeripheral) {
-        scope.launch {
-            runCatching { central.connectPeripheral(target) }
-                .onFailure {
-                    Log.d(TAG, "Could not connect: $it")
-                    _state.update { state -> state.copy(status = ConnectionStatus.IDLE) }
+        connectionTimeout?.cancel()
+        connectionTimeout = scope.launch {
+            delay(CONNECTION_TIMEOUT_MS)
+            synchronized(this@ScaleRepository) {
+                if (peripheral === target && !_state.value.isConnected) {
+                    event("Timed out waiting for GATT or first DiFluid reading")
+                    disconnect()
                 }
+            }
+        }
+        scope.launch {
+            runCatching { central.connectPeripheral(target) }.onFailure {
+                synchronized(this@ScaleRepository) {
+                    event("GATT connection failed: $it")
+                    if (peripheral === target) {
+                        disconnect()
+                    }
+                }
+            }
         }
     }
 
     private fun observeConnectionStateOnce() {
         if (connectionObserverStarted) return
         connectionObserverStarted = true
-        central.observeConnectionState { device, state ->
-            Log.d(TAG, "Scale ${device.name}: $state")
-            when (state) {
-                ConnectionState.CONNECTING ->
-                    _state.update { it.copy(status = ConnectionStatus.CONNECTING) }
+        central.observeConnectionState { device, state -> handleConnectionState(device, state) }
+    }
 
-                ConnectionState.CONNECTED -> {
-                    peripheral = device
-                    _state.update {
-                        it.copy(status = ConnectionStatus.CONNECTED, deviceName = device.name)
-                    }
-                    startObserving(device)
+    @Synchronized
+    private fun handleConnectionState(device: BluetoothPeripheral, state: ConnectionState) {
+        if (device !== peripheral || userDisconnected) return
+        event("GATT ${device.name}: $state")
+        when (state) {
+            ConnectionState.CONNECTING ->
+                _state.update { it.copy(status = ConnectionStatus.CONNECTING) }
+
+            ConnectionState.CONNECTED -> {
+                if (driver !is DifluidDriver) {
+                    connectionTimeout?.cancel()
+                    _state.update { it.copy(status = ConnectionStatus.CONNECTED, deviceName = device.name) }
                 }
+                startObserving(device)
+            }
 
-                ConnectionState.DISCONNECTING -> Unit
+            ConnectionState.DISCONNECTING -> Unit
 
-                ConnectionState.DISCONNECTED -> {
-                    heartbeatJob?.cancel()
-                    _state.update {
-                        it.copy(
-                            status = if (userDisconnected) {
-                                ConnectionStatus.IDLE
-                            } else {
-                                ConnectionStatus.RECONNECTING
-                            },
-                            // The last weight is left on the screen, while a flow rate with no
-                            // new packets would mean a pour that is not happening.
-                            flowRate = null,
-                            batteryPercent = null,
-                        )
-                    }
-                    if (!userDisconnected) scheduleReconnect(device)
+            ConnectionState.DISCONNECTED -> {
+                connectionTimeout?.cancel()
+                observationJob?.cancel()
+                tareJob?.cancel()
+                heartbeatJob?.cancel()
+                if (!_state.value.isConnected) {
+                    event("GATT disconnected before initialization completed")
+                    peripheral = null
+                    _state.value = ScaleState()
+                    return
                 }
+                _state.update {
+                    it.copy(status = ConnectionStatus.RECONNECTING, flowRate = null, batteryPercent = null)
+                }
+                scheduleReconnect(device)
             }
         }
     }
@@ -477,12 +512,16 @@ class ScaleRepository(context: Context) {
         reconnectJob?.cancel()
         reconnectJob = scope.launch {
             delay(RECONNECT_DELAY_MS)
-            if (userDisconnected) return@launch
-            // A device the library knows nothing about it refuses to hand over — with an
-            // exception rather than with a null.
-            val known = runCatching { central.getPeripheral(device.address) }.getOrNull()
-            if (known?.getState() == ConnectionState.DISCONNECTED) {
-                connect(device)
+            synchronized(this@ScaleRepository) {
+                if (userDisconnected || peripheral !== device) return@launch
+                val known = runCatching { central.getPeripheral(device.address) }.getOrNull()
+                if (known != null && known.getState() == ConnectionState.DISCONNECTED) {
+                    peripheral = known
+                    connect(known)
+                } else {
+                    event("Reconnect unavailable")
+                    disconnect()
+                }
             }
         }
     }
@@ -491,48 +530,31 @@ class ScaleRepository(context: Context) {
         val active = refineDriver(device)
         active.reset()
         readingSeen = false
-        scope.launch {
+        observationJob?.cancel()
+        observationJob = scope.launch {
             try {
+                device.services.forEach { service ->
+                    event("GATT service ${service.uuid}: " + service.characteristics.joinToString {
+                        "${it.uuid} [${it.propertyNames()}]"
+                    })
+                }
                 val weight = device.getCharacteristic(active.service, active.weightCharacteristic)
                 val battery = active.batteryService?.let { service ->
                     active.batteryCharacteristic?.let { device.getCharacteristic(service, it) }
                 }
 
-                if (weight != null) {
-                    device.observe(weight) { value ->
-                        val reading = active.parseWeight(value) ?: run {
-                            // On some scales the battery arrives in a frame of its own into the
-                            // same characteristic as the weight.
-                            val percent = active.parseBattery(value)
-                            if (percent != null) {
-                                _state.update { it.copy(batteryPercent = percent) }
-                            }
-                            logPacket(value, null, percent)
-                            return@observe
-                        }
-                        logPacket(value, reading)
-                        readingSeen = true
-                        // The scale may show ounces: recipes and guidance are in grams, so we
-                        // put it back if the model can do that. Packets come ten a second, while
-                        // the unit does not switch instantly — otherwise the scale would manage
-                        // a full round of "grams to ounces to grams".
-                        if (keepGrams && reading.unitOnScale != null &&
-                            reading.unitOnScale != WeightUnit.GRAM &&
-                            SystemClock.elapsedRealtime() - lastUnitCommandAt > UNIT_COMMAND_PAUSE_MS
-                        ) {
-                            lastUnitCommandAt = SystemClock.elapsedRealtime()
-                            active.unitCommand(WeightUnit.GRAM)?.let { command ->
-                                scope.launch { sendCommand(device, command) }
-                            }
-                        }
-                        _state.update { state ->
-                            state.copy(
-                                weightGrams = reading.grams,
-                                flowRate = reading.flowRate,
-                                batteryPercent = reading.batteryPercent ?: state.batteryPercent,
-                            )
-                        }
+                if (active is DifluidDriver) {
+                    check(weight != null && weight.notifies() &&
+                        weight.supports(BluetoothGattCharacteristic.PROPERTY_WRITE)) {
+                        "Missing DiFluid notify/write characteristic ${active.service}/${active.weightCharacteristic}"
                     }
+                }
+                if (weight != null) {
+                    val subscribed = device.observe(weight) { packet ->
+                        receivePacket(device, active, packet)
+                    }
+                    event("Subscribe ${weight.uuid}: $subscribed")
+                    if (active is DifluidDriver) check(subscribed) { "DiFluid notification subscription rejected" }
                 }
 
                 // Not everything has a separate battery service: on the rest it arrives in the
@@ -548,7 +570,7 @@ class ScaleRepository(context: Context) {
                 diagnostics?.let { log ->
                     log.event("connected: ${device.name}, driver ${active.title}")
                     dumpServices(device, log)
-                    observeEverything(device, log)
+                    if (BuildConfig.DEBUG) observeEverything(device, log)
                 }
 
                 val startup = buildList {
@@ -561,13 +583,55 @@ class ScaleRepository(context: Context) {
                 }
                 // On some scales the introduction goes in steps, and it cannot be hurried: they
                 // drop commands sent one after another.
+                if (active is DifluidDriver) delay(COMMAND_GAP_MS)
                 startup.forEachIndexed { index, command ->
                     if (index > 0) delay(COMMAND_GAP_MS)
                     sendCommand(device, command)
                 }
                 startHeartbeat(device, active)
             } catch (e: Exception) {
-                Log.d(TAG, "Could not subscribe to the characteristics: $e")
+                if (e is kotlinx.coroutines.CancellationException) throw e
+                event("GATT initialization failed: $e")
+                synchronized(this@ScaleRepository) {
+                    if (active is DifluidDriver && peripheral === device) disconnect()
+                }
+            }
+        }
+    }
+
+    @Synchronized
+    private fun receivePacket(device: BluetoothPeripheral, active: ScaleDriver, packet: ByteArray) {
+        if (device !== peripheral || userDisconnected || _state.value.status == ConnectionStatus.RECONNECTING) return
+        val frames = if (active is DifluidDriver) active.frames(packet) else listOf(packet)
+        for (frame in frames) {
+            val reading = active.parseWeight(frame)
+            if (reading == null) {
+                val battery = active.parseBattery(frame)
+                if (battery != null) _state.update { it.copy(batteryPercent = battery) }
+                logPacket(frame, null, battery)
+                continue
+            }
+            logPacket(frame, reading)
+            if (active is DifluidDriver && !readingSeen) {
+                connectionTimeout?.cancel()
+                event("First valid weight from ${active.title}")
+            }
+            readingSeen = true
+            if (keepGrams && reading.unitOnScale != null && reading.unitOnScale != WeightUnit.GRAM &&
+                SystemClock.elapsedRealtime() - lastUnitCommandAt > UNIT_COMMAND_PAUSE_MS
+            ) {
+                lastUnitCommandAt = SystemClock.elapsedRealtime()
+                active.unitCommand(WeightUnit.GRAM)?.let { command ->
+                    scope.launch { sendCommand(device, command) }
+                }
+            }
+            _state.update {
+                it.copy(
+                    status = ConnectionStatus.CONNECTED,
+                    weightGrams = reading.grams,
+                    flowRate = reading.flowRate,
+                    batteryPercent = reading.batteryPercent ?: it.batteryPercent,
+                )
             }
         }
     }
@@ -585,12 +649,11 @@ class ScaleRepository(context: Context) {
         }
         val better = ScaleDrivers.all.firstOrNull { candidate ->
             candidate !== current &&
-                candidate.matches(device.name) &&
+                (candidate.matches(device.name) || current is DifluidDriver && candidate is DifluidDriver) &&
                 device.getCharacteristic(candidate.service, candidate.weightCharacteristic) != null
         } ?: return current
 
-        Log.d(TAG, "Driver refined by the services: ${current.title} → ${better.title}")
-        diagnostics?.event("driver refined by the services: ${better.title}")
+        event("Driver refined: ${current.title} → ${better.title}")
         driver = better
         return better
     }
@@ -625,6 +688,7 @@ class ScaleRepository(context: Context) {
      * Needed when checking against a live scale, not built into a release.
      */
     private fun logPacket(value: ByteArray, reading: WeightReading?, battery: Int? = null) {
+        if (!BuildConfig.DEBUG) return
         // The scale sends the battery in a frame of its own into the same characteristic. It is
         // parsed differently from a weight, but it is parsed: "failed" here would be a lie.
         val parsed = when {
@@ -636,12 +700,11 @@ class ScaleRepository(context: Context) {
             log.packet(driver.weightCharacteristic.toString(), value, parsed)
             _diagnosticsPackets.value = log.packetCount
         }
-        if (!BuildConfig.DEBUG) return
         val now = SystemClock.elapsedRealtime()
-        if (now - lastPacketLogAt < PACKET_LOG_INTERVAL_MS) return
+        if (driver !is DifluidDriver && now - lastPacketLogAt < PACKET_LOG_INTERVAL_MS) return
         lastPacketLogAt = now
         val hex = value.joinToString(" ") { "%02x".format(it) }
-        Log.d(TAG, "Weight packet [$hex] → $parsed")
+        Log.d(if (driver is DifluidDriver) DIFLUID_TAG else TAG, "Weight packet [$hex] → $parsed")
     }
 
     private suspend fun sendCommand(
@@ -649,6 +712,7 @@ class ScaleRepository(context: Context) {
         command: ByteArray,
         silent: Boolean = false,
     ) {
+        if (device !== peripheral || userDisconnected) return
         val target = driver.commandCharacteristic ?: run {
             diagnostics?.event("the command was not sent: the driver has no command characteristic")
             return
@@ -670,21 +734,25 @@ class ScaleRepository(context: Context) {
         }
         // We write to the log before sending rather than after: a command stuck in the queue
         // would otherwise leave no trace at all.
-        if (!silent) diagnostics?.command(target.toString(), command, write.toString())
+        if (BuildConfig.DEBUG && driver is DifluidDriver) {
+            event("TX $target ($write) " + command.joinToString(" ") { "%02X".format(it) })
+        }
+        if (!silent && BuildConfig.DEBUG && driver !is DifluidDriver) diagnostics?.command(target.toString(), command, write.toString())
         try {
             withTimeout(COMMAND_TIMEOUT_MS) {
                 repeat(driver.commandRepeats.coerceAtLeast(1)) { attempt ->
                     if (attempt > 0) delay(COMMAND_GAP_MS)
-                    device.writeCharacteristic(characteristic, command, write)
+                    val result = device.writeCharacteristic(characteristic, command, write)
+                    if (driver is DifluidDriver) check(result.isNotEmpty()) { "GATT write rejected" }
                 }
             }
         } catch (e: TimeoutCancellationException) {
-            Log.d(TAG, "The command got stuck in the queue, bringing the connection up again")
-            diagnostics?.event("the command got stuck in the queue, bringing the connection up again")
+            event("GATT write timed out")
+
             recoverStuckLink(device)
         } catch (e: Exception) {
-            Log.d(TAG, "The command was not delivered: $e")
-            diagnostics?.event("the command did not go out: $e")
+            if (e is kotlinx.coroutines.CancellationException) throw e
+            event("Command delivery failed: $e")
         }
     }
 
@@ -699,7 +767,7 @@ class ScaleRepository(context: Context) {
      */
     @SuppressLint("MissingPermission")
     private suspend fun recoverStuckLink(device: BluetoothPeripheral) {
-        runCatching { central.cancelConnection(device) }
+        if (peripheral === device) runCatching { central.cancelConnection(device) }
     }
 
     private fun BluetoothGattCharacteristic.notifies(): Boolean =
@@ -707,14 +775,6 @@ class ScaleRepository(context: Context) {
 
     private fun BluetoothGattCharacteristic.supports(property: Int): Boolean =
         properties and property != 0
-
-    /**
-     * The name from the advertisement. A device can have none until it has been connected to,
-     * while the advertisement itself has one.
-     */
-    @SuppressLint("MissingPermission")
-    private fun BluetoothPeripheral.advertisedName(result: ScanResult): String =
-        name.ifBlank { result.scanRecord?.deviceName.orEmpty() }
 
     private fun BluetoothGattCharacteristic.propertyNames(): String = buildList {
         if (properties and BluetoothGattCharacteristic.PROPERTY_READ != 0) add("read")
@@ -727,6 +787,9 @@ class ScaleRepository(context: Context) {
     }.joinToString(", ").ifEmpty { "—" }
 
     companion object {
+        private const val SCAN_TIMEOUT_MS = 20_000L
+        private const val CONNECTION_TIMEOUT_MS = 35_000L
+        private const val DIFLUID_TAG = "PouristaDiFluid"
         private const val TAG = "ScaleRepository"
         private const val RECONNECT_DELAY_MS = 10_000L
         private const val PACKET_LOG_INTERVAL_MS = 1_000L
